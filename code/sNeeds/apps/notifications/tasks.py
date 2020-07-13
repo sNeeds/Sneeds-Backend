@@ -15,8 +15,8 @@ def send_email_notifications():
     )
 
     for obj in qs:
-        # if obj.is_sold_time_slot_reminder():
-        #     send_sold_time_slot_start_reminder_email(send_to=obj.email, **obj.get_data_dict())
+        if obj.is_sold_time_slot_reminder():
+            send_sold_time_slot_start_reminder_email(send_to=obj.email, **obj.get_data_dict())
         try:
             obj = obj.soldtimeslotreminderemailnotification
             send_sold_time_slot_start_reminder_email(send_to=obj.email, **obj.get_data_dict())
