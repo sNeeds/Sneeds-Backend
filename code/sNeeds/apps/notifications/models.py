@@ -44,4 +44,4 @@ class SoldTimeSlotReminderEmailNotification(EmailNotification):
 
 
 class SoldTimeSlotChangedEmailNotification(EmailNotification):
-    pass
+    sold_time_slot_id = models.PositiveIntegerField()

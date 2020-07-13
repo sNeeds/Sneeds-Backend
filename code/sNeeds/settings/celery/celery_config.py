@@ -33,6 +33,6 @@ CELERY_BEAT_SCHEDULE = {
     },
     'send-email-notifications': {
         'task': 'sNeeds.apps.notifications.tasks.send_email_notifications',
-        'schedule': timedelta(minutes=5),
+        'schedule': timedelta(seconds=5),
     },
 }
