@@ -129,7 +129,7 @@ class StudentDetailedInfo(models.Model):
     # Language skills and certificates
     language_certificate = models.ForeignKey(StudentFormFieldsChoice, on_delete=models.PROTECT,
                                              related_name='language_certificate')
-    language_certificate_overall = models.PositiveSmallIntegerField(null=True, blank=True)
+    language_certificate_overall = models.FloatField(null=True, blank=True)
     language_speaking = models.FloatField(null=True, blank=True)
     language_listening = models.FloatField(null=True, blank=True)
     language_writing = models.FloatField(null=True, blank=True)
