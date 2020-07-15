@@ -165,11 +165,9 @@ class LanguageCertificateTypeThrough(models.Model):
     reading = models.DecimalField(max_digits=5, decimal_places=2)
     overall = models.DecimalField(max_digits=5, decimal_places=2)
 
-
+class
 class StudentDetailedInfo(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
 
     age = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(15), MaxValueValidator(100)]
@@ -207,7 +205,8 @@ class StudentDetailedInfo(models.Model):
                               validators=[FileExtensionValidator(allowed_extensions=['pdf']),
                                           validate_resume_file_size])
 
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
     def is_complete(self):
-        # TODO: Hossein, implement this
-        # always is True, if form is created it means all the credentials are provided
         return True
