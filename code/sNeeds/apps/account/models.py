@@ -110,21 +110,70 @@ class StudentFormApplySemesterYear(models.Model):
         return str(self.year) + " " + self.semester
 
 
+class FormUniversity(models.Model):
+    name = models.CharField(max_length=128)
+
+
+class FormGrade(models.Model):
+    name = models.CharField(max_length=128)
+
+
+class FormMajor(models.Model):
+    name = models.CharField(max_length=128)
+
+
+class FormUniversityThrough(models.Model):
+    university = models.ForeignKey(
+        FormUniversity, on_delete=models.PROTECT
+    )
+    grade = models.ForeignKey(
+        FormGrade, on_delete=models.PROTECT
+    )
+    major = models.ForeignKey(
+        FormMajor, on_delete=models.PROTECT
+    )
+    graduate_in = models.SmallIntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(20)],
+        help_text="In Gregorian"
+    )
+    thesis_title = models.CharField(
+        max_length=512,
+        blank=True,
+        null=True
+    )
+    gpa = models.DecimalField(
+        validators=[MinValueValidator(0), MaxValueValidator(20)],
+        max_digits=4,
+        decimal_places=2
+    )
+
+
+class LanguageCertificate(models.Model):
+    name = models.CharField(
+        max_length=128
+    )
+
+class LanguageCertificateThrough(models.Model):
+
+
 class StudentDetailedInfo(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     # Personal information
-    age = models.PositiveSmallIntegerField(validators=[MinValueValidator(15), MaxValueValidator(100)])
-    marital_status = models.ForeignKey(StudentFormFieldsChoice, on_delete=models.PROTECT, related_name='marital_status')
+    age = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(15), MaxValueValidator(100)]
+    )
+    marital_status = models.ForeignKey(
+        StudentFormFieldsChoice,
+        on_delete=models.PROTECT,
+        related_name='marital_status'
+    )
 
-    # Last grade info
-    grade = models.ForeignKey(StudentFormFieldsChoice, on_delete=models.PROTECT, related_name='grade')
-    university = models.CharField(max_length=256)
-    degree_conferral_year = models.PositiveSmallIntegerField()
-    major = models.CharField(max_length=256)
-    total_average = models.DecimalField(max_digits=4, decimal_places=2)
-    thesis_title = models.CharField(max_length=512, blank=True, null=True)
+    university = models.ManyToManyField(
+        FormUniversity,
+        through=FormUniversityThrough
+    )
 
     # Language skills and certificates
     language_certificate = models.ForeignKey(StudentFormFieldsChoice, on_delete=models.PROTECT,
@@ -135,8 +184,10 @@ class StudentDetailedInfo(models.Model):
     language_writing = models.PositiveSmallIntegerField(null=True, blank=True)
     language_reading = models.PositiveSmallIntegerField(null=True, blank=True)
     # Apply info
-    apply_mainland = models.ForeignKey(StudentFormFieldsChoice, on_delete=models.PROTECT, related_name='apply_mainland')
-    apply_country = models.ForeignKey(StudentFormFieldsChoice, on_delete=models.PROTECT, related_name='apply_country')
+    apply_mainland = models.ForeignKey(StudentFormFieldsChoice, on_delete=models.PROTECT,
+                                       related_name='apply_mainland')
+    apply_country = models.ForeignKey(StudentFormFieldsChoice, on_delete=models.PROTECT,
+                                      related_name='apply_country')
     apply_grade = models.ForeignKey(StudentFormFieldsChoice, on_delete=models.PROTECT, related_name='apply_grade')
     apply_major = models.CharField(max_length=256)
     apply_university = models.CharField(max_length=256)
@@ -146,7 +197,8 @@ class StudentDetailedInfo(models.Model):
     # Extra info
     comment = models.TextField(max_length=1024, null=True, blank=True)
     resume = models.FileField(upload_to=get_student_resume_path, null=True, blank=True,
-                              validators=[FileExtensionValidator(allowed_extensions=['pdf']), validate_resume_file_size])
+                              validators=[FileExtensionValidator(allowed_extensions=['pdf']),
+                                          validate_resume_file_size])
 
     def is_complete(self):
         # TODO: Hossein, implement this
