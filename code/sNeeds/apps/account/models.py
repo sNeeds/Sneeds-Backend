@@ -148,19 +148,29 @@ class FormUniversityThrough(models.Model):
     )
 
 
-class LanguageCertificate(models.Model):
+class LanguageCertificateType(models.Model):
     name = models.CharField(
         max_length=128
     )
 
-class LanguageCertificateThrough(models.Model):
+
+class LanguageCertificateTypeThrough(models.Model):
+    certificate_type = models.ForeignKey(
+        LanguageCertificateType,
+        on_delete=models.PROTECT
+    )
+    speaking = models.DecimalField(max_digits=5, decimal_places=2)
+    listening = models.DecimalField(max_digits=5, decimal_places=2)
+    writing = models.DecimalField(max_digits=5, decimal_places=2)
+    reading = models.DecimalField(max_digits=5, decimal_places=2)
+    overall = models.DecimalField(max_digits=5, decimal_places=2)
 
 
 class StudentDetailedInfo(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    # Personal information
+
     age = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(15), MaxValueValidator(100)]
     )
@@ -175,14 +185,11 @@ class StudentDetailedInfo(models.Model):
         through=FormUniversityThrough
     )
 
-    # Language skills and certificates
-    language_certificate = models.ForeignKey(StudentFormFieldsChoice, on_delete=models.PROTECT,
-                                             related_name='language_certificate')
-    language_certificate_overall = models.FloatField(null=True, blank=True)
-    language_speaking = models.FloatField(null=True, blank=True)
-    language_listening = models.FloatField(null=True, blank=True)
-    language_writing = models.FloatField(null=True, blank=True)
-    language_reading = models.FloatField(null=True, blank=True)
+    language_certificate = models.ManyToManyField(
+        LanguageCertificateType,
+        through=LanguageCertificateTypeThrough
+    )
+
     # Apply info
     apply_mainland = models.ForeignKey(StudentFormFieldsChoice, on_delete=models.PROTECT,
                                        related_name='apply_mainland')
