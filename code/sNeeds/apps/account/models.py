@@ -165,7 +165,38 @@ class LanguageCertificateTypeThrough(models.Model):
     reading = models.DecimalField(max_digits=5, decimal_places=2)
     overall = models.DecimalField(max_digits=5, decimal_places=2)
 
-class
+
+class UniversityWantToApplyThrough(models.Model):
+    university = models.ForeignKey(
+        University,
+        on_delete=models.PROTECT
+    )
+    grade = models.ForeignKey(
+        FormGrade,
+        on_delete=models.PROTECT
+    )
+    major = models.CharField(
+        max_length=256
+    )
+
+
+class WantToApply(models.Model):
+    country = models.ForeignKey(
+        Country,
+        on_delete=models.PROTECT
+    )
+
+    universities = models.ManyToManyField(
+        University,
+        through=UniversityWantToApplyThrough
+    )
+
+    semester_year = models.ForeignKey(
+        StudentFormApplySemesterYear,
+        on_delete=models.PROTECT,
+    )
+
+
 class StudentDetailedInfo(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
 
@@ -178,32 +209,31 @@ class StudentDetailedInfo(models.Model):
         related_name='marital_status'
     )
 
-    university = models.ManyToManyField(
+    universities = models.ManyToManyField(
         FormUniversity,
         through=FormUniversityThrough
     )
 
-    language_certificate = models.ManyToManyField(
+    language_certificates = models.ManyToManyField(
         LanguageCertificateType,
         through=LanguageCertificateTypeThrough
     )
 
-    # Apply info
-    apply_mainland = models.ForeignKey(StudentFormFieldsChoice, on_delete=models.PROTECT,
-                                       related_name='apply_mainland')
-    apply_country = models.ForeignKey(StudentFormFieldsChoice, on_delete=models.PROTECT,
-                                      related_name='apply_country')
-    apply_grade = models.ForeignKey(StudentFormFieldsChoice, on_delete=models.PROTECT, related_name='apply_grade')
-    apply_major = models.CharField(max_length=256)
-    apply_university = models.CharField(max_length=256)
-    apply_semester_year = models.ForeignKey(StudentFormApplySemesterYear, on_delete=models.PROTECT,
-                                            related_name='apply_semester_year')
+    want_to_apply = models.ManyToManyField(
+        WantToApply,
+        through=UniversityWantToApplyThrough
+    )
 
     # Extra info
     comment = models.TextField(max_length=1024, null=True, blank=True)
-    resume = models.FileField(upload_to=get_student_resume_path, null=True, blank=True,
-                              validators=[FileExtensionValidator(allowed_extensions=['pdf']),
-                                          validate_resume_file_size])
+    resume = models.FileField(
+        upload_to=get_student_resume_path,
+        null=True,
+        blank=True,
+        validators=[
+            FileExtensionValidator(allowed_extensions=['pdf']), validate_resume_file_size
+        ]
+    )
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
