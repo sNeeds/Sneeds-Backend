@@ -98,7 +98,7 @@ class StudentFormFieldsChoice(models.Model):
 
 class StudentFormApplySemesterYear(models.Model):
     year = models.SmallIntegerField(
-        validators=[MinValueValidator(0), MaxValueValidator(20)],
+        validators=[MinValueValidator(1900), MaxValueValidator(2100)],
         help_text="In Gregorian"
     )
     semester = models.CharField(max_length=64, choices=SEMESTER_CHOICES)
@@ -118,13 +118,22 @@ class FormUniversity(models.Model):
 class FormGrade(models.Model):
     name = models.CharField(max_length=128)
 
+    def __str__(self):
+        return self.name
+
 
 class FormMajor(models.Model):
     name = models.CharField(max_length=128)
 
+    def __str__(self):
+        return self.name
+
 
 class FormMajorType(models.Model):
     name = models.CharField(max_length=128)
+
+    def __str__(self):
+        return self.name
 
 
 class LanguageCertificateType(models.Model):
@@ -151,26 +160,19 @@ class WantToApply(models.Model):
 
 
 class PublicationType(models.Model):
-    student_form_fields_choice = models.ForeignKey(
-        StudentFormFieldsChoice,
-        on_delete=models.PROTECT,
-        related_name='publication_type'
+    type = models.CharField(
+        max_length=256
     )
     value = models.IntegerField()
 
-    def clean(self):
-        if self.student_form_fields_choice.category != "publication_type":
-            raise ValidationError(
-                {
-                    "student_form_fields_choice": "StudentFormFieldsChoice type is not publication_type"
-                }
-            )
+    def __str__(self):
+        return str(self.type)
 
 
 class Publication(models.Model):
     title = models.CharField(max_length=512)
     publish_year = models.SmallIntegerField(
-        validators=[MinValueValidator(0), MaxValueValidator(20)],
+        validators=[MinValueValidator(1900), MaxValueValidator(2100)],
         help_text="In Gregorian"
     )
     which_author = models.ForeignKey(
@@ -182,6 +184,14 @@ class Publication(models.Model):
         PublicationType,
         on_delete=models.PROTECT
     )
+
+    def clean(self):
+        if self.which_author.category != "publication_which_author":
+            raise ValidationError(
+                {
+                    "which_author": "which_author type is not publication_which_author"
+                }
+            )
 
 
 class StudentDetailedInfo(models.Model):
@@ -265,6 +275,14 @@ class StudentDetailedInfo(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+    def clean(self):
+        if self.payment_affordability.category != "payment_affordability":
+            raise ValidationError(
+                {
+                    "payment_affordability": "payment_affordability type is not payment_affordability"
+                }
+            )
+
     def is_complete(self):
         return True
 
@@ -303,6 +321,14 @@ class FormUniversityThrough(models.Model):
         decimal_places=2
     )
 
+    def clean(self):
+        if self.major_type.category != "university_major_type":
+            raise ValidationError(
+                {
+                    "major_type": "major_type type is not university_major_type"
+                }
+            )
+
 
 class LanguageCertificateTypeThrough(models.Model):
     certificate_type = models.ForeignKey(
@@ -334,9 +360,8 @@ class UniversityWantToApplyThrough(models.Model):
         on_delete=models.PROTECT
     )
     major_type = models.ForeignKey(
-        StudentFormFieldsChoice,
+        FormMajorType,
         on_delete=models.PROTECT,
-        related_name='want_to_apply_major_type'
     )
     major = models.CharField(
         max_length=256
