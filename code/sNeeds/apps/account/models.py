@@ -18,16 +18,6 @@ SEMESTER_CHOICES = [
     ('زمستان', 'زمستان'),
 ]
 
-# Attention the names must be the same as the field names in the model
-STUDENT_FORM_CATEGORY_CHOICES = [
-    ('marital_status', 'marital_status'),
-    ('publication_type', 'publication_type'),
-    ('university_major_type', 'university_major_type'),
-    ('want_to_apply_major_type', 'want_to_apply_major_type'),
-    ('payment_affordability', 'payment_affordability'),
-    ('publication_which_author', 'publication_which_author')
-]
-
 
 def current_year():
     return datetime.date.today().year
@@ -81,21 +71,6 @@ class FieldOfStudy(models.Model):
         return self.name
 
 
-class StudentFormFieldsChoice(models.Model):
-    name = models.CharField(max_length=256)
-    category = models.CharField(
-        max_length=256,
-        choices=STUDENT_FORM_CATEGORY_CHOICES
-    )
-
-    class Meta:
-        ordering = ["category", "name"]
-        unique_together = ["category", "name"]
-
-    def __str__(self):
-        return self.name
-
-
 class StudentFormApplySemesterYear(models.Model):
     year = models.SmallIntegerField(
         validators=[MinValueValidator(1900), MaxValueValidator(2100)],
@@ -113,6 +88,9 @@ class StudentFormApplySemesterYear(models.Model):
 class FormUniversity(models.Model):
     name = models.CharField(max_length=128)
     value = models.IntegerField()
+
+    def __str__(self):
+        return self.name
 
 
 class FormGrade(models.Model):
@@ -158,6 +136,9 @@ class WantToApply(models.Model):
         on_delete=models.PROTECT,
     )
 
+    def __str__(self):
+        return str(self.country)
+
 
 class PublicationType(models.Model):
     type = models.CharField(
@@ -169,6 +150,13 @@ class PublicationType(models.Model):
         return str(self.type)
 
 
+class PublicationWhichAuthor(models.Model):
+    title = models.CharField(
+        max_length=256
+    )
+    value = models.IntegerField()
+
+
 class Publication(models.Model):
     title = models.CharField(max_length=512)
     publish_year = models.SmallIntegerField(
@@ -176,35 +164,49 @@ class Publication(models.Model):
         help_text="In Gregorian"
     )
     which_author = models.ForeignKey(
-        StudentFormFieldsChoice,
+        PublicationWhichAuthor,
         on_delete=models.PROTECT,
-        related_name='publication_which_author'
     )
     type = models.ForeignKey(
         PublicationType,
         on_delete=models.PROTECT
     )
 
-    def clean(self):
-        if self.which_author.category != "publication_which_author":
-            raise ValidationError(
-                {
-                    "which_author": "which_author type is not publication_which_author"
-                }
-            )
+    def __str__(self):
+        return self.title
+
+
+class PaymentAffordability(models.Model):
+    title = models.CharField(max_length=256)
+    value = models.IntegerField()
+
+    def __str__(self):
+        return self.title
+
+
+class MaritalStatus(models.Model):
+    title = models.CharField(
+        max_length=128
+    )
+
+    def __str__(self):
+        return self.title
 
 
 class StudentDetailedInfo(models.Model):
-    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        User,
+        null=True,
+        on_delete=models.CASCADE
+    )
 
     age = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(15), MaxValueValidator(100)]
     )
 
     marital_status = models.ForeignKey(
-        StudentFormFieldsChoice,
+        MaritalStatus,
         on_delete=models.PROTECT,
-        related_name='marital_status'
     )
 
     universities = models.ManyToManyField(
@@ -226,9 +228,8 @@ class StudentDetailedInfo(models.Model):
     )
 
     payment_affordability = models.ForeignKey(
-        StudentFormFieldsChoice,
+        PaymentAffordability,
         on_delete=models.PROTECT,
-        related_name='payment_affordability'
     )
 
     prefers_full_fund = models.BooleanField(default=False)
@@ -275,14 +276,6 @@ class StudentDetailedInfo(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    def clean(self):
-        if self.payment_affordability.category != "payment_affordability":
-            raise ValidationError(
-                {
-                    "payment_affordability": "payment_affordability type is not payment_affordability"
-                }
-            )
-
     def is_complete(self):
         return True
 
@@ -302,7 +295,7 @@ class FormUniversityThrough(models.Model):
         FormMajor, on_delete=models.PROTECT
     )
     major_type = models.ForeignKey(
-        StudentFormFieldsChoice,
+        FormMajorType,
         on_delete=models.PROTECT,
         related_name='university_major_type'
     )

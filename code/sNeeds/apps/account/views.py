@@ -2,10 +2,9 @@ from rest_framework import generics, permissions
 
 from . import models
 from . import serializers
-from .models import StudentDetailedInfo, StudentFormFieldsChoice, StudentFormApplySemesterYear
+from .models import StudentDetailedInfo,  StudentFormApplySemesterYear
 from .permissions import IsStudentPermission, StudentDetailedInfoOwnerOrInteractConsultantPermission
-from .serializers import StudentDetailedInfoSerializer, StudentFormFieldsChoiceSerializer,\
-    StudentFormApplySemesterYearSerializer
+from .serializers import StudentDetailedInfoSerializer, StudentFormApplySemesterYearSerializer
 
 
 class CountryDetail(generics.RetrieveAPIView):
@@ -82,16 +81,6 @@ class UserStudentDetailedInfoRetrieveAPIView(generics.RetrieveAPIView):
     lookup_field = 'user__id'
 
 
-class StudentFormFieldsChoiceListAPIView(generics.ListAPIView):
-    queryset = StudentFormFieldsChoice.objects.all()
-    serializer_class = StudentFormFieldsChoiceSerializer
-    filterset_fields = ['category']
-
-
-class StudentFormFieldsChoiceRetrieveAPIView(generics.RetrieveAPIView):
-    lookup_field = 'id'
-    queryset = StudentFormFieldsChoice.objects.all()
-    serializer_class = StudentFormFieldsChoiceSerializer
 
 
 class StudentFormApplySemesterYearListAPIView(generics.ListAPIView):

@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 from rest_framework.validators import ValidationError
 from . import models
-from .models import StudentDetailedInfo, StudentFormFieldsChoice, StudentFormApplySemesterYear
+from .models import StudentDetailedInfo, StudentFormApplySemesterYear
 
 User = get_user_model()
 
@@ -50,47 +50,6 @@ class FieldOfStudySerializer(serializers.ModelSerializer):
         fields = ('id', 'url', 'name', 'description', 'slug', 'picture')
 
 
-class StudentFormFieldsChoiceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = StudentFormFieldsChoice
-        fields = [
-            'id', 'name', 'category',
-        ]
-        extra_kwargs = {
-            'id': {'read_only': True},
-            'name': {'read_only': True},
-            'category': {'read_only': False},
-        }
-
-
-class StudentFormFieldsChoiceCustomPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
-    def get_choices(self, cutoff=None):
-        """
-        This method is overridden.
-        Issue was:
-        https://stackoverflow.com/questions/50973569/django-rest-framework-relatedfield-cant-return-a-dict-object
-        """
-        queryset = self.get_queryset()
-        if queryset is None:
-            # Ensure that field.choices returns something sensible
-            # even when accessed with a read-only field.
-            return {}
-
-        if cutoff is not None:
-            queryset = queryset[:cutoff]
-
-        return OrderedDict([
-            (
-                item.pk,
-                self.display_value(item)
-            )
-            for item in queryset
-        ])
-
-    def to_representation(self, value):
-        obj = StudentFormFieldsChoice.objects.get(pk=value.pk)
-        return StudentFormFieldsChoiceSerializer(obj).data
-
 
 class StudentFormApplySemesterYearSerializer(serializers.ModelSerializer):
     class Meta:
@@ -131,11 +90,6 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
     from sNeeds.apps.customAuth.serializers import SafeUserDataSerializer
     user = SafeUserDataSerializer(read_only=True)
 
-    marital_status = StudentFormFieldsChoiceCustomPrimaryKeyRelatedField(
-        queryset=StudentFormFieldsChoice.objects.all()
-    )
-    language_certificate \
-        = StudentFormFieldsChoiceCustomPrimaryKeyRelatedField(queryset=StudentFormFieldsChoice.objects.all())
 
     apply_semester_year = StudentFormApplySemesterYearCustomPrimaryKeyRelatedField(
         many=False,

@@ -9,6 +9,8 @@ admin.site.register(models.FormUniversity)
 admin.site.register(models.FormGrade)
 admin.site.register(models.FormMajor)
 admin.site.register(models.FormMajorType)
+admin.site.register(models.PublicationWhichAuthor)
+admin.site.register(models.PaymentAffordability)
 admin.site.register(models.Publication)
 admin.site.register(models.PublicationType)
 admin.site.register(models.LanguageCertificateType)
@@ -43,8 +45,3 @@ class StudentDetailedInfoAdmin(admin.ModelAdmin):
 class WantToApplyAdmin(admin.ModelAdmin):
     inlines = [UniversityWantToApplyThroughInline]
 
-
-@admin.register(models.StudentFormFieldsChoice)
-class StudentFormFieldsChoiceAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'category',)
-    list_filter = ('category',)
