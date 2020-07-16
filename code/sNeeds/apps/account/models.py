@@ -85,39 +85,34 @@ class StudentFormApplySemesterYear(models.Model):
         return str(self.year) + " " + self.semester
 
 
-class FormUniversity(models.Model):
-    name = models.CharField(max_length=128)
+class BasicFormField(models.Model):
+    name = models.CharField(max_length=256)
+
+
+class FormUniversity(BasicFormField):
     value = models.IntegerField()
 
     def __str__(self):
         return self.name
 
 
-class FormGrade(models.Model):
-    name = models.CharField(max_length=128)
-
+class FormGrade(BasicFormField):
     def __str__(self):
         return self.name
 
 
-class FormMajor(models.Model):
-    name = models.CharField(max_length=128)
-
+class FormMajor(BasicFormField):
     def __str__(self):
         return self.name
 
 
-class FormMajorType(models.Model):
-    name = models.CharField(max_length=128)
-
+class FormMajorType(BasicFormField):
     def __str__(self):
         return self.name
 
 
-class LanguageCertificateType(models.Model):
-    name = models.CharField(
-        max_length=128
-    )
+class LanguageCertificateType(BasicFormField):
+    pass
 
 
 class WantToApply(models.Model):
@@ -140,20 +135,14 @@ class WantToApply(models.Model):
         return str(self.country)
 
 
-class PublicationType(models.Model):
-    type = models.CharField(
-        max_length=256
-    )
+class PublicationType(BasicFormField):
     value = models.IntegerField()
 
     def __str__(self):
         return str(self.type)
 
 
-class PublicationWhichAuthor(models.Model):
-    title = models.CharField(
-        max_length=256
-    )
+class PublicationWhichAuthor(BasicFormField):
     value = models.IntegerField()
 
 
@@ -176,18 +165,14 @@ class Publication(models.Model):
         return self.title
 
 
-class PaymentAffordability(models.Model):
-    title = models.CharField(max_length=256)
+class PaymentAffordability(BasicFormField):
     value = models.IntegerField()
 
     def __str__(self):
         return self.title
 
 
-class MaritalStatus(models.Model):
-    title = models.CharField(
-        max_length=128
-    )
+class MaritalStatus(BasicFormField):
 
     def __str__(self):
         return self.title
