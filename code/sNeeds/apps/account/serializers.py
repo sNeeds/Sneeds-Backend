@@ -131,58 +131,42 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
     from sNeeds.apps.customAuth.serializers import SafeUserDataSerializer
     user = SafeUserDataSerializer(read_only=True)
 
-    grade \
-        = StudentFormFieldsChoiceCustomPrimaryKeyRelatedField(queryset=StudentFormFieldsChoice.objects.all())
-    apply_grade \
-        = StudentFormFieldsChoiceCustomPrimaryKeyRelatedField(queryset=StudentFormFieldsChoice.objects.all())
-    apply_country \
-        = StudentFormFieldsChoiceCustomPrimaryKeyRelatedField(queryset=StudentFormFieldsChoice.objects.all())
-    apply_mainland \
-        = StudentFormFieldsChoiceCustomPrimaryKeyRelatedField(queryset=StudentFormFieldsChoice.objects.all())
-    marital_status \
-        = StudentFormFieldsChoiceCustomPrimaryKeyRelatedField(queryset=StudentFormFieldsChoice.objects.all())
+    marital_status = StudentFormFieldsChoiceCustomPrimaryKeyRelatedField(
+        queryset=StudentFormFieldsChoice.objects.all()
+    )
     language_certificate \
         = StudentFormFieldsChoiceCustomPrimaryKeyRelatedField(queryset=StudentFormFieldsChoice.objects.all())
 
-    apply_semester_year \
-        = StudentFormApplySemesterYearCustomPrimaryKeyRelatedField(many=False,
-                                                                   queryset=StudentFormApplySemesterYear.objects.all())
+    apply_semester_year = StudentFormApplySemesterYearCustomPrimaryKeyRelatedField(
+        many=False,
+        queryset=StudentFormApplySemesterYear.objects.all()
+    )
 
     class Meta:
         model = StudentDetailedInfo
         fields = [
-            'id', 'user', 'created', 'updated', 'age', 'marital_status', 'grade', 'university', 'degree_conferral_year',
-            'major', 'total_average', 'thesis_title',
-            'language_certificate', 'language_certificate_overall', 'language_speaking', 'language_listening',
-            'language_writing', 'language_reading',
-            'apply_mainland', 'apply_country', 'apply_grade', 'apply_major', 'apply_university',
-            'apply_semester_year',
-            'comment', 'resume']
-
-        extra_kwargs = {
-            'id': {'read_only': True},
-            'user': {'read_only': True},
-        }
+            'id', 'user', 'age', 'marital_status','universities'
+        ]
 
     def validate(self, attrs):
-        if attrs.get('grade').category != 'grade':
-            raise ValidationError(_("The Value Entered for: {} is not in allowed category: {}"
-                                    .format('grade', 'grade')))
-        if attrs.get('apply_grade').category != 'apply_grade':
-            raise ValidationError(_("The Value Entered for: {} is not in allowed category: {}"
-                                    .format('apply_grade', 'apply_grade')))
-        if attrs.get('apply_country').category != 'apply_country':
-            raise ValidationError(_("The Value Entered for: {} is not in allowed category: {}"
-                                    .format('apply_country', 'apply_country')))
-        if attrs.get('apply_mainland').category != 'apply_mainland':
-            raise ValidationError(_("The Value Entered for: {} is not in allowed category: {}"
-                                    .format('apply_mainland', 'apply_mainland')))
-        if attrs.get('marital_status').category != 'marital_status':
-            raise ValidationError(_("The Value Entered for: {} is not in allowed category: {}"
-                                    .format('marital_status', 'marital_status')))
-        if attrs.get('language_certificate').category != 'language_certificate':
-            raise ValidationError(_("The Value Entered for: {} is not in allowed category: {}"
-                                    .format('language_certificate', 'language_certificate')))
+        # if attrs.get('grade').category != 'grade':
+        #     raise ValidationError(_("The Value Entered for: {} is not in allowed category: {}"
+        #                             .format('grade', 'grade')))
+        # if attrs.get('apply_grade').category != 'apply_grade':
+        #     raise ValidationError(_("The Value Entered for: {} is not in allowed category: {}"
+        #                             .format('apply_grade', 'apply_grade')))
+        # if attrs.get('apply_country').category != 'apply_country':
+        #     raise ValidationError(_("The Value Entered for: {} is not in allowed category: {}"
+        #                             .format('apply_country', 'apply_country')))
+        # if attrs.get('apply_mainland').category != 'apply_mainland':
+        #     raise ValidationError(_("The Value Entered for: {} is not in allowed category: {}"
+        #                             .format('apply_mainland', 'apply_mainland')))
+        # if attrs.get('marital_status').category != 'marital_status':
+        #     raise ValidationError(_("The Value Entered for: {} is not in allowed category: {}"
+        #                             .format('marital_status', 'marital_status')))
+        # if attrs.get('language_certificate').category != 'language_certificate':
+        #     raise ValidationError(_("The Value Entered for: {} is not in allowed category: {}"
+        #                             .format('language_certificate', 'language_certificate')))
         return attrs
 
     def create(self, validated_data):
