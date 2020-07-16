@@ -94,18 +94,21 @@ class BasicFormField(models.Model):
 
 class FormUniversity(BasicFormField):
     value = models.IntegerField()
-
+    is_college = models.BooleanField(default=False)
 
 class FormGrade(BasicFormField):
     pass
 
 
-class FormMajor(BasicFormField):
-    pass
-
-
 class FormMajorType(BasicFormField):
     pass
+
+
+class FormMajor(BasicFormField):
+    major_type = models.ForeignKey(
+        FormMajorType,
+        on_delete=models.PROTECT,
+    )
 
 
 class LanguageCertificateType(BasicFormField):
@@ -269,11 +272,6 @@ class FormUniversityThrough(models.Model):
     major = models.ForeignKey(
         FormMajor, on_delete=models.PROTECT
     )
-    major_type = models.ForeignKey(
-        FormMajorType,
-        on_delete=models.PROTECT,
-        related_name='university_major_type'
-    )
     graduate_in = models.SmallIntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(20)],
         help_text="In Gregorian"
@@ -319,10 +317,7 @@ class UniversityWantToApplyThrough(models.Model):
         FormGrade,
         on_delete=models.PROTECT
     )
-    major_type = models.ForeignKey(
-        FormMajorType,
-        on_delete=models.PROTECT,
-    )
+
     major = models.ForeignKey(
         FormMajor,
         on_delete=models.PROTECT
