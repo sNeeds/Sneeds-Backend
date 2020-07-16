@@ -7,6 +7,9 @@ admin.site.register(models.FieldOfStudy)
 admin.site.register(models.Country)
 admin.site.register(models.FormUniversity)
 admin.site.register(models.FormGrade)
+admin.site.register(models.FormMajor)
+admin.site.register(models.Publication)
+admin.site.register(models.PublicationType)
 admin.site.register(models.LanguageCertificateType)
 
 

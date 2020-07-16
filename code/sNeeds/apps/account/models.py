@@ -22,7 +22,8 @@ SEMESTER_CHOICES = [
 STUDENT_FORM_CATEGORY_CHOICES = [
     ('marital_status', 'marital_status'),
     ('publication_type', 'publication_type'),
-    ('major_type', 'major_type'),
+    ('university_major_type', 'university_major_type'),
+    ('want_to_apply_major_type', 'want_to_apply_major_type'),
     ('payment_affordability', 'payment_affordability'),
     ('publication_which_author', 'publication_which_author')
 ]
@@ -82,7 +83,10 @@ class FieldOfStudy(models.Model):
 
 class StudentFormFieldsChoice(models.Model):
     name = models.CharField(max_length=256)
-    category = models.CharField(max_length=256, choices=STUDENT_FORM_CATEGORY_CHOICES)
+    category = models.CharField(
+        max_length=256,
+        choices=STUDENT_FORM_CATEGORY_CHOICES
+    )
 
     class Meta:
         ordering = ["category", "name"]
@@ -153,6 +157,14 @@ class PublicationType(models.Model):
         related_name='publication_type'
     )
     value = models.IntegerField()
+
+    def clean(self):
+        if self.student_form_fields_choice.category != "publication_type":
+            raise ValidationError(
+                {
+                    "student_form_fields_choice": "StudentFormFieldsChoice type is not publication_type"
+                }
+            )
 
 
 class Publication(models.Model):
@@ -274,7 +286,7 @@ class FormUniversityThrough(models.Model):
     major_type = models.ForeignKey(
         StudentFormFieldsChoice,
         on_delete=models.PROTECT,
-        related_name='major_type'
+        related_name='university_major_type'
     )
     graduate_in = models.SmallIntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(20)],
@@ -320,6 +332,11 @@ class UniversityWantToApplyThrough(models.Model):
     grade = models.ForeignKey(
         FormGrade,
         on_delete=models.PROTECT
+    )
+    major_type = models.ForeignKey(
+        StudentFormFieldsChoice,
+        on_delete=models.PROTECT,
+        related_name='want_to_apply_major_type'
     )
     major = models.CharField(
         max_length=256
