@@ -123,66 +123,9 @@ class FormMajorType(models.Model):
     name = models.CharField(max_length=128)
 
 
-class FormUniversityThrough(models.Model):
-    university = models.ForeignKey(
-        FormUniversity, on_delete=models.PROTECT
-    )
-    grade = models.ForeignKey(
-        FormGrade, on_delete=models.PROTECT
-    )
-    major = models.ForeignKey(
-        FormMajor, on_delete=models.PROTECT
-    )
-    major_type = models.ForeignKey(
-        StudentFormFieldsChoice,
-        on_delete=models.PROTECT,
-        related_name='major_type'
-    )
-    graduate_in = models.SmallIntegerField(
-        validators=[MinValueValidator(0), MaxValueValidator(20)],
-        help_text="In Gregorian"
-    )
-    thesis_title = models.CharField(
-        max_length=512,
-        blank=True,
-        null=True
-    )
-    gpa = models.DecimalField(
-        validators=[MinValueValidator(0), MaxValueValidator(20)],
-        max_digits=4,
-        decimal_places=2
-    )
-
-
 class LanguageCertificateType(models.Model):
     name = models.CharField(
         max_length=128
-    )
-
-
-class LanguageCertificateTypeThrough(models.Model):
-    certificate_type = models.ForeignKey(
-        LanguageCertificateType,
-        on_delete=models.PROTECT
-    )
-    speaking = models.DecimalField(max_digits=5, decimal_places=2)
-    listening = models.DecimalField(max_digits=5, decimal_places=2)
-    writing = models.DecimalField(max_digits=5, decimal_places=2)
-    reading = models.DecimalField(max_digits=5, decimal_places=2)
-    overall = models.DecimalField(max_digits=5, decimal_places=2)
-
-
-class UniversityWantToApplyThrough(models.Model):
-    university = models.ForeignKey(
-        University,
-        on_delete=models.PROTECT
-    )
-    grade = models.ForeignKey(
-        FormGrade,
-        on_delete=models.PROTECT
-    )
-    major = models.CharField(
-        max_length=256
     )
 
 
@@ -194,7 +137,7 @@ class WantToApply(models.Model):
 
     universities = models.ManyToManyField(
         University,
-        through=UniversityWantToApplyThrough
+        through='UniversityWantToApplyThrough'
     )
 
     semester_year = models.ForeignKey(
@@ -244,17 +187,16 @@ class StudentDetailedInfo(models.Model):
 
     universities = models.ManyToManyField(
         FormUniversity,
-        through=FormUniversityThrough
+        through='FormUniversityThrough'
     )
 
     language_certificates = models.ManyToManyField(
         LanguageCertificateType,
-        through=LanguageCertificateTypeThrough
+        through='LanguageCertificateTypeThrough'
     )
 
     want_to_apply = models.ManyToManyField(
         WantToApply,
-        through=UniversityWantToApplyThrough
     )
 
     publications = models.ManyToManyField(
@@ -313,3 +255,72 @@ class StudentDetailedInfo(models.Model):
 
     def is_complete(self):
         return True
+
+
+class FormUniversityThrough(models.Model):
+    university = models.ForeignKey(
+        FormUniversity, on_delete=models.PROTECT
+    )
+    student_detailed_info = models.ForeignKey(
+        StudentDetailedInfo,
+        on_delete=models.CASCADE
+    )
+    grade = models.ForeignKey(
+        FormGrade, on_delete=models.PROTECT
+    )
+    major = models.ForeignKey(
+        FormMajor, on_delete=models.PROTECT
+    )
+    major_type = models.ForeignKey(
+        StudentFormFieldsChoice,
+        on_delete=models.PROTECT,
+        related_name='major_type'
+    )
+    graduate_in = models.SmallIntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(20)],
+        help_text="In Gregorian"
+    )
+    thesis_title = models.CharField(
+        max_length=512,
+        blank=True,
+        null=True
+    )
+    gpa = models.DecimalField(
+        validators=[MinValueValidator(0), MaxValueValidator(20)],
+        max_digits=4,
+        decimal_places=2
+    )
+
+
+class LanguageCertificateTypeThrough(models.Model):
+    certificate_type = models.ForeignKey(
+        LanguageCertificateType,
+        on_delete=models.PROTECT
+    )
+    student_detailed_info = models.ForeignKey(
+        StudentDetailedInfo,
+        on_delete=models.CASCADE
+    )
+    speaking = models.DecimalField(max_digits=5, decimal_places=2)
+    listening = models.DecimalField(max_digits=5, decimal_places=2)
+    writing = models.DecimalField(max_digits=5, decimal_places=2)
+    reading = models.DecimalField(max_digits=5, decimal_places=2)
+    overall = models.DecimalField(max_digits=5, decimal_places=2)
+
+
+class UniversityWantToApplyThrough(models.Model):
+    university = models.ForeignKey(
+        University,
+        on_delete=models.PROTECT
+    )
+    want_to_apply = models.ForeignKey(
+        WantToApply,
+        on_delete=models.CASCADE
+    )
+    grade = models.ForeignKey(
+        FormGrade,
+        on_delete=models.PROTECT
+    )
+    major = models.CharField(
+        max_length=256
+    )
