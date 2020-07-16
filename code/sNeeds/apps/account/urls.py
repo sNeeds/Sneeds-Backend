@@ -27,9 +27,8 @@ urlpatterns = [
     path('user-student-detailed-info/<int:user_id>/', views.UserStudentDetailedInfoRetrieveAPIView.as_view(),
          name='user-student-detailed-info-detail'),
 
+    path('student-form-semester-year-choices/', views.StudentFormApplySemesterYearListAPIView.as_view()),
+    path('student-form-semester-year-choices/<int:id>', views.StudentFormApplySemesterYearRetrieveAPIView.as_view()),
 
-    path('student-form-semester-year-choices/', views.StudentFormApplySemesterYearListAPIView.as_view(),
-         name="student_form_fields_choice-list"),
-    path('student-form-semester-year-choices/<int:id>', views.StudentFormApplySemesterYearRetrieveAPIView.as_view(),
-         name="student_form_fields_choice-detail"),
-    ]
+    path('basic-form-fields/', views.BasicFormFieldListAPIView.as_view(), name="basic-form-fields-list"),
+]

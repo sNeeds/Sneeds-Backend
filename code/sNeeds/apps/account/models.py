@@ -96,6 +96,7 @@ class FormUniversity(BasicFormField):
     value = models.IntegerField()
     is_college = models.BooleanField(default=False)
 
+
 class FormGrade(BasicFormField):
     pass
 

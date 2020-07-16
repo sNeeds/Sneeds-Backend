@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 from rest_framework.validators import ValidationError
 from . import models
-from .models import StudentDetailedInfo, StudentFormApplySemesterYear
+from .models import StudentDetailedInfo, StudentFormApplySemesterYear, BasicFormField
 
 User = get_user_model()
 
@@ -50,11 +50,16 @@ class FieldOfStudySerializer(serializers.ModelSerializer):
         fields = ('id', 'url', 'name', 'description', 'slug', 'picture')
 
 
-
 class StudentFormApplySemesterYearSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentFormApplySemesterYear
         fields = ['id', 'year', 'semester']
+
+
+class BasicFormFieldSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BasicFormField
+        fields = ['id', 'name']
 
 
 class StudentFormApplySemesterYearCustomPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
@@ -90,7 +95,6 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
     from sNeeds.apps.customAuth.serializers import SafeUserDataSerializer
     user = SafeUserDataSerializer(read_only=True)
 
-
     apply_semester_year = StudentFormApplySemesterYearCustomPrimaryKeyRelatedField(
         many=False,
         queryset=StudentFormApplySemesterYear.objects.all()
@@ -99,7 +103,7 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentDetailedInfo
         fields = [
-            'id', 'user', 'age', 'marital_status','universities'
+            'id', 'user', 'age', 'marital_status', 'universities'
         ]
 
     def validate(self, attrs):
