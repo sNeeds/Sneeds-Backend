@@ -22,7 +22,9 @@ SEMESTER_CHOICES = [
 STUDENT_FORM_CATEGORY_CHOICES = [
     ('marital_status', 'marital_status'),
     ('publication_type', 'publication_type'),
-    ('major_type', 'major_type')
+    ('major_type', 'major_type'),
+    ('payment_affordability', 'payment_affordability'),
+    ('publication_which_author', 'publication_which_author')
 ]
 
 
@@ -216,7 +218,11 @@ class Publication(models.Model):
         validators=[MinValueValidator(0), MaxValueValidator(20)],
         help_text="In Gregorian"
     )
-    first_author = models.BooleanField()
+    which_author = models.ForeignKey(
+        StudentFormFieldsChoice,
+        on_delete=models.PROTECT,
+        related_name='publication_which_author'
+    )
     type = models.ForeignKey(
         PublicationType,
         on_delete=models.PROTECT
@@ -254,6 +260,16 @@ class StudentDetailedInfo(models.Model):
     publications = models.ManyToManyField(
         Publication
     )
+
+    payment_affordability = models.ForeignKey(
+        StudentFormFieldsChoice,
+        on_delete=models.PROTECT,
+        related_name='payment_affordability'
+    )
+
+    prefers_full_fund = models.BooleanField(default=False)
+    prefers_half_fund = models.BooleanField(default=False)
+    prefers_self_fund = models.BooleanField(default=False)
 
     # Extra info
     comment = models.TextField(max_length=1024, null=True, blank=True)
