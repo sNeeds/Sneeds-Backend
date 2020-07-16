@@ -18,20 +18,11 @@ SEMESTER_CHOICES = [
     ('زمستان', 'زمستان'),
 ]
 
-"Attention"
-"the names must be the same as the field names in the model."
+# Attention the names must be the same as the field names in the model
 STUDENT_FORM_CATEGORY_CHOICES = [
-    ('grade', 'grade'),
-    # ('major', 'major'),
-    # ('university', 'university'),
-    ('apply_grade', 'apply_grade'),
-    # ('apply_major', 'apply_major'),
-    ('apply_country', 'apply_country'),
-    ('apply_mainland', 'apply_mainland'),
     ('marital_status', 'marital_status'),
-    # ('apply_university', 'apply_university'),
-    ('language_certificate', 'language_certificate'),
-    # ('degree_conferral_year', 'degree_conferral_year'),
+    ('publication_type', 'publication_type'),
+    ('major_type', 'major_type')
 ]
 
 
@@ -100,7 +91,10 @@ class StudentFormFieldsChoice(models.Model):
 
 
 class StudentFormApplySemesterYear(models.Model):
-    year = models.PositiveSmallIntegerField()
+    year = models.SmallIntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(20)],
+        help_text="In Gregorian"
+    )
     semester = models.CharField(max_length=64, choices=SEMESTER_CHOICES)
 
     class Meta:
@@ -112,6 +106,7 @@ class StudentFormApplySemesterYear(models.Model):
 
 class FormUniversity(models.Model):
     name = models.CharField(max_length=128)
+    value = models.IntegerField()
 
 
 class FormGrade(models.Model):
@@ -119,6 +114,10 @@ class FormGrade(models.Model):
 
 
 class FormMajor(models.Model):
+    name = models.CharField(max_length=128)
+
+
+class FormMajorType(models.Model):
     name = models.CharField(max_length=128)
 
 
@@ -131,6 +130,11 @@ class FormUniversityThrough(models.Model):
     )
     major = models.ForeignKey(
         FormMajor, on_delete=models.PROTECT
+    )
+    major_type = models.ForeignKey(
+        StudentFormFieldsChoice,
+        on_delete=models.PROTECT,
+        related_name='major_type'
     )
     graduate_in = models.SmallIntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(20)],
@@ -197,12 +201,35 @@ class WantToApply(models.Model):
     )
 
 
+class PublicationType(models.Model):
+    student_form_fields_choice = models.ForeignKey(
+        StudentFormFieldsChoice,
+        on_delete=models.PROTECT,
+        related_name='publication_type'
+    )
+    value = models.IntegerField()
+
+
+class Publication(models.Model):
+    title = models.CharField(max_length=512)
+    publish_year = models.SmallIntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(20)],
+        help_text="In Gregorian"
+    )
+    first_author = models.BooleanField()
+    type = models.ForeignKey(
+        PublicationType,
+        on_delete=models.PROTECT
+    )
+
+
 class StudentDetailedInfo(models.Model):
     user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
 
     age = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(15), MaxValueValidator(100)]
     )
+
     marital_status = models.ForeignKey(
         StudentFormFieldsChoice,
         on_delete=models.PROTECT,
@@ -224,6 +251,22 @@ class StudentDetailedInfo(models.Model):
         through=UniversityWantToApplyThrough
     )
 
+    publications = models.ManyToManyField(
+        Publication
+    )
+    academic_break = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(0), MaxValueValidator(100)]
+    )
+    linkedin_url = models.URLField(
+        blank=True,
+        null=True
+    )
+    homepage_url = models.URLField(
+        blank=True,
+        null=True
+    )
     # Extra info
     comment = models.TextField(max_length=1024, null=True, blank=True)
     resume = models.FileField(
