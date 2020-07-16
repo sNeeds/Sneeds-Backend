@@ -7,7 +7,7 @@ admin.site.register(models.FieldOfStudy)
 admin.site.register(models.Country)
 admin.site.register(models.FormUniversity)
 admin.site.register(models.FormGrade)
-
+admin.site.register(models.LanguageCertificateType)
 
 
 class FormUniversityThroughInline(admin.TabularInline):
@@ -15,10 +15,29 @@ class FormUniversityThroughInline(admin.TabularInline):
     extra = 1
 
 
+class LanguageCertificateTypeThroughInline(admin.TabularInline):
+    model = models.LanguageCertificateTypeThrough
+    extra = 1
+
+
+class UniversityWantToApplyThroughInline(admin.TabularInline):
+    model = models.UniversityWantToApplyThrough
+    extra = 1
+
+
 @admin.register(models.StudentDetailedInfo)
 class StudentDetailedInfoAdmin(admin.ModelAdmin):
-    inlines = [FormUniversityThroughInline, ]
+    inlines = [
+        FormUniversityThroughInline,
+        LanguageCertificateTypeThroughInline
+    ]
     list_display = ['id', 'user']
+    filter_horizontal = ['want_to_apply', 'publications']
+
+
+@admin.register(models.WantToApply)
+class WantToApplyAdmin(admin.ModelAdmin):
+    inlines = [UniversityWantToApplyThroughInline]
 
 
 @admin.register(models.StudentFormFieldsChoice)
