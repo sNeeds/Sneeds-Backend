@@ -254,19 +254,7 @@ class StudentDetailedInfo(models.Model):
     publications = models.ManyToManyField(
         Publication
     )
-    academic_break = models.PositiveIntegerField(
-        null=True,
-        blank=True,
-        validators=[MinValueValidator(0), MaxValueValidator(100)]
-    )
-    linkedin_url = models.URLField(
-        blank=True,
-        null=True
-    )
-    homepage_url = models.URLField(
-        blank=True,
-        null=True
-    )
+
     # Extra info
     comment = models.TextField(max_length=1024, null=True, blank=True)
     resume = models.FileField(
@@ -276,6 +264,32 @@ class StudentDetailedInfo(models.Model):
         validators=[
             FileExtensionValidator(allowed_extensions=['pdf']), validate_resume_file_size
         ]
+    )
+    related_work_experience = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        help_text="In months"
+    )
+    academic_break = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(0), MaxValueValidator(100)]
+    )
+    olympiad = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
+    powerful_recommendation = models.BooleanField(
+        default=False
+    )
+    linkedin_url = models.URLField(
+        blank=True,
+        null=True
+    )
+    homepage_url = models.URLField(
+        blank=True,
+        null=True
     )
 
     created = models.DateTimeField(auto_now_add=True)
