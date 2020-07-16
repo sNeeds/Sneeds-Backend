@@ -12,10 +12,10 @@ from . import validators
 User = get_user_model()
 
 SEMESTER_CHOICES = [
-    ('بهار', 'بهار'),
-    ('تابستان', 'تابستان'),
-    ('پاییز', 'پاییز‍'),
-    ('زمستان', 'زمستان'),
+    ('spring', 'بهار'),
+    ('summer', 'تابستان'),
+    ('fall', 'پاییز‍'),
+    ('winter', 'زمستان'),
 ]
 
 
@@ -88,27 +88,24 @@ class StudentFormApplySemesterYear(models.Model):
 class BasicFormField(models.Model):
     name = models.CharField(max_length=256)
 
+    def __str__(self):
+        return self.name
+
 
 class FormUniversity(BasicFormField):
     value = models.IntegerField()
 
-    def __str__(self):
-        return self.name
-
 
 class FormGrade(BasicFormField):
-    def __str__(self):
-        return self.name
+    pass
 
 
 class FormMajor(BasicFormField):
-    def __str__(self):
-        return self.name
+    pass
 
 
 class FormMajorType(BasicFormField):
-    def __str__(self):
-        return self.name
+    pass
 
 
 class LanguageCertificateType(BasicFormField):
@@ -138,9 +135,6 @@ class WantToApply(models.Model):
 class PublicationType(BasicFormField):
     value = models.IntegerField()
 
-    def __str__(self):
-        return str(self.type)
-
 
 class PublicationWhichAuthor(BasicFormField):
     value = models.IntegerField()
@@ -168,14 +162,9 @@ class Publication(models.Model):
 class PaymentAffordability(BasicFormField):
     value = models.IntegerField()
 
-    def __str__(self):
-        return self.title
-
 
 class MaritalStatus(BasicFormField):
-
-    def __str__(self):
-        return self.title
+    pass
 
 
 class StudentDetailedInfo(models.Model):
@@ -239,7 +228,8 @@ class StudentDetailedInfo(models.Model):
     academic_break = models.PositiveIntegerField(
         null=True,
         blank=True,
-        validators=[MinValueValidator(0), MaxValueValidator(100)]
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        help_text="In years"
     )
     olympiad = models.CharField(
         max_length=256,
@@ -299,14 +289,6 @@ class FormUniversityThrough(models.Model):
         decimal_places=2
     )
 
-    def clean(self):
-        if self.major_type.category != "university_major_type":
-            raise ValidationError(
-                {
-                    "major_type": "major_type type is not university_major_type"
-                }
-            )
-
 
 class LanguageCertificateTypeThrough(models.Model):
     certificate_type = models.ForeignKey(
@@ -341,6 +323,7 @@ class UniversityWantToApplyThrough(models.Model):
         FormMajorType,
         on_delete=models.PROTECT,
     )
-    major = models.CharField(
-        max_length=256
+    major = models.ForeignKey(
+        FormMajor,
+        on_delete=models.PROTECT
     )
