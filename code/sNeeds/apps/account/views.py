@@ -2,9 +2,9 @@ from rest_framework import generics, permissions
 
 from . import models
 from . import serializers
-from .models import StudentDetailedInfo,  StudentFormApplySemesterYear
+from .models import StudentDetailedInfo, StudentFormApplySemesterYear, BasicFormField
 from .permissions import IsStudentPermission, StudentDetailedInfoOwnerOrInteractConsultantPermission
-from .serializers import StudentDetailedInfoSerializer, StudentFormApplySemesterYearSerializer
+from .serializers import StudentDetailedInfoSerializer, StudentFormApplySemesterYearSerializer, BasicFormFieldSerializer
 
 
 class CountryDetail(generics.RetrieveAPIView):
@@ -81,8 +81,6 @@ class UserStudentDetailedInfoRetrieveAPIView(generics.RetrieveAPIView):
     lookup_field = 'user__id'
 
 
-
-
 class StudentFormApplySemesterYearListAPIView(generics.ListAPIView):
     queryset = StudentFormApplySemesterYear.objects.all()
     serializer_class = StudentFormApplySemesterYearSerializer
@@ -92,3 +90,8 @@ class StudentFormApplySemesterYearRetrieveAPIView(generics.RetrieveAPIView):
     lookup_field = 'id'
     queryset = StudentFormApplySemesterYear.objects.all()
     serializer_class = StudentFormApplySemesterYearSerializer
+
+
+class BasicFormFieldListAPIView(generics.ListAPIView):
+    queryset = BasicFormField.objects.all()
+    serializer_class = BasicFormFieldSerializer
