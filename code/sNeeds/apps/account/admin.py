@@ -38,7 +38,7 @@ class StudentDetailedInfoAdmin(admin.ModelAdmin):
         LanguageCertificateTypeThroughInline
     ]
     list_display = ['id', 'user']
-    filter_horizontal = ['want_to_apply', 'publications']
+    filter_horizontal = ['want_to_apply']
 
 
 @admin.register(models.WantToApply)

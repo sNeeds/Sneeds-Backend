@@ -147,6 +147,7 @@ class PublicationWhichAuthor(BasicFormField):
 
 
 class Publication(models.Model):
+    form = models.ForeignKey('StudentDetailedInfo', on_delete=models.CASCADE)
     title = models.CharField(max_length=512)
     publish_year = models.SmallIntegerField(
         validators=[MinValueValidator(1900), MaxValueValidator(2100)],
@@ -206,10 +207,6 @@ class StudentDetailedInfo(models.Model):
 
     want_to_apply = models.ManyToManyField(
         WantToApply,
-    )
-
-    publications = models.ManyToManyField(
-        Publication
     )
 
     payment_affordability = models.ForeignKey(
