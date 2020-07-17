@@ -27,9 +27,9 @@ class LanguageCertificateTypeThroughInline(admin.TabularInline):
     extra = 1
 
 
-class UniversityWantToApplyThroughInline(admin.TabularInline):
-    model = models.UniversityWantToApplyThrough
-    extra = 1
+# class UniversityWantToApplyThroughInline(admin.TabularInline):
+#     model = models.UniversityWantToApplyThrough
+#     extra = 1
 
 
 @admin.register(models.StudentDetailedInfo)
@@ -39,10 +39,9 @@ class StudentDetailedInfoAdmin(admin.ModelAdmin):
         LanguageCertificateTypeThroughInline
     ]
     list_display = ['id', 'user']
-    filter_horizontal = ['want_to_apply']
 
 
-@admin.register(models.WantToApply)
-class WantToApplyAdmin(admin.ModelAdmin):
-    inlines = [UniversityWantToApplyThroughInline]
+# @admin.register(models.WantToApply)
+# class WantToApplyAdmin(admin.ModelAdmin):
+#     # inlines = [UniversityWantToApplyThroughInline]
 

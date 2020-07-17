@@ -117,14 +117,31 @@ class LanguageCertificateType(BasicFormField):
 
 
 class WantToApply(models.Model):
+    form = models.ForeignKey('StudentDetailedInfo', on_delete=models.CASCADE)
     country = models.ForeignKey(
         Country,
         on_delete=models.PROTECT
     )
 
-    universities = models.ManyToManyField(
+    university = models.ForeignKey(
         University,
-        through='UniversityWantToApplyThrough'
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+    )
+
+    grade = models.ForeignKey(
+        FormGrade,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+    )
+
+    major = models.ForeignKey(
+        FormMajor,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
     )
 
     semester_year = models.ForeignKey(
@@ -196,10 +213,6 @@ class StudentDetailedInfo(models.Model):
     language_certificates = models.ManyToManyField(
         LanguageCertificateType,
         through='LanguageCertificateTypeThrough'
-    )
-
-    want_to_apply = models.ManyToManyField(
-        WantToApply,
     )
 
     payment_affordability = models.ForeignKey(
@@ -301,22 +314,3 @@ class LanguageCertificateTypeThrough(models.Model):
     reading = models.DecimalField(max_digits=5, decimal_places=2)
     overall = models.DecimalField(max_digits=5, decimal_places=2)
 
-
-class UniversityWantToApplyThrough(models.Model):
-    university = models.ForeignKey(
-        University,
-        on_delete=models.PROTECT
-    )
-    want_to_apply = models.ForeignKey(
-        WantToApply,
-        on_delete=models.CASCADE
-    )
-    grade = models.ForeignKey(
-        FormGrade,
-        on_delete=models.PROTECT
-    )
-
-    major = models.ForeignKey(
-        FormMajor,
-        on_delete=models.PROTECT
-    )
