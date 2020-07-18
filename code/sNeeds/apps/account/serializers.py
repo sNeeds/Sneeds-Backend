@@ -280,7 +280,8 @@ class StudentDetailedInfoRequestSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'user',
             'age', 'marital_status',
-            'universities', 'language_certificates'
+            'universities', 'want_to_applies', 'publications',
+            'language_certificates', 'gre_certificate', 'gmat_certificate',
             'payment_affordability', 'prefers_full_fund', 'prefers_half_fun', 'prefers_self_fund',
             'comment', 'resume', 'related_work_experience', 'academic_break', 'olympiad', 'powerful_recommendation',
             'linkedin_url', 'homepage_url',
