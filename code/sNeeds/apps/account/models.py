@@ -95,7 +95,7 @@ class BasicFormField(models.Model):
 class FormUniversity(BasicFormField):
     value = models.IntegerField()
     is_college = models.BooleanField(default=False)
-    rank = models.PositiveIntegerField()
+    rank = models.PositiveIntegerField(null=True)
 
 
 class FormGrade(BasicFormField):
@@ -117,6 +117,36 @@ class LanguageCertificateType(BasicFormField):
     pass
 
 
+class GMATCertificate(models.Model):
+    analytical_writing_assessment = models.DecimalField(
+        max_digits=5, decimal_places=2,
+        validators=[MinValueValidator(0.0), MaxValueValidator(6.00)],
+    )
+
+    integrated_reasoning = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(8)],
+    )
+    quantitative_and_verbal = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(6), MaxValueValidator(51)],
+    )
+    total = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(200), MaxValueValidator(800)],
+    )
+
+
+class GRECertificate(models.Model):
+    quantitative = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(130), MaxValueValidator(170)],
+    )
+    verbal = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(130), MaxValueValidator(170)],
+    )
+    analytical_writing = models.DecimalField(
+        max_digits=2, decimal_places=1,
+        validators=[MinValueValidator(0), MaxValueValidator(6)],
+    )
+
+
 class WantToApply(models.Model):
     student_detailed_info = models.ForeignKey(
         'StudentDetailedInfo',
@@ -128,7 +158,7 @@ class WantToApply(models.Model):
     )
 
     university = models.ForeignKey(
-        University,
+        FormUniversity,
         on_delete=models.PROTECT,
         null=True,
         blank=True,
@@ -205,12 +235,16 @@ class StudentDetailedInfo(models.Model):
     )
 
     age = models.PositiveSmallIntegerField(
-        validators=[MinValueValidator(15), MaxValueValidator(100)]
+        validators=[MinValueValidator(15), MaxValueValidator(100)],
+        null=True,
+        blank=True,
     )
 
     marital_status = models.ForeignKey(
         MaritalStatus,
         on_delete=models.PROTECT,
+        null=True,
+        blank=True,
     )
 
     universities = models.ManyToManyField(
@@ -222,15 +256,37 @@ class StudentDetailedInfo(models.Model):
         LanguageCertificateType,
         through='LanguageCertificateTypeThrough'
     )
+    gmat_certificate = models.ForeignKey(
+        GMATCertificate,
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT
+    )
+
+    gre_certificate = models.ForeignKey(
+        GRECertificate,
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT
+    )
 
     payment_affordability = models.ForeignKey(
         PaymentAffordability,
         on_delete=models.PROTECT,
+        null=True,
+        blank=True,
     )
 
-    prefers_full_fund = models.BooleanField(default=False)
-    prefers_half_fund = models.BooleanField(default=False)
-    prefers_self_fund = models.BooleanField(default=False)
+    prefers_full_fund = models.BooleanField(default=False,
+                                            null=True,
+                                            blank=True,)
+    prefers_half_fund = models.BooleanField(default=False,
+                                            null=True,
+                                            blank=True,)
+    prefers_self_fund = models.BooleanField(default=False,
+                                            null=True,
+                                            blank=True,
+                                            )
 
     # Extra info
     comment = models.TextField(max_length=1024, null=True, blank=True)
@@ -259,15 +315,17 @@ class StudentDetailedInfo(models.Model):
         null=True
     )
     powerful_recommendation = models.BooleanField(
-        default=False
+        default=False,
+        null=True,
+        blank=True,
     )
     linkedin_url = models.URLField(
         blank=True,
-        null=True
+        null=True,
     )
     homepage_url = models.URLField(
         blank=True,
-        null=True
+        null=True,
     )
 
     created = models.DateTimeField(auto_now_add=True)
@@ -292,7 +350,7 @@ class FormUniversityThrough(models.Model):
         FormMajor, on_delete=models.PROTECT
     )
     graduate_in = models.SmallIntegerField(
-        validators=[MinValueValidator(0), MaxValueValidator(20)],
+        validators=[MinValueValidator(1980), MaxValueValidator(2100)],
         help_text="In Gregorian"
     )
     thesis_title = models.CharField(

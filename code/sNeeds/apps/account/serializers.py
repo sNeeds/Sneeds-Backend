@@ -57,12 +57,6 @@ class StudentFormApplySemesterYearSerializer(serializers.ModelSerializer):
         fields = ['id', 'year', 'semester']
 
 
-class BasicFormFieldSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = BasicFormField
-        fields = ['id', 'name']
-
-
 class StudentFormApplySemesterYearCustomPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
     def get_choices(self, cutoff=None):
         """
@@ -92,84 +86,17 @@ class StudentFormApplySemesterYearCustomPrimaryKeyRelatedField(serializers.Prima
         return StudentFormApplySemesterYearSerializer(obj).data
 
 
-class FormUniversitySerializer(serializers.ModelSerializer):
-
+class BasicFormFieldSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.FormUniversity
-        fields = [
-            'id', 'value', 'is_college', 'rank',
-        ]
-
-
-class FormGradeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.FormGrade
-        fields = [
-            'id', 'name',
-        ]
-
-
-class FormMajorTypeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.FormMajorType
-        fields = [
-            'id', 'name',
-        ]
-
-
-class FormMajorSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.FormMajor
-        fields = [
-            'id', 'name',
-        ]
-
-
-class LanguageCertificateTypeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.LanguageCertificateType
-        fields = [
-            'id', 'name'
-        ]
-
-
-class PublicationTypeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.PublicationType
-        fields = [
-            'id', 'name', 'value',
-        ]
-
-
-class PublicationWhichAuthorSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.PublicationWhichAuthor
-        fields = [
-            'id', 'name', 'value',
-        ]
-
-
-class PaymentAffordabilitySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.PaymentAffordability
-        fields = [
-            'id', 'name', 'value',
-        ]
-
-
-class MaritalStatusSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.MaritalStatus
-        fields = [
-            'id', 'name',
-        ]
+        model = BasicFormField
+        fields = ['id', 'name']
 
 
 class WantToApplySerializer(serializers.ModelSerializer):
     country = CountrySerializer()
     university = UniversitySerializer()
-    grade = FormGradeSerializer()
-    major = FormMajorSerializer()
+    grade = BasicFormFieldSerializer()
+    major = BasicFormFieldSerializer()
     semester_year = StudentFormApplySemesterYearSerializer()
 
     class Meta:
@@ -189,13 +116,13 @@ class WantToApplyRequestSerializer(serializers.ModelSerializer):
 
 
 class PublicationSerializer(serializers.ModelSerializer):
-    which_author = PublicationWhichAuthorSerializer()
-    type = PublicationTypeSerializer()
+    which_author = BasicFormFieldSerializer()
+    type = BasicFormFieldSerializer()
 
     class Meta:
         model = models.Publication
         fields = [
-            'id', 'form', 'title', 'publish_year', 'which_author', 'type',
+            'id', 'student_detailed_info', 'title', 'publish_year', 'which_author', 'type',
         ]
 
 
@@ -203,14 +130,14 @@ class PublicationRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Publication
         fields = [
-            'id', 'form', 'title', 'publish_year', 'which_author', 'type',
+            'id', 'student_detailed_info', 'title', 'publish_year', 'which_author', 'type',
         ]
 
 
 class FormUniversityThroughSerializer(serializers.ModelSerializer):
-    university = FormUniversitySerializer()
-    grade = FormGradeSerializer()
-    major = FormMajorSerializer()
+    university = BasicFormFieldSerializer()
+    grade = BasicFormFieldSerializer()
+    major = BasicFormFieldSerializer()
 
     class Meta:
         model = models.FormUniversityThrough
@@ -228,7 +155,7 @@ class FormUniversityThroughRequestSerializer(serializers.ModelSerializer):
 
 
 class LanguageCertificateTypeThroughSerializer(serializers.ModelSerializer):
-    certificate_type = LanguageCertificateTypeSerializer()
+    certificate_type = BasicFormFieldSerializer()
 
     class Meta:
         model = models.LanguageCertificateTypeThrough
@@ -248,6 +175,22 @@ class LanguageCertificateTypeThroughRequestSerializer(serializers.ModelSerialize
         ]
 
 
+class GMATCertificateSerializer(serializers.ModelSerializer):
+    class Meta:
+        models = models.GMATCertificate
+        fields = [
+            'id', 'analytical_writing_assessment', 'integrated_reasoning', 'quantitative_and_verbal', 'total'
+        ]
+
+
+class GRECertificateSerializer(serializers.ModelSerializer):
+    class Meta:
+        models = models.GRECertificate
+        fields = [
+            'id', 'quantitative', 'verbal', 'analytical_writing',
+        ]
+
+
 class StudentDetailedInfoSerializer(serializers.ModelSerializer):
     from sNeeds.apps.customAuth.serializers import SafeUserDataSerializer
     user = SafeUserDataSerializer(read_only=True)
@@ -257,8 +200,12 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
         queryset=StudentFormApplySemesterYear.objects.all()
     )
 
-    marital_status = MaritalStatusSerializer()
-    payment_affordability = PaymentAffordabilitySerializer()
+    gre_certificate = GRECertificateSerializer()
+    gmat_certificate = GMATCertificateSerializer()
+
+    marital_status = BasicFormFieldSerializer()
+    payment_affordability = BasicFormFieldSerializer()
+
     universities = serializers.SerializerMethodField()
     language_certificates = serializers.SerializerMethodField()
     want_to_applies = serializers.SerializerMethodField
@@ -269,7 +216,8 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'user',
             'age', 'marital_status',
-            'universities', 'language_certificates', 'want_to_applies', 'publications',
+            'universities', 'want_to_applies', 'publications',
+            'language_certificates', 'gre_certificate', 'gmat_certificate',
             'payment_affordability', 'prefers_full_fund', 'prefers_half_fun', 'prefers_self_fund',
             'comment', 'resume', 'related_work_experience', 'academic_break', 'olympiad', 'powerful_recommendation',
             'linkedin_url', 'homepage_url',
