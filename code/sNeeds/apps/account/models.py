@@ -95,6 +95,7 @@ class BasicFormField(models.Model):
 class FormUniversity(BasicFormField):
     value = models.IntegerField()
     is_college = models.BooleanField(default=False)
+    rank = models.PositiveIntegerField()
 
 
 class FormGrade(BasicFormField):
@@ -117,7 +118,10 @@ class LanguageCertificateType(BasicFormField):
 
 
 class WantToApply(models.Model):
-    form = models.ForeignKey('StudentDetailedInfo', on_delete=models.CASCADE)
+    student_detailed_info = models.ForeignKey(
+        'StudentDetailedInfo',
+        on_delete=models.CASCADE
+    )
     country = models.ForeignKey(
         Country,
         on_delete=models.PROTECT
@@ -162,7 +166,11 @@ class PublicationWhichAuthor(BasicFormField):
 
 
 class Publication(models.Model):
-    form = models.ForeignKey('StudentDetailedInfo', on_delete=models.CASCADE)
+    student_detailed_info = models.ForeignKey(
+        'StudentDetailedInfo',
+        on_delete=models.CASCADE
+    )
+
     title = models.CharField(max_length=512)
     publish_year = models.SmallIntegerField(
         validators=[MinValueValidator(1900), MaxValueValidator(2100)],
