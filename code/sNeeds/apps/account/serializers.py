@@ -5,8 +5,8 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 from rest_framework.validators import ValidationError
 from . import models
-from .models import StudentDetailedInfo, StudentFormApplySemesterYear, BasicFormField, FormUniversityThrough, \
-    LanguageCertificateTypeThrough, WantToApply, Publication
+from .models import StudentDetailedInfo, StudentFormApplySemesterYear, BasicFormField, University, \
+    LanguageCertificateTypeThrough, WantToApply, Publication, UniversityThrough
 
 User = get_user_model()
 
@@ -107,7 +107,6 @@ class WantToApplySerializer(serializers.ModelSerializer):
 
 
 class WantToApplyRequestSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = models.WantToApply
         fields = [
@@ -134,21 +133,21 @@ class PublicationRequestSerializer(serializers.ModelSerializer):
         ]
 
 
-class FormUniversityThroughSerializer(serializers.ModelSerializer):
+class UniversityThroughSerializer(serializers.ModelSerializer):
     university = BasicFormFieldSerializer()
     grade = BasicFormFieldSerializer()
     major = BasicFormFieldSerializer()
 
     class Meta:
-        model = models.FormUniversityThrough
+        model = models.UniversityThrough
         fields = [
             'id', 'university', 'student_detailed_info', 'grade', 'major', 'graduate_in', 'thesis_title', 'gpa',
         ]
 
 
-class FormUniversityThroughRequestSerializer(serializers.ModelSerializer):
+class UniversityThroughRequestSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.FormUniversityThrough
+        model = models.UniversityThrough
         fields = [
             'id', 'university', 'student_detailed_info', 'grade', 'major', 'graduate_in', 'thesis_title', 'gpa',
         ]
@@ -166,7 +165,6 @@ class LanguageCertificateTypeThroughSerializer(serializers.ModelSerializer):
 
 
 class LanguageCertificateTypeThroughRequestSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = models.LanguageCertificateTypeThrough
         fields = [
@@ -225,8 +223,8 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
         ]
 
     def get_universities(self, obj):
-        qs = FormUniversityThrough.objects.filter(student_detailed_info_id=obj.id)
-        return FormUniversityThroughSerializer(qs, many=True, context=self.context).data
+        qs = UniversityThrough.objects.filter(student_detailed_info_id=obj.id)
+        return UniversityThroughSerializer(qs, many=True, context=self.context).data
 
     def get_language_certificates(self, obj):
         qs = LanguageCertificateTypeThrough.objects.filter(student_detailed_info_id=obj.id)
@@ -274,7 +272,6 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
 
 
 class StudentDetailedInfoRequestSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = StudentDetailedInfo
         fields = [

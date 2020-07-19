@@ -49,6 +49,8 @@ class University(models.Model):
     description = models.TextField(blank=True, null=True)
     picture = models.ImageField(upload_to=get_image_upload_path("university-pictures"))
     slug = models.SlugField(unique=True, help_text="Lowercase pls")
+    rank = models.PositiveIntegerField(null=True)
+    is_college = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["name"]
@@ -91,11 +93,6 @@ class BasicFormField(models.Model):
     def __str__(self):
         return self.name
 
-
-class FormUniversity(BasicFormField):
-    value = models.IntegerField()
-    is_college = models.BooleanField(default=False)
-    rank = models.PositiveIntegerField(null=True)
 
 
 class FormGrade(BasicFormField):
@@ -158,7 +155,7 @@ class WantToApply(models.Model):
     )
 
     university = models.ForeignKey(
-        FormUniversity,
+        University,
         on_delete=models.PROTECT,
         null=True,
         blank=True,
@@ -248,8 +245,8 @@ class StudentDetailedInfo(models.Model):
     )
 
     universities = models.ManyToManyField(
-        FormUniversity,
-        through='FormUniversityThrough'
+        University,
+        through='UniversityThrough'
     )
 
     language_certificates = models.ManyToManyField(
@@ -335,9 +332,9 @@ class StudentDetailedInfo(models.Model):
         return True
 
 
-class FormUniversityThrough(models.Model):
+class UniversityThrough(models.Model):
     university = models.ForeignKey(
-        FormUniversity, on_delete=models.PROTECT
+        University, on_delete=models.PROTECT
     )
     student_detailed_info = models.ForeignKey(
         StudentDetailedInfo,
