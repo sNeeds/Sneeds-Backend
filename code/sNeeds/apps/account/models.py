@@ -45,10 +45,10 @@ class Country(models.Model):
 
 class University(models.Model):
     name = models.CharField(max_length=256, unique=True)
-    country = models.ForeignKey(Country, on_delete=models.CASCADE)
+    # Deghat beshe ke age bekhaym moshavere jadid entekhab konim bayad che konim.
+    country = models.ForeignKey(Country, null=True, on_delete=models.CASCADE)
     description = models.TextField(blank=True, null=True)
     picture = models.ImageField(upload_to=get_image_upload_path("university-pictures"))
-    slug = models.SlugField(unique=True, help_text="Lowercase pls")
     rank = models.PositiveIntegerField(null=True)
     is_college = models.BooleanField(default=False)
 
@@ -92,7 +92,6 @@ class BasicFormField(models.Model):
 
     def __str__(self):
         return self.name
-
 
 
 class FormGrade(BasicFormField):
@@ -276,10 +275,10 @@ class StudentDetailedInfo(models.Model):
 
     prefers_full_fund = models.BooleanField(default=False,
                                             null=True,
-                                            blank=True,)
+                                            blank=True, )
     prefers_half_fund = models.BooleanField(default=False,
                                             null=True,
-                                            blank=True,)
+                                            blank=True, )
     prefers_self_fund = models.BooleanField(default=False,
                                             null=True,
                                             blank=True,
@@ -376,4 +375,3 @@ class LanguageCertificateTypeThrough(models.Model):
     writing = models.DecimalField(max_digits=5, decimal_places=2)
     reading = models.DecimalField(max_digits=5, decimal_places=2)
     overall = models.DecimalField(max_digits=5, decimal_places=2)
-
