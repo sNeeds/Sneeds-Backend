@@ -26,8 +26,11 @@ class CountrySerializer(serializers.ModelSerializer):
 
 
 class UniversitySerializer(serializers.ModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name="account:university-detail", lookup_field='slug',
-                                               read_only=True)
+    url = serializers.HyperlinkedIdentityField(
+        view_name="account:university-detail",
+        lookup_field='id',
+        read_only=True
+    )
     country = serializers.HyperlinkedRelatedField(
         read_only=True,
         view_name="account:country-detail",
@@ -36,7 +39,7 @@ class UniversitySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.University
-        fields = ('id', 'url', 'name', 'country', 'description', 'slug', 'picture')
+        fields = ('id', 'url', 'name', 'country', 'description', 'picture')
 
 
 class FieldOfStudySerializer(serializers.ModelSerializer):
