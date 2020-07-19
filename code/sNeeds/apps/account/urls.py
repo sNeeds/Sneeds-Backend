@@ -13,7 +13,7 @@ urlpatterns = [
     path('universities/<int:id>/', views.UniversityDetail.as_view(), name="university-detail"),
 
     path('field-of-studies/', views.FieldOfStudyList.as_view(), name="field-of-study-list"),
-    path('field-of-studies/<str:slug>/', views.FieldOfStudyDetail.as_view(), name="field-of-study-detail"),
+    path('field-of-studies/<int:id>/', views.FieldOfStudyDetail.as_view(), name="field-of-study-detail"),
 
     path('consultant-profiles/', sNeeds.apps.consultants.views.ConsultantProfileList.as_view(),
          name="consultant-profile-list"),

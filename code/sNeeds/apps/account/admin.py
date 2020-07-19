@@ -6,8 +6,7 @@ admin.site.register(models.University)
 admin.site.register(models.FieldOfStudy)
 admin.site.register(models.Country)
 admin.site.register(models.FormGrade)
-admin.site.register(models.FormMajor)
-admin.site.register(models.FormMajorType)
+admin.site.register(models.FieldOfStudyType)
 admin.site.register(models.PublicationWhichAuthor)
 admin.site.register(models.MaritalStatus)
 admin.site.register(models.PaymentAffordability)
@@ -39,5 +38,3 @@ class StudentDetailedInfoAdmin(admin.ModelAdmin):
         WantToApplyInline,
     ]
     list_display = ['id', 'user']
-
-

@@ -45,13 +45,13 @@ class UniversitySerializer(serializers.ModelSerializer):
 class FieldOfStudySerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name="account:field-of-study-detail",
-        lookup_field='slug',
+        lookup_field='id',
         read_only=True
     )
 
     class Meta:
         model = models.FieldOfStudy
-        fields = ('id', 'url', 'name', 'description', 'slug', 'picture')
+        fields = ('id', 'url', 'name', 'description', 'picture')
 
 
 class StudentFormApplySemesterYearSerializer(serializers.ModelSerializer):

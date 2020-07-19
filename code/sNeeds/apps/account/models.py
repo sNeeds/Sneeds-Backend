@@ -31,6 +31,13 @@ def get_student_resume_path(instance, filename):
     return "account/files/students/{}/resume/{}".format(instance.user.email, filename)
 
 
+class BasicFormField(models.Model):
+    name = models.CharField(max_length=256)
+
+    def __str__(self):
+        return self.name
+
+
 class Country(models.Model):
     name = models.CharField(max_length=256, unique=True)
     picture = models.ImageField(upload_to=get_image_upload_path("country-pictures"))
@@ -58,11 +65,24 @@ class University(models.Model):
         return self.name
 
 
+class FieldOfStudyType(BasicFormField):
+    pass
+
+
 class FieldOfStudy(models.Model):
     name = models.CharField(max_length=256, unique=True)
     description = models.TextField(blank=True, null=True)
-    picture = models.ImageField(upload_to=get_image_upload_path("field-of-study-pictures"))
-    slug = models.SlugField(unique=True, help_text="Lowercase pls")
+    picture = models.ImageField(
+        blank=False,
+        null=True,
+        upload_to=get_image_upload_path("field-of-study-pictures")
+    )
+    major_type = models.ForeignKey(
+        FieldOfStudyType,
+        null=True,
+        blank=False,
+        on_delete=models.PROTECT,
+    )
 
     class Meta:
         ordering = ["name"]
@@ -86,26 +106,8 @@ class StudentFormApplySemesterYear(models.Model):
         return str(self.year) + " " + self.semester
 
 
-class BasicFormField(models.Model):
-    name = models.CharField(max_length=256)
-
-    def __str__(self):
-        return self.name
-
-
 class FormGrade(BasicFormField):
     pass
-
-
-class FormMajorType(BasicFormField):
-    pass
-
-
-class FormMajor(BasicFormField):
-    major_type = models.ForeignKey(
-        FormMajorType,
-        on_delete=models.PROTECT,
-    )
 
 
 class LanguageCertificateType(BasicFormField):
@@ -167,7 +169,7 @@ class WantToApply(models.Model):
     )
 
     major = models.ForeignKey(
-        FormMajor,
+        FieldOfStudy,
         on_delete=models.PROTECT,
         null=True,
         blank=True,
@@ -342,7 +344,7 @@ class UniversityThrough(models.Model):
         FormGrade, on_delete=models.PROTECT
     )
     major = models.ForeignKey(
-        FormMajor, on_delete=models.PROTECT
+        FieldOfStudy, on_delete=models.PROTECT
     )
     graduate_in = models.SmallIntegerField(
         validators=[MinValueValidator(1980), MaxValueValidator(2100)],
