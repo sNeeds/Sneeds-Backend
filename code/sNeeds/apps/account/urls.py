@@ -27,8 +27,33 @@ urlpatterns = [
     path('user-student-detailed-info/<int:user_id>/', views.UserStudentDetailedInfoRetrieveAPIView.as_view(),
          name='user-student-detailed-info-detail'),
 
-    path('student-form-semester-year-choices/', views.StudentFormApplySemesterYearListAPIView.as_view()),
-    path('student-form-semester-year-choices/<int:id>', views.StudentFormApplySemesterYearRetrieveAPIView.as_view()),
+    path('basic-form-fields/', views.BasicFormFieldListAPIView.as_view(),
+         name="basic-form-fields-list"),
 
-    path('basic-form-fields/', views.BasicFormFieldListAPIView.as_view(), name="basic-form-fields-list"),
+    path('gamt-certificates/', views.GMATCertificateListCreateAPIView.as_view(),
+         name="gamt-certificate-list"),
+    path('gamt-certificates/<int:id>/', views.GMATCertificateRetrieveDestroyAPIView.as_view(),
+         name="gamt-certificate-detail"),
+
+    path('gre-certificates/', views.GRECertificateListCreateAPIView.as_view(),
+         name="gre-certificate-list"),
+    path('gre-certificates/<int:id>/', views.GRECertificateRetrieveDestroyAPIView.as_view(),
+         name="gre-certificates-detail"),
+
+    path('want-to-applies/', views.WantToApplyListCreateAPIView.as_view(),
+         name="want-to-apply-list"),
+    path('want-to-applies/<int:id>/', views.WantToApplyRetrieveDestroyAPIView.as_view(),
+         name="want-to-apply-detail"),
+
+    path('publications/', views.PublicationListCreateAPIView.as_view(),
+         name="publication-list"),
+    path('publications/<int:id>/', views.PublicationRetrieveDestroyAPIView.as_view(),
+         name="publication-detail"),
+
+    path('student-detailed-info-university-throughs/',
+         views.StudentDetailedUniversityThroughListCreateAPIView.as_view(),
+         name="student-detailed-info-university-through-list"),
+    path('student-detailed-info-university-throughs/<int:id>/',
+         views.StudentDetailedUniversityThroughRetrieveDestroyAPIView.as_view(),
+         name="student-detailed-info-university-through-detail"),
 ]

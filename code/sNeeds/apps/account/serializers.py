@@ -6,7 +6,7 @@ from rest_framework import serializers
 from rest_framework.validators import ValidationError
 from . import models
 from .models import StudentDetailedInfo, StudentFormApplySemesterYear, BasicFormField, University, \
-    LanguageCertificateTypeThrough, WantToApply, Publication, UniversityThrough
+    LanguageCertificateTypeThrough, WantToApply, Publication, UniversityThrough, GRECertificate, GMATCertificate
 
 User = get_user_model()
 
@@ -105,15 +105,17 @@ class WantToApplySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.WantToApply
         fields = [
-            'id', 'form', 'country', 'university', 'grade', 'major', 'semester_year',
+            'id', 'student_detailed_info', 'country', 'university', 'grade', 'major', 'semester_year',
         ]
 
 
 class WantToApplyRequestSerializer(serializers.ModelSerializer):
+    semester_year = StudentFormApplySemesterYearSerializer()
+
     class Meta:
         model = models.WantToApply
         fields = [
-            'id', 'form', 'country', 'university', 'grade', 'major', 'semester_year',
+            'id', 'student_detailed_info', 'country', 'university', 'grade', 'major', 'semester_year',
         ]
 
 
@@ -178,17 +180,17 @@ class LanguageCertificateTypeThroughRequestSerializer(serializers.ModelSerialize
 
 class GMATCertificateSerializer(serializers.ModelSerializer):
     class Meta:
-        models = models.GMATCertificate
+        model = models.GMATCertificate
         fields = [
-            'id', 'analytical_writing_assessment', 'integrated_reasoning', 'quantitative_and_verbal', 'total'
+            'id', 'student_detailed_info', 'analytical_writing_assessment', 'integrated_reasoning', 'quantitative_and_verbal', 'total'
         ]
 
 
 class GRECertificateSerializer(serializers.ModelSerializer):
     class Meta:
-        models = models.GRECertificate
+        model = models.GRECertificate
         fields = [
-            'id', 'quantitative', 'verbal', 'analytical_writing',
+            'id', 'student_detailed_info', 'quantitative', 'verbal', 'analytical_writing',
         ]
 
 
@@ -196,20 +198,15 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
     from sNeeds.apps.customAuth.serializers import SafeUserDataSerializer
     user = SafeUserDataSerializer(read_only=True)
 
-    apply_semester_year = StudentFormApplySemesterYearCustomPrimaryKeyRelatedField(
-        many=False,
-        queryset=StudentFormApplySemesterYear.objects.all()
-    )
-
-    gre_certificate = GRECertificateSerializer()
-    gmat_certificate = GMATCertificateSerializer()
+    gre_certificate = serializers.SerializerMethodField()
+    gmat_certificate = serializers.SerializerMethodField()
 
     marital_status = BasicFormFieldSerializer()
     payment_affordability = BasicFormFieldSerializer()
 
     universities = serializers.SerializerMethodField()
     language_certificates = serializers.SerializerMethodField()
-    want_to_applies = serializers.SerializerMethodField
+    want_to_applies = serializers.SerializerMethodField()
     publications = serializers.SerializerMethodField()
 
     class Meta:
@@ -219,11 +216,19 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
             'age', 'marital_status',
             'universities', 'want_to_applies', 'publications',
             'language_certificates', 'gre_certificate', 'gmat_certificate',
-            'payment_affordability', 'prefers_full_fund', 'prefers_half_fun', 'prefers_self_fund',
+            'payment_affordability', 'prefers_full_fund', 'prefers_half_fund', 'prefers_self_fund',
             'comment', 'resume', 'related_work_experience', 'academic_break', 'olympiad', 'powerful_recommendation',
             'linkedin_url', 'homepage_url',
             'created', 'updated',
         ]
+
+    def get_gre_certificate(self, obj):
+        qs = GRECertificate.objects.filter(student_detailed_info=obj)
+        return GRECertificateSerializer(qs, many=True, context=self.context).data
+
+    def get_gmat_certificate(self, obj):
+        qs = GMATCertificate.objects.filter(student_detailed_info=obj)
+        return GMATCertificateSerializer(qs, many=True, context=self.context).data
 
     def get_universities(self, obj):
         qs = UniversityThrough.objects.filter(student_detailed_info_id=obj.id)
@@ -239,7 +244,7 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
 
     def get_publications(self, obj):
         qs = Publication.objects.filter(student_detailed_info_id=obj.id)
-        return PublicationSerializer(qs, many=True, context=True)
+        return PublicationSerializer(qs, many=True, context=True).data
 
     def validate(self, attrs):
         # if attrs.get('grade').category != 'grade':
@@ -280,8 +285,7 @@ class StudentDetailedInfoRequestSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'user',
             'age', 'marital_status',
-            'universities', 'want_to_applies', 'publications',
-            'language_certificates', 'gre_certificate', 'gmat_certificate',
+            'gre_certificate', 'gmat_certificate',
             'payment_affordability', 'prefers_full_fund', 'prefers_half_fun', 'prefers_self_fund',
             'comment', 'resume', 'related_work_experience', 'academic_break', 'olympiad', 'powerful_recommendation',
             'linkedin_url', 'homepage_url',

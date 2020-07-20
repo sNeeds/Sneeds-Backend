@@ -115,6 +115,10 @@ class LanguageCertificateType(BasicFormField):
 
 
 class GMATCertificate(models.Model):
+    student_detailed_info = models.ForeignKey(
+        'StudentDetailedInfo',
+        on_delete=models.CASCADE,
+    )
     analytical_writing_assessment = models.DecimalField(
         max_digits=5, decimal_places=2,
         validators=[MinValueValidator(0.0), MaxValueValidator(6.00)],
@@ -132,6 +136,10 @@ class GMATCertificate(models.Model):
 
 
 class GRECertificate(models.Model):
+    student_detailed_info = models.ForeignKey(
+        'StudentDetailedInfo',
+        on_delete=models.CASCADE,
+    )
     quantitative = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(130), MaxValueValidator(170)],
     )
@@ -253,19 +261,6 @@ class StudentDetailedInfo(models.Model):
         LanguageCertificateType,
         through='LanguageCertificateTypeThrough'
     )
-    gmat_certificate = models.ForeignKey(
-        GMATCertificate,
-        null=True,
-        blank=True,
-        on_delete=models.PROTECT
-    )
-
-    gre_certificate = models.ForeignKey(
-        GRECertificate,
-        null=True,
-        blank=True,
-        on_delete=models.PROTECT
-    )
 
     payment_affordability = models.ForeignKey(
         PaymentAffordability,
@@ -359,6 +354,7 @@ class UniversityThrough(models.Model):
         validators=[MinValueValidator(0), MaxValueValidator(20)],
         max_digits=4,
         decimal_places=2
+
     )
 
 

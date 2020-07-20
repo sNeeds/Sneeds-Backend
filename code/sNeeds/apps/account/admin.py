@@ -13,6 +13,8 @@ admin.site.register(models.PaymentAffordability)
 admin.site.register(models.Publication)
 admin.site.register(models.PublicationType)
 admin.site.register(models.LanguageCertificateType)
+admin.site.register(models.GRECertificate)
+admin.site.register(models.GMATCertificate)
 
 
 class UniversityThroughInline(admin.TabularInline):
@@ -30,11 +32,17 @@ class WantToApplyInline(admin.TabularInline):
     extra = 1
 
 
+class PublicationInline(admin.TabularInline):
+    model = models.Publication
+    extra = 1
+
+
 @admin.register(models.StudentDetailedInfo)
 class StudentDetailedInfoAdmin(admin.ModelAdmin):
     inlines = [
         UniversityThroughInline,
         LanguageCertificateTypeThroughInline,
         WantToApplyInline,
+        PublicationInline,
     ]
     list_display = ['id', 'user']

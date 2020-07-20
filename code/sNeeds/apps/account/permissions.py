@@ -1,5 +1,6 @@
 from rest_framework import permissions
 
+from sNeeds.apps.account.models import StudentDetailedInfo, GMATCertificate
 from sNeeds.apps.storePackages.models import SoldStorePackage
 from sNeeds.utils.custom.custom_functions import get_consultants_interact_with_user
 
@@ -38,3 +39,63 @@ class StudentDetailedInfoOwnerOrInteractConsultantPermission(permissions.BasePer
                 # TODO If all sold store packages of user have consultant, other consultants won't access the form
                 qs_2 = SoldStorePackage.objects.filter(sold_to=obj.user)
                 return qs_2.exists()
+
+
+class IsGMATCertificateOwner(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        if request.method == "OPTIONS":
+            return True
+
+        user = request.user
+        if user:
+            return obj.student_detailed_info.user == user
+        return False
+
+
+class IsGRECertificateOwner(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        if request.method == "OPTIONS":
+            return True
+
+        user = request.user
+        if user:
+            return obj.student_detailed_info.user == user
+        return False
+
+
+class IsPublicationOwner(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        if request.method == "OPTIONS":
+            return True
+
+        user = request.user
+        if user:
+            return obj.student_detailed_info.user == user
+        return False
+
+
+class IsWantToApplyOwner(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        if request.method == "OPTIONS":
+            return True
+
+        user = request.user
+        if user:
+            return obj.student_detailed_info.user == user
+        return False
+
+
+class IsUniversityThroughOwner(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        if request.method == "OPTIONS":
+            return True
+
+        user = request.user
+        if user:
+            return obj.student_detailed_info.user == user
+        return False
