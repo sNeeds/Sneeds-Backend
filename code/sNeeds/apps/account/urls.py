@@ -30,10 +30,10 @@ urlpatterns = [
     path('basic-form-fields/', views.BasicFormFieldListAPIView.as_view(),
          name="basic-form-fields-list"),
 
-    path('gamt-certificates/', views.GMATCertificateListCreateAPIView.as_view(),
-         name="gamt-certificate-list"),
-    path('gamt-certificates/<int:id>/', views.GMATCertificateRetrieveDestroyAPIView.as_view(),
-         name="gamt-certificate-detail"),
+    path('gmat-certificates/', views.GMATCertificateListCreateAPIView.as_view(),
+         name="gmat-certificate-list"),
+    path('gmat-certificates/<int:id>/', views.GMATCertificateRetrieveDestroyAPIView.as_view(),
+         name="gmat-certificate-detail"),
 
     path('gre-certificates/', views.GRECertificateListCreateAPIView.as_view(),
          name="gre-certificate-list"),
