@@ -110,12 +110,13 @@ class WantToApplySerializer(serializers.ModelSerializer):
 
 
 class WantToApplyRequestSerializer(serializers.ModelSerializer):
-    semester_year = StudentFormApplySemesterYearSerializer()
 
     class Meta:
         model = models.WantToApply
         fields = [
-            'id', 'student_detailed_info', 'country', 'university', 'grade', 'major', 'semester_year',
+            'id', 'student_detailed_info', 'country', 'university',
+            'grade', 'major',
+            'semester_year',
         ]
 
 
@@ -182,7 +183,8 @@ class GMATCertificateSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.GMATCertificate
         fields = [
-            'id', 'student_detailed_info', 'analytical_writing_assessment', 'integrated_reasoning', 'quantitative_and_verbal', 'total'
+            'id', 'student_detailed_info', 'analytical_writing_assessment', 'integrated_reasoning',
+            'quantitative_and_verbal', 'total'
         ]
 
 
@@ -285,7 +287,6 @@ class StudentDetailedInfoRequestSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'user',
             'age', 'marital_status',
-            'gre_certificate', 'gmat_certificate',
             'payment_affordability', 'prefers_full_fund', 'prefers_half_fun', 'prefers_self_fund',
             'comment', 'resume', 'related_work_experience', 'academic_break', 'olympiad', 'powerful_recommendation',
             'linkedin_url', 'homepage_url',

@@ -1,6 +1,6 @@
 from rest_framework import generics
 
-from sNeeds.utils.custom.custom_mixins import BaseListModelMixin, BaseCreateModelMixin,\
+from sNeeds.utils.custom.views.custom_mixins import BaseListModelMixin, BaseCreateModelMixin,\
     BaseRetrieveModelMixin, BaseUpdateModelMixin, BaseDestroyModelMixin
 
 
@@ -9,6 +9,8 @@ class BaseGenericAPIView(generics.GenericAPIView):
     # the serializer instance that should be used for validating and
     # deserializing requests
     request_serializer_class = None
+
+    request_methods = None
 
     comment = ""
     description = ""
@@ -50,6 +52,25 @@ class BaseGenericAPIView(generics.GenericAPIView):
             'view': self
         }
 
+    # @classmethod
+    # def request_serializer_class_or_regular_serializer_class(cls):
+    #     """ Returns the request serializer class if it not None, other wise the normal serializer class"""
+    #     request_serializer_class = cls.get_request_serializer_class(cls())
+    #     if request_serializer_class is None:
+    #         request_serializer_class = cls.get_serializer_class(cls())
+    #
+    #     return request_serializer_class
+
+
+    @property
+    def request_serializer_class_or_regular_serializer_class(self):
+        """ Returns the request serializer class if it not None, other wise the normal serializer class"""
+        request_serializer_class = self.get_request_serializer_class()
+        if request_serializer_class is None:
+            request_serializer_class = self.get_serializer_class()
+
+        return request_serializer_class
+
 
 class BaseListAPIView(BaseListModelMixin, BaseGenericAPIView):
     """
@@ -69,6 +90,8 @@ class BaseCreateAPIView(BaseCreateModelMixin,
     Concrete view for creating a model instance.
     """
 
+    request_methods = ['post']
+
     def post(self, request, *args, **kwargs):
         """
         Create a new instance
@@ -76,13 +99,16 @@ class BaseCreateAPIView(BaseCreateModelMixin,
         return self.create(request, *args, **kwargs)
 
 
-class BaseListCreateAPIView(BaseListModelMixin,
+class BaseListCreateAPIView(BaseGenericAPIView,
+                            BaseListModelMixin,
                             BaseCreateModelMixin,
-                            BaseGenericAPIView):
+                            ):
+
+    request_methods = ['post']
+
     """
     Concrete view for listing a queryset or creating a model instance.
     """
-
     def get(self, request, *args, **kwargs):
         """
         List the queryset
@@ -124,6 +150,9 @@ class BaseUpdateAPIView(BaseUpdateModelMixin,
     Concrete view for updating a model instance.
     """
 
+    request_methods = ['put', 'patch']
+
+
     def put(self, request, *args, **kwargs):
         """Handle put method"""
         return self.update(request, *args, **kwargs)
@@ -139,6 +168,8 @@ class BaseRetrieveUpdateAPIView(BaseRetrieveModelMixin,
     """
     Concrete view for retrieving, updating a model instance.
     """
+
+    request_methods = ['put', 'patch']
 
     def get(self, request, *args, **kwargs):
         """Handle get method"""
@@ -176,6 +207,8 @@ class BaseRetrieveUpdateDestroyAPIView(BaseRetrieveModelMixin,
     """
     Concrete view for retrieving, updating or deleting a model instance.
     """
+
+    request_methods = ['put', 'patch']
 
     def get(self, request, *args, **kwargs):
         """Handle get method"""

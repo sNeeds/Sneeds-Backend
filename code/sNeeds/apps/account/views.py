@@ -1,4 +1,5 @@
 from django.contrib.contenttypes.models import ContentType
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, permissions
 
 from . import models
@@ -8,7 +9,7 @@ from .permissions import IsStudentPermission, StudentDetailedInfoOwnerOrInteract
     IsGMATCertificateOwner, IsGRECertificateOwner, IsWantToApplyOwner, IsPublicationOwner, IsUniversityThroughOwner
 from .serializers import StudentDetailedInfoSerializer, StudentFormApplySemesterYearSerializer, \
     BasicFormFieldSerializer, StudentDetailedInfoRequestSerializer
-from sNeeds.utils.custom import custom_generic_apiviews
+from ...utils.custom.views import custom_generic_apiviews
 
 
 class CountryDetail(generics.RetrieveAPIView):
@@ -71,14 +72,29 @@ class StudentDetailedInfoListCreateAPIView(custom_generic_apiviews.BaseListCreat
         return qs
 
 
-class StudentDetailedInfoRetrieveUpdateAPIView(generics.RetrieveUpdateAPIView):
+class StudentDetailedInfoRetrieveUpdateAPIView(custom_generic_apiviews.BaseRetrieveUpdateAPIView):
     lookup_field = 'id'
     queryset = StudentDetailedInfo.objects.all()
     serializer_class = StudentDetailedInfoSerializer
+    request_serializer_class = StudentDetailedInfoRequestSerializer
     permission_classes = (permissions.IsAuthenticated, StudentDetailedInfoOwnerOrInteractConsultantPermission)
 
+    @swagger_auto_schema(
+        request_body=request_serializer_class,
+        responses={200: serializer_class},
+    )
+    def put(self, request, *args, **kwargs):
+        return super().put(request, *args, **kwargs)
 
-class UserStudentDetailedInfoRetrieveAPIView(generics.RetrieveAPIView):
+    @swagger_auto_schema(
+        request_body=request_serializer_class,
+        responses={200: serializer_class},
+    )
+    def patch(self, request, *args, **kwargs):
+        return super().patch(request, *args, **kwargs)
+
+
+class UserStudentDetailedInfoRetrieveAPIView(custom_generic_apiviews.BaseRetrieveAPIView):
     queryset = StudentDetailedInfo.objects.all()
     serializer_class = StudentDetailedInfoSerializer
     permission_classes = (permissions.IsAuthenticated, StudentDetailedInfoOwnerOrInteractConsultantPermission)
@@ -86,18 +102,18 @@ class UserStudentDetailedInfoRetrieveAPIView(generics.RetrieveAPIView):
     lookup_field = 'user__id'
 
 
-class StudentFormApplySemesterYearListAPIView(generics.ListAPIView):
+class StudentFormApplySemesterYearListAPIView(custom_generic_apiviews.BaseListAPIView):
     queryset = StudentFormApplySemesterYear.objects.all()
     serializer_class = StudentFormApplySemesterYearSerializer
 
 
-class StudentFormApplySemesterYearRetrieveAPIView(generics.RetrieveAPIView):
+class StudentFormApplySemesterYearRetrieveAPIView(custom_generic_apiviews.BaseRetrieveAPIView):
     lookup_field = 'id'
     queryset = StudentFormApplySemesterYear.objects.all()
     serializer_class = StudentFormApplySemesterYearSerializer
 
 
-class BasicFormFieldListAPIView(generics.ListAPIView):
+class BasicFormFieldListAPIView(custom_generic_apiviews.BaseListAPIView):
     queryset = BasicFormField.objects.all()
     serializer_class = BasicFormFieldSerializer
 
@@ -170,6 +186,13 @@ class WantToApplyListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView
             qs = models.WantToApply.objects.filter(student_detailed_info=student_detailed_info)
         return qs
 
+    @swagger_auto_schema(
+        request_body=request_serializer_class,
+        responses={200: serializer_class},
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
 
 class WantToApplyRetrieveDestroyAPIView(custom_generic_apiviews.BaseRetrieveDestroyAPIView):
     lookup_field = 'id'
@@ -190,6 +213,13 @@ class PublicationListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView
             student_detailed_info = student_detailed_info_qs.first()
             qs = models.Publication.objects.filter(student_detailed_info=student_detailed_info)
         return qs
+
+    @swagger_auto_schema(
+        request_body=request_serializer_class,
+        responses={200: serializer_class},
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
 
 
 class PublicationRetrieveDestroyAPIView(custom_generic_apiviews.BaseRetrieveDestroyAPIView):

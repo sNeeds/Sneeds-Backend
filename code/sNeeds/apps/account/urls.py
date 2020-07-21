@@ -3,7 +3,10 @@ from django.urls import path
 import sNeeds.apps.consultants.views
 from . import views
 
+from sNeeds.utils.custom.views.custom_decorated_view import get_class_decorated_view as decorated_view
+
 app_name = "account"
+
 
 urlpatterns = [
     path('countries/', views.CountryList.as_view(), name="country-list"),
@@ -40,15 +43,15 @@ urlpatterns = [
     path('gre-certificates/<int:id>/', views.GRECertificateRetrieveDestroyAPIView.as_view(),
          name="gre-certificates-detail"),
 
-    path('want-to-applies/', views.WantToApplyListCreateAPIView.as_view(),
-         name="want-to-apply-list"),
-    path('want-to-applies/<int:id>/', views.WantToApplyRetrieveDestroyAPIView.as_view(),
-         name="want-to-apply-detail"),
-
     path('publications/', views.PublicationListCreateAPIView.as_view(),
          name="publication-list"),
     path('publications/<int:id>/', views.PublicationRetrieveDestroyAPIView.as_view(),
          name="publication-detail"),
+
+    path('want-to-applies/', views.WantToApplyListCreateAPIView.as_view(),
+         name="want-to-apply-list"),
+    path('want-to-applies/<int:id>/', views.WantToApplyRetrieveDestroyAPIView.as_view(),
+         name="want-to-apply-detail"),
 
     path('student-detailed-info-university-throughs/',
          views.StudentDetailedUniversityThroughListCreateAPIView.as_view(),
@@ -57,3 +60,61 @@ urlpatterns = [
          views.StudentDetailedUniversityThroughRetrieveDestroyAPIView.as_view(),
          name="student-detailed-info-university-through-detail"),
 ]
+
+
+
+
+# urlpatterns = [
+#     path('countries/', views.CountryList.as_view(), name="country-list"),
+#     path('countries/<str:slug>/', views.CountryDetail.as_view(), name="country-detail"),
+#
+#     path('universities/', views.UniversityList.as_view(), name="university-list"),
+#     path('universities/<int:id>/', views.UniversityDetail.as_view(), name="university-detail"),
+#
+#     path('field-of-studies/', views.FieldOfStudyList.as_view(), name="field-of-study-list"),
+#     path('field-of-studies/<int:id>/', views.FieldOfStudyDetail.as_view(), name="field-of-study-detail"),
+#
+#     path('consultant-profiles/', sNeeds.apps.consultants.views.ConsultantProfileList.as_view(),
+#          name="consultant-profile-list"),
+#     path('consultant-profiles/<str:slug>/', sNeeds.apps.consultants.views.ConsultantProfileDetail.as_view(),
+#          name="consultant-profile-detail"),
+#
+#     path('student-detailed-info/', decorated_view(views.StudentDetailedInfoListCreateAPIView),
+#          name='student-detailed-info-list'),
+#     path('student-detailed-info/<int:id>/', decorated_view(views.StudentDetailedInfoRetrieveUpdateAPIView),
+#          name='student-detailed-info-detail'),
+#     path('user-student-detailed-info/<int:user_id>/', views.UserStudentDetailedInfoRetrieveAPIView.as_view(),
+#          name='user-student-detailed-info-detail'),
+#
+#     path('basic-form-fields/', views.BasicFormFieldListAPIView.as_view(),
+#          name="basic-form-fields-list"),
+#
+#     path('gmat-certificates/', decorated_view(views.GMATCertificateListCreateAPIView),
+#          name="gmat-certificate-list"),
+#     path('gmat-certificates/<int:id>/', decorated_view(views.GMATCertificateRetrieveDestroyAPIView),
+#          name="gmat-certificate-detail"),
+#
+#     path('gre-certificates/', decorated_view(views.GRECertificateListCreateAPIView),
+#          name="gre-certificate-list"),
+#     path('gre-certificates/<int:id>/', decorated_view(views.GRECertificateRetrieveDestroyAPIView),
+#          name="gre-certificates-detail"),
+#
+#     path('publications/', decorated_view(views.PublicationListCreateAPIView),
+#          name="publication-list"),
+#     path('publications/<int:id>/', decorated_view(views.PublicationRetrieveDestroyAPIView),
+#          name="publication-detail"),
+#
+#     path('want-to-applies/', decorated_view(views.WantToApplyListCreateAPIView),
+#          name="want-to-apply-list"),
+#     path('want-to-applies/<int:id>/', decorated_view(views.WantToApplyRetrieveDestroyAPIView),
+#          name="want-to-apply-detail"),
+#
+#     path('student-detailed-info-university-throughs/',
+#          decorated_view(views.StudentDetailedUniversityThroughListCreateAPIView),
+#          name="student-detailed-info-university-through-list"),
+#     path('student-detailed-info-university-throughs/<int:id>/',
+#          decorated_view(views.StudentDetailedUniversityThroughRetrieveDestroyAPIView),
+#          name="student-detailed-info-university-through-detail"),
+# ]
+
+
