@@ -292,6 +292,9 @@ class ConsultantSoldStorePackageAcceptRequest(models.Model):
     class Meta:
         unique_together = ['sold_store_package', 'consultant']
 
+    def get_sold_store_package_sold_to(self):
+        return self.sold_store_package.sold_to
+
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         self.full_clean()
