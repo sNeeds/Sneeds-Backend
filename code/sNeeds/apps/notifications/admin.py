@@ -2,7 +2,8 @@ from django.contrib import admin
 
 from django.contrib import admin
 
-from .models import Notification, EmailNotification, SoldTimeSlotReminderEmailNotification
+from .models import Notification, EmailNotification, SoldTimeSlotReminderEmailNotification, \
+    SoldTimeSlotChangedEmailNotification
 
 
 @admin.register(EmailNotification)
