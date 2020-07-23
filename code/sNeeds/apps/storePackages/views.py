@@ -1,4 +1,5 @@
 from django.db.models import Q
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework import status, generics, mixins, permissions
@@ -27,7 +28,9 @@ class MarketplaceListAPIView(generics.ListAPIView):
             consultant=consultant
         ).values_list("sold_store_package", flat=True)
 
-        qs = SoldStorePackage.objects.filter(consultant=None).get_filled_student_detailed_infos().exclude(
+        qs = SoldStorePackage.objects.filter(
+            consultant=None, updated__gte=timezone.now() - timezone.timedelta(days=3)
+        ).get_filled_student_detailed_infos().exclude(
             id__in=accept_requested_store_packages_id_list
         )
         return qs

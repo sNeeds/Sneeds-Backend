@@ -36,6 +36,22 @@ class ConsultantProfileList(generics.ListAPIView):
     pagination_class = StandardResultsSetPagination
     ordering_fields = []
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        # If I delete this same objects will appear when paginating!
+        # This is Django bug.
+        # TODO: Report this bug
+        len(queryset)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     def get_queryset(self):
         qs = ConsultantProfile.objects.filter(active=True).at_least_one_time_slot()
 

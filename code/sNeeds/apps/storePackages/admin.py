@@ -45,7 +45,8 @@ class StorePackagePhaseAdmin(admin.ModelAdmin):
 
 @admin.register(ConsultantSoldStorePackageAcceptRequest)
 class ConsultantSoldStorePackageAcceptRequestAdmin(admin.ModelAdmin):
-    list_display = ['consultant', 'sold_store_package', 'created']
+    list_display = ['sold_store_package', 'consultant', 'get_sold_store_package_sold_to', 'created']
+    list_filter = ['sold_store_package', 'consultant', ]
 
 
 admin.site.register(StorePackagePhaseDetail)
