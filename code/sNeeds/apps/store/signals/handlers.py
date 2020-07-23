@@ -53,7 +53,7 @@ def post_save_time_slot_sold_receiver(sender, instance, created, *args, **kwargs
         SoldTimeSlotReminderEmailNotification.objects.filter(sold_time_slot_id=instance.id).delete()
 
         # For user
-        SoldTimeSlotChangedEmailNotification.objects.create_sold_time_slot_reminder(
+        SoldTimeSlotReminderEmailNotification.objects.create(
             sold_time_slot_id=instance.id,
             send_date=datetime.now(),
             data_json=json.dumps(data_dict),
@@ -62,7 +62,7 @@ def post_save_time_slot_sold_receiver(sender, instance, created, *args, **kwargs
 
         data_dict["name"] = instance.consultant.user.get_full_name()
         # For consultant
-        SoldTimeSlotChangedEmailNotification.objects.create_sold_time_slot_reminder(
+        SoldTimeSlotReminderEmailNotification.objects.create(
             sold_time_slot_id=instance.id,
             send_date=datetime.now(),
             data_json=json.dumps(data_dict),
@@ -71,13 +71,13 @@ def post_save_time_slot_sold_receiver(sender, instance, created, *args, **kwargs
 
     data_dict["name"] = instance.sold_to.get_full_name()
     # For user
-    SoldTimeSlotReminderEmailNotification.objects.create_sold_time_slot_reminder(
+    SoldTimeSlotReminderEmailNotification.objects.create(
         sold_time_slot_id=instance.id,
         send_date=instance.start_time - timezone.timedelta(days=1),
         data_json=json.dumps(data_dict),
         email=instance.sold_to.email
     )
-    SoldTimeSlotReminderEmailNotification.objects.create_sold_time_slot_reminder(
+    SoldTimeSlotReminderEmailNotification.objects.create(
         sold_time_slot_id=instance.id,
         send_date=instance.start_time - timezone.timedelta(hours=2),
         data_json=json.dumps(data_dict),
@@ -86,13 +86,13 @@ def post_save_time_slot_sold_receiver(sender, instance, created, *args, **kwargs
 
     data_dict["name"] = instance.consultant.user.get_full_name()
     # For consultant
-    SoldTimeSlotReminderEmailNotification.objects.create_sold_time_slot_reminder(
+    SoldTimeSlotReminderEmailNotification.objects.create(
         sold_time_slot_id=instance.id,
         send_date=instance.start_time - timezone.timedelta(days=1),
         data_json=json.dumps(data_dict),
         email=instance.consultant.user.email
     )
-    SoldTimeSlotReminderEmailNotification.objects.create_sold_time_slot_reminder(
+    SoldTimeSlotReminderEmailNotification.objects.create(
         sold_time_slot_id=instance.id,
         send_date=instance.start_time - timezone.timedelta(hours=2),
         data_json=json.dumps(data_dict),
