@@ -17,7 +17,7 @@ class DiscountAdmin(admin.ModelAdmin):
     readonly_fields = ['created', 'updated', 'sent', 'data_json', 'get_data_dict']
 
 
-@admin.register(SoldTimeSlotReminderEmailNotification)
+@admin.register(SoldTimeSlotChangedEmailNotification)
 class DiscountAdmin(admin.ModelAdmin):
     list_display = ['email', 'sent', 'send_date']
     readonly_fields = ['created', 'updated', 'sent', 'data_json', 'get_data_dict']
