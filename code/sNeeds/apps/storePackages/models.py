@@ -183,6 +183,9 @@ class SoldStorePackage(models.Model):
         self._update_paid_price()
         self._update_total_price()
 
+    class Meta:
+        ordering = ['updated']
+
 
 class SoldStorePackagePhaseDetail(models.Model):
     title = models.CharField(max_length=1024, null=False, blank=False)
