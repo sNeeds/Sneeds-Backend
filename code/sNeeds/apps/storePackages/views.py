@@ -25,7 +25,7 @@ class MarketplaceListAPIView(generics.ListAPIView):
     def get_queryset(self):
         consultant = ConsultantProfile.objects.get(user=self.request.user)
         accept_requested_store_packages_id_list = ConsultantSoldStorePackageAcceptRequest.objects.filter(
-            consultant=consultant, created__gte=timezone.now() - timezone.timedelta(days=3)
+            consultant=consultant, updated__gte=timezone.now() - timezone.timedelta(days=3)
         ).values_list("sold_store_package", flat=True)
 
         qs = SoldStorePackage.objects.filter(consultant=None).get_filled_student_detailed_infos().exclude(
