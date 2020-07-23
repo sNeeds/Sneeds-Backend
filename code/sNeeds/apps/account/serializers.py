@@ -170,6 +170,9 @@ class PublicationSerializer(serializers.ModelSerializer):
             'id', 'student_detailed_info', 'title', 'publish_year', 'which_author', 'type',
         ]
 
+    def create(self, validated_data):
+        raise ValidationError(_("Creating object through this serializer is not allowed"))
+
 
 class PublicationRequestSerializer(serializers.ModelSerializer):
     which_author = serializers.PrimaryKeyRelatedField(
@@ -211,6 +214,9 @@ class UniversityThroughSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'university', 'student_detailed_info', 'grade', 'major', 'graduate_in', 'thesis_title', 'gpa',
         ]
+
+    def create(self, validated_data):
+        raise ValidationError(_("Creating object through this serializer is not allowed"))
 
 
 class UniversityThroughRequestSerializer(serializers.ModelSerializer):
@@ -262,6 +268,9 @@ class LanguageCertificateTypeThroughSerializer(serializers.ModelSerializer):
             'id', 'certificate_type', 'student_detailed_info',
             'speaking', 'listening', 'writing', 'reading', 'overall',
         ]
+
+    def create(self, validated_data):
+        raise ValidationError(_("Creating object through this serializer is not allowed"))
 
 
 class LanguageCertificateTypeThroughRequestSerializer(serializers.ModelSerializer):
@@ -388,19 +397,8 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
         qs = Publication.objects.filter(student_detailed_info_id=obj.id)
         return PublicationSerializer(qs, many=True, context=True).data
 
-    def validate(self, attrs):
-        return attrs
-
     def create(self, validated_data):
-        request = self.context.get('request')
-        user = request.user
-        if user.is_consultant():
-            raise ValidationError(_("Consultants can not create Student Detailed Info"))
-        user_student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=user)
-        if user_student_detailed_info_qs.exists():
-            raise ValidationError(_("User already has student detailed info"))
-        student_detailed_info_obj = StudentDetailedInfo.objects.create(user=user, **validated_data)
-        return student_detailed_info_obj
+        raise ValidationError(_("Creating object through this serializer is not allowed"))
 
 
 class StudentDetailedInfoRequestSerializer(serializers.ModelSerializer):
@@ -426,15 +424,22 @@ class StudentDetailedInfoRequestSerializer(serializers.ModelSerializer):
         ]
 
     def validate(self, attrs):
+        request = self.context.get('request')
+        request_user = request.user
+        print(type(request_user))
+        print(request_user)
+        data_user = attrs.get("user")
+        if data_user is not None:
+            if data_user != request_user:
+                raise ValidationError(_("User can't set another user as the user of object."))
+            if data_user.is_consultant():
+                raise ValidationError(_("Consultants can not create Student Detailed Info"))
         return attrs
 
     def create(self, validated_data):
-        request = self.context.get('request')
-        user = request.user
-        if user.is_consultant():
-            raise ValidationError(_("Consultants can not create Student Detailed Info"))
-        user_student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=user)
+        data_user = validated_data.get("user")
+        user_student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=data_user)
         if user_student_detailed_info_qs.exists():
-            raise ValidationError(_("User already has student detailed info"))
-        student_detailed_info_obj = StudentDetailedInfo.objects.create(user=user, **validated_data)
+            raise ValidationError(_("User already has a student detailed info"))
+        student_detailed_info_obj = StudentDetailedInfo.objects.create(**validated_data)
         return student_detailed_info_obj

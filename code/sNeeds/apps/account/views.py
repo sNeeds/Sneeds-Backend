@@ -1,3 +1,4 @@
+from django.contrib.auth.models import AnonymousUser
 from django.contrib.contenttypes.models import ContentType
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, permissions
@@ -5,7 +6,8 @@ from rest_framework import generics, permissions
 from . import models
 from . import serializers
 from .models import StudentDetailedInfo, StudentFormApplySemesterYear, BasicFormField
-from .permissions import IsStudentPermission, StudentDetailedInfoOwnerOrInteractConsultantPermission, \
+from .permissions import IsStudentPermission,\
+    StudentDetailedInfoOwnerOrInteractConsultantOrWithoutUserPermission, \
     IsGMATCertificateOwner, IsGRECertificateOwner, IsWantToApplyOwner, IsPublicationOwner, IsUniversityThroughOwner, \
     IsLanguageCertificateTypeThroughOwner
 from .serializers import StudentDetailedInfoSerializer, StudentFormApplySemesterYearSerializer, \
@@ -65,10 +67,11 @@ class StudentDetailedInfoListCreateAPIView(custom_generic_apiviews.BaseListCreat
     queryset = StudentDetailedInfo.objects.all()
     serializer_class = StudentDetailedInfoSerializer
     request_serializer_class = StudentDetailedInfoRequestSerializer
-    permission_classes = (permissions.IsAuthenticated, IsStudentPermission)
 
     def get_queryset(self):
         user = self.request.user
+        if type(user) == AnonymousUser:
+            return StudentDetailedInfo.objects.none()
         qs = StudentDetailedInfo.objects.filter(user=user)
         return qs
 
@@ -85,7 +88,8 @@ class StudentDetailedInfoRetrieveUpdateAPIView(custom_generic_apiviews.BaseRetri
     queryset = StudentDetailedInfo.objects.all()
     serializer_class = StudentDetailedInfoSerializer
     request_serializer_class = StudentDetailedInfoRequestSerializer
-    permission_classes = (permissions.IsAuthenticated, StudentDetailedInfoOwnerOrInteractConsultantPermission)
+    permission_classes = (permissions.IsAuthenticated,
+                          StudentDetailedInfoOwnerOrInteractConsultantOrWithoutUserPermission)
 
     @swagger_auto_schema(
         request_body=request_serializer_class,
@@ -105,7 +109,8 @@ class StudentDetailedInfoRetrieveUpdateAPIView(custom_generic_apiviews.BaseRetri
 class UserStudentDetailedInfoRetrieveAPIView(custom_generic_apiviews.BaseRetrieveAPIView):
     queryset = StudentDetailedInfo.objects.all()
     serializer_class = StudentDetailedInfoSerializer
-    permission_classes = (permissions.IsAuthenticated, StudentDetailedInfoOwnerOrInteractConsultantPermission)
+    permission_classes = (permissions.IsAuthenticated,
+                          StudentDetailedInfoOwnerOrInteractConsultantOrWithoutUserPermission)
     lookup_url_kwarg = 'user_id'
     lookup_field = 'user__id'
 

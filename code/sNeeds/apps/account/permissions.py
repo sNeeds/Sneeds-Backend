@@ -19,11 +19,14 @@ class IsStudentPermission(permissions.BasePermission):
             return user.is_student()
 
 
-class StudentDetailedInfoOwnerOrInteractConsultantPermission(permissions.BasePermission):
+class StudentDetailedInfoOwnerOrInteractConsultantOrWithoutUserPermission(permissions.BasePermission):
     message = "Only owner can update and only owner and consultants that service the owner can see info"
 
     def has_object_permission(self, request, view, obj):
         if request.method == "OPTIONS":
+            return True
+
+        if obj.user is None:
             return True
 
         user = request.user
