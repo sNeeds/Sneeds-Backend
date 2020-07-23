@@ -117,26 +117,44 @@ class WantToApplyRequestSerializer(serializers.ModelSerializer):
     student_detailed_info = serializers.PrimaryKeyRelatedField(
         queryset=models.StudentDetailedInfo.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
+        allow_null=False,
+        allow_empty=False,
+        required=True,
     )
     country = serializers.PrimaryKeyRelatedField(
         queryset=models.Country.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
+        allow_null=False,
+        allow_empty=False,
+        required=True,
     )
     university = serializers.PrimaryKeyRelatedField(
         queryset=models.University.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
+        allow_null=True,
+        allow_empty=True,
+        required=False,
     )
     grade = serializers.PrimaryKeyRelatedField(
         queryset=models.FormGrade.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
+        allow_null=True,
+        allow_empty=True,
+        required=False,
     )
     major = serializers.PrimaryKeyRelatedField(
         queryset=models.FieldOfStudy.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
+        allow_null=True,
+        allow_empty=True,
+        required=False,
     )
     semester_year = serializers.PrimaryKeyRelatedField(
         queryset=models.StudentFormApplySemesterYear.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
+        allow_null=False,
+        allow_empty=False,
+        required=True,
     )
 
     class Meta:
@@ -154,6 +172,8 @@ class WantToApplyRequestSerializer(serializers.ModelSerializer):
             request_user = request.user
             student_detailed_info = attrs.get("student_detailed_info")
             if student_detailed_info.user is not None and student_detailed_info.user != request_user:
+                raise ValidationError(_("User can't set student_detailed_info of another user."))
+            if student_detailed_info.user is None and request_user.is_authenticated:
                 raise ValidationError(_("User can't set student_detailed_info of another user."))
         else:
             raise ValidationError(_("Can't validate data.Can't get request user."))
@@ -175,14 +195,28 @@ class PublicationSerializer(serializers.ModelSerializer):
 
 
 class PublicationRequestSerializer(serializers.ModelSerializer):
+    student_detailed_info = serializers.PrimaryKeyRelatedField(
+        queryset=models.StudentDetailedInfo.objects.all(),
+        pk_field=serializers.IntegerField(label='id'),
+        allow_null=False,
+        allow_empty=False,
+        required=True,
+    )
+
     which_author = serializers.PrimaryKeyRelatedField(
         queryset=models.PublicationWhichAuthor.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
+        allow_null=False,
+        allow_empty=False,
+        required=True,
     )
 
     type = serializers.PrimaryKeyRelatedField(
         queryset=models.PublicationType.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
+        allow_null=False,
+        allow_empty=False,
+        required=True,
     )
 
     class Meta:
@@ -198,6 +232,8 @@ class PublicationRequestSerializer(serializers.ModelSerializer):
             request_user = request.user
             student_detailed_info = attrs.get("student_detailed_info")
             if student_detailed_info.user is not None and student_detailed_info.user != request_user:
+                raise ValidationError(_("User can't set student_detailed_info of another user."))
+            if student_detailed_info.user is None and request_user.is_authenticated:
                 raise ValidationError(_("User can't set student_detailed_info of another user."))
         else:
             raise ValidationError(_("Can't validate data.Can't get request user."))
@@ -223,21 +259,33 @@ class UniversityThroughRequestSerializer(serializers.ModelSerializer):
     university = serializers.PrimaryKeyRelatedField(
         queryset=models.University.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
+        allow_null=False,
+        allow_empty=False,
+        required=True,
     )
 
     student_detailed_info = serializers.PrimaryKeyRelatedField(
         queryset=models.StudentDetailedInfo.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
+        allow_null=False,
+        allow_empty=False,
+        required=True,
     )
 
     grade = serializers.PrimaryKeyRelatedField(
         queryset=models.FormGrade.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
+        allow_null=False,
+        allow_empty=False,
+        required=True,
     )
 
     major = serializers.PrimaryKeyRelatedField(
         queryset=models.FieldOfStudy.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
+        allow_null=False,
+        allow_empty=False,
+        required=True,
     )
 
     class Meta:
@@ -253,6 +301,8 @@ class UniversityThroughRequestSerializer(serializers.ModelSerializer):
             request_user = request.user
             student_detailed_info = attrs.get("student_detailed_info")
             if student_detailed_info.user is not None and student_detailed_info.user != request_user:
+                raise ValidationError(_("User can't set student_detailed_info of another user."))
+            if student_detailed_info.user is None and request_user.is_authenticated:
                 raise ValidationError(_("User can't set student_detailed_info of another user."))
         else:
             raise ValidationError(_("Can't validate data.Can't get request user."))
@@ -277,11 +327,17 @@ class LanguageCertificateTypeThroughRequestSerializer(serializers.ModelSerialize
     certificate_type = serializers.PrimaryKeyRelatedField(
         queryset=models.LanguageCertificateType.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
+        allow_null=False,
+        allow_empty=False,
+        required=True,
     )
 
     student_detailed_info = serializers.PrimaryKeyRelatedField(
         queryset=models.StudentDetailedInfo.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
+        allow_null=False,
+        allow_empty=False,
+        required=True,
     )
 
     class Meta:
@@ -298,6 +354,8 @@ class LanguageCertificateTypeThroughRequestSerializer(serializers.ModelSerialize
             request_user = request.user
             student_detailed_info = attrs.get("student_detailed_info")
             if student_detailed_info.user is not None and student_detailed_info.user != request_user:
+                raise ValidationError(_("User can't set student_detailed_info of another user."))
+            if student_detailed_info.user is None and request_user.is_authenticated:
                 raise ValidationError(_("User can't set student_detailed_info of another user."))
         else:
             raise ValidationError(_("Can't validate data.Can't get request user."))
@@ -320,6 +378,8 @@ class GMATCertificateSerializer(serializers.ModelSerializer):
             student_detailed_info = attrs.get("student_detailed_info")
             if student_detailed_info.user is not None and student_detailed_info.user != request_user:
                 raise ValidationError(_("User can't set student_detailed_info of another user."))
+            if student_detailed_info.user is None and request_user.is_authenticated:
+                raise ValidationError(_("User can't set student_detailed_info of another user."))
         else:
             raise ValidationError(_("Can't validate data.Can't get request user."))
         return attrs
@@ -339,6 +399,8 @@ class GRECertificateSerializer(serializers.ModelSerializer):
             request_user = request.user
             student_detailed_info = attrs.get("student_detailed_info")
             if student_detailed_info.user is not None and student_detailed_info.user != request_user:
+                raise ValidationError(_("User can't set student_detailed_info of another user."))
+            if student_detailed_info.user is None and request_user.is_authenticated:
                 raise ValidationError(_("User can't set student_detailed_info of another user."))
         else:
             raise ValidationError(_("Can't validate data.Can't get request user."))
@@ -405,11 +467,17 @@ class StudentDetailedInfoRequestSerializer(serializers.ModelSerializer):
     marital_status = serializers.PrimaryKeyRelatedField(
         queryset=models.MaritalStatus.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
+        allow_null=True,
+        allow_empty=True,
+        required=False,
     )
 
     payment_affordability = serializers.PrimaryKeyRelatedField(
         queryset=models.PaymentAffordability.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
+        allow_null=True,
+        allow_empty=True,
+        required=False,
     )
 
     class Meta:
@@ -426,20 +494,23 @@ class StudentDetailedInfoRequestSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         request = self.context.get('request')
         request_user = request.user
-        print(type(request_user))
-        print(request_user)
         data_user = attrs.get("user")
         if data_user is not None:
             if data_user != request_user:
                 raise ValidationError(_("User can't set another user as the user of object."))
             if data_user.is_consultant():
-                raise ValidationError(_("Consultants can not create Student Detailed Info"))
+                raise ValidationError(_("Consultants can not have Student Detailed Info"))
+            if data_user.is_authenticated:
+                user_student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=data_user)
+                if user_student_detailed_info_qs.exists():
+                    raise ValidationError(_("User already has a student detailed info"))
         return attrs
 
     def create(self, validated_data):
         data_user = validated_data.get("user")
-        user_student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=data_user)
-        if user_student_detailed_info_qs.exists():
-            raise ValidationError(_("User already has a student detailed info"))
+        if data_user is not None:
+            user_student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=data_user)
+            if user_student_detailed_info_qs.exists():
+                raise ValidationError(_("User already has a student detailed info"))
         student_detailed_info_obj = StudentDetailedInfo.objects.create(**validated_data)
         return student_detailed_info_obj
