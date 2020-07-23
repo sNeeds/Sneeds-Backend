@@ -185,3 +185,9 @@ from sNeeds.utils.custom.custom_permissions import CustomIsAuthenticated
 
 permissions.IsAuthenticated = CustomIsAuthenticated
 # ---------------------
+
+
+# ---------------------
+# To prevent 413 error
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
+# ---------------------
