@@ -53,12 +53,19 @@ urlpatterns = [
     path('want-to-applies/<int:id>/', views.WantToApplyRetrieveDestroyAPIView.as_view(),
          name="want-to-apply-detail"),
 
-    path('student-detailed-info-university-throughs/',
+    path('student-detailed-university-throughs/',
          views.StudentDetailedUniversityThroughListCreateAPIView.as_view(),
-         name="student-detailed-info-university-through-list"),
-    path('student-detailed-info-university-throughs/<int:id>/',
+         name="student-detailed-university-through-list"),
+    path('student-detailed-university-throughs/<int:id>/',
          views.StudentDetailedUniversityThroughRetrieveDestroyAPIView.as_view(),
-         name="student-detailed-info-university-through-detail"),
+         name="student-detailed-university-through-detail"),
+
+    path('student-detailed-language-certificate-type-throughs/',
+         views.StudentDetailedLanguageCertificateTypeThroughListCreateAPIView.as_view(),
+         name="student-detailed-language-certificate-through-list"),
+    path('student-detailed-language-certificate-type-throughs/<int:id>/',
+         views.StudentDetailedLanguageCertificateTypeThroughRetrieveDestroyAPIView.as_view(),
+         name="student-detailed-language-certificate-through-detail"),
 ]
 
 

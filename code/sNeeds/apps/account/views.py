@@ -6,7 +6,8 @@ from . import models
 from . import serializers
 from .models import StudentDetailedInfo, StudentFormApplySemesterYear, BasicFormField
 from .permissions import IsStudentPermission, StudentDetailedInfoOwnerOrInteractConsultantPermission, \
-    IsGMATCertificateOwner, IsGRECertificateOwner, IsWantToApplyOwner, IsPublicationOwner, IsUniversityThroughOwner
+    IsGMATCertificateOwner, IsGRECertificateOwner, IsWantToApplyOwner, IsPublicationOwner, IsUniversityThroughOwner, \
+    IsLanguageCertificateTypeThroughOwner
 from .serializers import StudentDetailedInfoSerializer, StudentFormApplySemesterYearSerializer, \
     BasicFormFieldSerializer, StudentDetailedInfoRequestSerializer
 from ...utils.custom.views import custom_generic_apiviews
@@ -71,6 +72,13 @@ class StudentDetailedInfoListCreateAPIView(custom_generic_apiviews.BaseListCreat
         qs = StudentDetailedInfo.objects.filter(user=user)
         return qs
 
+    @swagger_auto_schema(
+        request_body=request_serializer_class,
+        responses={200: serializer_class},
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
 
 class StudentDetailedInfoRetrieveUpdateAPIView(custom_generic_apiviews.BaseRetrieveUpdateAPIView):
     lookup_field = 'id'
@@ -120,7 +128,7 @@ class BasicFormFieldListAPIView(custom_generic_apiviews.BaseListAPIView):
     def get_queryset(self):
 
         query_form_fields = self.request.query_params.getlist('form_field', None)
-        if query_form_fields is not None:
+        if len(query_form_fields) != 0:
             qs = BasicFormField.objects.none()
             for form_field in query_form_fields:
                 content_type = ContentType.objects.filter(app_label='account', model=form_field)
@@ -128,11 +136,12 @@ class BasicFormFieldListAPIView(custom_generic_apiviews.BaseListAPIView):
                     temp_ids = content_type.first().model_class().objects.all().only('id').values_list('id')
                     qs |= BasicFormField.objects.filter(id__in=temp_ids)
         else:
-            qs = self.queryset.all()
+            qs = self.queryset.none()
         return qs
 
 
 class GMATCertificateListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
+    queryset = models.GMATCertificate.objects.all()
     serializer_class = serializers.GMATCertificateSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -148,11 +157,13 @@ class GMATCertificateListCreateAPIView(custom_generic_apiviews.BaseListCreateAPI
 
 class GMATCertificateRetrieveDestroyAPIView(custom_generic_apiviews.BaseRetrieveDestroyAPIView):
     lookup_field = 'id'
+    queryset = models.GMATCertificate.objects.all()
     serializer_class = serializers.GMATCertificateSerializer
     permission_classes = [permissions.IsAuthenticated, IsGMATCertificateOwner]
 
 
 class GRECertificateListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
+    queryset = models.GRECertificate.objects.all()
     serializer_class = serializers.GRECertificateSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -168,11 +179,13 @@ class GRECertificateListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIV
 
 class GRECertificateRetrieveDestroyAPIView(custom_generic_apiviews.BaseRetrieveDestroyAPIView):
     lookup_field = 'id'
+    queryset = models.GRECertificate.objects.all()
     serializer_class = serializers.GRECertificateSerializer
     permission_classes = [permissions.IsAuthenticated, IsGRECertificateOwner]
 
 
 class WantToApplyListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
+    queryset = models.WantToApply.objects.all()
     serializer_class = serializers.WantToApplySerializer
     request_serializer_class = serializers.WantToApplyRequestSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -196,11 +209,13 @@ class WantToApplyListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView
 
 class WantToApplyRetrieveDestroyAPIView(custom_generic_apiviews.BaseRetrieveDestroyAPIView):
     lookup_field = 'id'
+    queryset = models.WantToApply.objects.all()
     serializer_class = serializers.WantToApplySerializer
     permission_classes = [permissions.IsAuthenticated, IsWantToApplyOwner]
 
 
 class PublicationListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
+    queryset = models.Publication.objects.all()
     serializer_class = serializers.PublicationSerializer
     request_serializer_class = serializers.PublicationRequestSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -224,11 +239,13 @@ class PublicationListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView
 
 class PublicationRetrieveDestroyAPIView(custom_generic_apiviews.BaseRetrieveDestroyAPIView):
     lookup_field = 'id'
+    queryset = models.Publication.objects.all()
     serializer_class = serializers.PublicationSerializer
     permission_classes = [permissions.IsAuthenticated, IsPublicationOwner]
 
 
 class StudentDetailedUniversityThroughListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
+    queryset = models.UniversityThrough.objects.all()
     serializer_class = serializers.UniversityThroughSerializer
     request_serializer_class = serializers.UniversityThroughRequestSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -242,8 +259,46 @@ class StudentDetailedUniversityThroughListCreateAPIView(custom_generic_apiviews.
             qs = models.UniversityThrough.objects.filter(student_detailed_info=student_detailed_info)
         return qs
 
+    @swagger_auto_schema(
+        request_body=request_serializer_class,
+        responses={200: serializer_class},
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
 
 class StudentDetailedUniversityThroughRetrieveDestroyAPIView(custom_generic_apiviews.BaseRetrieveDestroyAPIView):
     lookup_field = 'id'
+    queryset = models.UniversityThrough.objects.all()
     serializer_class = serializers.UniversityThroughSerializer
     permission_classes = [permissions.IsAuthenticated, IsUniversityThroughOwner]
+
+
+class StudentDetailedLanguageCertificateTypeThroughListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
+    queryset = models.LanguageCertificateTypeThrough.objects.all()
+    serializer_class = serializers.LanguageCertificateTypeThroughSerializer
+    request_serializer_class = serializers.LanguageCertificateTypeThroughRequestSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        qs = models.LanguageCertificateTypeThrough.objects.none()
+        student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=user)
+        if student_detailed_info_qs.exists():
+            student_detailed_info = student_detailed_info_qs.first()
+            qs = models.LanguageCertificateTypeThrough.objects.filter(student_detailed_info=student_detailed_info)
+        return qs
+
+    @swagger_auto_schema(
+        request_body=request_serializer_class,
+        responses={200: serializer_class},
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
+
+class StudentDetailedLanguageCertificateTypeThroughRetrieveDestroyAPIView(custom_generic_apiviews.BaseRetrieveDestroyAPIView):
+    lookup_field = 'id'
+    queryset = models.LanguageCertificateTypeThrough.objects.all()
+    serializer_class = serializers.LanguageCertificateTypeThroughSerializer
+    permission_classes = [permissions.IsAuthenticated, IsLanguageCertificateTypeThroughOwner]

@@ -99,3 +99,15 @@ class IsUniversityThroughOwner(permissions.BasePermission):
         if user:
             return obj.student_detailed_info.user == user
         return False
+
+
+class IsLanguageCertificateTypeThroughOwner(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        if request.method == "OPTIONS":
+            return True
+
+        user = request.user
+        if user:
+            return obj.student_detailed_info.user == user
+        return False
