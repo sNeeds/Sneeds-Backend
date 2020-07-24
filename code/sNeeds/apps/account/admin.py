@@ -2,7 +2,6 @@ from django.contrib import admin
 
 from . import models
 
-admin.site.register(models.University)
 admin.site.register(models.FieldOfStudy)
 admin.site.register(models.Country)
 admin.site.register(models.FormGrade)
@@ -46,3 +45,9 @@ class StudentDetailedInfoAdmin(admin.ModelAdmin):
         PublicationInline,
     ]
     list_display = ['id', 'user']
+
+
+@admin.register(models.University)
+class UniversityAdmin(admin.ModelAdmin):
+    list_display = ['id', 'name', 'rank', 'is_college']
+    search_fields = ['name']
