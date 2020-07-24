@@ -1,4 +1,5 @@
 from rest_framework import permissions
+from django.contrib.auth.models import AnonymousUser
 
 from sNeeds.apps.account.models import StudentDetailedInfo, GMATCertificate
 from sNeeds.apps.storePackages.models import SoldStorePackage
@@ -19,7 +20,7 @@ class IsStudentPermission(permissions.BasePermission):
             return user.is_student()
 
 
-class StudentDetailedInfoOwnerOrInteractConsultantPermission(permissions.BasePermission):
+class StudentDetailedInfoOwnerOrInteractConsultantOrWithoutUserPermission(permissions.BasePermission):
     message = "Only owner can update and only owner and consultants that service the owner can see info"
 
     def has_object_permission(self, request, view, obj):
@@ -27,10 +28,15 @@ class StudentDetailedInfoOwnerOrInteractConsultantPermission(permissions.BasePer
             return True
 
         user = request.user
+
+        if obj.user is None:
+            return True
+
+        user = request.user
         if user:
             if obj.user == user:
                 return True
-            elif request.method == 'GET' and user.is_consultant():
+            elif request.method == 'GET' and user.is_authenticated and user.is_consultant():
                 """when user has bought a package, every consultant can see the form
                 and if had not bought package any other user can not see that. in this situation to let consultants that
                 had time slot with user to see the form uncommnet the qs_2 line"""
@@ -41,61 +47,103 @@ class StudentDetailedInfoOwnerOrInteractConsultantPermission(permissions.BasePer
                 return qs_2.exists()
 
 
-class IsGMATCertificateOwner(permissions.BasePermission):
+class IsGMATCertificateOwnerOrDetailedInfoWithoutUser(permissions.BasePermission):
+    message = "Only owner can view or edit object."
 
     def has_object_permission(self, request, view, obj):
         if request.method == "OPTIONS":
             return True
 
         user = request.user
-        if user:
+
+        if user and user.is_authenticated:
             return obj.student_detailed_info.user == user
+        if not user.is_authenticated:
+            return obj.student_detailed_info.user is None
+
         return False
 
 
-class IsGRECertificateOwner(permissions.BasePermission):
+class IsGRECertificateOwnerOrDetailedInfoWithoutUser(permissions.BasePermission):
+    message = "Only owner can view or edit object."
 
     def has_object_permission(self, request, view, obj):
         if request.method == "OPTIONS":
             return True
 
         user = request.user
-        if user:
+
+        if user and user.is_authenticated:
             return obj.student_detailed_info.user == user
+        if not user.is_authenticated:
+            return obj.student_detailed_info.user is None
+
         return False
 
 
-class IsPublicationOwner(permissions.BasePermission):
+class IsPublicationOwnerOrDetailedInfoWithoutUser(permissions.BasePermission):
+    message = "Only owner can view or edit object."
 
     def has_object_permission(self, request, view, obj):
         if request.method == "OPTIONS":
             return True
 
         user = request.user
-        if user:
+
+        if user and user.is_authenticated:
             return obj.student_detailed_info.user == user
+        if not user.is_authenticated:
+            return obj.student_detailed_info.user is None
+
         return False
 
 
-class IsWantToApplyOwner(permissions.BasePermission):
+class IsWantToApplyOwnerOrDetailedInfoWithoutUser(permissions.BasePermission):
+    message = "Only owner can view or edit object."
 
     def has_object_permission(self, request, view, obj):
         if request.method == "OPTIONS":
             return True
 
         user = request.user
-        if user:
+
+        if user and user.is_authenticated:
             return obj.student_detailed_info.user == user
+        if not user.is_authenticated:
+            return obj.student_detailed_info.user is None
+
         return False
 
 
-class IsUniversityThroughOwner(permissions.BasePermission):
+class IsUniversityThroughOwnerOrDetailedInfoWithoutUser(permissions.BasePermission):
+    message = "Only owner can view or edit object."
 
     def has_object_permission(self, request, view, obj):
         if request.method == "OPTIONS":
             return True
 
         user = request.user
-        if user:
+
+        if user and user.is_authenticated:
             return obj.student_detailed_info.user == user
+        if not user.is_authenticated:
+            return obj.student_detailed_info.user is None
+
+        return False
+
+
+class IsLanguageCertificateTypeThroughOwnerOrDetailedInfoWithoutUser(permissions.BasePermission):
+    message = "Only owner can view or edit object."
+
+    def has_object_permission(self, request, view, obj):
+        if request.method == "OPTIONS":
+            return True
+
+        user = request.user
+
+        if user and user.is_authenticated:
+            return obj.student_detailed_info.user == user
+        if not user.is_authenticated:
+            return obj.student_detailed_info.user is None
+
         return False

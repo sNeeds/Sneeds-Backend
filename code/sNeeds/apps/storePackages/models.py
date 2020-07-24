@@ -183,6 +183,9 @@ class SoldStorePackage(models.Model):
         self._update_paid_price()
         self._update_total_price()
 
+    class Meta:
+        ordering = ['-updated']
+
 
 class SoldStorePackagePhaseDetail(models.Model):
     title = models.CharField(max_length=1024, null=False, blank=False)
@@ -291,6 +294,9 @@ class ConsultantSoldStorePackageAcceptRequest(models.Model):
 
     class Meta:
         unique_together = ['sold_store_package', 'consultant']
+
+    def get_sold_store_package_sold_to(self):
+        return self.sold_store_package.sold_to
 
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):

@@ -2,11 +2,16 @@
 
 from django.db import migrations
 import enumfields.fields
+from enum import Enum
+
 import sNeeds.apps.notifications.models
 
 
-class Migration(migrations.Migration):
+class NotificationType(Enum):
+    sold_time_slot_reminder = 1
 
+
+class Migration(migrations.Migration):
     dependencies = [
         ('notifications', '0001_initial'),
     ]
@@ -19,7 +24,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='notification',
             name='user_type',
-            field=enumfields.fields.EnumIntegerField(default=None, enum=sNeeds.apps.notifications.models.NotificationType),
+            field=enumfields.fields.EnumIntegerField(default=None, enum=NotificationType),
             preserve_default=False,
         ),
     ]

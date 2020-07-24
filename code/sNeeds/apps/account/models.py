@@ -236,6 +236,7 @@ class StudentDetailedInfo(models.Model):
     user = models.OneToOneField(
         User,
         null=True,
+        blank=True,
         on_delete=models.CASCADE
     )
 
