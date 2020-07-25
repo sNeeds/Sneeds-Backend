@@ -46,5 +46,6 @@ urlpatterns = [
                   path('basic-product/', include('sNeeds.apps.basicProducts.urls')),
                   path('utils/', include('sNeeds.apps.customUtils.urls')),
                   path('custom-form/', include('sNeeds.apps.customForms.urls')),
+                  path('estimation/', include('sNeeds.apps.estimations.urls')),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
