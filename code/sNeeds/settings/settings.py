@@ -11,6 +11,7 @@ INSTALLED_APPS = [
     'polymorphic',  # For django-polymorphic
     'ckeditor',
     'advanced_filters',
+    'django_extensions',
 
     'sNeeds.apps.customAuth',
     'sNeeds.apps.account',
@@ -37,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.postgres',
 
     'dbbackup',
     'django_cleanup',  # should go after your apps

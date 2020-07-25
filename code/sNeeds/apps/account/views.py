@@ -1,5 +1,7 @@
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.postgres.search import SearchQuery, SearchRank, TrigramSimilarity
+from django.db.models.functions import Length
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, permissions
 
@@ -132,7 +134,8 @@ class BasicFormFieldListAPIView(custom_generic_apiviews.BaseListAPIView):
     serializer_class = BasicFormFieldSerializer
 
     def get_queryset(self):
-        query_form_fields = self.request.query_params.getlist('form_field', None)
+        request = self.request
+        query_form_fields = request.query_params.getlist('form_field', None)
         if len(query_form_fields) != 0:
             qs = BasicFormField.objects.none()
             for form_field in query_form_fields:
@@ -144,6 +147,27 @@ class BasicFormFieldListAPIView(custom_generic_apiviews.BaseListAPIView):
                     pass
         else:
             qs = self.queryset.none()
+
+        params = request.query_params.get('search', '')
+        search_terms = params.replace(',', ' ').split()
+
+        if not search_terms:
+            return qs
+
+        if len(search_terms) == 0:
+            return qs
+
+        search_term = search_terms[0]
+        search_term_phrase = search_term[:16]
+
+        result_qs = BasicFormField.objects.none()
+        for search_term in search_term_phrase.split(" "):
+            result_qs |= qs.annotate(similarity=TrigramSimilarity('name', search_term)).filter(similarity__gt=2.5/Length('name')).order_by('-similarity')
+        qs = result_qs
+        # search_query = SearchQuery(search_term_phrase, search_type='plain')
+        # base = qs
+        # qs = base.annotate(rank=SearchRank('name_search', search_query)).order_by('-rank')
+
         return qs
 
 

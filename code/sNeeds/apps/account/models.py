@@ -5,6 +5,10 @@ from django.core.validators import MinValueValidator, MaxValueValidator, FileExt
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
+from django.contrib.postgres.search import SearchVectorField
+from django.contrib.postgres.indexes import GinIndex
+
+
 from .validators import validate_resume_file_extension, validate_resume_file_size
 
 from . import validators
@@ -33,6 +37,10 @@ def get_student_resume_path(instance, filename):
 
 class BasicFormField(models.Model):
     name = models.CharField(max_length=256)
+    name_search = SearchVectorField(null=True)
+
+    class Meta:
+        indexes = [GinIndex(fields=["name_search"])]
 
     def __str__(self):
         return self.name
@@ -220,6 +228,8 @@ class Publication(models.Model):
         on_delete=models.PROTECT
     )
 
+    # impact_factor
+
     def __str__(self):
         return self.title
 
@@ -245,6 +255,16 @@ class StudentDetailedInfo(models.Model):
         null=True,
         blank=True,
     )
+
+    # gender = models.BooleanField(
+    #     null=True,
+    #     blank=True,
+    # )
+
+    # passed_military_service = models.BooleanField(
+    #     null=True,
+    #     blank=True
+    # )
 
     marital_status = models.ForeignKey(
         MaritalStatus,

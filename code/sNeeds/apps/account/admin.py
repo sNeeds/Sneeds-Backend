@@ -5,7 +5,6 @@ from . import models
 admin.site.register(models.University)
 admin.site.register(models.FieldOfStudy)
 admin.site.register(models.Country)
-admin.site.register(models.FormGrade)
 admin.site.register(models.FieldOfStudyType)
 admin.site.register(models.PublicationWhichAuthor)
 admin.site.register(models.MaritalStatus)
@@ -46,3 +45,8 @@ class StudentDetailedInfoAdmin(admin.ModelAdmin):
         PublicationInline,
     ]
     list_display = ['id', 'user']
+
+
+@admin.register(models.FormGrade)
+class StudentDetailedInfoAdmin(admin.ModelAdmin):
+    exclude = ['name_search']
