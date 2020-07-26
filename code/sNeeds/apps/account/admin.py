@@ -2,7 +2,6 @@ from django.contrib import admin
 
 from . import models
 
-admin.site.register(models.FieldOfStudy)
 admin.site.register(models.Country)
 admin.site.register(models.FieldOfStudyType)
 admin.site.register(models.PublicationWhichAuthor)
@@ -46,13 +45,19 @@ class StudentDetailedInfoAdmin(admin.ModelAdmin):
     list_display = ['id', 'user']
 
 
-
 @admin.register(models.FormGrade)
 class StudentDetailedInfoAdmin(admin.ModelAdmin):
     exclude = ['name_search']
+
 
 @admin.register(models.University)
 class UniversityAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'rank', 'is_college']
     search_fields = ['name']
 
+
+@admin.register(models.FieldOfStudy)
+class FieldOfStudyAdmin(admin.ModelAdmin):
+    list_display = ['id', 'name', 'major_type']
+    search_fields = ['name', ]
+    list_filter = ['major_type']
