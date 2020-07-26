@@ -16,7 +16,7 @@ from .permissions import IsStudentPermission,\
     IsLanguageCertificateTypeThroughOwnerOrDetailedInfoWithoutUser
 from .serializers import StudentDetailedInfoSerializer, StudentFormApplySemesterYearSerializer, \
     BasicFormFieldSerializer, StudentDetailedInfoRequestSerializer
-from ...utils.custom.views import custom_generic_apiviews
+from sNeeds.utils.custom.views import custom_generic_apiviews
 
 
 class CountryDetail(generics.RetrieveAPIView):

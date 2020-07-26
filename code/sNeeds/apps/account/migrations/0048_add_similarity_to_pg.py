@@ -30,5 +30,7 @@ class Migration(migrations.Migration):
     operations = [
         # NOTE: If permission denied error appeared use below sql
         # CREATE EXTENSION IF NOT EXISTS pg_trgm;
+        # Or use this sql before migration
+        # ALTER ROLE <user> SUPERUSER;
         migrations.RunSQL(migration, reverse_migration)
     ]

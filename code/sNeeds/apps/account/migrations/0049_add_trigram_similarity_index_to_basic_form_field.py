@@ -1,8 +1,11 @@
 from django.db import migrations
 
 """Due to optimization trigram similarity on basic for field
-https://www.postgresql.org/docs/9.1/sql-createindex.html
+https://www.postgresql.org/docs/9.6/pgtrgm.html
 https://www.postgresqltutorial.com/postgresql-indexes/postgresql-drop-index/
+
+For create automatically in future we can use the solution is mentioned here:
+https://stackoverflow.com/questions/44820345/creating-a-gin-index-with-trigram-gin-trgm-ops-in-django-model
 """
 
 
