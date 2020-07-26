@@ -17,7 +17,7 @@ from sNeeds.apps.account.models import University, FieldOfStudy, FieldOfStudyTyp
 class ListUsersAutoFixture(autofixture.AutoFixture):
     class Values:
         age = staticmethod(
-            lambda: None if random.randint(1, 3) < 2 else random.randint(16, 60)
+            lambda: None if random.randint(1, 3) < 2 else random.randint(16, 40)
         )
 
 
@@ -25,8 +25,9 @@ class ListUsers(APIView):
     @transaction.atomic
     def get(self, request, format=None):
         StudentDetailedInfo.objects.all().delete()
-        student_detailed_infos = autofixture.create(
-            'account.StudentDetailedInfo',
-            10,
-            field_values={'is_superuser': True}
-        )
+        ListUsersAutoFixture(StudentDetailedInfo).create(100)
+        # student_detailed_infos = autofixture.create(
+        #     'account.StudentDetailedInfo',
+        #     10,
+        #     field_values={'is_superuser': True}
+        # )

@@ -42,7 +42,7 @@ class StudentDetailedInfoAdmin(admin.ModelAdmin):
         WantToApplyInline,
         PublicationInline,
     ]
-    list_display = ['id', 'user']
+    list_display = ['id', 'user', 'age']
 
 
 @admin.register(models.FormGrade)

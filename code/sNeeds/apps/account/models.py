@@ -289,16 +289,9 @@ class StudentDetailedInfo(models.Model):
         blank=True,
     )
 
-    prefers_full_fund = models.BooleanField(default=False,
-                                            null=True,
-                                            blank=True, )
-    prefers_half_fund = models.BooleanField(default=False,
-                                            null=True,
-                                            blank=True, )
-    prefers_self_fund = models.BooleanField(default=False,
-                                            null=True,
-                                            blank=True,
-                                            )
+    prefers_full_fund = models.BooleanField(default=False)
+    prefers_half_fund = models.BooleanField(default=False)
+    prefers_self_fund = models.BooleanField(default=False)
 
     # Extra info
     comment = models.TextField(max_length=1024, null=True, blank=True)
