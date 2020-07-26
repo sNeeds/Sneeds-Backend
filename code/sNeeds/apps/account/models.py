@@ -10,7 +10,6 @@ from django.contrib.postgres.indexes import GinIndex
 from enumfields import Enum, EnumField
 
 from .validators import validate_resume_file_extension, validate_resume_file_size
-
 from . import validators
 
 User = get_user_model()
@@ -185,12 +184,7 @@ class WantToApply(models.Model):
         on_delete=models.PROTECT
     )
 
-    university = models.ForeignKey(
-        University,
-        on_delete=models.PROTECT,
-        null=True,
-        blank=True,
-    )
+    university = models.ManyToManyField(University)
 
     grade = EnumField(Grade, default=Grade.BACHELOR)
 
@@ -220,8 +214,8 @@ class Publication(models.Model):
         validators=[MinValueValidator(1900), MaxValueValidator(2100)],
         help_text="In Gregorian"
     )
-    which_author = EnumField(WhichAuthor, max_length=20,  default=WhichAuthor.FIRST)
-    type = EnumField(PublicationType, max_length=20,  default=PublicationType.JOURNAL)
+    which_author = EnumField(WhichAuthor, max_length=20, default=WhichAuthor.FIRST)
+    type = EnumField(PublicationType, max_length=20, default=PublicationType.JOURNAL)
 
     # impact_factor
 
