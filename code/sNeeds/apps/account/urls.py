@@ -60,12 +60,12 @@ urlpatterns = [
          views.StudentDetailedUniversityThroughRetrieveDestroyAPIView.as_view(),
          name="student-detailed-university-through-detail"),
 
-    path('student-detailed-language-certificate-type-throughs/',
-         views.StudentDetailedLanguageCertificateTypeThroughListCreateAPIView.as_view(),
-         name="student-detailed-language-certificate-type-through-list"),
-    path('student-detailed-language-certificate-type-throughs/<int:id>/',
-         views.StudentDetailedLanguageCertificateTypeThroughRetrieveDestroyAPIView.as_view(),
-         name="student-detailed-language-certificate-type-through-detail"),
+    # path('student-detailed-language-certificate-type-throughs/',
+    #      views.StudentDetailedLanguageCertificateTypeThroughListCreateAPIView.as_view(),
+    #      name="student-detailed-language-certificate-type-through-list"),
+    # path('student-detailed-language-certificate-type-throughs/<int:id>/',
+    #      views.StudentDetailedLanguageCertificateTypeThroughRetrieveDestroyAPIView.as_view(),
+    #      name="student-detailed-language-certificate-type-through-detail"),
 ]
 
 

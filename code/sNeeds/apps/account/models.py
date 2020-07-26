@@ -41,6 +41,34 @@ class PublicationType(Enum):
     CONFERENCE = 'کنفرانسی'
 
 
+class LanguageCertificateType(Enum):
+    IELTS = 'IELTS'
+    TOEFL = 'TOEFL'
+    GMAT = 'GMAT'
+    GRE = 'GRE'
+
+
+class PaymentAffordability(Enum):
+    LOW = 'کم'
+    MIDDLE = 'متوسط'
+    MUCH = 'زیاد'
+
+
+class Gender(Enum):
+    MALE = 'آقا'
+    FEMALE = 'خانم'
+
+
+class MilitaryServiceStatus(Enum):
+    PASSED = 'گذرانده شده'
+    UNDID = 'گذرانده نشده'
+
+
+class JournalReputation(Enum):
+    ONETOTHREE = 'از یک تا سه'
+    FOURTOTEN = 'از چهار تا ده'
+    ABOVETEN = 'بیشتر از ده'
+
 def current_year():
     return datetime.date.today().year
 
@@ -132,48 +160,6 @@ class StudentFormApplySemesterYear(models.Model):
         return str(self.year) + " " + self.semester
 
 
-class LanguageCertificateType(BasicFormField):
-    pass
-
-
-class GMATCertificate(models.Model):
-    student_detailed_info = models.ForeignKey(
-        'StudentDetailedInfo',
-        on_delete=models.CASCADE,
-    )
-    analytical_writing_assessment = models.DecimalField(
-        max_digits=5, decimal_places=2,
-        validators=[MinValueValidator(0.0), MaxValueValidator(6.00)],
-    )
-
-    integrated_reasoning = models.PositiveSmallIntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(8)],
-    )
-    quantitative_and_verbal = models.PositiveSmallIntegerField(
-        validators=[MinValueValidator(6), MaxValueValidator(51)],
-    )
-    total = models.PositiveSmallIntegerField(
-        validators=[MinValueValidator(200), MaxValueValidator(800)],
-    )
-
-
-class GRECertificate(models.Model):
-    student_detailed_info = models.ForeignKey(
-        'StudentDetailedInfo',
-        on_delete=models.CASCADE,
-    )
-    quantitative = models.PositiveSmallIntegerField(
-        validators=[MinValueValidator(130), MaxValueValidator(170)],
-    )
-    verbal = models.PositiveSmallIntegerField(
-        validators=[MinValueValidator(130), MaxValueValidator(170)],
-    )
-    analytical_writing = models.DecimalField(
-        max_digits=2, decimal_places=1,
-        validators=[MinValueValidator(0), MaxValueValidator(6)],
-    )
-
-
 class WantToApply(models.Model):
     student_detailed_info = models.ForeignKey(
         'StudentDetailedInfo',
@@ -184,7 +170,7 @@ class WantToApply(models.Model):
         on_delete=models.PROTECT
     )
 
-    university = models.ManyToManyField(University)
+    universities = models.ManyToManyField(University)
 
     grade = EnumField(Grade, default=Grade.BACHELOR)
 
@@ -217,14 +203,14 @@ class Publication(models.Model):
     which_author = EnumField(WhichAuthor, max_length=20, default=WhichAuthor.FIRST)
     type = EnumField(PublicationType, max_length=20, default=PublicationType.JOURNAL)
 
-    # impact_factor
+    journal_reputation = EnumField(
+        JournalReputation,
+        max_length=30,
+        null=True,
+    )
 
     def __str__(self):
         return self.title
-
-
-class PaymentAffordability(BasicFormField):
-    value = models.IntegerField()
 
 
 class StudentDetailedInfo(models.Model):
@@ -241,15 +227,16 @@ class StudentDetailedInfo(models.Model):
         blank=True,
     )
 
-    # gender = models.BooleanField(
-    #     null=True,
-    #     blank=True,
-    # )
+    gender = EnumField(
+        Gender,
+        default=Gender.MALE,
+    )
 
-    # passed_military_service = models.BooleanField(
-    #     null=True,
-    #     blank=True
-    # )
+    military_service_status = EnumField(
+        MilitaryServiceStatus,
+        default=MilitaryServiceStatus.UNDID,
+        max_length=30,
+    )
 
     is_married = models.BooleanField(
         default=None,
@@ -262,16 +249,10 @@ class StudentDetailedInfo(models.Model):
         through='UniversityThrough'
     )
 
-    language_certificates = models.ManyToManyField(
-        LanguageCertificateType,
-        through='LanguageCertificateTypeThrough'
-    )
-
-    payment_affordability = models.ForeignKey(
+    payment_affordability = EnumField(
         PaymentAffordability,
-        on_delete=models.PROTECT,
-        null=True,
-        blank=True,
+        default=PaymentAffordability.MIDDLE,
+        max_length=30,
     )
 
     prefers_full_fund = models.BooleanField(
@@ -366,17 +347,63 @@ class UniversityThrough(models.Model):
     )
 
 
-class LanguageCertificateTypeThrough(models.Model):
-    certificate_type = models.ForeignKey(
-        LanguageCertificateType,
-        on_delete=models.PROTECT
-    )
+class LanguageCertificate(models.Model):
+    certificate_type = None
     student_detailed_info = models.ForeignKey(
         StudentDetailedInfo,
         on_delete=models.CASCADE
+    )
+
+
+class RegularLanguageCertificate(LanguageCertificate):
+    certificate_type = EnumField(
+        LanguageCertificateType,
+        default=LanguageCertificateType.IELTS
     )
     speaking = models.DecimalField(max_digits=5, decimal_places=2)
     listening = models.DecimalField(max_digits=5, decimal_places=2)
     writing = models.DecimalField(max_digits=5, decimal_places=2)
     reading = models.DecimalField(max_digits=5, decimal_places=2)
     overall = models.DecimalField(max_digits=5, decimal_places=2)
+
+
+class GMATCertificate(LanguageCertificate):
+    certificate_type = EnumField(
+        LanguageCertificateType,
+        default=LanguageCertificateType.GMAT,
+    )
+
+    analytical_writing_assessment = models.DecimalField(
+        max_digits=5, decimal_places=2,
+        validators=[MinValueValidator(0.0), MaxValueValidator(6.00)],
+    )
+    integrated_reasoning = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(8)],
+    )
+    quantitative_and_verbal = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(6), MaxValueValidator(51)],
+    )
+    total = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(200), MaxValueValidator(800)],
+    )
+
+
+class GRECertificate(LanguageCertificate):
+    certificate_type = EnumField(
+        LanguageCertificateType,
+        default=LanguageCertificateType.GRE,
+    )
+
+    quantitative = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(130), MaxValueValidator(170)],
+    )
+    verbal = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(130), MaxValueValidator(170)],
+    )
+    analytical_writing = models.DecimalField(
+        max_digits=2, decimal_places=1,
+        validators=[MinValueValidator(0), MaxValueValidator(6)],
+    )
+
+
+

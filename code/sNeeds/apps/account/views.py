@@ -310,32 +310,32 @@ class StudentDetailedUniversityThroughRetrieveDestroyAPIView(custom_generic_apiv
     permission_classes = [IsUniversityThroughOwnerOrDetailedInfoWithoutUser]
 
 
-class StudentDetailedLanguageCertificateTypeThroughListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
-    queryset = models.LanguageCertificateTypeThrough.objects.all()
-    serializer_class = serializers.LanguageCertificateTypeThroughSerializer
-    request_serializer_class = serializers.LanguageCertificateTypeThroughRequestSerializer
-
-    def get_queryset(self):
-        user = self.request.user
-        qs = models.LanguageCertificateTypeThrough.objects.none()
-        if not user.is_authenticated:
-            return qs
-        student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=user)
-        if student_detailed_info_qs.exists():
-            student_detailed_info = student_detailed_info_qs.first()
-            qs = models.LanguageCertificateTypeThrough.objects.filter(student_detailed_info=student_detailed_info)
-        return qs
-
-    @swagger_auto_schema(
-        request_body=request_serializer_class,
-        responses={200: serializer_class},
-    )
-    def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
-
-
-class StudentDetailedLanguageCertificateTypeThroughRetrieveDestroyAPIView(custom_generic_apiviews.BaseRetrieveDestroyAPIView):
-    lookup_field = 'id'
-    queryset = models.LanguageCertificateTypeThrough.objects.all()
-    serializer_class = serializers.LanguageCertificateTypeThroughSerializer
-    permission_classes = [IsLanguageCertificateTypeThroughOwnerOrDetailedInfoWithoutUser]
+# class StudentDetailedLanguageCertificateTypeThroughListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
+#     queryset = models.LanguageCertificateTypeThrough.objects.all()
+#     serializer_class = serializers.LanguageCertificateTypeThroughSerializer
+#     request_serializer_class = serializers.LanguageCertificateTypeThroughRequestSerializer
+#
+#     def get_queryset(self):
+#         user = self.request.user
+#         qs = models.LanguageCertificateTypeThrough.objects.none()
+#         if not user.is_authenticated:
+#             return qs
+#         student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=user)
+#         if student_detailed_info_qs.exists():
+#             student_detailed_info = student_detailed_info_qs.first()
+#             qs = models.LanguageCertificateTypeThrough.objects.filter(student_detailed_info=student_detailed_info)
+#         return qs
+#
+#     @swagger_auto_schema(
+#         request_body=request_serializer_class,
+#         responses={200: serializer_class},
+#     )
+#     def post(self, request, *args, **kwargs):
+#         return super().post(request, *args, **kwargs)
+#
+#
+# class StudentDetailedLanguageCertificateTypeThroughRetrieveDestroyAPIView(custom_generic_apiviews.BaseRetrieveDestroyAPIView):
+#     lookup_field = 'id'
+#     queryset = models.LanguageCertificateTypeThrough.objects.all()
+#     serializer_class = serializers.LanguageCertificateTypeThroughSerializer
+#     permission_classes = [IsLanguageCertificateTypeThroughOwnerOrDetailedInfoWithoutUser]

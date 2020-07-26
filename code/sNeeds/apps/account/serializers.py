@@ -5,8 +5,8 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 from rest_framework.validators import ValidationError
 from . import models
-from .models import StudentDetailedInfo, StudentFormApplySemesterYear, BasicFormField, University, \
-    LanguageCertificateTypeThrough, WantToApply, Publication, UniversityThrough, GRECertificate, GMATCertificate
+from .models import StudentDetailedInfo, StudentFormApplySemesterYear, BasicFormField, University,\
+    WantToApply, Publication, UniversityThrough, GRECertificate, GMATCertificate
 
 User = get_user_model()
 
@@ -277,57 +277,57 @@ class UniversityThroughRequestSerializer(serializers.ModelSerializer):
         return attrs
 
 
-class LanguageCertificateTypeThroughSerializer(serializers.ModelSerializer):
-    certificate_type = BasicFormFieldSerializer()
+# class LanguageCertificateTypeThroughSerializer(serializers.ModelSerializer):
+#     certificate_type = BasicFormFieldSerializer()
+#
+#     class Meta:
+#         model = models.LanguageCertificateTypeThrough
+#         fields = [
+#             'id', 'certificate_type', 'student_detailed_info',
+#             'speaking', 'listening', 'writing', 'reading', 'overall',
+#         ]
+#
+#     def create(self, validated_data):
+#         raise ValidationError(_("Creating object through this serializer is not allowed"))
 
-    class Meta:
-        model = models.LanguageCertificateTypeThrough
-        fields = [
-            'id', 'certificate_type', 'student_detailed_info',
-            'speaking', 'listening', 'writing', 'reading', 'overall',
-        ]
 
-    def create(self, validated_data):
-        raise ValidationError(_("Creating object through this serializer is not allowed"))
-
-
-class LanguageCertificateTypeThroughRequestSerializer(serializers.ModelSerializer):
-    certificate_type = serializers.PrimaryKeyRelatedField(
-        queryset=models.LanguageCertificateType.objects.all(),
-        pk_field=serializers.IntegerField(label='id'),
-        allow_null=False,
-        allow_empty=False,
-        required=True,
-    )
-
-    student_detailed_info = serializers.PrimaryKeyRelatedField(
-        queryset=models.StudentDetailedInfo.objects.all(),
-        pk_field=serializers.IntegerField(label='id'),
-        allow_null=False,
-        allow_empty=False,
-        required=True,
-    )
-
-    class Meta:
-        model = models.LanguageCertificateTypeThrough
-        fields = [
-            'id', 'certificate_type', 'student_detailed_info',
-            'speaking', 'listening', 'writing', 'reading', 'overall',
-        ]
-
-    def validate(self, attrs):
-        request_user = None
-        request = self.context.get("request")
-        if request and hasattr(request, "user"):
-            request_user = request.user
-            student_detailed_info = attrs.get("student_detailed_info")
-            if student_detailed_info.user is not None and student_detailed_info.user != request_user:
-                raise ValidationError(_("User can't set student_detailed_info of another user."))
-            if student_detailed_info.user is None and request_user.is_authenticated:
-                raise ValidationError(_("User can't set student_detailed_info of another user."))
-        else:
-            raise ValidationError(_("Can't validate data.Can't get request user."))
-        return attrs
+# class LanguageCertificateTypeThroughRequestSerializer(serializers.ModelSerializer):
+#     certificate_type = serializers.PrimaryKeyRelatedField(
+#         queryset=models.LanguageCertificateType.objects.all(),
+#         pk_field=serializers.IntegerField(label='id'),
+#         allow_null=False,
+#         allow_empty=False,
+#         required=True,
+#     )
+#
+#     student_detailed_info = serializers.PrimaryKeyRelatedField(
+#         queryset=models.StudentDetailedInfo.objects.all(),
+#         pk_field=serializers.IntegerField(label='id'),
+#         allow_null=False,
+#         allow_empty=False,
+#         required=True,
+#     )
+#
+#     class Meta:
+#         model = models.LanguageCertificateTypeThrough
+#         fields = [
+#             'id', 'certificate_type', 'student_detailed_info',
+#             'speaking', 'listening', 'writing', 'reading', 'overall',
+#         ]
+#
+#     def validate(self, attrs):
+#         request_user = None
+#         request = self.context.get("request")
+#         if request and hasattr(request, "user"):
+#             request_user = request.user
+#             student_detailed_info = attrs.get("student_detailed_info")
+#             if student_detailed_info.user is not None and student_detailed_info.user != request_user:
+#                 raise ValidationError(_("User can't set student_detailed_info of another user."))
+#             if student_detailed_info.user is None and request_user.is_authenticated:
+#                 raise ValidationError(_("User can't set student_detailed_info of another user."))
+#         else:
+#             raise ValidationError(_("Can't validate data.Can't get request user."))
+#         return attrs
 
 
 class GMATCertificateSerializer(serializers.ModelSerializer):
@@ -386,7 +386,7 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
     payment_affordability = BasicFormFieldSerializer()
 
     universities = serializers.SerializerMethodField()
-    language_certificates = serializers.SerializerMethodField()
+    # language_certificates = serializers.SerializerMethodField()
     want_to_applies = serializers.SerializerMethodField()
     publications = serializers.SerializerMethodField()
 
@@ -415,9 +415,9 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
         qs = UniversityThrough.objects.filter(student_detailed_info_id=obj.id)
         return UniversityThroughSerializer(qs, many=True, context=self.context).data
 
-    def get_language_certificates(self, obj):
-        qs = LanguageCertificateTypeThrough.objects.filter(student_detailed_info_id=obj.id)
-        return LanguageCertificateTypeThroughSerializer(qs, many=True, context=self.context).data
+    # def get_language_certificates(self, obj):
+    #     qs = LanguageCertificateTypeThrough.objects.filter(student_detailed_info_id=obj.id)
+    #     return LanguageCertificateTypeThroughSerializer(qs, many=True, context=self.context).data
 
     def get_want_to_applies(self, obj):
         qs = WantToApply.objects.filter(student_detailed_info_id=obj.id)
@@ -432,13 +432,13 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
 
 
 class StudentDetailedInfoRequestSerializer(serializers.ModelSerializer):
-    payment_affordability = serializers.PrimaryKeyRelatedField(
-        queryset=models.PaymentAffordability.objects.all(),
-        pk_field=serializers.IntegerField(label='id'),
-        allow_null=True,
-        allow_empty=True,
-        required=False,
-    )
+    # payment_affordability = serializers.PrimaryKeyRelatedField(
+    #     queryset=models.PaymentAffordability.objects.all(),
+    #     pk_field=serializers.IntegerField(label='id'),
+    #     allow_null=True,
+    #     allow_empty=True,
+    #     required=False,
+    # )
 
     class Meta:
         model = StudentDetailedInfo
