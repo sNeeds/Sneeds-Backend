@@ -5,7 +5,6 @@ from . import models
 admin.site.register(models.Country)
 admin.site.register(models.FieldOfStudyType)
 admin.site.register(models.PublicationWhichAuthor)
-admin.site.register(models.MaritalStatus)
 admin.site.register(models.PaymentAffordability)
 admin.site.register(models.Publication)
 admin.site.register(models.PublicationType)

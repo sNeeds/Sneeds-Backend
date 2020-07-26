@@ -237,9 +237,6 @@ class PaymentAffordability(BasicFormField):
     value = models.IntegerField()
 
 
-class MaritalStatus(BasicFormField):
-    pass
-
 
 class StudentDetailedInfo(models.Model):
     user = models.OneToOneField(
@@ -265,11 +262,10 @@ class StudentDetailedInfo(models.Model):
     #     blank=True
     # )
 
-    marital_status = models.ForeignKey(
-        MaritalStatus,
-        on_delete=models.PROTECT,
+    is_married = models.BooleanField(
+        default=None,
         null=True,
-        blank=True,
+        blank=True
     )
 
     universities = models.ManyToManyField(
@@ -289,9 +285,21 @@ class StudentDetailedInfo(models.Model):
         blank=True,
     )
 
-    prefers_full_fund = models.BooleanField(default=False)
-    prefers_half_fund = models.BooleanField(default=False)
-    prefers_self_fund = models.BooleanField(default=False)
+    prefers_full_fund = models.BooleanField(
+        default=None,
+        null=True,
+        blank=True
+    )
+    prefers_half_fund = models.BooleanField(
+        default=None,
+        null=True,
+        blank=True
+    )
+    prefers_self_fund = models.BooleanField(
+        default=None,
+        null=True,
+        blank=True
+    )
 
     # Extra info
     comment = models.TextField(max_length=1024, null=True, blank=True)

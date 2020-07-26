@@ -414,7 +414,7 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
     gre_certificate = serializers.SerializerMethodField()
     gmat_certificate = serializers.SerializerMethodField()
 
-    marital_status = BasicFormFieldSerializer()
+    is_married = BasicFormFieldSerializer()
     payment_affordability = BasicFormFieldSerializer()
 
     universities = serializers.SerializerMethodField()
@@ -426,7 +426,7 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
         model = StudentDetailedInfo
         fields = [
             'id', 'user',
-            'age', 'marital_status',
+            'age', 'is_married',
             'universities', 'want_to_applies', 'publications',
             'language_certificates', 'gre_certificate', 'gmat_certificate',
             'payment_affordability', 'prefers_full_fund', 'prefers_half_fund', 'prefers_self_fund',
@@ -464,14 +464,6 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
 
 
 class StudentDetailedInfoRequestSerializer(serializers.ModelSerializer):
-    marital_status = serializers.PrimaryKeyRelatedField(
-        queryset=models.MaritalStatus.objects.all(),
-        pk_field=serializers.IntegerField(label='id'),
-        allow_null=True,
-        allow_empty=True,
-        required=False,
-    )
-
     payment_affordability = serializers.PrimaryKeyRelatedField(
         queryset=models.PaymentAffordability.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
@@ -484,7 +476,7 @@ class StudentDetailedInfoRequestSerializer(serializers.ModelSerializer):
         model = StudentDetailedInfo
         fields = [
             'id', 'user',
-            'age', 'marital_status',
+            'age', 'is_married',
             'payment_affordability', 'prefers_full_fund', 'prefers_half_fund', 'prefers_self_fund',
             'comment', 'resume', 'related_work_experience', 'academic_break', 'olympiad', 'powerful_recommendation',
             'linkedin_url', 'homepage_url',
