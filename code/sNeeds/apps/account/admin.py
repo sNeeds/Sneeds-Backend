@@ -3,11 +3,10 @@ from django.contrib import admin
 from . import models
 
 admin.site.register(models.Country)
+admin.site.register(models.UniversityThrough)
 admin.site.register(models.FieldOfStudyType)
-admin.site.register(models.PublicationWhichAuthor)
 admin.site.register(models.PaymentAffordability)
 admin.site.register(models.Publication)
-admin.site.register(models.PublicationType)
 admin.site.register(models.LanguageCertificateType)
 admin.site.register(models.GRECertificate)
 admin.site.register(models.GMATCertificate)
@@ -41,12 +40,7 @@ class StudentDetailedInfoAdmin(admin.ModelAdmin):
         WantToApplyInline,
         PublicationInline,
     ]
-    list_display = ['id', 'user', 'age']
-
-
-@admin.register(models.FormGrade)
-class FormGradeAdmin(admin.ModelAdmin):
-    exclude = ['name_search']
+    list_display = ['id', 'user', 'age', 'is_married']
 
 
 @admin.register(models.University)

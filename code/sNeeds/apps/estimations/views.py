@@ -11,7 +11,8 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from sNeeds.apps.account.models import University, FieldOfStudy, FieldOfStudyType, StudentDetailedInfo
+from sNeeds.apps.account.models import University, FieldOfStudy, FieldOfStudyType, StudentDetailedInfo, \
+    UniversityThrough
 
 
 class ListUsersAutoFixture(autofixture.AutoFixture):
@@ -19,15 +20,17 @@ class ListUsersAutoFixture(autofixture.AutoFixture):
         age = staticmethod(
             lambda: None if random.randint(1, 3) < 2 else random.randint(16, 40)
         )
+        is_married = staticmethod(
+            lambda: None if random.randint(1, 3) < 2 else random.randint(0, 1)
+        )
+
 
 
 class ListUsers(APIView):
     @transaction.atomic
     def get(self, request, format=None):
+        UniversityThrough.objects.all().delete()
         StudentDetailedInfo.objects.all().delete()
+
         ListUsersAutoFixture(StudentDetailedInfo).create(100)
-        # student_detailed_infos = autofixture.create(
-        #     'account.StudentDetailedInfo',
-        #     10,
-        #     field_values={'is_superuser': True}
-        # )
+        ListUsersAutoFixture(UniversityThrough).create(250)

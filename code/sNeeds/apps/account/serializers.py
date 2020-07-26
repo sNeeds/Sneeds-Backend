@@ -135,13 +135,6 @@ class WantToApplyRequestSerializer(serializers.ModelSerializer):
         allow_empty=True,
         required=False,
     )
-    grade = serializers.PrimaryKeyRelatedField(
-        queryset=models.FormGrade.objects.all(),
-        pk_field=serializers.IntegerField(label='id'),
-        allow_null=True,
-        allow_empty=True,
-        required=False,
-    )
     major = serializers.PrimaryKeyRelatedField(
         queryset=models.FieldOfStudy.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
@@ -203,22 +196,6 @@ class PublicationRequestSerializer(serializers.ModelSerializer):
         required=True,
     )
 
-    which_author = serializers.PrimaryKeyRelatedField(
-        queryset=models.PublicationWhichAuthor.objects.all(),
-        pk_field=serializers.IntegerField(label='id'),
-        allow_null=False,
-        allow_empty=False,
-        required=True,
-    )
-
-    type = serializers.PrimaryKeyRelatedField(
-        queryset=models.PublicationType.objects.all(),
-        pk_field=serializers.IntegerField(label='id'),
-        allow_null=False,
-        allow_empty=False,
-        required=True,
-    )
-
     class Meta:
         model = models.Publication
         fields = [
@@ -271,15 +248,6 @@ class UniversityThroughRequestSerializer(serializers.ModelSerializer):
         allow_empty=False,
         required=True,
     )
-
-    grade = serializers.PrimaryKeyRelatedField(
-        queryset=models.FormGrade.objects.all(),
-        pk_field=serializers.IntegerField(label='id'),
-        allow_null=False,
-        allow_empty=False,
-        required=True,
-    )
-
     major = serializers.PrimaryKeyRelatedField(
         queryset=models.FieldOfStudy.objects.all(),
         pk_field=serializers.IntegerField(label='id'),

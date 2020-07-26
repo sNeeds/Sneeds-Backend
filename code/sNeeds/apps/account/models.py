@@ -7,6 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
 from django.contrib.postgres.search import SearchVectorField
 from django.contrib.postgres.indexes import GinIndex
+from enumfields import Enum, EnumField
 
 from .validators import validate_resume_file_extension, validate_resume_file_size
 
@@ -20,6 +21,25 @@ SEMESTER_CHOICES = [
     ('fall', 'پاییز‍'),
     ('winter', 'زمستان'),
 ]
+
+
+class Grade(Enum):
+    BACHELOR = 'کارشناسی'
+    MASTER = 'ارشد'
+    PHD = 'دکتری'
+    POST_DOC = 'پست دکتری'
+
+
+class WhichAuthor(Enum):
+    FIRST = 'نویسنده اول'
+    SECOND = 'نویسنده دوم'
+    THIRD = 'نویسنده سوم'
+    FOURTH_OR_MORE = 'نویسنده چهارم به بعد'
+
+
+class PublicationType(Enum):
+    JOURNAL = 'ژورنالی'
+    CONFERENCE = 'کنفرانسی'
 
 
 def current_year():
@@ -113,10 +133,6 @@ class StudentFormApplySemesterYear(models.Model):
         return str(self.year) + " " + self.semester
 
 
-class FormGrade(BasicFormField):
-    pass
-
-
 class LanguageCertificateType(BasicFormField):
     pass
 
@@ -176,12 +192,7 @@ class WantToApply(models.Model):
         blank=True,
     )
 
-    grade = models.ForeignKey(
-        FormGrade,
-        on_delete=models.PROTECT,
-        null=True,
-        blank=True,
-    )
+    grade = EnumField(Grade)
 
     major = models.ForeignKey(
         FieldOfStudy,
@@ -199,33 +210,18 @@ class WantToApply(models.Model):
         return str(self.country)
 
 
-class PublicationType(BasicFormField):
-    value = models.IntegerField()
-
-
-class PublicationWhichAuthor(BasicFormField):
-    value = models.IntegerField()
-
-
 class Publication(models.Model):
     student_detailed_info = models.ForeignKey(
         'StudentDetailedInfo',
         on_delete=models.CASCADE
     )
-
     title = models.CharField(max_length=512)
     publish_year = models.SmallIntegerField(
         validators=[MinValueValidator(1900), MaxValueValidator(2100)],
         help_text="In Gregorian"
     )
-    which_author = models.ForeignKey(
-        PublicationWhichAuthor,
-        on_delete=models.PROTECT,
-    )
-    type = models.ForeignKey(
-        PublicationType,
-        on_delete=models.PROTECT
-    )
+    which_author = EnumField(WhichAuthor, max_length=20)
+    type = EnumField(PublicationType, max_length=20)
 
     # impact_factor
 
@@ -235,7 +231,6 @@ class Publication(models.Model):
 
 class PaymentAffordability(BasicFormField):
     value = models.IntegerField()
-
 
 
 class StudentDetailedInfo(models.Model):
@@ -356,9 +351,7 @@ class UniversityThrough(models.Model):
         StudentDetailedInfo,
         on_delete=models.CASCADE
     )
-    grade = models.ForeignKey(
-        FormGrade, on_delete=models.PROTECT
-    )
+    grade = EnumField(Grade)
     major = models.ForeignKey(
         FieldOfStudy, on_delete=models.PROTECT
     )
