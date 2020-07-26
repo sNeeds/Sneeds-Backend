@@ -46,7 +46,7 @@ class StudentDetailedInfoAdmin(admin.ModelAdmin):
 
 
 @admin.register(models.FormGrade)
-class StudentDetailedInfoAdmin(admin.ModelAdmin):
+class FormGradeAdmin(admin.ModelAdmin):
     exclude = ['name_search']
 
 

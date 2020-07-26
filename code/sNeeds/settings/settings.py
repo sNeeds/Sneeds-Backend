@@ -12,6 +12,7 @@ INSTALLED_APPS = [
     'ckeditor',
     'advanced_filters',
     'django_extensions',
+    'autofixture',
 
     'sNeeds.apps.customAuth',
     'sNeeds.apps.account',

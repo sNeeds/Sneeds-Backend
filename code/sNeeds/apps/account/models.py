@@ -8,7 +8,6 @@ from django.contrib.auth import get_user_model
 from django.contrib.postgres.search import SearchVectorField
 from django.contrib.postgres.indexes import GinIndex
 
-
 from .validators import validate_resume_file_extension, validate_resume_file_size
 
 from . import validators
