@@ -93,7 +93,7 @@ class FieldOfStudy(models.Model):
     )
 
     class Meta:
-        ordering = ["name"]
+        ordering = ["major_type"]
 
     def __str__(self):
         self.name = self.name
