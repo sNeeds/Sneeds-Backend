@@ -1,5 +1,9 @@
 import csv
 import os
+import random
+
+import autofixture
+from autofixture import generators
 
 from django.db import transaction
 from rest_framework import status, generics, mixins, permissions
@@ -7,18 +11,23 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from sNeeds.apps.account.models import University
+from sNeeds.apps.account.models import University, FieldOfStudy, FieldOfStudyType, StudentDetailedInfo
+
+
+class ListUsersAutoFixture(autofixture.AutoFixture):
+    class Values:
+        age = staticmethod(
+            lambda: None if random.randint(1, 3) < 2 else random.randint(16, 40)
+        )
 
 
 class ListUsers(APIView):
     @transaction.atomic
     def get(self, request, format=None):
-        path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'estimations/universities.csv')
-
-        with open(path) as f:
-            reader = csv.reader(f)
-            for row in reader:
-                _, created = University.objects.get_or_create(
-                    name=row[0],
-                    rank=int(row[1]),
-                )
+        StudentDetailedInfo.objects.all().delete()
+        ListUsersAutoFixture(StudentDetailedInfo).create(100)
+        # student_detailed_infos = autofixture.create(
+        #     'account.StudentDetailedInfo',
+        #     10,
+        #     field_values={'is_superuser': True}
+        # )
