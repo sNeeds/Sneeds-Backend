@@ -8,20 +8,20 @@ import sNeeds.apps.account.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('account', '0053_auto_20200726_1940'),
+        ('account', '0054_auto_20200726_1940'),
     ]
 
     operations = [
         migrations.AddField(
             model_name='universitythrough',
             name='grade',
-            field=enumfields.fields.EnumField(default=None, enum=sNeeds.apps.account.models.Grade, max_length=10),
+            field=enumfields.fields.EnumField(null=True, default=None, enum=sNeeds.apps.account.models.Grade, max_length=10),
             preserve_default=False,
         ),
         migrations.AddField(
             model_name='wanttoapply',
             name='grade',
-            field=enumfields.fields.EnumField(default=None, enum=sNeeds.apps.account.models.Grade, max_length=10),
+            field=enumfields.fields.EnumField(null=True, default=None, enum=sNeeds.apps.account.models.Grade, max_length=10),
             preserve_default=False,
         ),
     ]

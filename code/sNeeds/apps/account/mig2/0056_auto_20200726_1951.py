@@ -8,13 +8,16 @@ import sNeeds.apps.account.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('account', '0055_auto_20200726_1951'),
+        ('account', '0055_auto_20200726_1945'),
     ]
 
     operations = [
         migrations.AlterField(
             model_name='publication',
             name='which_author',
-            field=enumfields.fields.EnumField(enum=sNeeds.apps.account.models.WhichAuthor, max_length=20),
+            field=enumfields.fields.EnumField(enum=sNeeds.apps.account.models.WhichAuthor, max_length=10),
+        ),
+        migrations.DeleteModel(
+            name='PublicationWhichAuthor',
         ),
     ]

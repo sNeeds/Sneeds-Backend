@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('account', '0049_add_trigram_similarity_index_to_basic_form_field'),
+        ('account', '0050_auto_20200726_1900'),
     ]
 
     operations = [

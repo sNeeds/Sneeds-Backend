@@ -192,7 +192,7 @@ class WantToApply(models.Model):
         blank=True,
     )
 
-    grade = EnumField(Grade)
+    grade = EnumField(Grade, default=Grade.BACHELOR)
 
     major = models.ForeignKey(
         FieldOfStudy,
@@ -220,8 +220,8 @@ class Publication(models.Model):
         validators=[MinValueValidator(1900), MaxValueValidator(2100)],
         help_text="In Gregorian"
     )
-    which_author = EnumField(WhichAuthor, max_length=20)
-    type = EnumField(PublicationType, max_length=20)
+    which_author = EnumField(WhichAuthor, max_length=20,  default=WhichAuthor.FIRST)
+    type = EnumField(PublicationType, max_length=20,  default=PublicationType.JOURNAL)
 
     # impact_factor
 
@@ -351,7 +351,7 @@ class UniversityThrough(models.Model):
         StudentDetailedInfo,
         on_delete=models.CASCADE
     )
-    grade = EnumField(Grade)
+    grade = EnumField(Grade, default=Grade.BACHELOR)
     major = models.ForeignKey(
         FieldOfStudy, on_delete=models.PROTECT
     )
