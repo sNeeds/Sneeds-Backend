@@ -25,6 +25,7 @@ class LanguageCertificateTypeThroughInline(admin.TabularInline):
 class WantToApplyInline(admin.TabularInline):
     model = models.WantToApply
     extra = 1
+    filter_horizontal = ['university']
 
 
 class PublicationInline(admin.TabularInline):

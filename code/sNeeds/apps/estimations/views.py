@@ -52,4 +52,5 @@ class ListUsers(APIView):
 
         ListUsersAutoFixture(StudentDetailedInfo).create(100)
         ListUsersAutoFixture(UniversityThrough).create(250)
-        ListUsersAutoFixture(WantToApply).create(200)
+        ListUsersAutoFixture(WantToApply, follow_m2m={'university': (1, 10)}).create(100)
+        ListUsersAutoFixture(WantToApply, follow_m2m={'university': (0, 0)}).create(50)

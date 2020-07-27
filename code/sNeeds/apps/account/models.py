@@ -200,9 +200,6 @@ class WantToApply(models.Model):
         on_delete=models.PROTECT,
     )
 
-    def __str__(self):
-        return str(self.country)
-
 
 class Publication(models.Model):
     student_detailed_info = models.ForeignKey(
