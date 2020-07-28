@@ -9,12 +9,8 @@ from django.contrib.postgres.search import SearchVectorField
 from django.contrib.postgres.indexes import GinIndex
 from enumfields import Enum, EnumField
 
-<<<<<<< HEAD
 from .managers import UniversityThroughQuerySetManager
-from .validators import validate_resume_file_extension, validate_resume_file_size
-=======
 from .validators import validate_resume_file_extension, validate_resume_file_size, ten_factor_validator
->>>>>>> 4d67d75049368442d36ca424103c861c9ab2c965
 from . import validators
 
 User = get_user_model()
@@ -347,10 +343,9 @@ class UniversityThrough(models.Model):
         decimal_places=2
 
     )
+    objects = UniversityThroughQuerySetManager.as_manager()
 
     class Meta:
-        objects = UniversityThroughQuerySetManager.as_manager()
-
         unique_together = ['student_detailed_info', 'grade']
 
 

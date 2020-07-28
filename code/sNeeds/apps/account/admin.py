@@ -23,7 +23,7 @@ class UniversityThroughInline(admin.TabularInline):
 class WantToApplyInline(admin.TabularInline):
     model = models.WantToApply
     extra = 1
-    filter_horizontal = ['university']
+    filter_horizontal = ['universities']
 
 
 class PublicationInline(admin.TabularInline):
