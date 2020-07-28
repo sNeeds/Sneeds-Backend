@@ -47,8 +47,11 @@ class StudentDetailedFormReview:
 
         data = {}
 
-        # TODO: PHD remained
-        if last_grade_university == Grade.MASTER:
+        if last_grade_university == Grade.PHD:
+            # TODO: PHD remained
+            pass
+
+        elif last_grade_university == Grade.MASTER:
             if last_grade_university.university.rank < 850:
                 data['دانشگاه ارشد'] = MASTER_LAST_GRADE_TOP_850_COMMENTS
                 if last_grade_university.gpa <= 14:
@@ -81,6 +84,9 @@ class StudentDetailedFormReview:
                     data['معدل ارشد'] = MASTER_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_BETWEEN_16_18
                 if 18 < last_grade_university.gpa:
                     data['معدل ارشد'] = MASTER_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_ABOVE_18
+
+            if university_through.objects.get_bachelors().exists():
+                university_through.objects.get_bachelors()
 
 
     def review_student_detailed_form(self, form):
