@@ -9,7 +9,7 @@ from . import fields
 
 from . import models
 from .models import StudentDetailedInfo, StudentFormApplySemesterYear, BasicFormField, University, \
-    WantToApply, Publication, UniversityThrough, LanguageCertificateType
+    WantToApply, Publication, UniversityThrough, LanguageCertificateType, Grade, WhichAuthor
 
 User = get_user_model()
 
@@ -101,7 +101,7 @@ class BasicFormFieldSerializer(serializers.ModelSerializer):
 class WantToApplySerializer(serializers.ModelSerializer):
     country = CountrySerializer()
     university = UniversitySerializer()
-    grade = BasicFormFieldSerializer()
+    grade = fields.EnumField(enum=Grade)
     major = BasicFormFieldSerializer()
     semester_year = StudentFormApplySemesterYearSerializer()
 
@@ -138,6 +138,9 @@ class WantToApplyRequestSerializer(serializers.ModelSerializer):
         allow_empty=True,
         required=False,
     )
+
+    grade = fields.EnumField(enum=Grade)
+
     major = serializers.PrimaryKeyRelatedField(
         queryset=models.FieldOfStudy.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
@@ -177,13 +180,14 @@ class WantToApplyRequestSerializer(serializers.ModelSerializer):
 
 
 class PublicationSerializer(serializers.ModelSerializer):
-    which_author = BasicFormFieldSerializer()
-    type = BasicFormFieldSerializer()
+    which_author = fields.EnumField(enum=models.WhichAuthor)
+    type = fields.EnumField(enum=models.PublicationType)
+    journal_reputation = fields.EnumField(enum=models.JournalReputation)
 
     class Meta:
         model = models.Publication
         fields = [
-            'id', 'student_detailed_info', 'title', 'publish_year', 'which_author', 'type',
+            'id', 'student_detailed_info', 'title', 'publish_year', 'which_author', 'type','journal_reputation',
         ]
 
     def create(self, validated_data):
@@ -199,10 +203,14 @@ class PublicationRequestSerializer(serializers.ModelSerializer):
         required=True,
     )
 
+    which_author = fields.EnumField(enum=models.WhichAuthor)
+    type = fields.EnumField(enum=models.PublicationType)
+    journal_reputation = fields.EnumField(enum=models.JournalReputation)
+
     class Meta:
         model = models.Publication
         fields = [
-            'id', 'student_detailed_info', 'title', 'publish_year', 'which_author', 'type',
+            'id', 'student_detailed_info', 'title', 'publish_year', 'which_author', 'type', 'journal_reputation',
         ]
 
     def validate(self, attrs):
@@ -222,7 +230,7 @@ class PublicationRequestSerializer(serializers.ModelSerializer):
 
 class UniversityThroughSerializer(serializers.ModelSerializer):
     university = BasicFormFieldSerializer()
-    grade = BasicFormFieldSerializer()
+    grade = fields.EnumField(enum=models.Grade)
     major = BasicFormFieldSerializer()
 
     class Meta:
@@ -258,6 +266,8 @@ class UniversityThroughRequestSerializer(serializers.ModelSerializer):
         allow_empty=False,
         required=True,
     )
+
+    grade = fields.EnumField(enum=models.Grade)
 
     class Meta:
         model = models.UniversityThrough
@@ -367,12 +377,15 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
     # gmat_certificate = serializers.SerializerMethodField()
 
     is_married = BasicFormFieldSerializer()
-    payment_affordability = BasicFormFieldSerializer()
 
     universities = serializers.SerializerMethodField()
     # language_certificates = serializers.SerializerMethodField()
     want_to_applies = serializers.SerializerMethodField()
     publications = serializers.SerializerMethodField()
+
+    payment_affordability = fields.EnumField(enum=models.PaymentAffordability)
+    gender = fields.EnumField(enum=models.Gender)
+    military_service_status = fields.EnumField(enum=models.MilitaryServiceStatus)
 
     class Meta:
         model = StudentDetailedInfo
@@ -380,8 +393,9 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
             'id', 'user',
             'age', 'is_married',
             'universities', 'want_to_applies', 'publications',
+            'payment_affordability', 'gender', 'military_service_status',
             # 'language_certificates', 'gre_certificate', 'gmat_certificate',
-            'payment_affordability', 'prefers_full_fund', 'prefers_half_fund', 'prefers_self_fund',
+            'prefers_full_fund', 'prefers_half_fund', 'prefers_self_fund',
             'comment', 'resume', 'related_work_experience', 'academic_break', 'olympiad', 'powerful_recommendation',
             'linkedin_url', 'homepage_url',
             'created', 'updated',
@@ -416,20 +430,17 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
 
 
 class StudentDetailedInfoRequestSerializer(serializers.ModelSerializer):
-    # payment_affordability = serializers.PrimaryKeyRelatedField(
-    #     queryset=models.PaymentAffordability.objects.all(),
-    #     pk_field=serializers.IntegerField(label='id'),
-    #     allow_null=True,
-    #     allow_empty=True,
-    #     required=False,
-    # )
+    payment_affordability = fields.EnumField(enum=models.PaymentAffordability)
+    gender = fields.EnumField(enum=models.Gender)
+    military_service_status = fields.EnumField(enum=models.MilitaryServiceStatus)
 
     class Meta:
         model = StudentDetailedInfo
         fields = [
             'id', 'user',
             'age', 'is_married',
-            'payment_affordability', 'prefers_full_fund', 'prefers_half_fund', 'prefers_self_fund',
+            'payment_affordability', 'gender', 'military_service_status'
+            'prefers_full_fund', 'prefers_half_fund', 'prefers_self_fund',
             'comment', 'resume', 'related_work_experience', 'academic_break', 'olympiad', 'powerful_recommendation',
             'linkedin_url', 'homepage_url',
             'created', 'updated',
