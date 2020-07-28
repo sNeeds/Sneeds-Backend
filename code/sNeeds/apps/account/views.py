@@ -8,12 +8,11 @@ from rest_framework import generics, permissions
 from . import models
 from . import serializers
 from .models import StudentDetailedInfo, StudentFormApplySemesterYear, BasicFormField
-from .permissions import IsStudentPermission,\
+from .permissions import IsStudentPermission, \
     StudentDetailedInfoOwnerOrInteractConsultantOrWithoutUserPermission, \
-    IsGMATCertificateOwnerOrDetailedInfoWithoutUser, IsGRECertificateOwnerOrDetailedInfoWithoutUser,\
-    IsWantToApplyOwnerOrDetailedInfoWithoutUser, IsPublicationOwnerOrDetailedInfoWithoutUser,\
+    IsWantToApplyOwnerOrDetailedInfoWithoutUser, IsPublicationOwnerOrDetailedInfoWithoutUser, \
     IsUniversityThroughOwnerOrDetailedInfoWithoutUser, \
-    IsLanguageCertificateTypeThroughOwnerOrDetailedInfoWithoutUser
+    IsLanguageCertificateTypeThroughOwnerOrDetailedInfoWithoutUser, IsLanguageCertificateOwnerOrDetailedInfoWithoutUser
 from .serializers import StudentDetailedInfoSerializer, StudentFormApplySemesterYearSerializer, \
     BasicFormFieldSerializer, StudentDetailedInfoRequestSerializer
 from sNeeds.utils.custom.views import custom_generic_apiviews
@@ -171,50 +170,147 @@ class BasicFormFieldListAPIView(custom_generic_apiviews.BaseListAPIView):
         return qs
 
 
-class GMATCertificateListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
-    queryset = models.GMATCertificate.objects.all()
-    serializer_class = serializers.GMATCertificateSerializer
+
+
+
+class LanguageCertificateListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
+    model_class = models.LanguageCertificate
+    queryset = model_class.objects.all()
+    serializer_class = serializers.LanguageCertificateSerializer
 
     def get_queryset(self):
         user = self.request.user
-        qs = models.GMATCertificate.objects.none()
+        qs = self.model_class.objects.none()
         if not user.is_authenticated:
             return qs
         student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=user)
         if student_detailed_info_qs.exists():
             student_detailed_info = student_detailed_info_qs.first()
-            qs = models.GMATCertificate.objects.filter(student_detailed_info=student_detailed_info)
+            qs = self.model_class.objects.filter(student_detailed_info=student_detailed_info)
         return qs
 
 
-class GMATCertificateRetrieveDestroyAPIView(custom_generic_apiviews.BaseRetrieveDestroyAPIView):
+class LanguageCertificateRetrieveDestroyAPIView(custom_generic_apiviews.BaseRetrieveDestroyAPIView):
     lookup_field = 'id'
-    queryset = models.GMATCertificate.objects.all()
+    model_class = models.LanguageCertificate
+    queryset = model_class.objects.all()
     serializer_class = serializers.GMATCertificateSerializer
-    permission_classes = [IsGMATCertificateOwnerOrDetailedInfoWithoutUser]
+    permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
-class GRECertificateListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
-    queryset = models.GRECertificate.objects.all()
-    serializer_class = serializers.GRECertificateSerializer
-
-    def get_queryset(self):
-        user = self.request.user
-        qs = models.GRECertificate.objects.none()
-        if not user.is_authenticated:
-            return qs
-        student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=user)
-        if student_detailed_info_qs.exists():
-            student_detailed_info = student_detailed_info_qs.first()
-            qs = models.GRECertificate.objects.filter(student_detailed_info=student_detailed_info)
-        return qs
+class RegularLanguageCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
+    model_class = models.RegularLanguageCertificate
+    queryset = model_class.objects.all()
+    serializer_class = serializers.RegularLanguageCertificateSerializer
 
 
-class GRECertificateRetrieveDestroyAPIView(custom_generic_apiviews.BaseRetrieveDestroyAPIView):
+class RegularLanguageCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestroyAPIView):
     lookup_field = 'id'
-    queryset = models.GRECertificate.objects.all()
-    serializer_class = serializers.GRECertificateSerializer
-    permission_classes = [IsGRECertificateOwnerOrDetailedInfoWithoutUser]
+    model_class = models.RegularLanguageCertificate
+    queryset = model_class.objects.all()
+    serializer_class = serializers.RegularLanguageCertificateSerializer
+    permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
+
+
+class GMATCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
+    model_class = models.GMATCertificate
+    queryset = model_class.objects.all()
+    serializer_class = serializers.GMATCertificateSerializer
+
+
+class GMATCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestroyAPIView):
+    lookup_field = 'id'
+    model_class = models.GMATCertificate
+    queryset = model_class.objects.all()
+    serializer_class = serializers.GMATCertificateSerializer
+    permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
+
+
+class GREGeneralCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
+    model_class = models.GREGeneralCertificate
+    queryset = model_class.objects.all()
+    serializer_class = serializers.GREGeneralCertificateSerializer
+
+
+class GREGeneralCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestroyAPIView):
+    lookup_field = 'id'
+    model_class = models.GREGeneralCertificate
+    queryset = model_class.objects.all()
+    serializer_class = serializers.GREGeneralCertificateSerializer
+    permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
+
+
+class GRESubjectCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
+    model_class = models.GRESubjectCertificate
+    queryset = model_class.objects.all()
+    serializer_class = serializers.GRESubjectCertificateSerializer
+
+
+class GRESubjectCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestroyAPIView):
+    lookup_field = 'id'
+    model_class = models.GRESubjectCertificate
+    queryset = model_class.objects.all()
+    serializer_class = serializers.GRESubjectCertificateSerializer
+    permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
+
+
+class GREBiologyCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
+    model_class = models.GREBiologyCertificate
+    queryset = model_class.objects.all()
+    serializer_class = serializers.GREBiologyCertificateSerializer
+
+
+class GREBiologyCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestroyAPIView):
+    lookup_field = 'id'
+    model_class = models.GREBiologyCertificate
+    queryset = model_class.objects.all()
+    serializer_class = serializers.GREBiologyCertificateSerializer
+    permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
+
+
+class GREPhysicsCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
+    model_class = models.GREPhysicsCertificate
+    queryset = model_class.objects.all()
+    serializer_class = serializers.GREPhysicsCertificateSerializer
+
+
+class GREPhysicsCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestroyAPIView):
+    lookup_field = 'id'
+    model_class = models.GREPhysicsCertificate
+    queryset = model_class.objects.all()
+    serializer_class = serializers.GREPhysicsCertificateSerializer
+    permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
+
+
+class GREPsychologyCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
+    model_class = models.GREPsychologyCertificate
+    queryset = model_class.objects.all()
+    serializer_class = serializers.GREPsychologyCertificateSerializer
+
+
+class GREPsychologyCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestroyAPIView):
+    lookup_field = 'id'
+    model_class = models.GREPsychologyCertificate
+    queryset = model_class.objects.all()
+    serializer_class = serializers.GREPsychologyCertificateSerializer
+    permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
+
+
+class DuolingoCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
+    model_class = models.DuolingoCertificate
+    queryset = model_class.objects.all()
+    serializer_class = serializers.DuolingoCertificateSerializer
+
+
+class DuolingoCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestroyAPIView):
+    lookup_field = 'id'
+    model_class = models.DuolingoCertificate
+    queryset = model_class.objects.all()
+    serializer_class = serializers.DuolingoCertificateSerializer
+    permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
+
+
+
 
 
 class WantToApplyListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
@@ -248,6 +344,9 @@ class WantToApplyRetrieveDestroyAPIView(custom_generic_apiviews.BaseRetrieveDest
     permission_classes = [IsWantToApplyOwnerOrDetailedInfoWithoutUser]
 
 
+
+
+
 class PublicationListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
     queryset = models.Publication.objects.all()
     serializer_class = serializers.PublicationSerializer
@@ -279,6 +378,9 @@ class PublicationRetrieveDestroyAPIView(custom_generic_apiviews.BaseRetrieveDest
     permission_classes = [IsPublicationOwnerOrDetailedInfoWithoutUser]
 
 
+
+
+
 class StudentDetailedUniversityThroughListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
     queryset = models.UniversityThrough.objects.all()
     serializer_class = serializers.UniversityThroughSerializer
@@ -308,34 +410,3 @@ class StudentDetailedUniversityThroughRetrieveDestroyAPIView(custom_generic_apiv
     queryset = models.UniversityThrough.objects.all()
     serializer_class = serializers.UniversityThroughSerializer
     permission_classes = [IsUniversityThroughOwnerOrDetailedInfoWithoutUser]
-
-
-class StudentDetailedLanguageCertificateTypeThroughListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
-    queryset = models.LanguageCertificateTypeThrough.objects.all()
-    serializer_class = serializers.LanguageCertificateTypeThroughSerializer
-    request_serializer_class = serializers.LanguageCertificateTypeThroughRequestSerializer
-
-    def get_queryset(self):
-        user = self.request.user
-        qs = models.LanguageCertificateTypeThrough.objects.none()
-        if not user.is_authenticated:
-            return qs
-        student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=user)
-        if student_detailed_info_qs.exists():
-            student_detailed_info = student_detailed_info_qs.first()
-            qs = models.LanguageCertificateTypeThrough.objects.filter(student_detailed_info=student_detailed_info)
-        return qs
-
-    @swagger_auto_schema(
-        request_body=request_serializer_class,
-        responses={200: serializer_class},
-    )
-    def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
-
-
-class StudentDetailedLanguageCertificateTypeThroughRetrieveDestroyAPIView(custom_generic_apiviews.BaseRetrieveDestroyAPIView):
-    lookup_field = 'id'
-    queryset = models.LanguageCertificateTypeThrough.objects.all()
-    serializer_class = serializers.LanguageCertificateTypeThroughSerializer
-    permission_classes = [IsLanguageCertificateTypeThroughOwnerOrDetailedInfoWithoutUser]

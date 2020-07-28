@@ -4,9 +4,12 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 from rest_framework.validators import ValidationError
+# from rest_enumfield import EnumField
+from . import fields
+
 from . import models
 from .models import StudentDetailedInfo, StudentFormApplySemesterYear, BasicFormField, University, \
-    LanguageCertificateTypeThrough, WantToApply, Publication, UniversityThrough, GRECertificate, GMATCertificate
+    WantToApply, Publication, UniversityThrough, LanguageCertificateType, Grade, WhichAuthor
 
 User = get_user_model()
 
@@ -98,7 +101,7 @@ class BasicFormFieldSerializer(serializers.ModelSerializer):
 class WantToApplySerializer(serializers.ModelSerializer):
     country = CountrySerializer()
     university = UniversitySerializer()
-    grade = BasicFormFieldSerializer()
+    grade = fields.EnumField(enum=Grade)
     major = BasicFormFieldSerializer()
     semester_year = StudentFormApplySemesterYearSerializer()
 
@@ -135,6 +138,9 @@ class WantToApplyRequestSerializer(serializers.ModelSerializer):
         allow_empty=True,
         required=False,
     )
+
+    grade = fields.EnumField(enum=Grade)
+
     major = serializers.PrimaryKeyRelatedField(
         queryset=models.FieldOfStudy.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
@@ -174,13 +180,14 @@ class WantToApplyRequestSerializer(serializers.ModelSerializer):
 
 
 class PublicationSerializer(serializers.ModelSerializer):
-    which_author = BasicFormFieldSerializer()
-    type = BasicFormFieldSerializer()
+    which_author = fields.EnumField(enum=models.WhichAuthor)
+    type = fields.EnumField(enum=models.PublicationType)
+    journal_reputation = fields.EnumField(enum=models.JournalReputation)
 
     class Meta:
         model = models.Publication
         fields = [
-            'id', 'student_detailed_info', 'title', 'publish_year', 'which_author', 'type',
+            'id', 'student_detailed_info', 'title', 'publish_year', 'which_author', 'type','journal_reputation',
         ]
 
     def create(self, validated_data):
@@ -196,10 +203,14 @@ class PublicationRequestSerializer(serializers.ModelSerializer):
         required=True,
     )
 
+    which_author = fields.EnumField(enum=models.WhichAuthor)
+    type = fields.EnumField(enum=models.PublicationType)
+    journal_reputation = fields.EnumField(enum=models.JournalReputation)
+
     class Meta:
         model = models.Publication
         fields = [
-            'id', 'student_detailed_info', 'title', 'publish_year', 'which_author', 'type',
+            'id', 'student_detailed_info', 'title', 'publish_year', 'which_author', 'type', 'journal_reputation',
         ]
 
     def validate(self, attrs):
@@ -219,7 +230,7 @@ class PublicationRequestSerializer(serializers.ModelSerializer):
 
 class UniversityThroughSerializer(serializers.ModelSerializer):
     university = BasicFormFieldSerializer()
-    grade = BasicFormFieldSerializer()
+    grade = fields.EnumField(enum=models.Grade)
     major = BasicFormFieldSerializer()
 
     class Meta:
@@ -256,6 +267,8 @@ class UniversityThroughRequestSerializer(serializers.ModelSerializer):
         required=True,
     )
 
+    grade = fields.EnumField(enum=models.Grade)
+
     class Meta:
         model = models.UniversityThrough
         fields = [
@@ -277,29 +290,7 @@ class UniversityThroughRequestSerializer(serializers.ModelSerializer):
         return attrs
 
 
-class LanguageCertificateTypeThroughSerializer(serializers.ModelSerializer):
-    certificate_type = BasicFormFieldSerializer()
-
-    class Meta:
-        model = models.LanguageCertificateTypeThrough
-        fields = [
-            'id', 'certificate_type', 'student_detailed_info',
-            'speaking', 'listening', 'writing', 'reading', 'overall',
-        ]
-
-    def create(self, validated_data):
-        raise ValidationError(_("Creating object through this serializer is not allowed"))
-
-
-class LanguageCertificateTypeThroughRequestSerializer(serializers.ModelSerializer):
-    certificate_type = serializers.PrimaryKeyRelatedField(
-        queryset=models.LanguageCertificateType.objects.all(),
-        pk_field=serializers.IntegerField(label='id'),
-        allow_null=False,
-        allow_empty=False,
-        required=True,
-    )
-
+class LanguageCertificateSerializer(serializers.ModelSerializer):
     student_detailed_info = serializers.PrimaryKeyRelatedField(
         queryset=models.StudentDetailedInfo.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
@@ -308,12 +299,11 @@ class LanguageCertificateTypeThroughRequestSerializer(serializers.ModelSerialize
         required=True,
     )
 
+    certificate_type = fields.EnumField(enum=LanguageCertificateType)
+
     class Meta:
-        model = models.LanguageCertificateTypeThrough
-        fields = [
-            'id', 'certificate_type', 'student_detailed_info',
-            'speaking', 'listening', 'writing', 'reading', 'overall',
-        ]
+        model = models.LanguageCertificate
+        fields = '__all__'
 
     def validate(self, attrs):
         request_user = None
@@ -329,66 +319,78 @@ class LanguageCertificateTypeThroughRequestSerializer(serializers.ModelSerialize
             raise ValidationError(_("Can't validate data.Can't get request user."))
         return attrs
 
+# TODO validate certificate type per serializer
+class RegularLanguageCertificateSerializer(LanguageCertificateSerializer):
 
-class GMATCertificateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.RegularLanguageCertificate
+        fields = '__all__'
+
+
+class GMATCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = models.GMATCertificate
-        fields = [
-            'id', 'student_detailed_info', 'analytical_writing_assessment', 'integrated_reasoning',
-            'quantitative_and_verbal', 'total'
-        ]
-
-    def validate(self, attrs):
-        request_user = None
-        request = self.context.get("request")
-        if request and hasattr(request, "user"):
-            request_user = request.user
-            student_detailed_info = attrs.get("student_detailed_info")
-            if student_detailed_info.user is not None and student_detailed_info.user != request_user:
-                raise ValidationError(_("User can't set student_detailed_info of another user."))
-            if student_detailed_info.user is None and request_user.is_authenticated:
-                raise ValidationError(_("User can't set student_detailed_info of another user."))
-        else:
-            raise ValidationError(_("Can't validate data.Can't get request user."))
-        return attrs
+        fields = '__all__'
 
 
-class GRECertificateSerializer(serializers.ModelSerializer):
+class GREGeneralCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
-        model = models.GRECertificate
-        fields = [
-            'id', 'student_detailed_info', 'quantitative', 'verbal', 'analytical_writing',
-        ]
+        model = models.GREGeneralCertificate
+        fields = '__all__'
 
-    def validate(self, attrs):
-        request_user = None
-        request = self.context.get("request")
-        if request and hasattr(request, "user"):
-            request_user = request.user
-            student_detailed_info = attrs.get("student_detailed_info")
-            if student_detailed_info.user is not None and student_detailed_info.user != request_user:
-                raise ValidationError(_("User can't set student_detailed_info of another user."))
-            if student_detailed_info.user is None and request_user.is_authenticated:
-                raise ValidationError(_("User can't set student_detailed_info of another user."))
-        else:
-            raise ValidationError(_("Can't validate data.Can't get request user."))
-        return attrs
+
+class GRESubjectCertificateSerializer(LanguageCertificateSerializer):
+    class Meta:
+        model = models.GRESubjectCertificate
+        fields = '__all__'
+
+
+class GREBiologyCertificateSerializer(LanguageCertificateSerializer):
+    class Meta:
+        model = models.GREBiologyCertificate
+        fields = '__all__'
+
+
+class GREPhysicsCertificateSerializer(LanguageCertificateSerializer):
+    class Meta:
+        model = models.GREPhysicsCertificate
+        fields = '__all__'
+
+
+class GREPsychologyCertificateSerializer(LanguageCertificateSerializer):
+    class Meta:
+        model = models.GREPsychologyCertificate
+        fields = '__all__'
+
+
+class DuolingoCertificateSerializer(LanguageCertificateSerializer):
+    class Meta:
+        model = models.DuolingoCertificate
+        fields = '__all__'
 
 
 class StudentDetailedInfoSerializer(serializers.ModelSerializer):
     from sNeeds.apps.customAuth.serializers import SafeUserDataSerializer
     user = SafeUserDataSerializer(read_only=True)
 
-    gre_certificate = serializers.SerializerMethodField()
-    gmat_certificate = serializers.SerializerMethodField()
+    regular_certificates = serializers.SerializerMethodField()
+    gmat_certificates = serializers.SerializerMethodField()
+    gre_general_certificates = serializers.SerializerMethodField()
+    gre_subject_certificates = serializers.SerializerMethodField()
+    gre_biology_certificates = serializers.SerializerMethodField()
+    gre_physics_certificates = serializers.SerializerMethodField()
+    gre_psychology_certificates = serializers.SerializerMethodField()
+    duolingo_certificates = serializers.SerializerMethodField()
 
     is_married = BasicFormFieldSerializer()
-    payment_affordability = BasicFormFieldSerializer()
 
     universities = serializers.SerializerMethodField()
-    language_certificates = serializers.SerializerMethodField()
     want_to_applies = serializers.SerializerMethodField()
     publications = serializers.SerializerMethodField()
+
+    payment_affordability = fields.EnumField(enum=models.PaymentAffordability)
+    gender = fields.EnumField(enum=models.Gender)
+    military_service_status = fields.EnumField(enum=models.MilitaryServiceStatus)
 
     class Meta:
         model = StudentDetailedInfo
@@ -396,28 +398,45 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
             'id', 'user',
             'age', 'is_married',
             'universities', 'want_to_applies', 'publications',
-            'language_certificates', 'gre_certificate', 'gmat_certificate',
-            'payment_affordability', 'prefers_full_fund', 'prefers_half_fund', 'prefers_self_fund',
+            'payment_affordability', 'gender', 'military_service_status',
+            'regular_certificates', 'gmat_certificates', 'gre_general_certificates', 'gre_subject_certificates',
+            'gre_biology_certificates', 'gre_physics_certificates', 'gre_psychology_certificates',
+            'duolingo_certificates',
+            'prefers_full_fund', 'prefers_half_fund', 'prefers_self_fund',
             'comment', 'resume', 'related_work_experience', 'academic_break', 'olympiad', 'powerful_recommendation',
             'linkedin_url', 'homepage_url',
             'created', 'updated',
         ]
 
-    def get_gre_certificate(self, obj):
-        qs = GRECertificate.objects.filter(student_detailed_info=obj)
-        return GRECertificateSerializer(qs, many=True, context=self.context).data
+    def get_regular_certificates(self, obj):
+        return self.certificates(obj, models.RegularLanguageCertificate, RegularLanguageCertificateSerializer)
 
-    def get_gmat_certificate(self, obj):
-        qs = GMATCertificate.objects.filter(student_detailed_info=obj)
-        return GMATCertificateSerializer(qs, many=True, context=self.context).data
+    def get_gmat_certificates(self, obj):
+        return self.certificates(obj, models.GMATCertificate, GMATCertificateSerializer)
+
+    def get_gre_general_certificates(self, obj):
+        return self.certificates(obj, models.GREGeneralCertificate, GREGeneralCertificateSerializer)
+
+    def get_gre_subject_certificates(self, obj):
+        return self.certificates(obj, models.GRESubjectCertificate, GRESubjectCertificateSerializer)
+
+    def get_gre_biology_certificates(self, obj):
+        return self.certificates(obj, models.GREBiologyCertificate, GREBiologyCertificateSerializer)
+
+    def get_gre_physics_certificates(self, obj):
+        return self.certificates(obj, models.GREPhysicsCertificate, GREPhysicsCertificateSerializer)
+
+    def get_gre_psychology_certificates(self, obj):
+        return self.certificates(obj, models.GREPsychologyCertificate, GREPsychologyCertificateSerializer)
+
+    def get_duolingo_certificates(self, obj):
+        return self.certificates(obj, models.DuolingoCertificate, DuolingoCertificateSerializer)
 
     def get_universities(self, obj):
         qs = UniversityThrough.objects.filter(student_detailed_info_id=obj.id)
         return UniversityThroughSerializer(qs, many=True, context=self.context).data
 
-    def get_language_certificates(self, obj):
-        qs = LanguageCertificateTypeThrough.objects.filter(student_detailed_info_id=obj.id)
-        return LanguageCertificateTypeThroughSerializer(qs, many=True, context=self.context).data
+
 
     def get_want_to_applies(self, obj):
         qs = WantToApply.objects.filter(student_detailed_info_id=obj.id)
@@ -430,22 +449,24 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         raise ValidationError(_("Creating object through this serializer is not allowed"))
 
+    # Custom method
+    def certificates(self, obj, model_class, serializer_class):
+        qs = model_class.objects.filter(student_detailed_info_id=obj.id)
+        return serializer_class(qs, many=True, context=self.context).data
+
 
 class StudentDetailedInfoRequestSerializer(serializers.ModelSerializer):
-    payment_affordability = serializers.PrimaryKeyRelatedField(
-        queryset=models.PaymentAffordability.objects.all(),
-        pk_field=serializers.IntegerField(label='id'),
-        allow_null=True,
-        allow_empty=True,
-        required=False,
-    )
+    payment_affordability = fields.EnumField(enum=models.PaymentAffordability)
+    gender = fields.EnumField(enum=models.Gender)
+    military_service_status = fields.EnumField(enum=models.MilitaryServiceStatus)
 
     class Meta:
         model = StudentDetailedInfo
         fields = [
             'id', 'user',
             'age', 'is_married',
-            'payment_affordability', 'prefers_full_fund', 'prefers_half_fund', 'prefers_self_fund',
+            'payment_affordability', 'gender', 'military_service_status'
+            'prefers_full_fund', 'prefers_half_fund', 'prefers_self_fund',
             'comment', 'resume', 'related_work_experience', 'academic_break', 'olympiad', 'powerful_recommendation',
             'linkedin_url', 'homepage_url',
             'created', 'updated',
