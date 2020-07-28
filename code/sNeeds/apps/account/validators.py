@@ -41,3 +41,10 @@ def validate_resume_file_size(value):
         raise ValidationError("The maximum file size that can be uploaded is 5MB")
     else:
         return value
+
+
+def ten_factor_validator(value):
+    if value % 10 != 0:
+        raise ValidationError("Value Should be a factor of 10")
+    else:
+        return value

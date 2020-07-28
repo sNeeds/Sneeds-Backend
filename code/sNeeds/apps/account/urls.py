@@ -3,8 +3,6 @@ from django.urls import path
 import sNeeds.apps.consultants.views
 from . import views
 
-from sNeeds.utils.custom.views.custom_decorated_view import get_class_decorated_view as decorated_view
-
 app_name = "account"
 
 
@@ -33,15 +31,15 @@ urlpatterns = [
     path('basic-form-fields/', views.BasicFormFieldListAPIView.as_view(),
          name="basic-form-fields-list"),
 
-    path('gmat-certificates/', views.GMATCertificateListCreateAPIView.as_view(),
-         name="gmat-certificate-list"),
-    path('gmat-certificates/<int:id>/', views.GMATCertificateRetrieveDestroyAPIView.as_view(),
-         name="gmat-certificate-detail"),
-
-    path('gre-certificates/', views.GRECertificateListCreateAPIView.as_view(),
-         name="gre-certificate-list"),
-    path('gre-certificates/<int:id>/', views.GRECertificateRetrieveDestroyAPIView.as_view(),
-         name="gre-certificates-detail"),
+    # path('gmat-certificates/', views.GMATCertificateListCreateAPIView.as_view(),
+    #      name="gmat-certificate-list"),
+    # path('gmat-certificates/<int:id>/', views.GMATCertificateRetrieveDestroyAPIView.as_view(),
+    #      name="gmat-certificate-detail"),
+    #
+    # path('gre-certificates/', views.GRECertificateListCreateAPIView.as_view(),
+    #      name="gre-certificate-list"),
+    # path('gre-certificates/<int:id>/', views.GRECertificateRetrieveDestroyAPIView.as_view(),
+    #      name="gre-certificates-detail"),
 
     path('publications/', views.PublicationListCreateAPIView.as_view(),
          name="publication-list"),

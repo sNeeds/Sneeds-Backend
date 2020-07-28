@@ -9,7 +9,7 @@ from django.contrib.postgres.search import SearchVectorField
 from django.contrib.postgres.indexes import GinIndex
 from enumfields import Enum, EnumField
 
-from .validators import validate_resume_file_extension, validate_resume_file_size
+from .validators import validate_resume_file_extension, validate_resume_file_size, ten_factor_validator
 from . import validators
 
 User = get_user_model()
@@ -346,9 +346,15 @@ class UniversityThrough(models.Model):
 
     )
 
+    class Meta:
+        unique_together = ['student_detailed_info', 'grade']
+
 
 class LanguageCertificate(models.Model):
-    certificate_type = None
+    certificate_type = EnumField(
+        LanguageCertificateType,
+        default=LanguageCertificateType.IELTS
+    )
     student_detailed_info = models.ForeignKey(
         StudentDetailedInfo,
         on_delete=models.CASCADE
@@ -356,10 +362,6 @@ class LanguageCertificate(models.Model):
 
 
 class RegularLanguageCertificate(LanguageCertificate):
-    certificate_type = EnumField(
-        LanguageCertificateType,
-        default=LanguageCertificateType.IELTS
-    )
     speaking = models.DecimalField(max_digits=5, decimal_places=2)
     listening = models.DecimalField(max_digits=5, decimal_places=2)
     writing = models.DecimalField(max_digits=5, decimal_places=2)
@@ -368,11 +370,6 @@ class RegularLanguageCertificate(LanguageCertificate):
 
 
 class GMATCertificate(LanguageCertificate):
-    certificate_type = EnumField(
-        LanguageCertificateType,
-        default=LanguageCertificateType.GMAT,
-    )
-
     analytical_writing_assessment = models.DecimalField(
         max_digits=5, decimal_places=2,
         validators=[MinValueValidator(0.0), MaxValueValidator(6.00)],
@@ -388,12 +385,7 @@ class GMATCertificate(LanguageCertificate):
     )
 
 
-class GRECertificate(LanguageCertificate):
-    certificate_type = EnumField(
-        LanguageCertificateType,
-        default=LanguageCertificateType.GRE,
-    )
-
+class GREGeneralCertificate(LanguageCertificate):
     quantitative = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(130), MaxValueValidator(170)],
     )
@@ -406,4 +398,89 @@ class GRECertificate(LanguageCertificate):
     )
 
 
+class GRESubjectCertificate(LanguageCertificate):
+    quantitative = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(130), MaxValueValidator(170)],
+    )
+    verbal = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(130), MaxValueValidator(170)],
+    )
+    analytical_writing = models.DecimalField(
+        max_digits=2, decimal_places=1,
+        validators=[MinValueValidator(0), MaxValueValidator(6)],
+    )
+
+    total = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(200), MaxValueValidator(990), ten_factor_validator],
+    )
+
+
+class GREBiologyCertificate(GRESubjectCertificate):
+    cellular_and_molecular = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(20), MaxValueValidator(99)]
+    )
+
+    organismal = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(20), MaxValueValidator(99)]
+    )
+
+    ecology_and_evolution = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(20), MaxValueValidator(99)]
+    )
+
+
+class GREPhysicsCertificate(LanguageCertificate):
+
+    classical_mechanics = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(20), MaxValueValidator(99)]
+    )
+
+    electromagnetism = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(20), MaxValueValidator(99)]
+    )
+
+    quantum_mechanics = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(20), MaxValueValidator(99)]
+    )
+
+
+class GREPsychologyCertificate(GRESubjectCertificate):
+
+    biological = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(20), MaxValueValidator(99)]
+    )
+
+    cognitive = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(20), MaxValueValidator(99)]
+    )
+
+    social = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(20), MaxValueValidator(99)]
+    )
+
+    developmental = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(20), MaxValueValidator(99)]
+    )
+
+    clinical = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(20), MaxValueValidator(99)]
+    )
+
+    measurement_or_methodology = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(20), MaxValueValidator(99)]
+    )
+
+
+class DuolingoCertificate(LanguageCertificate):
+    overall = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(10), MaxValueValidator(160)]
+    )
+
+    literacy = models.PositiveSmallIntegerField()
+
+    comprehension = models.PositiveSmallIntegerField()
+
+    conversation = models.PositiveSmallIntegerField()
+
+    production = models.PositiveSmallIntegerField()
 

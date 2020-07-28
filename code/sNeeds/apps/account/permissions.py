@@ -1,7 +1,7 @@
 from rest_framework import permissions
 from django.contrib.auth.models import AnonymousUser
 
-from sNeeds.apps.account.models import StudentDetailedInfo, GMATCertificate
+from sNeeds.apps.account.models import StudentDetailedInfo
 from sNeeds.apps.storePackages.models import SoldStorePackage
 from sNeeds.utils.custom.custom_functions import get_consultants_interact_with_user
 
@@ -47,24 +47,7 @@ class StudentDetailedInfoOwnerOrInteractConsultantOrWithoutUserPermission(permis
                 return qs_2.exists()
 
 
-class IsGMATCertificateOwnerOrDetailedInfoWithoutUser(permissions.BasePermission):
-    message = "Only owner can view or edit object."
-
-    def has_object_permission(self, request, view, obj):
-        if request.method == "OPTIONS":
-            return True
-
-        user = request.user
-
-        if user and user.is_authenticated:
-            return obj.student_detailed_info.user == user
-        if not user.is_authenticated:
-            return obj.student_detailed_info.user is None
-
-        return False
-
-
-class IsGRECertificateOwnerOrDetailedInfoWithoutUser(permissions.BasePermission):
+class IsLanguageCertificateOwnerOrDetailedInfoWithoutUser(permissions.BasePermission):
     message = "Only owner can view or edit object."
 
     def has_object_permission(self, request, view, obj):

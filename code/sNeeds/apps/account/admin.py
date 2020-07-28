@@ -6,8 +6,8 @@ admin.site.register(models.Country)
 admin.site.register(models.UniversityThrough)
 admin.site.register(models.FieldOfStudyType)
 admin.site.register(models.Publication)
-admin.site.register(models.GRECertificate)
-admin.site.register(models.GMATCertificate)
+# admin.site.register(models.GRECertificate)
+# admin.site.register(models.GMATCertificate)
 
 
 class UniversityThroughInline(admin.TabularInline):
@@ -15,9 +15,9 @@ class UniversityThroughInline(admin.TabularInline):
     extra = 1
 
 
-class LanguageCertificateTypeInline(admin.TabularInline):
-    model = models.LanguageCertificate
-    extra = 1
+# class LanguageCertificateTypeInline(admin.TabularInline):
+#     model = models.LanguageCertificate
+#     extra = 1
 
 
 class WantToApplyInline(admin.TabularInline):
@@ -34,7 +34,7 @@ class PublicationInline(admin.TabularInline):
 class StudentDetailedInfoAdmin(admin.ModelAdmin):
     inlines = [
         UniversityThroughInline,
-        LanguageCertificateTypeInline,
+        # LanguageCertificateTypeInline,
         WantToApplyInline,
         PublicationInline,
     ]
