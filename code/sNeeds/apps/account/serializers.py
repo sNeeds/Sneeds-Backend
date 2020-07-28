@@ -319,7 +319,7 @@ class LanguageCertificateSerializer(serializers.ModelSerializer):
             raise ValidationError(_("Can't validate data.Can't get request user."))
         return attrs
 
-
+# TODO validate certificate type per serializer
 class RegularLanguageCertificateSerializer(LanguageCertificateSerializer):
 
     class Meta:
@@ -373,13 +373,18 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
     from sNeeds.apps.customAuth.serializers import SafeUserDataSerializer
     user = SafeUserDataSerializer(read_only=True)
 
-    # gre_certificate = serializers.SerializerMethodField()
-    # gmat_certificate = serializers.SerializerMethodField()
+    regular_certificates = serializers.SerializerMethodField()
+    gmat_certificates = serializers.SerializerMethodField()
+    gre_general_certificates = serializers.SerializerMethodField()
+    gre_subject_certificates = serializers.SerializerMethodField()
+    gre_biology_certificates = serializers.SerializerMethodField()
+    gre_physics_certificates = serializers.SerializerMethodField()
+    gre_psychology_certificates = serializers.SerializerMethodField()
+    duolingo_certificates = serializers.SerializerMethodField()
 
     is_married = BasicFormFieldSerializer()
 
     universities = serializers.SerializerMethodField()
-    # language_certificates = serializers.SerializerMethodField()
     want_to_applies = serializers.SerializerMethodField()
     publications = serializers.SerializerMethodField()
 
@@ -394,28 +399,44 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
             'age', 'is_married',
             'universities', 'want_to_applies', 'publications',
             'payment_affordability', 'gender', 'military_service_status',
-            # 'language_certificates', 'gre_certificate', 'gmat_certificate',
+            'regular_certificates', 'gmat_certificates', 'gre_general_certificates', 'gre_subject_certificates',
+            'gre_biology_certificates', 'gre_physics_certificates', 'gre_psychology_certificates',
+            'duolingo_certificates',
             'prefers_full_fund', 'prefers_half_fund', 'prefers_self_fund',
             'comment', 'resume', 'related_work_experience', 'academic_break', 'olympiad', 'powerful_recommendation',
             'linkedin_url', 'homepage_url',
             'created', 'updated',
         ]
 
-    # def get_gre_certificate(self, obj):
-    #     qs = GRECertificate.objects.filter(student_detailed_info=obj)
-    #     return GRECertificateSerializer(qs, many=True, context=self.context).data
-    #
-    # def get_gmat_certificate(self, obj):
-    #     qs = GMATCertificate.objects.filter(student_detailed_info=obj)
-    #     return GMATCertificateSerializer(qs, many=True, context=self.context).data
+    def get_regular_certificates(self, obj):
+        return self.certificates(obj, models.RegularLanguageCertificate, RegularLanguageCertificateSerializer)
+
+    def get_gmat_certificates(self, obj):
+        return self.certificates(obj, models.GMATCertificate, GMATCertificateSerializer)
+
+    def get_gre_general_certificates(self, obj):
+        return self.certificates(obj, models.GREGeneralCertificate, GREGeneralCertificateSerializer)
+
+    def get_gre_subject_certificates(self, obj):
+        return self.certificates(obj, models.GRESubjectCertificate, GRESubjectCertificateSerializer)
+
+    def get_gre_biology_certificates(self, obj):
+        return self.certificates(obj, models.GREBiologyCertificate, GREBiologyCertificateSerializer)
+
+    def get_gre_physics_certificates(self, obj):
+        return self.certificates(obj, models.GREPhysicsCertificate, GREPhysicsCertificateSerializer)
+
+    def get_gre_psychology_certificates(self, obj):
+        return self.certificates(obj, models.GREPsychologyCertificate, GREPsychologyCertificateSerializer)
+
+    def get_duolingo_certificates(self, obj):
+        return self.certificates(obj, models.DuolingoCertificate, DuolingoCertificateSerializer)
 
     def get_universities(self, obj):
         qs = UniversityThrough.objects.filter(student_detailed_info_id=obj.id)
         return UniversityThroughSerializer(qs, many=True, context=self.context).data
 
-    # def get_language_certificates(self, obj):
-    #     qs = LanguageCertificateTypeThrough.objects.filter(student_detailed_info_id=obj.id)
-    #     return LanguageCertificateTypeThroughSerializer(qs, many=True, context=self.context).data
+
 
     def get_want_to_applies(self, obj):
         qs = WantToApply.objects.filter(student_detailed_info_id=obj.id)
@@ -427,6 +448,11 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         raise ValidationError(_("Creating object through this serializer is not allowed"))
+
+    # Custom method
+    def certificates(self, obj, model_class, serializer_class):
+        qs = model_class.objects.filter(student_detailed_info_id=obj.id)
+        return serializer_class(qs, many=True, context=self.context).data
 
 
 class StudentDetailedInfoRequestSerializer(serializers.ModelSerializer):
