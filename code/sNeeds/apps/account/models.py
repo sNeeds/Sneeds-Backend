@@ -9,6 +9,7 @@ from django.contrib.postgres.search import SearchVectorField
 from django.contrib.postgres.indexes import GinIndex
 from enumfields import Enum, EnumField
 
+from .managers import UniversityThroughQuerySetManager
 from .validators import validate_resume_file_extension, validate_resume_file_size
 from . import validators
 
@@ -361,6 +362,9 @@ class UniversityThrough(models.Model):
         decimal_places=2
 
     )
+
+    class Meta:
+        objects = UniversityThroughQuerySetManager.as_manager()
 
 
 class LanguageCertificateTypeThrough(models.Model):
