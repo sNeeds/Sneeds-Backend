@@ -204,7 +204,7 @@ class RegularLanguageCertificateListCreateAPIView(LanguageCertificateListCreateA
     serializer_class = serializers.RegularLanguageCertificateSerializer
 
 
-class RetrieveDestroyAPIView(LanguageCertificateRetrieveDestroyAPIView):
+class RegularLanguageCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestroyAPIView):
     lookup_field = 'id'
     model_class = models.RegularLanguageCertificate
     queryset = model_class.objects.all()
