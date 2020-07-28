@@ -45,14 +45,42 @@ class StudentDetailedFormReview:
         # User has previous university
         last_grade_university = university_through.objects.filter(grade=self.last_grade)
 
-        data = {
+        data = {}
 
-        }
-        #TODO: PHD remained
+        # TODO: PHD remained
         if last_grade_university == Grade.MASTER:
             if last_grade_university.university.rank < 850:
+                data['دانشگاه ارشد'] = MASTER_LAST_GRADE_TOP_850_COMMENTS
+                if last_grade_university.gpa <= 14:
+                    data['معدل ارشد'] = MASTER_LAST_GRADE_TOP_850_COMMENTS_GPA_UNDER_14
+                if 14 < last_grade_university.gpa <= 16:
+                    data['معدل ارشد'] = MASTER_LAST_GRADE_TOP_850_COMMENTS_GPA_BETWEEN_14_16
+                if 16 < last_grade_university.gpa <= 18:
+                    data['معدل ارشد'] = MASTER_LAST_GRADE_TOP_850_COMMENTS_GPA_BETWEEN_16_18
+                if 18 < last_grade_university.gpa:
+                    data['معدل ارشد'] = MASTER_LAST_GRADE_TOP_850_COMMENTS_GPA_ABOVE_18
 
+            elif 850 <= last_grade_university.university.rank <= 1100:
+                data['دانشگاه ارشد'] = MASTER_LAST_GRADE_BETWEEN_850_1100_COMMENTS
+                if last_grade_university.gpa <= 14:
+                    data['معدل ارشد'] = MASTER_LAST_GRADE_BETWEEN_850_1100_COMMENTS_GPA_UNDER_14
+                if 14 < last_grade_university.gpa <= 16:
+                    data['معدل ارشد'] = MASTER_LAST_GRADE_BETWEEN_850_1100_COMMENTS_GPA_BETWEEN_14_16
+                if 16 < last_grade_university.gpa <= 18:
+                    data['معدل ارشد'] = MASTER_LAST_GRADE_BETWEEN_850_1100_COMMENTS_GPA_BETWEEN_16_18
+                if 18 < last_grade_university.gpa:
+                    data['معدل ارشد'] = MASTER_LAST_GRADE_BETWEEN_850_1100_COMMENTS_GPA_ABOVE_18
 
+            elif 1100 < last_grade_university.university.rank:
+                data['دانشگاه ارشد'] = MASTER_LAST_GRADE_ABOVE_1100
+                if last_grade_university.gpa <= 14:
+                    data['معدل ارشد'] = MASTER_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_UNDER_14
+                if 14 < last_grade_university.gpa <= 16:
+                    data['معدل ارشد'] = MASTER_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_BETWEEN_14_16
+                if 16 < last_grade_university.gpa <= 18:
+                    data['معدل ارشد'] = MASTER_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_BETWEEN_16_18
+                if 18 < last_grade_university.gpa:
+                    data['معدل ارشد'] = MASTER_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_ABOVE_18
 
 
     def review_student_detailed_form(self, form):

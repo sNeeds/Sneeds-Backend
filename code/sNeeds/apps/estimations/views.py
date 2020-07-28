@@ -6,6 +6,7 @@ import autofixture
 from autofixture import generators
 
 from django.db import transaction
+from django.http import HttpRequest, HttpResponse
 from rest_framework import status, generics, mixins, permissions
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
@@ -51,6 +52,8 @@ class ListUsers(APIView):
         WantToApply.objects.all().delete()
 
         ListUsersAutoFixture(StudentDetailedInfo).create(100)
-        ListUsersAutoFixture(UniversityThrough).create(250)
-        ListUsersAutoFixture(WantToApply, follow_m2m={'university': (1, 10)}).create(100)
-        ListUsersAutoFixture(WantToApply, follow_m2m={'university': (0, 0)}).create(50)
+        ListUsersAutoFixture(UniversityThrough).create(100)
+        ListUsersAutoFixture(WantToApply, follow_m2m={'universities': (1, 10)}).create(100)
+        ListUsersAutoFixture(WantToApply, follow_m2m={'universities': (0, 0)}).create(50)
+
+        return HttpResponse()
