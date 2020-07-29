@@ -13,6 +13,8 @@ urlpatterns = [
     path('universities/', views.UniversityList.as_view(), name="university-list"),
     path('universities/<int:id>/', views.UniversityDetail.as_view(), name="university-detail"),
 
+    path('form-universities/', views.UniversityForFormList.as_view(), name='form-university-list'),
+
     path('field-of-studies/', views.FieldOfStudyList.as_view(), name="field-of-study-list"),
     path('field-of-studies/<int:id>/', views.FieldOfStudyDetail.as_view(), name="field-of-study-detail"),
 

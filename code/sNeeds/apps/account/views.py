@@ -1,9 +1,12 @@
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.search import SearchQuery, SearchRank, TrigramSimilarity
-from django.db.models.functions import Length
+from django.db.models import F, Sum, ExpressionWrapper, FloatField
+from django.db.models.functions import Length, Ln
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from . import models
 from . import serializers
@@ -48,6 +51,85 @@ class UniversityList(generics.ListAPIView):
         study_info_with_active_consultant_qs = StudyInfo.objects.all().with_active_consultants()
         university_list = list(study_info_with_active_consultant_qs.values_list('university_id', flat=True))
         return models.University.objects.filter(id__in=university_list)
+
+
+# class UniversityForFormList(APIView):
+#     queryset = models.University.objects.none()
+#     serializer_class = serializers.UniversitySerializer
+#
+#     def get(self, request, *args, **kwargs):
+#         params = request.query_params.get('search', '')
+#         search_terms = params.replace(',', ' ').split()
+#         qs = models.University.objects.none()
+#
+#         if not search_terms:
+#             return qs
+#
+#         if len(search_terms) == 0:
+#             return qs
+#
+#         search_term = search_terms[0]
+#         search_term_phrase = search_term[:16]
+#
+#         result_qs = qs
+#         for search_term in search_term_phrase.split(" "):
+#             result_qs |= models.University.objects.annotate(similarity=TrigramSimilarity('name', search_term)).filter(
+#                 similarity__gt=2.5 / Length('name')).order_by('-similarity')
+#         qs = result_qs.distinct()[:5]
+#         serializer = self.serializer_class(qs, many=True, context={'request': request})
+#         return Response(
+#             serializer.data,
+#             status=status.HTTP_200_OK,
+#         )
+
+
+class UniversityForFormList(generics.ListAPIView):
+    queryset = models.University.objects.none()
+    serializer_class = serializers.UniversitySerializer
+
+    def get_queryset(self):
+        request = self.request
+        params = request.query_params.get('search', '')
+        search_terms = params.replace(',', ' ').split()
+        qs = models.University.objects.none()
+
+        if not search_terms:
+            return qs
+
+        if len(search_terms) == 0:
+            return qs
+
+        search_term = search_terms[0][:16]
+
+        # TODO try the below approaches and select the best one. Sorry for string comments.I wanted to be recognizable
+        # TODO explanations from codes
+        # TODO To see execution time of queries, use this: python manage.py shell_plus --print-sql
+        # TODO To see results use endpoint /form-universities?&search=colombia
+
+        "Most close results but worse time about 32ms"
+        # qs = models.University.objects.\
+        #     annotate(similarity=TrigramSimilarity('name', search_term), name_length=ExpressionWrapper(0.5*Length('name'), output_field=FloatField())).\
+        #     annotate(t=F('similarity') * F('name_length')).\
+        #     filter(t__gt=0.5).order_by('-t')
+
+        "Much close results but worse time about 28ms"
+        qs = models.University.objects.\
+            annotate(similarity=TrigramSimilarity('name', search_term), name_length=Ln(Length('name'))).\
+            annotate(t=F('similarity') * F('name_length')).\
+            filter(t__gt=0.4).order_by('-t')
+
+        """Very basicbut middle with 20 ms. rows with longer value in name column go down in results because more characters
+                 reduce trigram similarity"""
+        # qs = models.University.objects.annotate(similarity=TrigramSimilarity('name', 'university')) \
+        #     .filter(similarity__gt=0.1).order_by('-similarity')
+
+        """ Very strange!! Best time cost with 17 ms with a little optimization in results"""
+        # qs = models.University.objects.annotate(similarity=TrigramSimilarity('name', search_term)).filter(
+        #     similarity__gt=20 / Length('name')).order_by('-similarity')
+
+        qs = qs.distinct()
+
+        return qs
 
 
 class FieldOfStudyDetail(generics.RetrieveAPIView):
@@ -147,30 +229,7 @@ class BasicFormFieldListAPIView(custom_generic_apiviews.BaseListAPIView):
         else:
             qs = self.queryset.none()
 
-        params = request.query_params.get('search', '')
-        search_terms = params.replace(',', ' ').split()
-
-        if not search_terms:
-            return qs
-
-        if len(search_terms) == 0:
-            return qs
-
-        search_term = search_terms[0]
-        search_term_phrase = search_term[:16]
-
-        result_qs = BasicFormField.objects.none()
-        for search_term in search_term_phrase.split(" "):
-            result_qs |= qs.annotate(similarity=TrigramSimilarity('name', search_term)).filter(similarity__gt=2.5/Length('name')).order_by('-similarity')
-        qs = result_qs
-        # search_query = SearchQuery(search_term_phrase, search_type='plain')
-        # base = qs
-        # qs = base.annotate(rank=SearchRank('name_search', search_query)).order_by('-rank')
-
         return qs
-
-
-
 
 
 class LanguageCertificateListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
@@ -310,9 +369,6 @@ class DuolingoCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestr
     permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
-
-
-
 class WantToApplyListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
     queryset = models.WantToApply.objects.all()
     serializer_class = serializers.WantToApplySerializer
@@ -344,9 +400,6 @@ class WantToApplyRetrieveDestroyAPIView(custom_generic_apiviews.BaseRetrieveDest
     permission_classes = [IsWantToApplyOwnerOrDetailedInfoWithoutUser]
 
 
-
-
-
 class PublicationListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
     queryset = models.Publication.objects.all()
     serializer_class = serializers.PublicationSerializer
@@ -376,9 +429,6 @@ class PublicationRetrieveDestroyAPIView(custom_generic_apiviews.BaseRetrieveDest
     queryset = models.Publication.objects.all()
     serializer_class = serializers.PublicationSerializer
     permission_classes = [IsPublicationOwnerOrDetailedInfoWithoutUser]
-
-
-
 
 
 class StudentDetailedUniversityThroughListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):

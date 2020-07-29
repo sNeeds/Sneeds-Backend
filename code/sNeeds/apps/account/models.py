@@ -84,10 +84,6 @@ def get_student_resume_path(instance, filename):
 
 class BasicFormField(models.Model):
     name = models.CharField(max_length=256)
-    name_search = SearchVectorField(null=True)
-
-    class Meta:
-        indexes = [GinIndex(fields=["name_search"])]
 
     def __str__(self):
         return self.name

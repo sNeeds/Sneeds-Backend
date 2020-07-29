@@ -4,7 +4,6 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 from rest_framework.validators import ValidationError
-# from rest_enumfield import EnumField
 from . import fields
 
 from . import models
