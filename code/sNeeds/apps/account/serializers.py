@@ -7,6 +7,7 @@ from rest_framework.validators import ValidationError
 from . import fields
 
 from . import models
+from . import validators
 from .models import StudentDetailedInfo, StudentFormApplySemesterYear, BasicFormField, University, \
     WantToApply, Publication, UniversityThrough, LanguageCertificateType, Grade, WhichAuthor
 
@@ -115,7 +116,6 @@ class WantToApplySerializer(serializers.ModelSerializer):
 
 
 class WantToApplyRequestSerializer(serializers.ModelSerializer):
-
     student_detailed_info = serializers.PrimaryKeyRelatedField(
         queryset=models.StudentDetailedInfo.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
@@ -186,7 +186,7 @@ class PublicationSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Publication
         fields = [
-            'id', 'student_detailed_info', 'title', 'publish_year', 'which_author', 'type','journal_reputation',
+            'id', 'student_detailed_info', 'title', 'publish_year', 'which_author', 'type', 'journal_reputation',
         ]
 
     def create(self, validated_data):
@@ -311,61 +311,132 @@ class LanguageCertificateSerializer(serializers.ModelSerializer):
             request_user = request.user
             student_detailed_info = attrs.get("student_detailed_info")
             if student_detailed_info.user is not None and student_detailed_info.user != request_user:
-                raise ValidationError(_("User can't set student_detailed_info of another user."))
+                raise ValidationError(
+                    {'student_detailed_info': _("User can't set student_detailed_info of another user.")})
             if student_detailed_info.user is None and request_user.is_authenticated:
-                raise ValidationError(_("User can't set student_detailed_info of another user."))
+                raise ValidationError(
+                    {'student_detailed_info': _("User can't set student_detailed_info of another user.")})
         else:
             raise ValidationError(_("Can't validate data.Can't get request user."))
         return attrs
 
-# TODO validate certificate type per serializer
-class RegularLanguageCertificateSerializer(LanguageCertificateSerializer):
 
+class RegularLanguageCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = models.RegularLanguageCertificate
         fields = '__all__'
+
+    def validate_certificate_type(self, value):
+        certificate_types = models.LanguageCertificateType
+        if value not in [certificate_types.IELTS, certificate_types.TOEFL]:
+            raise ValidationError(_("Value is not in allowed certificate types."))
+        return value
 
 
 class GMATCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = models.GMATCertificate
         fields = '__all__'
+        extra_kwargs = {
+            'certificate_type': {'validators': [validators.gmat_certificate_type_validator]}
+        }
+
+    def validate_certificate_type(self, value):
+        certificate_types = models.LanguageCertificateType
+        if value not in [certificate_types.GMAT]:
+            raise ValidationError(_("Value is not in allowed certificate types."))
+        return value
 
 
 class GREGeneralCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = models.GREGeneralCertificate
         fields = '__all__'
+        extra_kwargs = {
+            'certificate_type': {'validators': [validators.gre_general_certificate_type_validator]}
+        }
+
+    def validate_certificate_type(self, value):
+        certificate_types = models.LanguageCertificateType
+        if value not in [certificate_types.GRE_GENERAL]:
+            raise ValidationError(_("Value is not in allowed certificate types."))
+        return value
 
 
 class GRESubjectCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = models.GRESubjectCertificate
         fields = '__all__'
+        extra_kwargs = {
+            'certificate_type': {'validators': [validators.gre_subject_certificate_type_validator]}
+        }
+
+    def validate_certificate_type(self, value):
+        certificate_types = models.LanguageCertificateType
+        if value not in [certificate_types.GRE_CHEMISTRY, certificate_types.GRE_LITERATURE,
+                         certificate_types.GRE_MATHEMATICS]:
+            raise ValidationError(_("Value is not in allowed certificate types."))
+        return value
 
 
 class GREBiologyCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = models.GREBiologyCertificate
         fields = '__all__'
+        extra_kwargs = {
+            'certificate_type': {'validators': [validators.gre_biology_certificate_type_validator]}
+        }
+
+    def validate_certificate_type(self, value):
+        certificate_types = models.LanguageCertificateType
+        if value not in [certificate_types.GRE_BIOLOGY]:
+            raise ValidationError(_("Value is not in allowed certificate types."))
+        return value
 
 
 class GREPhysicsCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = models.GREPhysicsCertificate
         fields = '__all__'
+        extra_kwargs = {
+            'certificate_type': {'validators': [validators.gre_physics_certificate_type_validator]}
+        }
+
+    def validate_certificate_type(self, value):
+        certificate_types = models.LanguageCertificateType
+        if value not in [certificate_types.GRE_PHYSICS]:
+            raise ValidationError(_("Value is not in allowed certificate types."))
+        return value
 
 
 class GREPsychologyCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = models.GREPsychologyCertificate
         fields = '__all__'
+        extra_kwargs = {
+            'certificate_type': {'validators': [validators.gre_psychology_certificate_type_validator]}
+        }
+
+    def validate_certificate_type(self, value):
+        certificate_types = models.LanguageCertificateType
+        if value not in [certificate_types.GRE_PSYCHOLOGY]:
+            raise ValidationError(_("Value is not in allowed certificate types."))
+        return value
 
 
 class DuolingoCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = models.DuolingoCertificate
         fields = '__all__'
+        extra_kwargs = {
+            'certificate_type': {'validators': [validators.duolingo_certificate_type_validator]}
+        }
+
+    def validate_certificate_type(self, value):
+        certificate_types = models.LanguageCertificateType
+        if value not in [certificate_types.DUOLINGO]:
+            raise ValidationError(_("Value is not in allowed certificate types."))
+        return value
 
 
 class StudentDetailedInfoSerializer(serializers.ModelSerializer):
@@ -435,8 +506,6 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
         qs = UniversityThrough.objects.filter(student_detailed_info_id=obj.id)
         return UniversityThroughSerializer(qs, many=True, context=self.context).data
 
-
-
     def get_want_to_applies(self, obj):
         qs = WantToApply.objects.filter(student_detailed_info_id=obj.id)
         return WantToApplySerializer(qs, many=True, context=self.context).data
@@ -464,7 +533,7 @@ class StudentDetailedInfoRequestSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'user',
             'age', 'is_married',
-            'payment_affordability', 'gender', 'military_service_status'
+            'payment_affordability', 'gender', 'military_service_status',
             'prefers_full_fund', 'prefers_half_fund', 'prefers_self_fund',
             'comment', 'resume', 'related_work_experience', 'academic_break', 'olympiad', 'powerful_recommendation',
             'linkedin_url', 'homepage_url',

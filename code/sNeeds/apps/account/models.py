@@ -43,10 +43,19 @@ class PublicationType(Enum):
 
 
 class LanguageCertificateType(Enum):
+    """Every time updated this class in this file update the mirror class in account.validators"""
+
     IELTS = 'IELTS'
     TOEFL = 'TOEFL'
     GMAT = 'GMAT'
-    GRE = 'GRE'
+    GRE_GENERAL = 'GRE General'
+    GRE_CHEMISTRY = 'GRE Chemistry'
+    GRE_MATHEMATICS = 'GRE Mathematics'
+    GRE_LITERATURE = 'GRE Literature'
+    GRE_BIOLOGY = 'GRE Biology'
+    GRE_PHYSICS = 'GRE Physics'
+    GRE_PSYCHOLOGY = 'GRE Psychology'
+    DUOLINGO = 'Duolingo'
 
 
 class PaymentAffordability(Enum):
@@ -348,7 +357,9 @@ class UniversityThrough(models.Model):
 class LanguageCertificate(models.Model):
     certificate_type = EnumField(
         LanguageCertificateType,
-        default=LanguageCertificateType.IELTS
+        default=LanguageCertificateType.IELTS,
+        max_length=64,
+        help_text="Based on endpoint just some types are allowed to insert not all certificate types."
     )
     student_detailed_info = models.ForeignKey(
         StudentDetailedInfo,

@@ -1,3 +1,4 @@
+import six
 from rest_framework import serializers
 
 
@@ -8,10 +9,23 @@ class EnumField(serializers.ChoiceField):
         super(EnumField, self).__init__(**kwargs)
 
     def to_representation(self, obj):
-        return obj.name
+        if hasattr(obj, 'name'):
+            return obj.name
+        else:
+            return self.choice_strings_to_values.get(six.text_type(obj), obj)
 
     def to_internal_value(self, data):
         try:
             return self.enum[data]
         except KeyError:
             self.fail('invalid_choice', input=data)
+
+
+class CustomRepresentation:
+    def __init__(self, value, name):
+        self.value = value
+        self.name = name
+
+    def __str__(self):
+        return self.name
+
