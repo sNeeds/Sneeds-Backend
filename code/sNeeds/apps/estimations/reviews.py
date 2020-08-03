@@ -53,7 +53,6 @@ class StudentDetailedFormReview:
 
         elif last_grade_university == Grade.MASTER:
             if last_grade_university.university.rank < 850:
-                data['دانشگاه ارشد'] = MASTER_LAST_GRADE_TOP_850_COMMENTS
                 if last_grade_university.gpa <= 14:
                     data['معدل ارشد'] = MASTER_LAST_GRADE_TOP_850_COMMENTS_GPA_UNDER_14
                 if 14 < last_grade_university.gpa <= 16:
@@ -64,7 +63,6 @@ class StudentDetailedFormReview:
                     data['معدل ارشد'] = MASTER_LAST_GRADE_TOP_850_COMMENTS_GPA_ABOVE_18
 
             elif 850 <= last_grade_university.university.rank <= 1100:
-                data['دانشگاه ارشد'] = MASTER_LAST_GRADE_BETWEEN_850_1100_COMMENTS
                 if last_grade_university.gpa <= 14:
                     data['معدل ارشد'] = MASTER_LAST_GRADE_BETWEEN_850_1100_COMMENTS_GPA_UNDER_14
                 if 14 < last_grade_university.gpa <= 16:
@@ -75,7 +73,6 @@ class StudentDetailedFormReview:
                     data['معدل ارشد'] = MASTER_LAST_GRADE_BETWEEN_850_1100_COMMENTS_GPA_ABOVE_18
 
             elif 1100 < last_grade_university.university.rank:
-                data['دانشگاه ارشد'] = MASTER_LAST_GRADE_ABOVE_1100
                 if last_grade_university.gpa <= 14:
                     data['معدل ارشد'] = MASTER_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_UNDER_14
                 if 14 < last_grade_university.gpa <= 16:
@@ -88,14 +85,13 @@ class StudentDetailedFormReview:
             bachelor = university_through.objects.get_bachelor()
             if bachelor is not None:
                 if bachelor.gpa <= 14:
-                    data['دانشگاه کارشناسی'] = MASTER_WITH_BACHELOR_BAD_GPA
+                    data['معدل کارشناسی'] = MASTER_WITH_BACHELOR_BAD_GPA
                 elif 14 < bachelor.gpa <= 16:
-                    data['دانشگاه کارشناسی'] = MASTER_WITH_BACHELOR_MODERATE_GPA
+                    data['معدل کارشناسی'] = MASTER_WITH_BACHELOR_MODERATE_GPA
                 elif 16 < bachelor.gpa <= 18:
-                    data['دانشگاه کارشناسی'] = MASTER_WITH_BACHELOR_GOOD_GPA
+                    data['معدل کارشناسی'] = MASTER_WITH_BACHELOR_GOOD_GPA
                 elif 18 < bachelor.gpa:
-                    data['دانشگاه کارشناسی'] = MASTER_WITH_BACHELOR_EXCELLENT_GPA
-
+                    data['معدل کارشناسی'] = MASTER_WITH_BACHELOR_EXCELLENT_GPA
 
         elif last_grade_university == Grade.BACHELOR:
             if last_grade_university.university.rank < 850:

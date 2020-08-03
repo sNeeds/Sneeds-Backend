@@ -5,5 +5,8 @@ from . import views
 app_name = "estimations"
 
 urlpatterns = [
-    path('import-top-universities/', views.ListUsers.as_view(),),
+    path('form-comments/<int:id>/', views.FormComments),
+
+    path('import-top-universities/', views.ListUsers.as_view(), ),
+
 ]

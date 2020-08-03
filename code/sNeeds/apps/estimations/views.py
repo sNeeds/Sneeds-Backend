@@ -57,3 +57,9 @@ class ListUsers(APIView):
         ListUsersAutoFixture(WantToApply, follow_m2m={'universities': (0, 0)}).create(50)
 
         return HttpResponse()
+
+
+class FormComments(APIView):
+    def get(self, request):
+        # print(args)
+        return HttpResponse()

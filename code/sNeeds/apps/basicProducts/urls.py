@@ -26,5 +26,4 @@ urlpatterns = [
 
     path('webinar-room-links/', views.WebinarRoomLinkList.as_view(), name="webinar-room-link-list"),
     path('webinar-room-links/<int:id>/', views.WebinarRoomLinkDetail.as_view(), name="webinar-room-link-detail"),
-
 ]
