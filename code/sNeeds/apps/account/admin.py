@@ -12,4 +12,9 @@ admin.site.register(models.StudentFormApplySemesterYear)
 @admin.register(models.StudentFormFieldsChoice)
 class DiscountAdmin(admin.ModelAdmin):
     list_display = ('name', 'category', 'id')
-    list_filter = ('category', )
+    list_filter = ('category',)
+
+
+@admin.register(models.StudentDetailedInfo)
+class StudentDetailedInfoAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user')
