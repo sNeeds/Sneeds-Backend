@@ -79,6 +79,7 @@ class JournalReputation(Enum):
     FOURTOTEN = 'از چهار تا ده'
     ABOVETEN = 'بیشتر از ده'
 
+
 def current_year():
     return datetime.date.today().year
 
@@ -436,7 +437,6 @@ class GREBiologyCertificate(GRESubjectCertificate):
 
 
 class GREPhysicsCertificate(LanguageCertificate):
-
     classical_mechanics = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(20), MaxValueValidator(99)]
     )
@@ -451,7 +451,6 @@ class GREPhysicsCertificate(LanguageCertificate):
 
 
 class GREPsychologyCertificate(GRESubjectCertificate):
-
     biological = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(20), MaxValueValidator(99)]
     )
@@ -489,4 +488,3 @@ class DuolingoCertificate(LanguageCertificate):
     conversation = models.PositiveSmallIntegerField()
 
     production = models.PositiveSmallIntegerField()
-

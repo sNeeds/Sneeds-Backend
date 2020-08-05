@@ -6,7 +6,7 @@ import autofixture
 from autofixture import generators
 
 from django.db import transaction
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, Http404
 from rest_framework import status, generics, mixins, permissions
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
@@ -14,6 +14,7 @@ from rest_framework.views import APIView
 
 from sNeeds.apps.account.models import University, FieldOfStudy, FieldOfStudyType, StudentDetailedInfo, \
     UniversityThrough, PaymentAffordability, WantToApply
+from sNeeds.apps.estimations.reviews import StudentDetailedFormReview
 
 
 class ListUsersAutoFixture(autofixture.AutoFixture):
@@ -60,6 +61,13 @@ class ListUsers(APIView):
 
 
 class FormComments(APIView):
-    def get(self, request):
-        # print(args)
-        return HttpResponse()
+    def get_object(self, id):
+        try:
+            return StudentDetailedInfo.objects.get(id=id)
+        except StudentDetailedInfo.DoesNotExist:
+            raise Http404
+
+    def get(self, request, id, format=None):
+        form = self.get_object(id)
+        review = StudentDetailedFormReview(form)
+        return Response(review.review_all())

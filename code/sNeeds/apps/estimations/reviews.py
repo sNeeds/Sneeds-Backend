@@ -21,18 +21,19 @@ class StudentDetailedFormReview:
         university_through = UniversityThrough.objects.filter(
             student_detailed_info=self.student_detailed_form
         )
-        if university_through.objects.get_post_doc().exists():
+        if university_through.get_post_doc():
             last_grade = Grade.POST_DOC
-        elif university_through.objects.get_phd().exists():
+        elif university_through.get_phd():
             last_grade = Grade.PHD
-        elif university_through.objects.get_master().exists():
+        elif university_through.get_master():
             last_grade = Grade.MASTER
-        elif university_through.objects.get_bachelor().exists():
+        elif university_through.get_bachelor():
             last_grade = Grade.BACHELOR
 
         self.last_grade = last_grade
 
     def review_universities(self):
+        last_grade = self.last_grade
         university_through = UniversityThrough.objects.filter(
             student_detailed_info=self.student_detailed_form
         )
@@ -43,15 +44,14 @@ class StudentDetailedFormReview:
             return NONE_UNIVERSITY_COMMENT
 
         # User has previous university
-        last_grade_university = university_through.objects.filter(grade=self.last_grade)
+        last_grade_university = university_through.get(grade=self.last_grade)
 
         data = {}
 
-        if last_grade_university == Grade.PHD:
+        if last_grade == Grade.PHD:
             # TODO: PHD remained
             pass
-
-        elif last_grade_university == Grade.MASTER:
+        elif last_grade == Grade.MASTER:
             if last_grade_university.university.rank < 850:
                 if last_grade_university.gpa <= 14:
                     data['معدل ارشد'] = MASTER_LAST_GRADE_TOP_850_COMMENTS_GPA_UNDER_14
@@ -93,13 +93,17 @@ class StudentDetailedFormReview:
                 elif 18 < bachelor.gpa:
                     data['معدل کارشناسی'] = MASTER_WITH_BACHELOR_EXCELLENT_GPA
 
-        elif last_grade_university == Grade.BACHELOR:
+        elif last_grade == Grade.BACHELOR:
+            print(last_grade_university.university.rank)
             if last_grade_university.university.rank < 850:
+                print("1")
+                print(last_grade_university.gpa)
                 if last_grade_university.gpa <= 14:
                     data['معدل کارشناسی'] = BACHELOR_LAST_GRADE_TOP_850_COMMENTS_GPA_UNDER_14
                 if 14 < last_grade_university.gpa <= 16:
                     data['معدل کارشناسی'] = BACHELOR_LAST_GRADE_TOP_850_COMMENTS_GPA_BETWEEN_14_16
                 if 16 < last_grade_university.gpa <= 18:
+                    print("2")
                     data['معدل کارشناسی'] = BACHELOR_LAST_GRADE_TOP_850_COMMENTS_GPA_BETWEEN_16_18
                 if 18 < last_grade_university.gpa:
                     data['معدل کارشناسی'] = BACHELOR_LAST_GRADE_TOP_850_COMMENTS_GPA_ABOVE_18
@@ -123,11 +127,15 @@ class StudentDetailedFormReview:
                     data['معدل کارشناسی'] = BACHELOR_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_BETWEEN_16_18
                 if 18 < last_grade_university.gpa:
                     data['معدل کارشناسی'] = BACHELOR_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_ABOVE_18
+        return data
 
-    def review_student_detailed_form(self, form):
+    def review_all(self):
+        self._set_grade()
         data = {
-            "age": {
-                "title": "سن",
-                "message": self._review_age(form.age)
+            "university": {
+                "title": "دانشگاه",
+                "data": self.review_universities()
             }
         }
+
+        return data
