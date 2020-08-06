@@ -22,15 +22,15 @@ class StorePackageAdmin(admin.ModelAdmin):
 @admin.register(SoldStorePackage)
 class SoldStorePackageAdmin(admin.ModelAdmin):
     readonly_fields = ["paid_price", "total_price", ]
-    list_display = ['id', 'title', 'sold_to', 'consultant', 'created', 'update']
-    readonly_fields = ('created', 'update')
+    list_display = ['id', 'title', 'sold_to', 'consultant', 'created', 'updated']
+    readonly_fields = ('created', 'updated')
 
 
 @admin.register(SoldStoreUnpaidPackagePhase)
 class SoldStoreUnpaidPackagePhaseAdmin(admin.ModelAdmin):
     readonly_fields = ['status', 'sold_store_package', ]
     list_display = ['id', 'title', 'price', 'sold_store_package', ]
-    readonly_fields = ('created', 'update')
+    readonly_fields = ('created', 'updated')
 
 
 @admin.register(SoldStorePaidPackagePhase)
@@ -38,7 +38,7 @@ class SoldStorePaidPackagePhaseAdmin(admin.ModelAdmin):
     exclude = ['sold_to', ]
     readonly_fields = ['status', 'sold_store_package', ]
     list_display = ['id', 'title', 'price', 'sold_store_package', ]
-    readonly_fields = ('created', 'update')
+    readonly_fields = ('created', 'updated')
 
 
 @admin.register(StorePackagePhase)
