@@ -367,8 +367,8 @@ class LanguageCertificate(models.Model):
         on_delete=models.CASCADE
     )
 
-    # class Meta:
-    #     unique_together = (certi)
+    class Meta:
+        unique_together = ('certificate_type', 'student_detailed_info')
 
 
 class RegularLanguageCertificate(LanguageCertificate):

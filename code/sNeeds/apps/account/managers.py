@@ -33,6 +33,7 @@ class UniversityThroughQuerySetManager(models.QuerySet):
 
 
 class LanguageCertificateManager(models.QuerySet):
+
     def get_IELTS(self):
         from sNeeds.apps.account.models import LanguageCertificateType
         return self.filter(certificate_type=LanguageCertificateType.IELTS)
