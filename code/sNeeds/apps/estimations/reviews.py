@@ -1,5 +1,5 @@
 from .review_comments import *
-from ..account.models import Grade, University, UniversityThrough
+from ..account.models import Grade, University, UniversityThrough, LanguageCertificate
 
 
 class StudentDetailedFormReview:
@@ -151,7 +151,10 @@ class StudentDetailedFormReview:
                 return AGE_ABOVE_34_WITH_ACADEMIC_BREAK
 
     def review_language_certificates(self):
-        return
+        form = self.student_detailed_form
+        language_certificate_qs = LanguageCertificate.objects.filter(student_detailed_info=form)
+
+
 
     def review_all(self):
         self._set_grade()

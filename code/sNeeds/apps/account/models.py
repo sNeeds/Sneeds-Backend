@@ -9,7 +9,7 @@ from django.contrib.postgres.search import SearchVectorField
 from django.contrib.postgres.indexes import GinIndex
 from enumfields import Enum, EnumField
 
-from .managers import UniversityThroughQuerySetManager
+from .managers import UniversityThroughQuerySetManager, LanguageCertificateQuerysetManager
 from .validators import validate_resume_file_extension, validate_resume_file_size, ten_factor_validator
 from . import validators
 
@@ -366,6 +366,8 @@ class LanguageCertificate(models.Model):
         StudentDetailedInfo,
         on_delete=models.CASCADE
     )
+
+    objects = LanguageCertificateQuerysetManager.as_manager()
 
     class Meta:
         unique_together = ('certificate_type', 'student_detailed_info')

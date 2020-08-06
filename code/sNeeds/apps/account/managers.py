@@ -32,7 +32,7 @@ class UniversityThroughQuerySetManager(models.QuerySet):
             return None
 
 
-class LanguageCertificateManager(models.QuerySet):
+class LanguageCertificateQuerysetManager(models.QuerySet):
 
     def get_IELTS(self):
         from sNeeds.apps.account.models import LanguageCertificateType
