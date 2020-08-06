@@ -94,16 +94,12 @@ class StudentDetailedFormReview:
                     data['معدل کارشناسی'] = MASTER_WITH_BACHELOR_EXCELLENT_GPA
 
         elif last_grade == Grade.BACHELOR:
-            print(last_grade_university.university.rank)
             if last_grade_university.university.rank < 850:
-                print("1")
-                print(last_grade_university.gpa)
                 if last_grade_university.gpa <= 14:
                     data['معدل کارشناسی'] = BACHELOR_LAST_GRADE_TOP_850_COMMENTS_GPA_UNDER_14
                 if 14 < last_grade_university.gpa <= 16:
                     data['معدل کارشناسی'] = BACHELOR_LAST_GRADE_TOP_850_COMMENTS_GPA_BETWEEN_14_16
                 if 16 < last_grade_university.gpa <= 18:
-                    print("2")
                     data['معدل کارشناسی'] = BACHELOR_LAST_GRADE_TOP_850_COMMENTS_GPA_BETWEEN_16_18
                 if 18 < last_grade_university.gpa:
                     data['معدل کارشناسی'] = BACHELOR_LAST_GRADE_TOP_850_COMMENTS_GPA_ABOVE_18
@@ -129,12 +125,41 @@ class StudentDetailedFormReview:
                     data['معدل کارشناسی'] = BACHELOR_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_ABOVE_18
         return data
 
+    def review_age(self):
+        age = self.student_detailed_form.age
+        form = self.student_detailed_form
+
+        if self.student_detailed_form < 28:
+            return None
+
+        elif 28 <= age < 30:
+            if form.academic_break is None:
+                return AGE_BETWEEN_28_AND_30_WITHOUT_ACADEMIC_BREAK
+            elif form.academic_break:
+                return AGE_BETWEEN_28_AND_30_WITH_ACADEMIC_BREAK
+
+        elif 30 <= age < 34:
+            if form.academic_break is None:
+                return AGE_BETWEEN_30_AND_34_WITHOUT_ACADEMIC_BREAK
+            elif form.academic_break:
+                return AGE_BETWEEN_30_AND_34_WITH_ACADEMIC_BREAK
+
+        elif 34 <= age:
+            if form.academic_break is None:
+                return AGE_ABOVE_34_WITHOUT_ACADEMIC_BREAK
+            elif form.academic_break:
+                return AGE_ABOVE_34_WITH_ACADEMIC_BREAK
+
     def review_all(self):
         self._set_grade()
         data = {
             "university": {
                 "title": "دانشگاه",
                 "data": self.review_universities()
+            },
+            "age": {
+                "title": "سن و گپ تحصیلی",
+                "data": self.review_age()
             }
         }
 
