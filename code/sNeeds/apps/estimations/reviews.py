@@ -150,6 +150,9 @@ class StudentDetailedFormReview:
             elif form.academic_break:
                 return AGE_ABOVE_34_WITH_ACADEMIC_BREAK
 
+    def review_language_certificates(self):
+        return
+
     def review_all(self):
         self._set_grade()
         data = {

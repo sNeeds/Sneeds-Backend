@@ -367,6 +367,9 @@ class LanguageCertificate(models.Model):
         on_delete=models.CASCADE
     )
 
+    # class Meta:
+    #     unique_together = (certi)
+
 
 class RegularLanguageCertificate(LanguageCertificate):
     speaking = models.DecimalField(max_digits=5, decimal_places=2)

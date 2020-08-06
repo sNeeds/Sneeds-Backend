@@ -30,3 +30,21 @@ class UniversityThroughQuerySetManager(models.QuerySet):
             return self.all().get(grade=Grade.POST_DOC)
         except self.model.DoesNotExist:
             return None
+
+
+class LanguageCertificateManager(models.QuerySet):
+    def get_IELTS(self):
+        from sNeeds.apps.account.models import LanguageCertificateType
+        return self.filter(certificate_type=LanguageCertificateType.IELTS)
+
+    def get_TOEFL(self):
+        from sNeeds.apps.account.models import LanguageCertificateType
+        return self.filter(certificate_type=LanguageCertificateType.TOEFL)
+
+    def get_GRE(self):
+        from sNeeds.apps.account.models import LanguageCertificateType
+        return self.filter(certificate_type=LanguageCertificateType.GRE)
+
+    def get_Duolingo(self):
+        from sNeeds.apps.account.models import LanguageCertificateType
+        return self.filter(certificate_type=LanguageCertificateType.DUOLINGO)
