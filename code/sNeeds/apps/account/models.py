@@ -43,8 +43,6 @@ class PublicationType(Enum):
 
 
 class LanguageCertificateType(Enum):
-    """Every time updated this class in this file update the mirror class in account.validators"""
-
     IELTS = 'IELTS'
     TOEFL = 'TOEFL'
     GMAT = 'GMAT'
@@ -373,6 +371,10 @@ class LanguageCertificate(models.Model):
     class Meta:
         unique_together = ('certificate_type', 'student_detailed_info')
 
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
 
 class RegularLanguageCertificate(LanguageCertificate):
     speaking = models.DecimalField(max_digits=5, decimal_places=2)
@@ -380,6 +382,10 @@ class RegularLanguageCertificate(LanguageCertificate):
     writing = models.DecimalField(max_digits=5, decimal_places=2)
     reading = models.DecimalField(max_digits=5, decimal_places=2)
     overall = models.DecimalField(max_digits=5, decimal_places=2)
+
+    def clean(self, *args, **kwargs):
+        if self.certificate_type not in [LanguageCertificateType.IELTS, LanguageCertificateType.TOEFL]:
+            raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})
 
 
 class GMATCertificate(LanguageCertificate):
@@ -397,6 +403,10 @@ class GMATCertificate(LanguageCertificate):
         validators=[MinValueValidator(200), MaxValueValidator(800)],
     )
 
+    def clean(self, *args, **kwargs):
+        if self.certificate_type not in [LanguageCertificateType.GMAT]:
+            raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})
+
 
 class GREGeneralCertificate(LanguageCertificate):
     quantitative = models.PositiveSmallIntegerField(
@@ -409,6 +419,10 @@ class GREGeneralCertificate(LanguageCertificate):
         max_digits=2, decimal_places=1,
         validators=[MinValueValidator(0), MaxValueValidator(6)],
     )
+
+    def clean(self, *args, **kwargs):
+        if self.certificate_type not in [LanguageCertificateType.GRE_GENERAL]:
+            raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})
 
 
 class GRESubjectCertificate(LanguageCertificate):
@@ -427,6 +441,11 @@ class GRESubjectCertificate(LanguageCertificate):
         validators=[MinValueValidator(200), MaxValueValidator(990), ten_factor_validator],
     )
 
+    def clean(self, *args, **kwargs):
+        if self.certificate_type not in [LanguageCertificateType.GRE_CHEMISTRY, LanguageCertificateType.GRE_LITERATURE,
+                                         LanguageCertificateType.GRE_MATHEMATICS]:
+            raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})
+
 
 class GREBiologyCertificate(GRESubjectCertificate):
     cellular_and_molecular = models.PositiveSmallIntegerField(
@@ -441,6 +460,10 @@ class GREBiologyCertificate(GRESubjectCertificate):
         validators=[MinValueValidator(20), MaxValueValidator(99)]
     )
 
+    def clean(self, *args, **kwargs):
+        if self.certificate_type not in [LanguageCertificateType.GRE_BIOLOGY]:
+            raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})
+
 
 class GREPhysicsCertificate(LanguageCertificate):
     classical_mechanics = models.PositiveSmallIntegerField(
@@ -454,6 +477,10 @@ class GREPhysicsCertificate(LanguageCertificate):
     quantum_mechanics = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(20), MaxValueValidator(99)]
     )
+
+    def clean(self, *args, **kwargs):
+        if self.certificate_type not in [LanguageCertificateType.GRE_PHYSICS]:
+            raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})
 
 
 class GREPsychologyCertificate(GRESubjectCertificate):
@@ -481,6 +508,10 @@ class GREPsychologyCertificate(GRESubjectCertificate):
         validators=[MinValueValidator(20), MaxValueValidator(99)]
     )
 
+    def clean(self, *args, **kwargs):
+        if self.certificate_type not in [LanguageCertificateType.GRE_PSYCHOLOGY]:
+            raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})
+
 
 class DuolingoCertificate(LanguageCertificate):
     overall = models.PositiveSmallIntegerField(
@@ -494,3 +525,7 @@ class DuolingoCertificate(LanguageCertificate):
     conversation = models.PositiveSmallIntegerField()
 
     production = models.PositiveSmallIntegerField()
+
+    def clean(self, *args, **kwargs):
+        if self.certificate_type not in [LanguageCertificateType.DUOLINGO]:
+            raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})

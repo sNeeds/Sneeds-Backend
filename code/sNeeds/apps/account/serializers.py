@@ -337,9 +337,6 @@ class GMATCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = models.GMATCertificate
         fields = '__all__'
-        extra_kwargs = {
-            'certificate_type': {'validators': [validators.gmat_certificate_type_validator]}
-        }
 
     def validate_certificate_type(self, value):
         certificate_types = models.LanguageCertificateType
@@ -352,9 +349,6 @@ class GREGeneralCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = models.GREGeneralCertificate
         fields = '__all__'
-        extra_kwargs = {
-            'certificate_type': {'validators': [validators.gre_general_certificate_type_validator]}
-        }
 
     def validate_certificate_type(self, value):
         certificate_types = models.LanguageCertificateType
@@ -367,9 +361,6 @@ class GRESubjectCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = models.GRESubjectCertificate
         fields = '__all__'
-        extra_kwargs = {
-            'certificate_type': {'validators': [validators.gre_subject_certificate_type_validator]}
-        }
 
     def validate_certificate_type(self, value):
         certificate_types = models.LanguageCertificateType
@@ -383,9 +374,6 @@ class GREBiologyCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = models.GREBiologyCertificate
         fields = '__all__'
-        extra_kwargs = {
-            'certificate_type': {'validators': [validators.gre_biology_certificate_type_validator]}
-        }
 
     def validate_certificate_type(self, value):
         certificate_types = models.LanguageCertificateType
@@ -398,9 +386,6 @@ class GREPhysicsCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = models.GREPhysicsCertificate
         fields = '__all__'
-        extra_kwargs = {
-            'certificate_type': {'validators': [validators.gre_physics_certificate_type_validator]}
-        }
 
     def validate_certificate_type(self, value):
         certificate_types = models.LanguageCertificateType
@@ -413,9 +398,6 @@ class GREPsychologyCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = models.GREPsychologyCertificate
         fields = '__all__'
-        extra_kwargs = {
-            'certificate_type': {'validators': [validators.gre_psychology_certificate_type_validator]}
-        }
 
     def validate_certificate_type(self, value):
         certificate_types = models.LanguageCertificateType
@@ -428,9 +410,6 @@ class DuolingoCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = models.DuolingoCertificate
         fields = '__all__'
-        extra_kwargs = {
-            'certificate_type': {'validators': [validators.duolingo_certificate_type_validator]}
-        }
 
     def validate_certificate_type(self, value):
         certificate_types = models.LanguageCertificateType
