@@ -43,7 +43,6 @@ class PublicationType(Enum):
 
 
 class LanguageCertificateType(Enum):
-    """Every time updated this class in this file update the mirror class in account.validators"""
 
     IELTS = 'IELTS'
     TOEFL = 'TOEFL'

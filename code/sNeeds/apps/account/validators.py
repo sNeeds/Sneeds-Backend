@@ -3,23 +3,6 @@ import os
 
 from django.utils.translation import gettext_lazy as _
 
-from enumfields import Enum
-
-
-class LanguageCertificateType(Enum):
-    """Every time updated this class in this file update the mirror class in account.models"""
-
-    IELTS = 'IELTS'
-    TOEFL = 'TOEFL'
-    GMAT = 'GMAT'
-    GRE_GENERAL = 'GRE General'
-    GRE_CHEMISTRY = 'GRE Chemistry'
-    GRE_MATHEMATICS = 'GRE Mathematics'
-    GRE_LITERATURE = 'GRE Literature'
-    GRE_BIOLOGY = 'GRE Biology'
-    GRE_PHYSICS = 'GRE Physics'
-    GRE_PSYCHOLOGY = 'GRE Psychology'
-    DUOLINGO = 'Duolingo'
 
 
 def validate_marital_status(value):
