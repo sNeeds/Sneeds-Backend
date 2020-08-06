@@ -59,6 +59,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     'sNeeds.settings.middlewares.middlewares.CORSMiddleware',
+    'sNeeds.settings.middlewares.middlewares.TimezoneMiddleware',
 ]
 
 TEMPLATES = [
