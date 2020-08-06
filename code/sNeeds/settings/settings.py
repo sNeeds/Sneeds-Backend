@@ -192,3 +192,11 @@ permissions.IsAuthenticated = CustomIsAuthenticated
 # To prevent 413 error
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
 # ---------------------
+
+
+# ---------------------
+# Add new DateTimeFormat
+from django.conf.global_settings import DATETIME_INPUT_FORMATS
+
+DATETIME_INPUT_FORMATS += ('%Y-%m-%dT%H:%M:%S',)
+# ---------------------

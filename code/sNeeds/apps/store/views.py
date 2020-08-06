@@ -21,9 +21,6 @@ class TimeSlotSaleListAPIView(generics.ListCreateAPIView):
     filterset_class = filtersets.TimeSlotSaleFilter
     permission_classes = [IsConsultantUnsafePermission, permissions.IsAuthenticatedOrReadOnly]
 
-    def get_queryset(self):
-        return super(TimeSlotSaleListAPIView, self).get_queryset().order_by('-start_time')
-
 
 class TimeSlotSaleDetailAPIView(generics.RetrieveDestroyAPIView):
     lookup_field = "id"

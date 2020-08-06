@@ -41,6 +41,7 @@ class ProductQuerySet(models.QuerySet):
         #         pass
         # return result_qs
         return None
+
     def get_class_products(self):
         # from sNeeds.apps.basicProducts.models import ClassProduct
         # result_qs = ClassProduct.objects.none()
@@ -238,6 +239,9 @@ class TimeSlotSale(Product):
                                 "the time you chose conflicts with these times you have sold before :" +
                                 str(sessions_str)),
             })
+
+    class Mata:
+        ordering = ['start_time', ]
 
 
 class SoldProduct(models.Model):
