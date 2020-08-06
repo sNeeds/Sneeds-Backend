@@ -43,7 +43,6 @@ class PublicationType(Enum):
 
 
 class LanguageCertificateType(Enum):
-
     IELTS = 'IELTS'
     TOEFL = 'TOEFL'
     GMAT = 'GMAT'

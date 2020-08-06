@@ -4,7 +4,6 @@ import os
 from django.utils.translation import gettext_lazy as _
 
 
-
 def validate_marital_status(value):
     pass
 
@@ -49,9 +48,4 @@ def ten_factor_validator(value):
         raise ValidationError("Value Should be a factor of 10")
     else:
         return value
-
-
-
-
-
 

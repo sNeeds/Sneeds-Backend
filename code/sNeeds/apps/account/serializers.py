@@ -326,68 +326,96 @@ class RegularLanguageCertificateSerializer(LanguageCertificateSerializer):
         model = models.RegularLanguageCertificate
         fields = '__all__'
 
+    def validate_certificate_type(self, value):
+        certificate_types = models.LanguageCertificateType
+        if value not in [certificate_types.IELTS, certificate_types.TOEFL]:
+            raise ValidationError(_("Value is not in allowed certificate types."))
+        return value
+
 
 class GMATCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = models.GMATCertificate
         fields = '__all__'
-        extra_kwargs = {
-            'certificate_type': {'validators': [validators.gmat_certificate_type_validator]}
-        }
+
+    def validate_certificate_type(self, value):
+        certificate_types = models.LanguageCertificateType
+        if value not in [certificate_types.GMAT]:
+            raise ValidationError(_("Value is not in allowed certificate types."))
+        return value
 
 
 class GREGeneralCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = models.GREGeneralCertificate
         fields = '__all__'
-        extra_kwargs = {
-            'certificate_type': {'validators': [validators.gre_general_certificate_type_validator]}
-        }
+
+    def validate_certificate_type(self, value):
+        certificate_types = models.LanguageCertificateType
+        if value not in [certificate_types.GRE_GENERAL]:
+            raise ValidationError(_("Value is not in allowed certificate types."))
+        return value
 
 
 class GRESubjectCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = models.GRESubjectCertificate
         fields = '__all__'
-        extra_kwargs = {
-            'certificate_type': {'validators': [validators.gre_subject_certificate_type_validator]}
-        }
+
+    def validate_certificate_type(self, value):
+        certificate_types = models.LanguageCertificateType
+        if value not in [certificate_types.GRE_CHEMISTRY, certificate_types.GRE_LITERATURE,
+                         certificate_types.GRE_MATHEMATICS]:
+            raise ValidationError(_("Value is not in allowed certificate types."))
+        return value
 
 
 class GREBiologyCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = models.GREBiologyCertificate
         fields = '__all__'
-        extra_kwargs = {
-            'certificate_type': {'validators': [validators.gre_biology_certificate_type_validator]}
-        }
+
+    def validate_certificate_type(self, value):
+        certificate_types = models.LanguageCertificateType
+        if value not in [certificate_types.GRE_BIOLOGY]:
+            raise ValidationError(_("Value is not in allowed certificate types."))
+        return value
 
 
 class GREPhysicsCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = models.GREPhysicsCertificate
         fields = '__all__'
-        extra_kwargs = {
-            'certificate_type': {'validators': [validators.gre_physics_certificate_type_validator]}
-        }
+
+    def validate_certificate_type(self, value):
+        certificate_types = models.LanguageCertificateType
+        if value not in [certificate_types.GRE_PHYSICS]:
+            raise ValidationError(_("Value is not in allowed certificate types."))
+        return value
 
 
 class GREPsychologyCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = models.GREPsychologyCertificate
         fields = '__all__'
-        extra_kwargs = {
-            'certificate_type': {'validators': [validators.gre_psychology_certificate_type_validator]}
-        }
+
+    def validate_certificate_type(self, value):
+        certificate_types = models.LanguageCertificateType
+        if value not in [certificate_types.GRE_PSYCHOLOGY]:
+            raise ValidationError(_("Value is not in allowed certificate types."))
+        return value
 
 
 class DuolingoCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = models.DuolingoCertificate
         fields = '__all__'
-        extra_kwargs = {
-            'certificate_type': {'validators': [validators.duolingo_certificate_type_validator]}
-        }
+
+    def validate_certificate_type(self, value):
+        certificate_types = models.LanguageCertificateType
+        if value not in [certificate_types.DUOLINGO]:
+            raise ValidationError(_("Value is not in allowed certificate types."))
+        return value
 
 
 class StudentDetailedInfoSerializer(serializers.ModelSerializer):
