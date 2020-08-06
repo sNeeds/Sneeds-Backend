@@ -158,6 +158,7 @@ class StudentDetailedFormReview:
 
 
 
+
     def review_all(self):
         self._set_grade()
         data = {
