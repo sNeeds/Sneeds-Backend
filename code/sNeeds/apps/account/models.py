@@ -213,18 +213,26 @@ class Publication(models.Model):
         validators=[MinValueValidator(1900), MaxValueValidator(2100)],
         help_text="In Gregorian"
     )
-    which_author = EnumField(WhichAuthor, max_length=20, default=WhichAuthor.FIRST)
+    which_author = EnumField(WhichAuthor, max_length=128, default=WhichAuthor.FIRST)
     type = EnumField(PublicationType, max_length=20, default=PublicationType.JOURNAL)
 
     journal_reputation = EnumField(
         JournalReputation,
-        max_length=30,
+        max_length=128,
         null=True,
     )
-    value = models.IntegerField(
-        validators=[MinValueValidator(0), MinValueValidator(100)],
+
+    value = models.FloatField(
+        validators=[MinValueValidator(0), MaxValueValidator(1)],
         editable=False
-    )  # Used in analyze and review, determined in signal
+    )
+
+    def _get_value(self):
+        value = (self.journal_reputation.value * 2 + self.which_author.value) / 3
+        return value
+
+    def clean(self):
+        self.value = self._get_value()
 
     def __str__(self):
         return self.title
