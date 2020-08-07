@@ -1,5 +1,5 @@
 from .review_comments import *
-from ..account.models import Grade, University, UniversityThrough, LanguageCertificate
+from ..account.models import Grade, University, UniversityThrough, LanguageCertificate, Publication
 
 
 class StudentDetailedFormReview:
@@ -153,10 +153,10 @@ class StudentDetailedFormReview:
     def review_language_certificates(self):
         form = self.student_detailed_form
         language_certificate_qs = LanguageCertificate.objects.filter(student_detailed_info=form)
+        # TODO: R
 
-
-
-
+    def review_publications(self):
+        publications = Publication.objects.filter(student_detailed_info=self.student_detailed_form)
 
 
     def review_all(self):

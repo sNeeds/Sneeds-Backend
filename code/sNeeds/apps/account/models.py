@@ -210,6 +210,10 @@ class Publication(models.Model):
         max_length=30,
         null=True,
     )
+    value = models.IntegerField(
+        validators=[MinValueValidator(0), MinValueValidator(100)],
+        editable=False
+    )  # Used in analyze and review, determined in signal
 
     def __str__(self):
         return self.title
