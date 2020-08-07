@@ -30,13 +30,6 @@ class Grade(Enum):
     POST_DOC = 'پست دکتری'
 
 
-class WhichAuthor(Enum):
-    FIRST = 'نویسنده اول'
-    SECOND = 'نویسنده دوم'
-    THIRD = 'نویسنده سوم'
-    FOURTH_OR_MORE = 'نویسنده چهارم به بعد'
-
-
 class PublicationType(Enum):
     JOURNAL = 'ژورنالی'
     CONFERENCE = 'کنفرانسی'
@@ -72,10 +65,28 @@ class MilitaryServiceStatus(Enum):
     UNDID = 'گذرانده نشده'
 
 
+class WhichAuthor(Enum):
+    FIRST = 'نویسنده اول'
+    SECOND = 'نویسنده دوم'
+    THIRD = 'نویسنده سوم'
+    FOURTH_OR_MORE = 'نویسنده چهارم به بعد'
+
+    class Value:
+        FIRST = 1
+        SECOND = 0.75
+        THIRD = 0.5
+        FOURTH_OR_MORE = 0.25
+
+
 class JournalReputation(Enum):
-    ONETOTHREE = 'از یک تا سه'
-    FOURTOTEN = 'از چهار تا ده'
-    ABOVETEN = 'بیشتر از ده'
+    ONE_TO_THREE = 'از یک تا سه'
+    FOUR_TO_TEN = 'از چهار تا ده'
+    ABOVE_TEN = 'بیشتر از ده'
+
+    class Value:
+        ONE_TO_THREE = 1
+        FOUR_TO_TEN = 0.7
+        ABOVE_TEN = 0.5
 
 
 def current_year():
