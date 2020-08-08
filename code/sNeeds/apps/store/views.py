@@ -68,8 +68,8 @@ class SoldTimeSlotSaleDetailAPIView(generics.RetrieveAPIView):
 class SoldTimeSlotSaleSafeListAPIView(generics.ListAPIView):
     queryset = SoldTimeSlotSale.objects.all()
     serializer_class = serializers.SoldTimeSlotSaleSafeSerializer
+    filterset_class = filtersets.SoldTimeSlotSaleFilter
     ordering_fields = ['start_time', ]
-    filterset_fields = ['used', 'consultant']
 
 
 class SoldTimeSlotSaleSafeDetailAPIView(generics.RetrieveAPIView):
