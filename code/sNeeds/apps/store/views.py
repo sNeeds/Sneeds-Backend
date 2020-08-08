@@ -22,6 +22,27 @@ class TimeSlotSaleListAPIView(generics.ListCreateAPIView):
     permission_classes = [IsConsultantUnsafePermission, permissions.IsAuthenticatedOrReadOnly]
 
 
+class TimeSlotSaleExistListAPIView(generics.ListAPIView):
+    queryset = TimeSlotSale.objects.all()
+    filterset_class = filtersets.TimeSlotSaleFilter
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        if self.queryset.exists():
+            return Response(
+                {
+                    "exists": True,
+                    "number": len(queryset)
+                }
+            )
+        return Response(
+            {
+                "exists": False,
+                "number": len(queryset)
+            }
+        )
+
+
 class TimeSlotSaleDetailAPIView(generics.RetrieveDestroyAPIView):
     lookup_field = "id"
     queryset = TimeSlotSale.objects.all()
