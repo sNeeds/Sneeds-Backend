@@ -5,7 +5,6 @@ from . import models
 admin.site.register(models.Country)
 admin.site.register(models.UniversityThrough)
 admin.site.register(models.FieldOfStudyType)
-admin.site.register(models.Publication)
 admin.site.register(models.WantToApply)
 
 
@@ -91,8 +90,6 @@ class UniversityAdmin(admin.ModelAdmin):
     search_fields = ['name']
 
 
-@admin.register(models.FieldOfStudy)
-class FieldOfStudyAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'major_type']
-    search_fields = ['name', ]
-    list_filter = ['major_type']
+@admin.register(models.Publication)
+class PublicationAdmin(admin.ModelAdmin):
+    readonly_fields = ['value']

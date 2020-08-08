@@ -71,19 +71,11 @@ class WhichAuthor(Enum):
     THIRD = 'نویسنده سوم'
     FOURTH_OR_MORE = 'نویسنده چهارم به بعد'
 
-    class Value:
-        FIRST = 1
-        SECOND = 0.75
-        THIRD = 0.5
-        FOURTH_OR_MORE = 0.25
-
 
 class JournalReputation(Enum):
     ONE_TO_THREE = 'از یک تا سه'
     FOUR_TO_TEN = 'از چهار تا ده'
     ABOVE_TEN = 'بیشتر از ده'
-
-
 
 
 def current_year():
@@ -222,31 +214,7 @@ class Publication(models.Model):
     value = models.FloatField(
         validators=[MinValueValidator(0), MaxValueValidator(1)],
         editable=False
-    )
-
-    def _get_value(self):
-        reputation = self.journal_reputation
-        reputation_value = 0
-        if reputation == JournalReputation.ONE_TO_THREE:
-            reputation_value = 1
-        elif reputation == JournalReputation.FOUR_TO_TEN:
-            reputation_value = 0.7
-        elif reputation == JournalReputation.ABOVE_TEN:
-            reputation_value = 0.5
-
-
-        print(getattr(JournalReputation.Values, self.journal_reputation.name))
-        # print(getattr(JournalReputation.Values, self.journal_reputation.name).value)
-        # print(type(getattr(JournalReputation.Values, self.journal_reputation.name)))
-        value = (self.journal_reputation.Value * 2 + self.which_author.Value) / 3
-        return value
-
-    def clean(self):
-        self.value = self._get_value()
-
-    def save(self, *args, **kwargs):
-        self.full_clean()
-        super().save(*args, **kwargs)
+    )  # Updated in signal
 
     def __str__(self):
         return self.title
