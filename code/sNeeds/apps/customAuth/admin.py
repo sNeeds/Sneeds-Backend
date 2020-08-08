@@ -32,7 +32,8 @@ class CustomUserAdmin(UserAdmin):
     search_fields = ('email', 'first_name', 'last_name', 'phone_number')
     ordering = ('email',)
 
-    actions = [export_as_csv_action("CSV Export", fields=['first_name', 'last_name', 'email', 'phone_number', 'user_type'])]
+    actions = [
+        export_as_csv_action("CSV Export", fields=['first_name', 'last_name', 'email', 'phone_number', 'user_type'])]
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
