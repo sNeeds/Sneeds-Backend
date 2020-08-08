@@ -1,4 +1,6 @@
 import os
+import pytz
+from datetime import timedelta
 
 from ckeditor.fields import RichTextField
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
@@ -7,6 +9,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 from sNeeds.apps.account.models import StudentDetailedInfo
 from sNeeds.apps.consultants.models import ConsultantProfile
@@ -43,6 +46,11 @@ def get_store_package_image_upload_path(instance, file_name):
 
 def get_sold_store_package_image_upload_path(instance, file_name):
     return "storePackage/images/sold-store-package-images/{}/{}".format(instance.id, file_name)
+
+
+def default_show_on_marketplace_until():
+    now = timezone.now()
+    return now + timedelta(days=4)
 
 
 class StorePackagePhaseDetail(models.Model):
@@ -159,6 +167,7 @@ class SoldStorePackage(models.Model):
     paid_price = models.PositiveIntegerField()
     total_price = models.PositiveIntegerField()
 
+    show_on_marketplace_until = models.DateTimeField(default=default_show_on_marketplace_until)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
