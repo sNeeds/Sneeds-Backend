@@ -193,7 +193,7 @@ class SoldStorePackage(models.Model):
         self._update_total_price()
 
     class Meta:
-        ordering = ['-updated']
+        ordering = ['-created']
 
 
 class SoldStorePackagePhaseDetail(models.Model):
