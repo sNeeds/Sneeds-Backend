@@ -50,7 +50,7 @@ def get_sold_store_package_image_upload_path(instance, file_name):
 
 def default_show_on_marketplace_until():
     now = timezone.now()
-    return now + timedelta(days=4)
+    return now + timedelta(days=3)
 
 
 class StorePackagePhaseDetail(models.Model):
