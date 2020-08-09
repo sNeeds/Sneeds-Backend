@@ -54,7 +54,7 @@ class ConsultantProfileSerializer(serializers.ModelSerializer):
     def get_rate(self, obj):
         rate = obj.rate
         if rate is None:
-            rate = 4.5 + (obj.id // 5) / 10
+            rate = 4.5 + (obj.id // 10) / 10
         else:
             rate = (4 * 5 + obj.rate) / 5
         rate = round(rate, 1)
