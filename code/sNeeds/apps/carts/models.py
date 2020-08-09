@@ -200,3 +200,6 @@ class Cart(models.Model):
 
     def __str__(self):
         return "User {} cart | pk: {}".format(self.user, str(self.pk))
+
+    class Meta:
+        ordering = ["-id"]

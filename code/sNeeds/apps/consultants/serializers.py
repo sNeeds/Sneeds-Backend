@@ -53,8 +53,11 @@ class ConsultantProfileSerializer(serializers.ModelSerializer):
 
     def get_rate(self, obj):
         rate = obj.rate
-        if rate is not None:
-            rate = round(obj.rate, 1)
+        if rate is None:
+            rate = 4.5 + (obj.id // 5) / 10
+        else:
+            rate = (4 * 5 + obj.rate) / 5 * 5
+        rate = round(obj.rate, 1)
         return rate
 
     def get_first_name(self, obj):
