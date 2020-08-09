@@ -104,11 +104,11 @@ BACHELOR_HAS_GOOD_PUBLICATION_PLURAL_START = "از نظر ارزش برای اپ
 BACHELOR_HAS_AVERAGE_PUBLICATION_PLURAL_START = "از دید استاد n تا مقالت متوسط حساب می‌شن ولی برای کارشناسی خیلی خوبن. "
 BACHELOR_HAS_BAD_PUBLICATION_PLURAL_START = "این n تا مقاله شاید خیلی ارزش بالایی تو اپلای نداشته باشن. "
 
-BACHELOR_HAS_EXCELLENT_PUBLICATION_PLURAL = " مقاله‌های تو فوق‌العادن و به دلیل impact factor بالا و نفر مهم بودن تو نوشتن مقاله ارزش خیلی زیادی دارن به خصوص که تو کارشناسی هم نوشته شدن! خیلی نکته مثبتی برای رزومت حساب می‌شن چون تو کارشناسی کمتر کسی چنین مقاله‌‌هایی دارن. "
-BACHELOR_HAS_GREAT_PUBLICATION_PLURAL = "مقاله‌های تو با توجه به impact factor بالا و نفر مهم بودن در نگارش ارزش بالایی دارن. توی کارشناسی آدم‌های خیلی کمی چنین مقاله‌‌هایی دارن پس یه نکته خیلی مثبت برای رزومت هست. "
-BACHELOR_HAS_GOOD_PUBLICATION_PLURAL = "مقاله‌هات ارزش بالایی برای استاد دارن و با توجه به این که کارشناسی هستی نکته خیلی خوبی می‌تونن برای رزومت باشن! "
-BACHELOR_HAS_AVERAGE_PUBLICATION_PLURAL = "چون مجموع impact factor و درگیری در مقاله برای استاد خیلی مهمه ولی با توجه به این که کارشناسی هستی ارزش زیادی تو رزومت دارن. "
-BACHELOR_HAS_BAD_PUBLICATION_PLURAL = "دو مورد impact factor بالا و جزو نفرات اول مقاله بودن خیلی مهمه که متاسفانه این مقاله‌ها این دو مورد رو ندارن. "
+BACHELOR_HAS_EXCELLENT_PUBLICATION_PLURAL = BACHELOR_HAS_EXCELLENT_PUBLICATION_PLURAL_START + " مقاله‌های تو فوق‌العادن و به دلیل impact factor بالا و نفر مهم بودن تو نوشتن مقاله ارزش خیلی زیادی دارن به خصوص که تو کارشناسی هم نوشته شدن! خیلی نکته مثبتی برای رزومت حساب می‌شن چون تو کارشناسی کمتر کسی چنین مقاله‌‌هایی دارن. "
+BACHELOR_HAS_GREAT_PUBLICATION_PLURAL = BACHELOR_HAS_GREAT_PUBLICATION_PLURAL_START + "مقاله‌های تو با توجه به impact factor بالا و نفر مهم بودن در نگارش ارزش بالایی دارن. توی کارشناسی آدم‌های خیلی کمی چنین مقاله‌‌هایی دارن پس یه نکته خیلی مثبت برای رزومت هست. "
+BACHELOR_HAS_GOOD_PUBLICATION_PLURAL = BACHELOR_HAS_GOOD_PUBLICATION_PLURAL_START + "مقاله‌هات ارزش بالایی برای استاد دارن و با توجه به این که کارشناسی هستی نکته خیلی خوبی می‌تونن برای رزومت باشن! "
+BACHELOR_HAS_AVERAGE_PUBLICATION_PLURAL = BACHELOR_HAS_AVERAGE_PUBLICATION_PLURAL_START + "چون مجموع impact factor و درگیری در مقاله برای استاد خیلی مهمه ولی با توجه به این که کارشناسی هستی ارزش زیادی تو رزومت دارن. "
+BACHELOR_HAS_BAD_PUBLICATION_PLURAL = BACHELOR_HAS_BAD_PUBLICATION_PLURAL_START + "دو مورد impact factor بالا و جزو نفرات اول مقاله بودن خیلی مهمه که متاسفانه این مقاله‌ها این دو مورد رو ندارن. "
 
 # -- Master
 MASTER_PUBLICATION = "داشتن مقاله برای یه دانشجوی ارشد تقریبا لازمه چون استاد می‌تونه با مطالعه مقاله تو متوجه توانایی آکادمیک و همچنین علایق تحقیقاتیت بشه که خوشبختانه داری. "
@@ -131,8 +131,8 @@ MASTER_HAS_GOOD_PUBLICATION_PLURAL_START = "از نظر ارزش برای اپل
 MASTER_HAS_AVERAGE_PUBLICATION_PLURAL_START = "از دید استاد n تا مقالت متوسط حساب می‌شن ولی برای کارشناسی خیلی خوبن. "
 MASTER_HAS_BAD_PUBLICATION_PLURAL_START = "این n تا مقاله شاید خیلی ارزش بالایی تو اپلای نداشته باشن. "
 
-MASTER_HAS_EXCELLENT_PUBLICATION_PLURAL = "از دید استاد impact factor بالا و جزو نفرات اصلی مقاله بودن ارزش خیلی بالایی داره و نکته خیلی مثبتی برای تو به حساب میاد و می‌تونی به شدت روشون حساب کنی، استاد با دیدنشون تو رزومه یا حتی ایمیلت متوجه توانایی آکادمیک تو خواهد شد. "
-MASTER_HAS_GREAT_PUBLICATION_PLURAL = "از دید استاد impact factor بالا و جزو نفرات اصلی مقاله بودن ارزش خیلی بالایی داره و نکته مثبتی برای تو به حساب میاد و می‌تونی روشون حساب کنی، استاد با دیدنشون تو رزومه یا حتی ایمیلت متوجه توانایی آکادمیک تو خواهد شد. "
-MASTER_HAS_GOOD_PUBLICATION_PLURAL = "اگه مقاله‌هات دو فاکتور نفر اصلی مقاله بودن و impact factor بالا رو با هم داشتن عالی بودن ولی مقاله‌هات خوبن و داشتنشون توی رزومه باعث می‌شه استاد متوجه توانایی‌های آکادمیکت بشه.  "
-MASTER_HAS_AVERAGE_PUBLICATION_PLURAL = "با توجه به ارشد بودنت ارزششون برای اپلای و استاد نه خیلی بالاست نه خیلی پایینه و می‌تونه به عنوان یک نکته مثبت کلی برات باشه ولی اکثر رقبا هم مقاله‌های در این سطح دارن. "
-MASTER_HAS_BAD_PUBLICATION_PLURAL = "دو مورد impact factor بالا و جزو نفرات اول مقاله بودن خیلی مهمه که متاسفانه این مقاله‌ها این دو مورد رو ندارن. "
+MASTER_HAS_EXCELLENT_PUBLICATION_PLURAL = MASTER_HAS_EXCELLENT_PUBLICATION_PLURAL_START + "از دید استاد impact factor بالا و جزو نفرات اصلی مقاله بودن ارزش خیلی بالایی داره و نکته خیلی مثبتی برای تو به حساب میاد و می‌تونی به شدت روشون حساب کنی، استاد با دیدنشون تو رزومه یا حتی ایمیلت متوجه توانایی آکادمیک تو خواهد شد. "
+MASTER_HAS_GREAT_PUBLICATION_PLURAL = MASTER_HAS_GREAT_PUBLICATION_PLURAL_START + "از دید استاد impact factor بالا و جزو نفرات اصلی مقاله بودن ارزش خیلی بالایی داره و نکته مثبتی برای تو به حساب میاد و می‌تونی روشون حساب کنی، استاد با دیدنشون تو رزومه یا حتی ایمیلت متوجه توانایی آکادمیک تو خواهد شد. "
+MASTER_HAS_GOOD_PUBLICATION_PLURAL = MASTER_HAS_GOOD_PUBLICATION_PLURAL_START + "اگه مقاله‌هات دو فاکتور نفر اصلی مقاله بودن و impact factor بالا رو با هم داشتن عالی بودن ولی مقاله‌هات خوبن و داشتنشون توی رزومه باعث می‌شه استاد متوجه توانایی‌های آکادمیکت بشه.  "
+MASTER_HAS_AVERAGE_PUBLICATION_PLURAL = MASTER_HAS_AVERAGE_PUBLICATION_PLURAL_START + "با توجه به ارشد بودنت ارزششون برای اپلای و استاد نه خیلی بالاست نه خیلی پایینه و می‌تونه به عنوان یک نکته مثبت کلی برات باشه ولی اکثر رقبا هم مقاله‌های در این سطح دارن. "
+MASTER_HAS_BAD_PUBLICATION_PLURAL = MASTER_HAS_BAD_PUBLICATION_PLURAL_START + "دو مورد impact factor بالا و جزو نفرات اول مقاله بودن خیلی مهمه که متاسفانه این مقاله‌ها این دو مورد رو ندارن. "
