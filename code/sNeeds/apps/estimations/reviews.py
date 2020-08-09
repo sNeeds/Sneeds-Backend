@@ -158,6 +158,12 @@ class StudentDetailedFormReview:
     def review_publications(self):
         publications = Publication.objects.filter(student_detailed_info=self.student_detailed_form)
 
+        if self.last_grade == Grade.BACHELOR:
+            if not publications.exists():
+
+
+
+
 
     def review_all(self):
         self._set_grade()
