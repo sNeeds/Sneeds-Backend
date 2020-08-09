@@ -57,7 +57,7 @@ class ConsultantProfileSerializer(serializers.ModelSerializer):
             rate = 4.5 + (obj.id // 5) / 10
         else:
             rate = (4 * 5 + obj.rate) / 5 * 5
-        rate = round(obj.rate, 1)
+        rate = round(rate, 1)
         return rate
 
     def get_first_name(self, obj):
