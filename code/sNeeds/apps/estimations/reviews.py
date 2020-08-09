@@ -129,7 +129,7 @@ class StudentDetailedFormReview:
         age = self.student_detailed_form.age
         form = self.student_detailed_form
 
-        if self.student_detailed_form < 28:
+        if age < 28:
             return None
 
         elif 28 <= age < 30:
@@ -156,20 +156,43 @@ class StudentDetailedFormReview:
         # TODO: R
 
     def review_publications(self):
-        def _add_review(qs, singular_comment, plural_comment):
+        def _add_review(
+                qs,
+                singular_comment,
+                singular_not_between_others,
+                singular_between_others,
+                plural_comment,
+                plural_between_others,
+                plural_not_between_others,
+                more_than_one_pub
+        ):
             pub_count = qs.count()
             if pub_count == 1:
-                return singular_comment
+                only_pub = qs.first()
+                if more_than_one_pub:
+                    sentence_start = singular_not_between_others.replace(
+                        'x',
+                        only_pub.title
+                    )
+                else:
+                    sentence_start = singular_between_others.replace(
+                        'x',
+                        only_pub.title
+                    )
+                return sentence_start + singular_comment
+
             elif pub_count >= 1:
                 return plural_comment.replace("n", NUMBERS_PERSIAN[pub_count])
 
         publications_qs = Publication.objects.filter(student_detailed_info=self.student_detailed_form)
 
-        excellent_publications = publications_qs.objects.filter(value__gte=0.7)
-        great_publications = publications_qs.objects.filter(value__gte=0.6, value__lt=0.7)
-        good_publications = publications_qs.objects.filter(value__gte=0.6, value__lt=0.7)
-        average_publications = publications_qs.objects.filter(value__gte=0.3, value__lt=0.5)
-        bad_publications = publications_qs.objects.filter(value__gte=0)
+        excellent_publications = publications_qs.filter(value__gte=0.7)
+        great_publications = publications_qs.filter(value__gte=0.6, value__lt=0.7)
+        good_publications = publications_qs.filter(value__gte=0.5, value__lt=0.6)
+        average_publications = publications_qs.filter(value__gte=0.3, value__lt=0.5)
+        bad_publications = publications_qs.filter(value__gte=0, value__lt=0.3)
+
+        more_than_one_publications = bool(publications_qs.count())
 
         data = {
             "کارشناسی": None,
@@ -187,34 +210,64 @@ class StudentDetailedFormReview:
                 data["کارشناسی"] = THREE_OR_MORE_PUBLICATION_BACHELOR
 
             if excellent_publications.exists():
+                print(1)
                 data["کارشناسی"] += _add_review(
                     excellent_publications,
                     BACHELOR_HAS_EXCELLENT_PUBLICATION_SINGULAR,
-                    BACHELOR_HAS_EXCELLENT_PUBLICATION_PLURAL
+                    HAS_EXCELLENT_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
+                    HAS_EXCELLENT_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
+                    BACHELOR_HAS_EXCELLENT_PUBLICATION_PLURAL,
+                    None,
+                    None,
+                    more_than_one_publications
                 )
-            elif great_publications.exists():
+            if great_publications.exists():
+                print(2)
                 data["کارشناسی"] += _add_review(
                     great_publications,
                     BACHELOR_HAS_GREAT_PUBLICATION_SINGULAR,
-                    BACHELOR_HAS_GREAT_PUBLICATION_PLURAL
+                    HAS_GREAT_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
+                    HAS_GREAT_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
+                    BACHELOR_HAS_GREAT_PUBLICATION_PLURAL,
+                    None,
+                    None,
+                    more_than_one_publications
                 )
-            elif good_publications.exists():
+            if good_publications.exists():
+                print(3)
                 data["کارشناسی"] += _add_review(
                     good_publications,
                     BACHELOR_HAS_GOOD_PUBLICATION_SINGULAR,
-                    BACHELOR_HAS_GOOD_PUBLICATION_PLURAL
+                    HAS_GOOD_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
+                    HAS_GOOD_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
+                    BACHELOR_HAS_GOOD_PUBLICATION_PLURAL,
+                    None,
+                    None,
+                    more_than_one_publications
                 )
-            elif average_publications.exists():
+            if average_publications.exists():
+                print(4)
                 data["کارشناسی"] += _add_review(
                     average_publications,
                     BACHELOR_HAS_AVERAGE_PUBLICATION_SINGULAR,
-                    BACHELOR_HAS_AVERAGE_PUBLICATION_PLURAL
+                    HAS_AVERAGE_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
+                    HAS_AVERAGE_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
+                    BACHELOR_HAS_AVERAGE_PUBLICATION_PLURAL,
+                    None,
+                    None,
+                    more_than_one_publications
                 )
-            elif bad_publications.exists():
+            if bad_publications.exists():
+                print(5)
                 data["کارشناسی"] += _add_review(
                     bad_publications,
                     BACHELOR_HAS_BAD_PUBLICATION_SINGULAR,
-                    BACHELOR_HAS_BAD_PUBLICATION_PLURAL
+                    HAS_BAD_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
+                    HAS_BAD_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
+                    BACHELOR_HAS_BAD_PUBLICATION_PLURAL,
+                    None,
+                    None,
+                    more_than_one_publications
                 )
 
         if self.last_grade == Grade.MASTER:
@@ -233,32 +286,38 @@ class StudentDetailedFormReview:
                 data["کارشناسی ارشد"] += _add_review(
                     excellent_publications,
                     MASTER_HAS_EXCELLENT_PUBLICATION_SINGULAR,
-                    MASTER_HAS_EXCELLENT_PUBLICATION_PLURAL
+                    MASTER_HAS_EXCELLENT_PUBLICATION_PLURAL,
+                    more_than_one_publications
                 )
-            elif great_publications.exists():
+            if great_publications.exists():
                 data["کارشناسی ارشد"] += _add_review(
                     great_publications,
                     MASTER_HAS_GREAT_PUBLICATION_SINGULAR,
-                    MASTER_HAS_GREAT_PUBLICATION_PLURAL
+                    MASTER_HAS_GREAT_PUBLICATION_PLURAL,
+                    more_than_one_publications
                 )
-            elif good_publications.exists():
+            if good_publications.exists():
                 data["کارشناسی ارشد"] += _add_review(
                     good_publications,
                     MASTER_HAS_GOOD_PUBLICATION_SINGULAR,
-                    MASTER_HAS_GOOD_PUBLICATION_PLURAL
+                    MASTER_HAS_GOOD_PUBLICATION_PLURAL,
+                    more_than_one_publications
                 )
-            elif average_publications.exists():
+            if average_publications.exists():
                 data["کارشناسی ارشد"] += _add_review(
                     average_publications,
                     MASTER_HAS_AVERAGE_PUBLICATION_SINGULAR,
-                    MASTER_HAS_AVERAGE_PUBLICATION_PLURAL
+                    MASTER_HAS_AVERAGE_PUBLICATION_PLURAL,
+                    more_than_one_publications
                 )
-            elif bad_publications.exists():
+            if bad_publications.exists():
                 data["کارشناسی ارشد"] += _add_review(
                     bad_publications,
                     MASTER_HAS_BAD_PUBLICATION_SINGULAR,
-                    MASTER_HAS_BAD_PUBLICATION_PLURAL
+                    MASTER_HAS_BAD_PUBLICATION_PLURAL,
+                    more_than_one_publications
                 )
+        return data
 
     def review_all(self):
         self._set_grade()
@@ -266,6 +325,10 @@ class StudentDetailedFormReview:
             "university": {
                 "title": "دانشگاه",
                 "data": self.review_universities()
+            },
+            "publication": {
+                "title": "مقالات",
+                "data": self.review_publications()
             },
             "age": {
                 "title": "سن و گپ تحصیلی",

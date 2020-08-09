@@ -324,6 +324,9 @@ class StudentDetailedInfo(models.Model):
     def is_complete(self):
         return True
 
+    class Meta:
+        ordering = ['-id', ]
+
 
 class UniversityThrough(models.Model):
     university = models.ForeignKey(

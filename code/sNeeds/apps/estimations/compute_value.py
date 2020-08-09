@@ -18,7 +18,7 @@ def compute_publication_value(publication):
     elif which_author == WhichAuthor.SECOND:
         which_author_value = 0.7
     elif which_author == WhichAuthor.THIRD:
-        which_author_value = 0.45
+        which_author_value = 0.5
     elif which_author == WhichAuthor.FOURTH_OR_MORE:
         which_author_value = 0.1
 
