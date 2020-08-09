@@ -56,7 +56,7 @@ class ConsultantProfileSerializer(serializers.ModelSerializer):
         if rate is None:
             rate = 4.5 + (obj.id // 10) / 10
         else:
-            rate = (2 * 5 + obj.rate) / 3
+            rate = (1.25 * 5 + obj.rate) / 2.25
         rate = round(rate, 1)
         return rate
 
