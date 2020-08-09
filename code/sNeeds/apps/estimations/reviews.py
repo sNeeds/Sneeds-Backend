@@ -156,12 +156,32 @@ class StudentDetailedFormReview:
         # TODO: R
 
     def review_publications(self):
-        publications = Publication.objects.filter(student_detailed_info=self.student_detailed_form)
+        publications_qs = Publication.objects.filter(student_detailed_info=self.student_detailed_form)
+
+        excellent_publications = publications_qs.objects.filter(value__gte=0.7)
+        great_publications = publications_qs.objects.filter(value__gte=0.6, value__lt=0.7)
+        good_publications = publications_qs.objects.filter(value__gte=0.5, value__lt=0.6)
+        average_publications = publications_qs.objects.filter(value__gte=0.3, value__lt=0.5)
+        bad_publications = publications_qs.objects.filter(value__gte=0)
+
+        data = {
+            "کارشناسی": None,
+            "ارشد": None
+        }
 
         if self.last_grade == Grade.BACHELOR:
-            if not publications.exists():
+            if publications_qs.count() == 0:
+                data["کارشناسی"] = NO_PUBLICATION_BACHELOR
+            elif publications_qs.count() == 1:
+                data["کارشناسی"] = ONE_PUBLICATION_BACHELOR
+            elif publications_qs.count() == 2:
+                data["کارشناسی"] = TWO_PUBLICATION_BACHELOR
+            elif publications_qs.count() >= 3:
+                data["کارشناسی"] = THREE_OR_MORE_PUBLICATION_BACHELOR
 
-
+            if excellent_publications.exists():
+                if excellent_publications.count() == 1:
+                    data["کارشناسی"] =
 
 
 
