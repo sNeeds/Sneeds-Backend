@@ -156,11 +156,18 @@ class StudentDetailedFormReview:
         # TODO: R
 
     def review_publications(self):
+        def _add_review(qs, singular_comment, plural_comment):
+            pub_count = qs.count()
+            if pub_count == 1:
+                return singular_comment
+            elif pub_count >= 1:
+                return plural_comment.replace("n", NUMBERS_PERSIAN[pub_count])
+
         publications_qs = Publication.objects.filter(student_detailed_info=self.student_detailed_form)
 
         excellent_publications = publications_qs.objects.filter(value__gte=0.7)
         great_publications = publications_qs.objects.filter(value__gte=0.6, value__lt=0.7)
-        good_publications = publications_qs.objects.filter(value__gte=0.5, value__lt=0.6)
+        good_publications = publications_qs.objects.filter(value__gte=0.6, value__lt=0.7)
         average_publications = publications_qs.objects.filter(value__gte=0.3, value__lt=0.5)
         bad_publications = publications_qs.objects.filter(value__gte=0)
 
@@ -180,50 +187,78 @@ class StudentDetailedFormReview:
                 data["کارشناسی"] = THREE_OR_MORE_PUBLICATION_BACHELOR
 
             if excellent_publications.exists():
-                pub_count = excellent_publications.count()
-                if pub_count == 1:
-                    data["کارشناسی"] += BACHELOR_HAS_EXCELLENT_PUBLICATION_SINGULAR
-                elif pub_count >= 1:
-                    data["کارشناسی"] += BACHELOR_HAS_EXCELLENT_PUBLICATION_PLURAL.replace(
-                        "n",
-                        NUMBERS_PERSIAN[pub_count]
-                    )
+                data["کارشناسی"] += _add_review(
+                    excellent_publications,
+                    BACHELOR_HAS_EXCELLENT_PUBLICATION_SINGULAR,
+                    BACHELOR_HAS_EXCELLENT_PUBLICATION_PLURAL
+                )
             elif great_publications.exists():
-                pub_count = great_publications.count()
-                if pub_count == 1:
-                    data["کارشناسی"] += BACHELOR_HAS_GREAT_PUBLICATION_SINGULAR
-                elif pub_count >= 1:
-                    data["کارشناسی"] += BACHELOR_HAS_GREAT_PUBLICATION_PLURAL.replace(
-                        "n",
-                        NUMBERS_PERSIAN[pub_count]
-                    )
+                data["کارشناسی"] += _add_review(
+                    great_publications,
+                    BACHELOR_HAS_GREAT_PUBLICATION_SINGULAR,
+                    BACHELOR_HAS_GREAT_PUBLICATION_PLURAL
+                )
             elif good_publications.exists():
-                pub_count = good_publications.count()
-                if pub_count == 1:
-                    data["کارشناسی"] += BACHELOR_HAS_GOOD_PUBLICATION_SINGULAR
-                elif pub_count >= 1:
-                    data["کارشناسی"] += BACHELOR_HAS_GOOD_PUBLICATION_PLURAL.replace(
-                        "n",
-                        NUMBERS_PERSIAN[pub_count]
-                    )
+                data["کارشناسی"] += _add_review(
+                    good_publications,
+                    BACHELOR_HAS_GOOD_PUBLICATION_SINGULAR,
+                    BACHELOR_HAS_GOOD_PUBLICATION_PLURAL
+                )
             elif average_publications.exists():
-                pub_count = great_publications.count()
-                if pub_count == 1:
-                    data["کارشناسی"] += BACHELOR_HAS_AVERAGE_PUBLICATION_SINGULAR
-                elif pub_count >= 1:
-                    data["کارشناسی"] += BACHELOR_HAS_AVERAGE_PUBLICATION_PLURAL.replace(
-                        "n",
-                        NUMBERS_PERSIAN[pub_count]
-                    )
+                data["کارشناسی"] += _add_review(
+                    average_publications,
+                    BACHELOR_HAS_AVERAGE_PUBLICATION_SINGULAR,
+                    BACHELOR_HAS_AVERAGE_PUBLICATION_PLURAL
+                )
             elif bad_publications.exists():
-                pub_count = bad_publications.count()
-                if pub_count == 1:
-                    data["کارشناسی"] += BACHELOR_HAS_BAD_PUBLICATION_SINGULAR
-                elif pub_count >= 1:
-                    data["کارشناسی"] += BACHELOR_HAS_BAD_PUBLICATION_PLURAL.replace(
-                        "n",
-                        NUMBERS_PERSIAN[pub_count]
-                    )
+                data["کارشناسی"] += _add_review(
+                    bad_publications,
+                    BACHELOR_HAS_BAD_PUBLICATION_SINGULAR,
+                    BACHELOR_HAS_BAD_PUBLICATION_PLURAL
+                )
+
+        if self.last_grade == Grade.MASTER:
+            if publications_qs.count() == 0:
+                data["کارشناسی ارشد"] = NO_PUBLICATION_MASTER
+            elif publications_qs.count() == 1:
+                data["کارشناسی ارشد"] = ONE_PUBLICATION_MASTER
+            elif publications_qs.count() == 2:
+                data["کارشناسی ارشد"] = TWO_PUBLICATION_MASTER
+            elif publications_qs.count() == 3:
+                data["کارشناسی ارشد"] = THREE_PUBLICATION_MASTER
+            elif publications_qs.count() == 4:
+                data["کارشناسی ارشد"] = FOUR_OR_MORE_PUBLICATION_MASTER
+
+            if excellent_publications.exists():
+                data["کارشناسی ارشد"] += _add_review(
+                    excellent_publications,
+                    MASTER_HAS_EXCELLENT_PUBLICATION_SINGULAR,
+                    MASTER_HAS_EXCELLENT_PUBLICATION_PLURAL
+                )
+            elif great_publications.exists():
+                data["کارشناسی ارشد"] += _add_review(
+                    great_publications,
+                    MASTER_HAS_GREAT_PUBLICATION_SINGULAR,
+                    MASTER_HAS_GREAT_PUBLICATION_PLURAL
+                )
+            elif good_publications.exists():
+                data["کارشناسی ارشد"] += _add_review(
+                    good_publications,
+                    MASTER_HAS_GOOD_PUBLICATION_SINGULAR,
+                    MASTER_HAS_GOOD_PUBLICATION_PLURAL
+                )
+            elif average_publications.exists():
+                data["کارشناسی ارشد"] += _add_review(
+                    average_publications,
+                    MASTER_HAS_AVERAGE_PUBLICATION_SINGULAR,
+                    MASTER_HAS_AVERAGE_PUBLICATION_PLURAL
+                )
+            elif bad_publications.exists():
+                data["کارشناسی ارشد"] += _add_review(
+                    bad_publications,
+                    MASTER_HAS_BAD_PUBLICATION_SINGULAR,
+                    MASTER_HAS_BAD_PUBLICATION_PLURAL
+                )
 
     def review_all(self):
         self._set_grade()
