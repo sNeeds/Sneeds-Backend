@@ -8,7 +8,8 @@ from rest_framework import serializers
 
 from .models import TimeSlotSale, SoldTimeSlotSale
 from ..consultants.models import ConsultantProfile
-from ..consultants.serializers import ShortConsultantProfileSerializer, ConsultantProfileSerializer
+from ..consultants.serializers import ShortConsultantProfileSerializer, ConsultantProfileSerializer, \
+    VeryShortConsultantProfileSerializer
 from sNeeds.apps.customAuth.serializers import SafeUserDataSerializer
 
 
@@ -32,12 +33,9 @@ class TimeSlotSaleSerializer(serializers.ModelSerializer):
         model = TimeSlotSale
         fields = (
             'id',
-            'url',
             'consultant',
-            'consultant_url',
             'start_time',
             'end_time',
-            'price',
         )
 
         extra_kwargs = {
@@ -50,7 +48,7 @@ class TimeSlotSaleSerializer(serializers.ModelSerializer):
     def get_consultant(self, obj):
         request = self.context.get('request')
 
-        return ShortConsultantProfileSerializer(
+        return VeryShortConsultantProfileSerializer(
             obj.consultant, context={'request': request}
         ).data
 
@@ -117,12 +115,12 @@ class SoldTimeSlotSaleSafeSerializer(serializers.ModelSerializer):
     class Meta:
         model = SoldTimeSlotSale
         fields = [
-            'id', 'url', 'price', 'used', 'consultant', 'start_time', 'end_time',
+            'id',  'used', 'consultant', 'start_time', 'end_time',
         ]
 
     def get_consultant(self, obj):
         request = self.context.get('request')
 
-        return ShortConsultantProfileSerializer(
+        return VeryShortConsultantProfileSerializer(
             obj.consultant, context={'request': request}
         ).data
