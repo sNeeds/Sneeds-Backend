@@ -100,15 +100,15 @@ class BasicFormFieldSerializer(serializers.ModelSerializer):
 
 class WantToApplySerializer(serializers.ModelSerializer):
     country = CountrySerializer()
-    university = UniversitySerializer()
+    universities = UniversitySerializer(many=True)
     grade = fields.EnumField(enum=Grade)
-    major = BasicFormFieldSerializer()
+    major = FieldOfStudySerializer()
     semester_year = StudentFormApplySemesterYearSerializer()
 
     class Meta:
         model = models.WantToApply
         fields = [
-            'id', 'student_detailed_info', 'country', 'university', 'grade', 'major', 'semester_year',
+            'id', 'student_detailed_info', 'country', 'universities', 'grade', 'major', 'semester_year',
         ]
 
     def create(self, validated_data):
@@ -130,7 +130,7 @@ class WantToApplyRequestSerializer(serializers.ModelSerializer):
         allow_empty=False,
         required=True,
     )
-    university = serializers.PrimaryKeyRelatedField(
+    universities = serializers.PrimaryKeyRelatedField(
         queryset=models.University.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
         allow_null=True,
@@ -158,7 +158,7 @@ class WantToApplyRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.WantToApply
         fields = [
-            'id', 'student_detailed_info', 'country', 'university',
+            'id', 'student_detailed_info', 'country', 'universities',
             'grade', 'major',
             'semester_year',
         ]
@@ -228,9 +228,9 @@ class PublicationRequestSerializer(serializers.ModelSerializer):
 
 
 class UniversityThroughSerializer(serializers.ModelSerializer):
-    university = BasicFormFieldSerializer()
+    university = UniversitySerializer()
     grade = fields.EnumField(enum=models.Grade)
-    major = BasicFormFieldSerializer()
+    major = FieldOfStudySerializer()
 
     class Meta:
         model = models.UniversityThrough
@@ -430,8 +430,6 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
     gre_physics_certificates = serializers.SerializerMethodField()
     gre_psychology_certificates = serializers.SerializerMethodField()
     duolingo_certificates = serializers.SerializerMethodField()
-
-    is_married = BasicFormFieldSerializer()
 
     universities = serializers.SerializerMethodField()
     want_to_applies = serializers.SerializerMethodField()
