@@ -14,15 +14,31 @@ from sNeeds.apps.customAuth.serializers import SafeUserDataSerializer
 
 
 class TimeSlotSaleSerializer(serializers.ModelSerializer):
+    url = serializers.HyperlinkedIdentityField(
+        read_only=True,
+        lookup_field='id',
+        view_name="store:time-slot-sale-detail"
+    )
+
+    consultant_url = serializers.HyperlinkedRelatedField(
+        source='consultant',
+        lookup_field='slug',
+        read_only=True,
+        view_name='consultant:consultant-profile-detail'
+    )
+
     consultant = serializers.SerializerMethodField()
 
     class Meta:
         model = TimeSlotSale
         fields = (
             'id',
+            'url',
             'consultant',
+            'consultant_url',
             'start_time',
             'end_time',
+            'price',
         )
 
         extra_kwargs = {
@@ -35,7 +51,7 @@ class TimeSlotSaleSerializer(serializers.ModelSerializer):
     def get_consultant(self, obj):
         request = self.context.get('request')
 
-        return VeryShortConsultantProfileSerializer(
+        return ShortConsultantProfileSerializer(
             obj.consultant, context={'request': request}
         ).data
 
@@ -61,6 +77,33 @@ class TimeSlotSaleSerializer(serializers.ModelSerializer):
                 _("You have to choose time later than 1 hour later.")
             )
         return obj
+
+
+class ShortTimeSlotSaleSerializer(serializers.ModelSerializer):
+    consultant = serializers.SerializerMethodField()
+
+    class Meta:
+        model = TimeSlotSale
+        fields = (
+            'id',
+            'consultant',
+            'start_time',
+            'end_time',
+        )
+
+        extra_kwargs = {
+            'id': {'read_only': True},
+            'consultant': {'read_only': True},
+            'end_time': {'read_only': True},
+            'price': {'read_only': True},
+        }
+
+    def get_consultant(self, obj):
+        request = self.context.get('request')
+
+        return VeryShortConsultantProfileSerializer(
+            obj.consultant, context={'request': request}
+        ).data
 
 
 class SoldTimeSlotSaleSerializer(serializers.ModelSerializer):
@@ -91,12 +134,35 @@ class SoldTimeSlotSaleSerializer(serializers.ModelSerializer):
 
 
 class SoldTimeSlotSaleSafeSerializer(serializers.ModelSerializer):
+    url = serializers.HyperlinkedIdentityField(
+        view_name="store:sold-time-slot-sale-safe-detail",
+        lookup_field='id',
+        read_only=True
+    )
+
     consultant = serializers.SerializerMethodField()
 
     class Meta:
         model = SoldTimeSlotSale
         fields = [
-            'id',  'used', 'consultant', 'start_time', 'end_time',
+            'id', 'url', 'price', 'used', 'consultant', 'start_time', 'end_time',
+        ]
+
+    def get_consultant(self, obj):
+        request = self.context.get('request')
+
+        return ShortConsultantProfileSerializer(
+            obj.consultant, context={'request': request}
+        ).data
+
+
+class ShortSoldTimeSlotSaleSafeSerializer(serializers.ModelSerializer):
+    consultant = serializers.SerializerMethodField()
+
+    class Meta:
+        model = SoldTimeSlotSale
+        fields = [
+            'id', 'used', 'consultant', 'start_time', 'end_time',
         ]
 
     def get_consultant(self, obj):
