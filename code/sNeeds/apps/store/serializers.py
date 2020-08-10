@@ -14,19 +14,6 @@ from sNeeds.apps.customAuth.serializers import SafeUserDataSerializer
 
 
 class TimeSlotSaleSerializer(serializers.ModelSerializer):
-    url = serializers.HyperlinkedIdentityField(
-        read_only=True,
-        lookup_field='id',
-        view_name="store:time-slot-sale-detail"
-    )
-
-    consultant_url = serializers.HyperlinkedRelatedField(
-        source='consultant',
-        lookup_field='slug',
-        read_only=True,
-        view_name='consultant:consultant-profile-detail'
-    )
-
     consultant = serializers.SerializerMethodField()
 
     class Meta:
@@ -104,12 +91,6 @@ class SoldTimeSlotSaleSerializer(serializers.ModelSerializer):
 
 
 class SoldTimeSlotSaleSafeSerializer(serializers.ModelSerializer):
-    url = serializers.HyperlinkedIdentityField(
-        view_name="store:sold-time-slot-sale-safe-detail",
-        lookup_field='id',
-        read_only=True
-    )
-
     consultant = serializers.SerializerMethodField()
 
     class Meta:
