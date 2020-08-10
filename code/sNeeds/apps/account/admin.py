@@ -92,5 +92,5 @@ class UniversityAdmin(admin.ModelAdmin):
 
 @admin.register(models.Publication)
 class PublicationAdmin(admin.ModelAdmin):
-    list_display = ['id', 'student_detailed_info']
+    list_display = ['id', 'title', 'student_detailed_info' ,'value']
     readonly_fields = ['value']

@@ -82,7 +82,7 @@ class StudentDetailedFormReview:
                 if 18 < last_grade_university.gpa:
                     data['معدل ارشد'] = MASTER_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_ABOVE_18
 
-            bachelor = university_through.objects.get_bachelor()
+            bachelor = university_through.get_bachelor()
             if bachelor is not None:
                 if bachelor.gpa <= 14:
                     data['معدل کارشناسی'] = MASTER_WITH_BACHELOR_BAD_GPA
@@ -129,7 +129,10 @@ class StudentDetailedFormReview:
         age = self.student_detailed_form.age
         form = self.student_detailed_form
 
-        if age < 28:
+        if age is None:
+            return None
+
+        elif age < 28:
             return None
 
         elif 28 <= age < 30:
@@ -156,17 +159,26 @@ class StudentDetailedFormReview:
         # TODO: R
 
     def review_publications(self):
+        def _get_appended_publication_qs_titles(qs):
+            text = ""
+            for pub in qs:
+                if text == "":
+                    text = pub.title
+                else:
+                    text += " و " + pub.title
+            return text
+
         def _add_review(
                 qs,
                 singular_comment,
                 singular_not_between_others,
                 singular_between_others,
                 plural_comment,
-                plural_between_others,
-                plural_not_between_others,
+                plural_between_and_not_between_others,
                 more_than_one_pub
         ):
             pub_count = qs.count()
+            print(pub_count)
             if pub_count == 1:
                 only_pub = qs.first()
                 if more_than_one_pub:
@@ -179,10 +191,17 @@ class StudentDetailedFormReview:
                         'x',
                         only_pub.title
                     )
+                print("hhh")
+                print(sentence_start)
+                print(singular_comment)
                 return sentence_start + singular_comment
 
             elif pub_count >= 1:
-                return plural_comment.replace("n", NUMBERS_PERSIAN[pub_count])
+                sentence_start = plural_between_and_not_between_others.replace(
+                    "z",
+                    _get_appended_publication_qs_titles(qs)
+                )
+                return sentence_start + plural_comment
 
         publications_qs = Publication.objects.filter(student_detailed_info=self.student_detailed_form)
 
@@ -217,8 +236,7 @@ class StudentDetailedFormReview:
                     HAS_EXCELLENT_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
                     HAS_EXCELLENT_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
                     BACHELOR_HAS_EXCELLENT_PUBLICATION_PLURAL,
-                    None,
-                    None,
+                    HAS_EXCELLENT_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
                     more_than_one_publications
                 )
             if great_publications.exists():
@@ -229,8 +247,7 @@ class StudentDetailedFormReview:
                     HAS_GREAT_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
                     HAS_GREAT_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
                     BACHELOR_HAS_GREAT_PUBLICATION_PLURAL,
-                    None,
-                    None,
+                    HAS_GREAT_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
                     more_than_one_publications
                 )
             if good_publications.exists():
@@ -241,8 +258,7 @@ class StudentDetailedFormReview:
                     HAS_GOOD_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
                     HAS_GOOD_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
                     BACHELOR_HAS_GOOD_PUBLICATION_PLURAL,
-                    None,
-                    None,
+                    HAS_GOOD_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
                     more_than_one_publications
                 )
             if average_publications.exists():
@@ -253,8 +269,7 @@ class StudentDetailedFormReview:
                     HAS_AVERAGE_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
                     HAS_AVERAGE_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
                     BACHELOR_HAS_AVERAGE_PUBLICATION_PLURAL,
-                    None,
-                    None,
+                    HAS_AVERAGE_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
                     more_than_one_publications
                 )
             if bad_publications.exists():
@@ -265,56 +280,71 @@ class StudentDetailedFormReview:
                     HAS_BAD_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
                     HAS_BAD_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
                     BACHELOR_HAS_BAD_PUBLICATION_PLURAL,
-                    None,
-                    None,
+                    HAS_BAD_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
                     more_than_one_publications
                 )
 
         if self.last_grade == Grade.MASTER:
             if publications_qs.count() == 0:
-                data["کارشناسی ارشد"] = NO_PUBLICATION_MASTER
+                data["ارشد"] = NO_PUBLICATION_MASTER
             elif publications_qs.count() == 1:
-                data["کارشناسی ارشد"] = ONE_PUBLICATION_MASTER
+                data["ارشد"] = ONE_PUBLICATION_MASTER
             elif publications_qs.count() == 2:
-                data["کارشناسی ارشد"] = TWO_PUBLICATION_MASTER
+                data["ارشد"] = TWO_PUBLICATION_MASTER
             elif publications_qs.count() == 3:
-                data["کارشناسی ارشد"] = THREE_PUBLICATION_MASTER
-            elif publications_qs.count() == 4:
-                data["کارشناسی ارشد"] = FOUR_OR_MORE_PUBLICATION_MASTER
+                data["ارشد"] = THREE_PUBLICATION_MASTER
+            elif publications_qs.count() >= 4:
+                data["ارشد"] = FOUR_OR_MORE_PUBLICATION_MASTER
 
             if excellent_publications.exists():
-                data["کارشناسی ارشد"] += _add_review(
+                print("*1" , excellent_publications)
+                data["ارشد"] += _add_review(
                     excellent_publications,
                     MASTER_HAS_EXCELLENT_PUBLICATION_SINGULAR,
+                    HAS_EXCELLENT_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
+                    HAS_EXCELLENT_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
                     MASTER_HAS_EXCELLENT_PUBLICATION_PLURAL,
+                    HAS_EXCELLENT_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
                     more_than_one_publications
                 )
             if great_publications.exists():
-                data["کارشناسی ارشد"] += _add_review(
+                data["ارشد"] += _add_review(
                     great_publications,
                     MASTER_HAS_GREAT_PUBLICATION_SINGULAR,
+                    HAS_GREAT_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
+                    HAS_GREAT_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
                     MASTER_HAS_GREAT_PUBLICATION_PLURAL,
+                    HAS_GREAT_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
                     more_than_one_publications
                 )
             if good_publications.exists():
-                data["کارشناسی ارشد"] += _add_review(
+                data["ارشد"] += _add_review(
                     good_publications,
                     MASTER_HAS_GOOD_PUBLICATION_SINGULAR,
+                    HAS_GOOD_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
+                    HAS_GOOD_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
                     MASTER_HAS_GOOD_PUBLICATION_PLURAL,
+                    HAS_GOOD_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
                     more_than_one_publications
                 )
             if average_publications.exists():
-                data["کارشناسی ارشد"] += _add_review(
+                data["ارشد"] += _add_review(
                     average_publications,
                     MASTER_HAS_AVERAGE_PUBLICATION_SINGULAR,
+                    HAS_AVERAGE_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
+                    HAS_AVERAGE_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
                     MASTER_HAS_AVERAGE_PUBLICATION_PLURAL,
+                    HAS_AVERAGE_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
                     more_than_one_publications
                 )
             if bad_publications.exists():
-                data["کارشناسی ارشد"] += _add_review(
+                data["ارشد"] += _add_review(
                     bad_publications,
                     MASTER_HAS_BAD_PUBLICATION_SINGULAR,
+                    HAS_BAD_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
+                    HAS_BAD_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
                     MASTER_HAS_BAD_PUBLICATION_PLURAL,
+                    HAS_BAD_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
                     more_than_one_publications
                 )
         return data
