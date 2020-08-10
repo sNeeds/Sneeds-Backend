@@ -28,7 +28,7 @@ class TimeSlotSaleExistListAPIView(generics.ListAPIView):
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
-        if self.queryset.exists():
+        if queryset.exists():
             return Response({"exists": True, "number": len(queryset)})
         return Response({"exists": False, "number": len(queryset)})
 
