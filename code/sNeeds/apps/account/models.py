@@ -237,12 +237,16 @@ class StudentDetailedInfo(models.Model):
     gender = EnumField(
         Gender,
         default=Gender.MALE,
+        null=True,
+        blank=True,
     )
 
     military_service_status = EnumField(
         MilitaryServiceStatus,
         default=MilitaryServiceStatus.UNDID,
         max_length=30,
+        null=True,
+        blank=True,
     )
 
     is_married = models.BooleanField(
@@ -260,6 +264,8 @@ class StudentDetailedInfo(models.Model):
         PaymentAffordability,
         default=PaymentAffordability.MIDDLE,
         max_length=30,
+        null=True,
+        blank=True,
     )
 
     prefers_full_fund = models.BooleanField(
