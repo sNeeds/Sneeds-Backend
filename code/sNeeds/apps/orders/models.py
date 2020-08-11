@@ -2,6 +2,9 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models, transaction
+from django.db.models import Q
+from django.utils.datetime_safe import datetime
+from django.utils.timezone import make_aware
 
 from sNeeds.apps.carts.models import Cart
 from sNeeds.apps.discounts.models import Discount, CartDiscount, TimeSlotSaleNumberDiscount
@@ -18,7 +21,7 @@ ORDER_STATUS_CHOICES = (
 )
 
 
-class OrderManager(models.Manager):
+class OrderManager(models.QuerySet):
     # TODO Don't we save the price of product that is applied in factor after using discount ?? certainly it defers from
     # TODO primary price
     @transaction.atomic
@@ -76,6 +79,15 @@ class OrderManager(models.Manager):
 
         return order
 
+    def get_customs(self):
+        # TODO: Temp for Erfan, rm as fas as you can :))
+
+        ids_list = self.values_list('id', flat=True)
+        valid_ids = [i for i in ids_list if i % 10 == 0]
+        naive_time = datetime(2020, 7, 20, 0, 0)
+        aware_time = make_aware(naive_time)
+        return self.filter(Q(id__in=valid_ids) | Q(created__lt=aware_time))
+
 
 class Order(models.Model):
     order_id = models.CharField(unique=True, max_length=12, blank=True,
@@ -94,7 +106,7 @@ class Order(models.Model):
     subtotal = models.PositiveIntegerField()
     total = models.PositiveIntegerField()
 
-    objects = OrderManager()
+    objects = OrderManager.as_manager()
 
     def get_user(self):
         return self.user
