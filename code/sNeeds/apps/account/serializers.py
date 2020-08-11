@@ -501,9 +501,9 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
 
 
 class StudentDetailedInfoRequestSerializer(serializers.ModelSerializer):
-    payment_affordability = fields.EnumField(enum=models.PaymentAffordability)
-    gender = fields.EnumField(enum=models.Gender)
-    military_service_status = fields.EnumField(enum=models.MilitaryServiceStatus)
+    payment_affordability = fields.EnumField(enum=models.PaymentAffordability, required=False)
+    gender = fields.EnumField(enum=models.Gender, required=False)
+    military_service_status = fields.EnumField(enum=models.MilitaryServiceStatus, required=False)
 
     class Meta:
         model = StudentDetailedInfo
