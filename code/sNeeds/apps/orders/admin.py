@@ -11,7 +11,7 @@ from ..carts.models import Cart
 
 @admin.register(Order)
 class OrderAdmin(AdminAdvancedFiltersMixin, admin.ModelAdmin):
-    list_display = ["order_id", "user", "total", "subtotal", "created"]
+    list_display = ["id", "order_id", "user", "total", "subtotal", "created"]
     fields = (
         ("order_id", "status"), "user", "sold_products", ("used_discount",
                                                           "time_slot_sales_number_discount"), ("subtotal", "total"),
@@ -25,6 +25,11 @@ class OrderAdmin(AdminAdvancedFiltersMixin, admin.ModelAdmin):
         "created"
     )
     date_hierarchy = 'created'
+
+    def get_list_display(self, request):
+        if request.user.groups.all().filter(name="adminplus"):
+            return ["order_id", "user", "total", "subtotal", "created"]
+        return self.list_display
 
     def get_queryset(self, request):
         qs = super(OrderAdmin, self).get_queryset(request)
