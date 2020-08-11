@@ -100,6 +100,8 @@ class UniversityForFormList(generics.ListAPIView):
             return qs
 
         search_term = search_terms[0][:16]
+        if len(search_term) == 0 and len(search_term) < 4:
+            return qs
 
         # TODO try the below approaches and select the best one. Sorry for string comments.I wanted to be recognizable
         # TODO explanations from codes
@@ -146,6 +148,57 @@ class FieldOfStudyList(generics.ListAPIView):
         study_info_with_active_consultant_qs = StudyInfo.objects.all().with_active_consultants()
         field_of_study_list = list(study_info_with_active_consultant_qs.values_list('field_of_study__id', flat=True))
         return models.FieldOfStudy.objects.filter(id__in=field_of_study_list)
+
+
+class FieldOfStudyForFormList(generics.ListAPIView):
+    queryset = models.FieldOfStudy.objects.none()
+    serializer_class = serializers.FieldOfStudySerializer
+
+    def get_queryset(self):
+        request = self.request
+        params = request.query_params.get('search', '')
+        search_terms = params.replace(',', ' ').split()
+        qs = models.FieldOfStudy.objects.none()
+
+        if not search_terms:
+            return qs
+
+        if len(search_terms) == 0:
+            return qs
+
+        search_term = search_terms[0][:16]
+        if len(search_term) == 0 and len(search_term) < 4:
+            return qs
+
+        # TODO try the below approaches and select the best one. Sorry for string comments.I wanted to be recognizable
+        # TODO explanations from codes
+        # TODO To see execution time of queries, use this: python manage.py shell_plus --print-sql
+        # TODO To see results use endpoint /form-universities?&search=colombia
+
+        "Most close results but worse time about 32ms"
+        qs = models.FieldOfStudy.objects.\
+            annotate(similarity=TrigramSimilarity('name', search_term), name_length=ExpressionWrapper(0.5*Length('name'), output_field=FloatField())).\
+            annotate(t=F('similarity') * F('name_length')).\
+            filter(t__gt=0.5).order_by('-t')
+
+        "Much close results but worse time about 28ms"
+        # qs = models.University.objects.\
+        #     annotate(similarity=TrigramSimilarity('name', search_term), name_length=Ln(Length('name'))).\
+        #     annotate(t=F('similarity') * F('name_length')).\
+        #     filter(t__gt=0.4).order_by('-t')
+
+        """Very basicbut middle with 20 ms. rows with longer value in name column go down in results because more characters
+                 reduce trigram similarity"""
+        # qs = models.University.objects.annotate(similarity=TrigramSimilarity('name', 'university')) \
+        #     .filter(similarity__gt=0.1).order_by('-similarity')
+
+        """ Very strange!! Best time cost with 17 ms with a little optimization in results"""
+        # qs = models.University.objects.annotate(similarity=TrigramSimilarity('name', search_term)).filter(
+        #     similarity__gt=20 / Length('name')).order_by('-similarity')
+
+        qs = qs.distinct()
+
+        return qs
 
 
 class StudentDetailedInfoListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
