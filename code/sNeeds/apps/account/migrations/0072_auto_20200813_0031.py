@@ -12,6 +12,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunSQL("UPDATE account_languagecertificate SET certificate_type = 'IELTS General' WHERE certificate_type = 'IELTS';"),
         migrations.AlterField(
             model_name='languagecertificate',
             name='certificate_type',

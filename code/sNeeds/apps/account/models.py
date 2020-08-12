@@ -371,7 +371,7 @@ class UniversityThrough(models.Model):
 class LanguageCertificate(models.Model):
     certificate_type = EnumField(
         LanguageCertificateType,
-        default=LanguageCertificateType.IELTS_ACADEMIC,
+        default=LanguageCertificateType.TOEFL,
         max_length=64,
         help_text="Based on endpoint just some types are allowed to insert not all certificate types."
     )
@@ -481,7 +481,7 @@ class GREBiologyCertificate(GRESubjectCertificate):
             raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})
 
 
-class GREPhysicsCertificate(LanguageCertificate):
+class GREPhysicsCertificate(GRESubjectCertificate):
     classical_mechanics = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(20), MaxValueValidator(99)]
     )
