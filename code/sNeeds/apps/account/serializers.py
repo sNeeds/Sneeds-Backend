@@ -328,7 +328,8 @@ class RegularLanguageCertificateSerializer(LanguageCertificateSerializer):
 
     def validate_certificate_type(self, value):
         certificate_types = models.LanguageCertificateType
-        if value not in [certificate_types.IELTS, certificate_types.TOEFL]:
+        if value not in [LanguageCertificateType.IELTS_ACADEMIC, LanguageCertificateType.IELTS_GENERAL,
+                         certificate_types.TOEFL]:
             raise ValidationError(_("Value is not in allowed certificate types."))
         return value
 

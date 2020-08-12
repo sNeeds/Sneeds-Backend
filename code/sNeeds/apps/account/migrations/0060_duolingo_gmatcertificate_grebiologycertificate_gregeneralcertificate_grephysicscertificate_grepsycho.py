@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
             name='LanguageCertificate',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('certificate_type', enumfields.fields.EnumField(default='IELTS', enum=sNeeds.apps.account.models.LanguageCertificateType, max_length=10)),
+                ('certificate_type', enumfields.fields.EnumField(default='IELTS General', enum=sNeeds.apps.account.models.LanguageCertificateType, max_length=10)),
                 ('student_detailed_info', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='account.StudentDetailedInfo')),
             ],
         ),

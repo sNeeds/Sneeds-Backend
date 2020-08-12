@@ -36,7 +36,8 @@ class PublicationType(Enum):
 
 
 class LanguageCertificateType(Enum):
-    IELTS = 'IELTS'
+    IELTS_GENERAL = 'IELTS General'
+    IELTS_ACADEMIC = 'IELTS Academic'
     TOEFL = 'TOEFL'
     GMAT = 'GMAT'
     GRE_GENERAL = 'GRE General'
@@ -370,7 +371,7 @@ class UniversityThrough(models.Model):
 class LanguageCertificate(models.Model):
     certificate_type = EnumField(
         LanguageCertificateType,
-        default=LanguageCertificateType.IELTS,
+        default=LanguageCertificateType.IELTS_ACADEMIC,
         max_length=64,
         help_text="Based on endpoint just some types are allowed to insert not all certificate types."
     )
@@ -398,7 +399,8 @@ class RegularLanguageCertificate(LanguageCertificate):
     overall = models.DecimalField(max_digits=5, decimal_places=2)
 
     def clean(self, *args, **kwargs):
-        if self.certificate_type not in [LanguageCertificateType.IELTS, LanguageCertificateType.TOEFL]:
+        if self.certificate_type not in [LanguageCertificateType.IELTS_ACADEMIC, LanguageCertificateType.IELTS_GENERAL,
+                                         LanguageCertificateType.TOEFL]:
             raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})
 
 
