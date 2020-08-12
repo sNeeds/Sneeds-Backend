@@ -53,36 +53,6 @@ class UniversityList(generics.ListAPIView):
         return models.University.objects.filter(id__in=university_list)
 
 
-# class UniversityForFormList(APIView):
-#     queryset = models.University.objects.none()
-#     serializer_class = serializers.UniversitySerializer
-#
-#     def get(self, request, *args, **kwargs):
-#         params = request.query_params.get('search', '')
-#         search_terms = params.replace(',', ' ').split()
-#         qs = models.University.objects.none()
-#
-#         if not search_terms:
-#             return qs
-#
-#         if len(search_terms) == 0:
-#             return qs
-#
-#         search_term = search_terms[0]
-#         search_term_phrase = search_term[:16]
-#
-#         result_qs = qs
-#         for search_term in search_term_phrase.split(" "):
-#             result_qs |= models.University.objects.annotate(similarity=TrigramSimilarity('name', search_term)).filter(
-#                 similarity__gt=2.5 / Length('name')).order_by('-similarity')
-#         qs = result_qs.distinct()[:5]
-#         serializer = self.serializer_class(qs, many=True, context={'request': request})
-#         return Response(
-#             serializer.data,
-#             status=status.HTTP_200_OK,
-#         )
-
-
 class UniversityForFormList(generics.ListAPIView):
     queryset = models.University.objects.none()
     serializer_class = serializers.UniversitySerializer
@@ -294,11 +264,15 @@ class LanguageCertificateListCreateAPIView(custom_generic_apiviews.BaseListCreat
         user = self.request.user
         qs = self.model_class.objects.none()
         if not user.is_authenticated:
+            student_detailed_info_ids = self.request.query_params.getlist('student-detailed-info', [])
+            qs = self.model_class.objects.filter(student_detailed_info_id__in=student_detailed_info_ids)\
+                .filter(student_detailed_info__user__isnull=True)
             return qs
-        student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=user)
-        if student_detailed_info_qs.exists():
-            student_detailed_info = student_detailed_info_qs.first()
-            qs = self.model_class.objects.filter(student_detailed_info=student_detailed_info)
+        else:
+            student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=user)
+            if student_detailed_info_qs.exists():
+                student_detailed_info = student_detailed_info_qs.first()
+                qs = self.model_class.objects.filter(student_detailed_info=student_detailed_info)
         return qs
 
 
@@ -431,6 +405,9 @@ class WantToApplyListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView
         user = self.request.user
         qs = models.WantToApply.objects.none()
         if not user.is_authenticated:
+            student_detailed_info_ids = self.request.query_params.getlist('student-detailed-info', [])
+            qs = models.WantToApply.objects.filter(student_detailed_info_id__in=student_detailed_info_ids) \
+                .filter(student_detailed_info__user__isnull=True)
             return qs
         student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=user)
         if student_detailed_info_qs.exists():
@@ -462,6 +439,9 @@ class PublicationListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView
         user = self.request.user
         qs = models.Publication.objects.none()
         if not user.is_authenticated:
+            student_detailed_info_ids = self.request.query_params.getlist('student-detailed-info', [])
+            qs = models.Publication.objects.filter(student_detailed_info_id__in=student_detailed_info_ids) \
+                .filter(student_detailed_info__user__isnull=True)
             return qs
         student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=user)
         if student_detailed_info_qs.exists():
@@ -493,6 +473,9 @@ class StudentDetailedUniversityThroughListCreateAPIView(custom_generic_apiviews.
         user = self.request.user
         qs = models.UniversityThrough.objects.none()
         if not user.is_authenticated:
+            student_detailed_info_ids = self.request.query_params.getlist('student-detailed-info', [])
+            qs = models.UniversityThrough.objects.filter(student_detailed_info_id__in=student_detailed_info_ids) \
+                .filter(student_detailed_info__user__isnull=True)
             return qs
         student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=user)
         if student_detailed_info_qs.exists():
