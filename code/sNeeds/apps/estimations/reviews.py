@@ -1,5 +1,6 @@
 from .review_comments import *
-from ..account.models import Grade, University, UniversityThrough, LanguageCertificate, Publication
+from ..account.models import Grade, University, UniversityThrough, LanguageCertificate, Publication, \
+    RegularLanguageCertificate, LanguageCertificateType
 
 
 class StudentDetailedFormReview:
@@ -155,8 +156,17 @@ class StudentDetailedFormReview:
 
     def review_language_certificates(self):
         form = self.student_detailed_form
-        language_certificate_qs = LanguageCertificate.objects.filter(student_detailed_info=form)
-        # TODO: R
+
+        # Supports IELTS general, academic and TOEFL
+        IELTS_generals = RegularLanguageCertificate.objects.filter(
+            student_detailed_info=form,
+            certificate_type = LanguageCertificateType.IELTS_ACADEMIC
+        )
+        IELTS_academic = RegularLanguageCertificate.objects.filter(
+            student_detailed_info=form,
+            certificate_type=LanguageCertificateType.IELTS_GENERAL
+        )
+
 
     def review_publications(self):
         def _get_appended_publication_qs_titles(qs):
@@ -178,7 +188,6 @@ class StudentDetailedFormReview:
                 more_than_one_pub
         ):
             pub_count = qs.count()
-            print(pub_count)
             if pub_count == 1:
                 only_pub = qs.first()
                 if more_than_one_pub:
@@ -191,9 +200,6 @@ class StudentDetailedFormReview:
                         'x',
                         only_pub.title
                     )
-                print("hhh")
-                print(sentence_start)
-                print(singular_comment)
                 return sentence_start + singular_comment
 
             elif pub_count >= 1:
@@ -229,7 +235,6 @@ class StudentDetailedFormReview:
                 data["کارشناسی"] = THREE_OR_MORE_PUBLICATION_BACHELOR
 
             if excellent_publications.exists():
-                print(1)
                 data["کارشناسی"] += _add_review(
                     excellent_publications,
                     BACHELOR_HAS_EXCELLENT_PUBLICATION_SINGULAR,
@@ -240,7 +245,6 @@ class StudentDetailedFormReview:
                     more_than_one_publications
                 )
             if great_publications.exists():
-                print(2)
                 data["کارشناسی"] += _add_review(
                     great_publications,
                     BACHELOR_HAS_GREAT_PUBLICATION_SINGULAR,
@@ -251,7 +255,6 @@ class StudentDetailedFormReview:
                     more_than_one_publications
                 )
             if good_publications.exists():
-                print(3)
                 data["کارشناسی"] += _add_review(
                     good_publications,
                     BACHELOR_HAS_GOOD_PUBLICATION_SINGULAR,
@@ -262,7 +265,6 @@ class StudentDetailedFormReview:
                     more_than_one_publications
                 )
             if average_publications.exists():
-                print(4)
                 data["کارشناسی"] += _add_review(
                     average_publications,
                     BACHELOR_HAS_AVERAGE_PUBLICATION_SINGULAR,
@@ -273,7 +275,6 @@ class StudentDetailedFormReview:
                     more_than_one_publications
                 )
             if bad_publications.exists():
-                print(5)
                 data["کارشناسی"] += _add_review(
                     bad_publications,
                     BACHELOR_HAS_BAD_PUBLICATION_SINGULAR,
@@ -297,7 +298,6 @@ class StudentDetailedFormReview:
                 data["ارشد"] = FOUR_OR_MORE_PUBLICATION_MASTER
 
             if excellent_publications.exists():
-                print("*1" , excellent_publications)
                 data["ارشد"] += _add_review(
                     excellent_publications,
                     MASTER_HAS_EXCELLENT_PUBLICATION_SINGULAR,

@@ -36,8 +36,9 @@ class PublicationType(Enum):
 
 
 class LanguageCertificateType(Enum):
-    IELTS = 'IELTS'
     TOEFL = 'TOEFL'
+    IELTS_GENERAL = 'IELTS_GENERAL'
+    IELTS_ACADEMIC = 'IELTS_ACADEMIC'
     GMAT = 'GMAT'
     GRE_GENERAL = 'GRE General'
     GRE_CHEMISTRY = 'GRE Chemistry'
