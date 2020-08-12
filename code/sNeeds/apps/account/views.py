@@ -4,7 +4,7 @@ from django.contrib.postgres.search import SearchQuery, SearchRank, TrigramSimil
 from django.db.models import F, Sum, ExpressionWrapper, FloatField
 from django.db.models.functions import Length, Ln
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, status, exceptions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -264,10 +264,18 @@ class LanguageCertificateListCreateAPIView(custom_generic_apiviews.BaseListCreat
         user = self.request.user
         qs = self.model_class.objects.none()
         if not user.is_authenticated:
-            student_detailed_info_ids = self.request.query_params.getlist('student-detailed-info', [])
-            qs = self.model_class.objects.filter(student_detailed_info_id__in=student_detailed_info_ids)\
-                .filter(student_detailed_info__user__isnull=True)
-            return qs
+            sdi_id = self.request.query_params.get('student-detailed-info', '')
+            sdi_qs = models.StudentDetailedInfo.objects.filter(id=sdi_id)
+            if sdi_qs.exists():
+                sdi = models.StudentDetailedInfo.objects.get(id=sdi_id)
+                if sdi.user is None:
+                    qs = self.model_class.objects.filter(student_detailed_info_id=sdi)
+                    return qs
+                else:
+                    raise exceptions.NotAuthenticated()
+            else:
+                raise exceptions.NotFound()
+
         else:
             student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=user)
             if student_detailed_info_qs.exists():
@@ -405,10 +413,17 @@ class WantToApplyListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView
         user = self.request.user
         qs = models.WantToApply.objects.none()
         if not user.is_authenticated:
-            student_detailed_info_ids = self.request.query_params.getlist('student-detailed-info', [])
-            qs = models.WantToApply.objects.filter(student_detailed_info_id__in=student_detailed_info_ids) \
-                .filter(student_detailed_info__user__isnull=True)
-            return qs
+            sdi_id = self.request.query_params.get('student-detailed-info', '')
+            sdi_qs = models.StudentDetailedInfo.objects.filter(id=sdi_id)
+            if sdi_qs.exists():
+                sdi = models.StudentDetailedInfo.objects.get(id=sdi_id)
+                if sdi.user is None:
+                    qs = models.WantToApply.objects.filter(student_detailed_info_id=sdi)
+                    return qs
+                else:
+                    raise exceptions.NotAuthenticated()
+            else:
+                raise exceptions.NotFound()
         student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=user)
         if student_detailed_info_qs.exists():
             student_detailed_info = student_detailed_info_qs.first()
@@ -439,10 +454,17 @@ class PublicationListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView
         user = self.request.user
         qs = models.Publication.objects.none()
         if not user.is_authenticated:
-            student_detailed_info_ids = self.request.query_params.getlist('student-detailed-info', [])
-            qs = models.Publication.objects.filter(student_detailed_info_id__in=student_detailed_info_ids) \
-                .filter(student_detailed_info__user__isnull=True)
-            return qs
+            sdi_id = self.request.query_params.get('student-detailed-info', '')
+            sdi_qs = models.StudentDetailedInfo.objects.filter(id=sdi_id)
+            if sdi_qs.exists():
+                sdi = models.StudentDetailedInfo.objects.get(id=sdi_id)
+                if sdi.user is None:
+                    qs = models.Publication.objects.filter(student_detailed_info_id=sdi)
+                    return qs
+                else:
+                    raise exceptions.NotAuthenticated()
+            else:
+                raise exceptions.NotFound()
         student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=user)
         if student_detailed_info_qs.exists():
             student_detailed_info = student_detailed_info_qs.first()
@@ -473,10 +495,17 @@ class StudentDetailedUniversityThroughListCreateAPIView(custom_generic_apiviews.
         user = self.request.user
         qs = models.UniversityThrough.objects.none()
         if not user.is_authenticated:
-            student_detailed_info_ids = self.request.query_params.getlist('student-detailed-info', [])
-            qs = models.UniversityThrough.objects.filter(student_detailed_info_id__in=student_detailed_info_ids) \
-                .filter(student_detailed_info__user__isnull=True)
-            return qs
+            sdi_id = self.request.query_params.get('student-detailed-info', '')
+            sdi_qs = models.StudentDetailedInfo.objects.filter(id=sdi_id)
+            if sdi_qs.exists():
+                sdi = models.StudentDetailedInfo.objects.get(id=sdi_id)
+                if sdi.user is None:
+                    qs = models.UniversityThrough.objects.filter(student_detailed_info_id=sdi)
+                    return qs
+                else:
+                    raise exceptions.NotAuthenticated()
+            else:
+                raise exceptions.NotFound()
         student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=user)
         if student_detailed_info_qs.exists():
             student_detailed_info = student_detailed_info_qs.first()
