@@ -262,30 +262,8 @@ class LanguageCertificateListCreateAPIView(custom_generic_apiviews.BaseListCreat
 
     def get_queryset(self):
         user = self.request.user
-        qs = self.model_class.objects.none()
         sdi_id = self.request.query_params.get('student-detailed-info', None)
-        if not user.is_authenticated:
-            if sdi_id is not None:
-                sdi_qs = models.StudentDetailedInfo.objects.filter(id=sdi_id)
-                if sdi_qs.exists():
-                    sdi = models.StudentDetailedInfo.objects.get(id=sdi_id)
-                    if sdi.user is None:
-                        qs = self.model_class.objects.filter(student_detailed_info_id=sdi)
-                        return qs
-                    else:
-                        raise exceptions.NotAuthenticated()
-                else:
-                    raise exceptions.NotFound()
-            else:
-                raise exceptions.NotFound()
-
-        else:
-            if sdi_id is not None:
-                raise exceptions.NotFound()
-            student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=user)
-            if student_detailed_info_qs.exists():
-                student_detailed_info = student_detailed_info_qs.first()
-                qs = self.model_class.objects.filter(student_detailed_info=student_detailed_info)
+        qs = student_detailed_info_many_to_one_qs(user, sdi_id, self.model_class)
         return qs
 
 
@@ -416,28 +394,8 @@ class WantToApplyListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView
 
     def get_queryset(self):
         user = self.request.user
-        qs = models.WantToApply.objects.none()
         sdi_id = self.request.query_params.get('student-detailed-info', None)
-        if not user.is_authenticated:
-            if sdi_id is not None:
-                sdi_qs = models.StudentDetailedInfo.objects.filter(id=sdi_id)
-                if sdi_qs.exists():
-                    sdi = models.StudentDetailedInfo.objects.get(id=sdi_id)
-                    if sdi.user is None:
-                        qs = models.WantToApply.objects.filter(student_detailed_info_id=sdi)
-                        return qs
-                    else:
-                        raise exceptions.NotAuthenticated()
-                else:
-                    raise exceptions.NotFound()
-            else:
-                raise exceptions.NotFound()
-        if sdi_id is not None:
-            raise exceptions.NotFound()
-        student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=user)
-        if student_detailed_info_qs.exists():
-            student_detailed_info = student_detailed_info_qs.first()
-            qs = models.WantToApply.objects.filter(student_detailed_info=student_detailed_info)
+        qs = student_detailed_info_many_to_one_qs(user, sdi_id, models.WantToApply)
         return qs
 
     @swagger_auto_schema(
@@ -462,28 +420,8 @@ class PublicationListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView
 
     def get_queryset(self):
         user = self.request.user
-        qs = models.Publication.objects.none()
         sdi_id = self.request.query_params.get('student-detailed-info', None)
-        if not user.is_authenticated:
-            if sdi_id is not None:
-                sdi_qs = models.StudentDetailedInfo.objects.filter(id=sdi_id)
-                if sdi_qs.exists():
-                    sdi = models.StudentDetailedInfo.objects.get(id=sdi_id)
-                    if sdi.user is None:
-                        qs = models.Publication.objects.filter(student_detailed_info_id=sdi)
-                        return qs
-                    else:
-                        raise exceptions.NotAuthenticated()
-                else:
-                    raise exceptions.NotFound()
-            else:
-                raise exceptions.NotFound()
-        if sdi_id is not None:
-            raise exceptions.NotFound()
-        student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=user)
-        if student_detailed_info_qs.exists():
-            student_detailed_info = student_detailed_info_qs.first()
-            qs = models.Publication.objects.filter(student_detailed_info=student_detailed_info)
+        qs = student_detailed_info_many_to_one_qs(user, sdi_id, models.Publication)
         return qs
 
     @swagger_auto_schema(
@@ -508,28 +446,8 @@ class StudentDetailedUniversityThroughListCreateAPIView(custom_generic_apiviews.
 
     def get_queryset(self):
         user = self.request.user
-        qs = models.UniversityThrough.objects.none()
         sdi_id = self.request.query_params.get('student-detailed-info', None)
-        if not user.is_authenticated:
-            if sdi_id is not None:
-                sdi_qs = models.StudentDetailedInfo.objects.filter(id=sdi_id)
-                if sdi_qs.exists():
-                    sdi = models.StudentDetailedInfo.objects.get(id=sdi_id)
-                    if sdi.user is None:
-                        qs = models.UniversityThrough.objects.filter(student_detailed_info_id=sdi)
-                        return qs
-                    else:
-                        raise exceptions.NotAuthenticated()
-                else:
-                    raise exceptions.NotFound()
-            else:
-                raise exceptions.NotFound()
-        if sdi_id is not None:
-            raise exceptions.NotFound()
-        student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=user)
-        if student_detailed_info_qs.exists():
-            student_detailed_info = student_detailed_info_qs.first()
-            qs = models.UniversityThrough.objects.filter(student_detailed_info=student_detailed_info)
+        qs = student_detailed_info_many_to_one_qs(user, sdi_id, models.UniversityThrough)
         return qs
 
     @swagger_auto_schema(
@@ -545,3 +463,35 @@ class StudentDetailedUniversityThroughRetrieveDestroyAPIView(custom_generic_apiv
     queryset = models.UniversityThrough.objects.all()
     serializer_class = serializers.UniversityThroughSerializer
     permission_classes = [IsUniversityThroughOwnerOrDetailedInfoWithoutUser]
+
+
+def student_detailed_info_many_to_one_qs(user, sdi_id, model_class):
+    if not user.is_authenticated:
+        if sdi_id is not None:
+            sdi_qs = StudentDetailedInfo.objects.filter(id=sdi_id)
+            if sdi_qs.exists():
+                sdi = StudentDetailedInfo.objects.get(id=sdi_id)
+                if sdi.user is None:
+                    qs = model_class.objects.filter(student_detailed_info_id=sdi)
+                    return qs
+                else:
+                    raise exceptions.NotAuthenticated()
+            else:
+                raise exceptions.NotFound()
+        else:
+            raise exceptions.NotFound()
+
+    else:
+        if sdi_id is not None:
+            try:
+                sdi_user = StudentDetailedInfo.objects.get(id=sdi_id).user
+                if user == sdi_user:
+                    qs = model_class.objects.filter(student_detailed_info_id=sdi_id)
+                    return qs
+                else:
+                    raise exceptions.PermissionDenied()
+            except StudentDetailedInfo.DoesNotExist:
+                raise exceptions.NotFound()
+
+        qs = model_class.objects.filter(student_detailed_info__user=user)
+        return qs
