@@ -263,8 +263,8 @@ class LanguageCertificateListCreateAPIView(custom_generic_apiviews.BaseListCreat
     def get_queryset(self):
         user = self.request.user
         qs = self.model_class.objects.none()
+        sdi_id = self.request.query_params.get('student-detailed-info', None)
         if not user.is_authenticated:
-            sdi_id = self.request.query_params.get('student-detailed-info', None)
             if sdi_id is not None:
                 sdi_qs = models.StudentDetailedInfo.objects.filter(id=sdi_id)
                 if sdi_qs.exists():
@@ -280,6 +280,8 @@ class LanguageCertificateListCreateAPIView(custom_generic_apiviews.BaseListCreat
                 raise exceptions.NotFound()
 
         else:
+            if sdi_id is not None:
+                raise exceptions.NotFound()
             student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=user)
             if student_detailed_info_qs.exists():
                 student_detailed_info = student_detailed_info_qs.first()
@@ -415,8 +417,8 @@ class WantToApplyListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView
     def get_queryset(self):
         user = self.request.user
         qs = models.WantToApply.objects.none()
+        sdi_id = self.request.query_params.get('student-detailed-info', None)
         if not user.is_authenticated:
-            sdi_id = self.request.query_params.get('student-detailed-info', None)
             if sdi_id is not None:
                 sdi_qs = models.StudentDetailedInfo.objects.filter(id=sdi_id)
                 if sdi_qs.exists():
@@ -430,6 +432,8 @@ class WantToApplyListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView
                     raise exceptions.NotFound()
             else:
                 raise exceptions.NotFound()
+        if sdi_id is not None:
+            raise exceptions.NotFound()
         student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=user)
         if student_detailed_info_qs.exists():
             student_detailed_info = student_detailed_info_qs.first()
@@ -459,8 +463,8 @@ class PublicationListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView
     def get_queryset(self):
         user = self.request.user
         qs = models.Publication.objects.none()
+        sdi_id = self.request.query_params.get('student-detailed-info', None)
         if not user.is_authenticated:
-            sdi_id = self.request.query_params.get('student-detailed-info', None)
             if sdi_id is not None:
                 sdi_qs = models.StudentDetailedInfo.objects.filter(id=sdi_id)
                 if sdi_qs.exists():
@@ -474,6 +478,8 @@ class PublicationListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView
                     raise exceptions.NotFound()
             else:
                 raise exceptions.NotFound()
+        if sdi_id is not None:
+            raise exceptions.NotFound()
         student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=user)
         if student_detailed_info_qs.exists():
             student_detailed_info = student_detailed_info_qs.first()
@@ -503,8 +509,8 @@ class StudentDetailedUniversityThroughListCreateAPIView(custom_generic_apiviews.
     def get_queryset(self):
         user = self.request.user
         qs = models.UniversityThrough.objects.none()
+        sdi_id = self.request.query_params.get('student-detailed-info', None)
         if not user.is_authenticated:
-            sdi_id = self.request.query_params.get('student-detailed-info', None)
             if sdi_id is not None:
                 sdi_qs = models.StudentDetailedInfo.objects.filter(id=sdi_id)
                 if sdi_qs.exists():
@@ -518,6 +524,8 @@ class StudentDetailedUniversityThroughListCreateAPIView(custom_generic_apiviews.
                     raise exceptions.NotFound()
             else:
                 raise exceptions.NotFound()
+        if sdi_id is not None:
+            raise exceptions.NotFound()
         student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=user)
         if student_detailed_info_qs.exists():
             student_detailed_info = student_detailed_info_qs.first()
