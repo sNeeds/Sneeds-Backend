@@ -136,6 +136,7 @@ class WantToApplyRequestSerializer(serializers.ModelSerializer):
         allow_null=True,
         allow_empty=True,
         required=False,
+        many=True,
     )
 
     grade = fields.EnumField(enum=Grade)
