@@ -5,6 +5,7 @@ from django.db.models import F, Sum, ExpressionWrapper, FloatField
 from django.db.models.functions import Length, Ln
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, permissions, status, exceptions
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -15,7 +16,7 @@ from .permissions import IsStudentPermission, \
     StudentDetailedInfoOwnerOrInteractConsultantOrWithoutUserPermission, \
     IsWantToApplyOwnerOrDetailedInfoWithoutUser, IsPublicationOwnerOrDetailedInfoWithoutUser, \
     IsUniversityThroughOwnerOrDetailedInfoWithoutUser, \
-    IsLanguageCertificateTypeThroughOwnerOrDetailedInfoWithoutUser, IsLanguageCertificateOwnerOrDetailedInfoWithoutUser
+    IsLanguageCertificateOwnerOrDetailedInfoWithoutUser
 from .serializers import StudentDetailedInfoSerializer, StudentFormApplySemesterYearSerializer, \
     BasicFormFieldSerializer, StudentDetailedInfoRequestSerializer
 from sNeeds.utils.custom.views import custom_generic_apiviews
@@ -463,6 +464,15 @@ class StudentDetailedUniversityThroughRetrieveDestroyAPIView(custom_generic_apiv
     queryset = models.UniversityThrough.objects.all()
     serializer_class = serializers.UniversityThroughSerializer
     permission_classes = [IsUniversityThroughOwnerOrDetailedInfoWithoutUser]
+
+
+@api_view(['GET'])
+def payment_affordability_choices(request, format=None):
+    choices = models.PaymentAffordability.choices()
+    return Response(
+        data={"choices": choices},
+        status=status.HTTP_200_OK,
+    )
 
 
 def student_detailed_info_many_to_one_qs(user, sdi_id, model_class):
