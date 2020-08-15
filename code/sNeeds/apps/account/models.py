@@ -88,7 +88,7 @@ def get_image_upload_path(sub_dir):
 
 
 def get_student_resume_path(instance, filename):
-    return "account/files/students/form/{}/resume/{}".format(instance.id, filename)
+    return "account/files/form/{}/resume/{}".format(instance.id, filename)
 
 
 class BasicFormField(models.Model):
