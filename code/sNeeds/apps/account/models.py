@@ -88,10 +88,7 @@ def get_image_upload_path(sub_dir):
 
 
 def get_student_resume_path(instance, filename):
-    if instance.user:
-        return "account/files/students/{}/resume/{}".format(instance.user.email, filename)
-    else:
-        return "account/files/students/not_authenticated_user/resume/{}".format(filename)
+    return "account/files/students/form/{}/resume/{}".format(instance.id, filename)
 
 
 class BasicFormField(models.Model):
