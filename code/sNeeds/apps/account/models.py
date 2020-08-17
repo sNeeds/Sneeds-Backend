@@ -36,9 +36,9 @@ class PublicationType(Enum):
 
 
 class LanguageCertificateType(Enum):
+    IELTS_GENERAL = 'IELTS General'
+    IELTS_ACADEMIC = 'IELTS Academic'
     TOEFL = 'TOEFL'
-    IELTS_GENERAL = 'IELTS_GENERAL'
-    IELTS_ACADEMIC = 'IELTS_ACADEMIC'
     GMAT = 'GMAT'
     GRE_GENERAL = 'GRE General'
     GRE_CHEMISTRY = 'GRE Chemistry'
@@ -88,7 +88,7 @@ def get_image_upload_path(sub_dir):
 
 
 def get_student_resume_path(instance, filename):
-    return "account/files/students/{}/resume/{}".format(instance.user.email, filename)
+    return "account/files/form/{}/resume/{}".format(instance.id, filename)
 
 
 class BasicFormField(models.Model):
@@ -238,12 +238,16 @@ class StudentDetailedInfo(models.Model):
     gender = EnumField(
         Gender,
         default=Gender.MALE,
+        null=True,
+        blank=True,
     )
 
     military_service_status = EnumField(
         MilitaryServiceStatus,
         default=MilitaryServiceStatus.UNDID,
         max_length=30,
+        null=True,
+        blank=True,
     )
 
     is_married = models.BooleanField(
@@ -261,6 +265,8 @@ class StudentDetailedInfo(models.Model):
         PaymentAffordability,
         default=PaymentAffordability.MIDDLE,
         max_length=30,
+        null=True,
+        blank=True,
     )
 
     prefers_full_fund = models.BooleanField(
@@ -365,7 +371,7 @@ class UniversityThrough(models.Model):
 class LanguageCertificate(models.Model):
     certificate_type = EnumField(
         LanguageCertificateType,
-        default=LanguageCertificateType.IELTS,
+        default=LanguageCertificateType.TOEFL,
         max_length=64,
         help_text="Based on endpoint just some types are allowed to insert not all certificate types."
     )
@@ -393,7 +399,8 @@ class RegularLanguageCertificate(LanguageCertificate):
     overall = models.DecimalField(max_digits=5, decimal_places=2)
 
     def clean(self, *args, **kwargs):
-        if self.certificate_type not in [LanguageCertificateType.IELTS, LanguageCertificateType.TOEFL]:
+        if self.certificate_type not in [LanguageCertificateType.IELTS_ACADEMIC, LanguageCertificateType.IELTS_GENERAL,
+                                         LanguageCertificateType.TOEFL]:
             raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})
 
 
@@ -474,7 +481,7 @@ class GREBiologyCertificate(GRESubjectCertificate):
             raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})
 
 
-class GREPhysicsCertificate(LanguageCertificate):
+class GREPhysicsCertificate(GRESubjectCertificate):
     classical_mechanics = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(20), MaxValueValidator(99)]
     )

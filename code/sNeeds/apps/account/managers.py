@@ -1,4 +1,5 @@
 from django.db import models, transaction
+from django.db.models import Q
 
 
 class UniversityThroughQuerySetManager(models.QuerySet):
@@ -36,7 +37,8 @@ class LanguageCertificateQuerysetManager(models.QuerySet):
 
     def get_IELTS(self):
         from sNeeds.apps.account.models import LanguageCertificateType
-        return self.filter(certificate_type=LanguageCertificateType.IELTS)
+        return self.filter(Q(certificate_type=LanguageCertificateType.IELTS_GENERAL)
+                           | Q(certificate_type=LanguageCertificateType.IELTS_ACADEMIC))
 
     def get_TOEFL(self):
         from sNeeds.apps.account.models import LanguageCertificateType

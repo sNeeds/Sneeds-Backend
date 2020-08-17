@@ -18,7 +18,6 @@ class BasicFormFieldSearch(SearchFilter):
 
     def filter_queryset(self, request, queryset, view):
 
-        print("HOY HOY HOY")
         params = request.query_params.get('search', '')
         search_terms = params.replace(',', ' ').split()
 

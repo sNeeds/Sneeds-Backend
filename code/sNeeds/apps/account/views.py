@@ -4,7 +4,8 @@ from django.contrib.postgres.search import SearchQuery, SearchRank, TrigramSimil
 from django.db.models import F, Sum, ExpressionWrapper, FloatField
 from django.db.models.functions import Length, Ln
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, status, exceptions
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -15,7 +16,7 @@ from .permissions import IsStudentPermission, \
     StudentDetailedInfoOwnerOrInteractConsultantOrWithoutUserPermission, \
     IsWantToApplyOwnerOrDetailedInfoWithoutUser, IsPublicationOwnerOrDetailedInfoWithoutUser, \
     IsUniversityThroughOwnerOrDetailedInfoWithoutUser, \
-    IsLanguageCertificateTypeThroughOwnerOrDetailedInfoWithoutUser, IsLanguageCertificateOwnerOrDetailedInfoWithoutUser
+    IsLanguageCertificateOwnerOrDetailedInfoWithoutUser
 from .serializers import StudentDetailedInfoSerializer, StudentFormApplySemesterYearSerializer, \
     BasicFormFieldSerializer, StudentDetailedInfoRequestSerializer
 from sNeeds.utils.custom.views import custom_generic_apiviews
@@ -53,36 +54,6 @@ class UniversityList(generics.ListAPIView):
         return models.University.objects.filter(id__in=university_list)
 
 
-# class UniversityForFormList(APIView):
-#     queryset = models.University.objects.none()
-#     serializer_class = serializers.UniversitySerializer
-#
-#     def get(self, request, *args, **kwargs):
-#         params = request.query_params.get('search', '')
-#         search_terms = params.replace(',', ' ').split()
-#         qs = models.University.objects.none()
-#
-#         if not search_terms:
-#             return qs
-#
-#         if len(search_terms) == 0:
-#             return qs
-#
-#         search_term = search_terms[0]
-#         search_term_phrase = search_term[:16]
-#
-#         result_qs = qs
-#         for search_term in search_term_phrase.split(" "):
-#             result_qs |= models.University.objects.annotate(similarity=TrigramSimilarity('name', search_term)).filter(
-#                 similarity__gt=2.5 / Length('name')).order_by('-similarity')
-#         qs = result_qs.distinct()[:5]
-#         serializer = self.serializer_class(qs, many=True, context={'request': request})
-#         return Response(
-#             serializer.data,
-#             status=status.HTTP_200_OK,
-#         )
-
-
 class UniversityForFormList(generics.ListAPIView):
     queryset = models.University.objects.none()
     serializer_class = serializers.UniversitySerializer
@@ -100,6 +71,8 @@ class UniversityForFormList(generics.ListAPIView):
             return qs
 
         search_term = search_terms[0][:16]
+        if len(search_term) == 0 and len(search_term) < 4:
+            return qs
 
         # TODO try the below approaches and select the best one. Sorry for string comments.I wanted to be recognizable
         # TODO explanations from codes
@@ -146,6 +119,57 @@ class FieldOfStudyList(generics.ListAPIView):
         study_info_with_active_consultant_qs = StudyInfo.objects.all().with_active_consultants()
         field_of_study_list = list(study_info_with_active_consultant_qs.values_list('field_of_study__id', flat=True))
         return models.FieldOfStudy.objects.filter(id__in=field_of_study_list)
+
+
+class FieldOfStudyForFormList(generics.ListAPIView):
+    queryset = models.FieldOfStudy.objects.none()
+    serializer_class = serializers.FieldOfStudySerializer
+
+    def get_queryset(self):
+        request = self.request
+        params = request.query_params.get('search', '')
+        search_terms = params.replace(',', ' ').split()
+        qs = models.FieldOfStudy.objects.none()
+
+        if not search_terms:
+            return qs
+
+        if len(search_terms) == 0:
+            return qs
+
+        search_term = search_terms[0][:16]
+        if len(search_term) == 0 and len(search_term) < 4:
+            return qs
+
+        # TODO try the below approaches and select the best one. Sorry for string comments.I wanted to be recognizable
+        # TODO explanations from codes
+        # TODO To see execution time of queries, use this: python manage.py shell_plus --print-sql
+        # TODO To see results use endpoint /form-universities?&search=colombia
+
+        "Most close results but worse time about 32ms"
+        qs = models.FieldOfStudy.objects.\
+            annotate(similarity=TrigramSimilarity('name', search_term), name_length=ExpressionWrapper(0.5*Length('name'), output_field=FloatField())).\
+            annotate(t=F('similarity') * F('name_length')).\
+            filter(t__gt=0.5).order_by('-t')
+
+        "Much close results but worse time about 28ms"
+        # qs = models.University.objects.\
+        #     annotate(similarity=TrigramSimilarity('name', search_term), name_length=Ln(Length('name'))).\
+        #     annotate(t=F('similarity') * F('name_length')).\
+        #     filter(t__gt=0.4).order_by('-t')
+
+        """Very basicbut middle with 20 ms. rows with longer value in name column go down in results because more characters
+                 reduce trigram similarity"""
+        # qs = models.University.objects.annotate(similarity=TrigramSimilarity('name', 'university')) \
+        #     .filter(similarity__gt=0.1).order_by('-similarity')
+
+        """ Very strange!! Best time cost with 17 ms with a little optimization in results"""
+        # qs = models.University.objects.annotate(similarity=TrigramSimilarity('name', search_term)).filter(
+        #     similarity__gt=20 / Length('name')).order_by('-similarity')
+
+        qs = qs.distinct()
+
+        return qs
 
 
 class StudentDetailedInfoListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
@@ -239,13 +263,8 @@ class LanguageCertificateListCreateAPIView(custom_generic_apiviews.BaseListCreat
 
     def get_queryset(self):
         user = self.request.user
-        qs = self.model_class.objects.none()
-        if not user.is_authenticated:
-            return qs
-        student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=user)
-        if student_detailed_info_qs.exists():
-            student_detailed_info = student_detailed_info_qs.first()
-            qs = self.model_class.objects.filter(student_detailed_info=student_detailed_info)
+        sdi_id = self.request.query_params.get('student-detailed-info', None)
+        qs = student_detailed_info_many_to_one_qs(user, sdi_id, self.model_class)
         return qs
 
 
@@ -376,13 +395,8 @@ class WantToApplyListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView
 
     def get_queryset(self):
         user = self.request.user
-        qs = models.WantToApply.objects.none()
-        if not user.is_authenticated:
-            return qs
-        student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=user)
-        if student_detailed_info_qs.exists():
-            student_detailed_info = student_detailed_info_qs.first()
-            qs = models.WantToApply.objects.filter(student_detailed_info=student_detailed_info)
+        sdi_id = self.request.query_params.get('student-detailed-info', None)
+        qs = student_detailed_info_many_to_one_qs(user, sdi_id, models.WantToApply)
         return qs
 
     @swagger_auto_schema(
@@ -407,13 +421,8 @@ class PublicationListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView
 
     def get_queryset(self):
         user = self.request.user
-        qs = models.Publication.objects.none()
-        if not user.is_authenticated:
-            return qs
-        student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=user)
-        if student_detailed_info_qs.exists():
-            student_detailed_info = student_detailed_info_qs.first()
-            qs = models.Publication.objects.filter(student_detailed_info=student_detailed_info)
+        sdi_id = self.request.query_params.get('student-detailed-info', None)
+        qs = student_detailed_info_many_to_one_qs(user, sdi_id, models.Publication)
         return qs
 
     @swagger_auto_schema(
@@ -438,13 +447,8 @@ class StudentDetailedUniversityThroughListCreateAPIView(custom_generic_apiviews.
 
     def get_queryset(self):
         user = self.request.user
-        qs = models.UniversityThrough.objects.none()
-        if not user.is_authenticated:
-            return qs
-        student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=user)
-        if student_detailed_info_qs.exists():
-            student_detailed_info = student_detailed_info_qs.first()
-            qs = models.UniversityThrough.objects.filter(student_detailed_info=student_detailed_info)
+        sdi_id = self.request.query_params.get('student-detailed-info', None)
+        qs = student_detailed_info_many_to_one_qs(user, sdi_id, models.UniversityThrough)
         return qs
 
     @swagger_auto_schema(
@@ -460,3 +464,44 @@ class StudentDetailedUniversityThroughRetrieveDestroyAPIView(custom_generic_apiv
     queryset = models.UniversityThrough.objects.all()
     serializer_class = serializers.UniversityThroughSerializer
     permission_classes = [IsUniversityThroughOwnerOrDetailedInfoWithoutUser]
+
+
+@api_view(['GET'])
+def payment_affordability_choices(request, format=None):
+    choices = models.PaymentAffordability.choices()
+    return Response(
+        data={"choices": choices},
+        status=status.HTTP_200_OK,
+    )
+
+
+def student_detailed_info_many_to_one_qs(user, sdi_id, model_class):
+    if not user.is_authenticated:
+        if sdi_id is not None:
+            sdi_qs = StudentDetailedInfo.objects.filter(id=sdi_id)
+            if sdi_qs.exists():
+                sdi = StudentDetailedInfo.objects.get(id=sdi_id)
+                if sdi.user is None:
+                    qs = model_class.objects.filter(student_detailed_info_id=sdi)
+                    return qs
+                else:
+                    raise exceptions.NotAuthenticated()
+            else:
+                raise exceptions.NotFound()
+        else:
+            raise exceptions.NotFound()
+
+    else:
+        if sdi_id is not None:
+            try:
+                sdi_user = StudentDetailedInfo.objects.get(id=sdi_id).user
+                if user == sdi_user:
+                    qs = model_class.objects.filter(student_detailed_info_id=sdi_id)
+                    return qs
+                else:
+                    raise exceptions.PermissionDenied()
+            except StudentDetailedInfo.DoesNotExist:
+                raise exceptions.NotFound()
+
+        qs = model_class.objects.filter(student_detailed_info__user=user)
+        return qs

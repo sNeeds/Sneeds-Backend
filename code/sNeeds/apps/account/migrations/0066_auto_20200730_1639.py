@@ -15,6 +15,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='languagecertificate',
             name='certificate_type',
-            field=enumfields.fields.EnumField(default='IELTS', enum=sNeeds.apps.account.models.LanguageCertificateType, max_length=64),
+            field=enumfields.fields.EnumField(default='IELTS General', enum=sNeeds.apps.account.models.LanguageCertificateType, max_length=64),
         ),
     ]

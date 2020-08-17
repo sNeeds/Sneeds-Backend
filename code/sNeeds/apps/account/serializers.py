@@ -100,15 +100,15 @@ class BasicFormFieldSerializer(serializers.ModelSerializer):
 
 class WantToApplySerializer(serializers.ModelSerializer):
     country = CountrySerializer()
-    university = UniversitySerializer()
+    universities = UniversitySerializer(many=True)
     grade = fields.EnumField(enum=Grade)
-    major = BasicFormFieldSerializer()
+    major = FieldOfStudySerializer()
     semester_year = StudentFormApplySemesterYearSerializer()
 
     class Meta:
         model = models.WantToApply
         fields = [
-            'id', 'student_detailed_info', 'country', 'university', 'grade', 'major', 'semester_year',
+            'id', 'student_detailed_info', 'country', 'universities', 'grade', 'major', 'semester_year',
         ]
 
     def create(self, validated_data):
@@ -130,12 +130,13 @@ class WantToApplyRequestSerializer(serializers.ModelSerializer):
         allow_empty=False,
         required=True,
     )
-    university = serializers.PrimaryKeyRelatedField(
+    universities = serializers.PrimaryKeyRelatedField(
         queryset=models.University.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
         allow_null=True,
         allow_empty=True,
         required=False,
+        many=True,
     )
 
     grade = fields.EnumField(enum=Grade)
@@ -158,7 +159,7 @@ class WantToApplyRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.WantToApply
         fields = [
-            'id', 'student_detailed_info', 'country', 'university',
+            'id', 'student_detailed_info', 'country', 'universities',
             'grade', 'major',
             'semester_year',
         ]
@@ -228,9 +229,9 @@ class PublicationRequestSerializer(serializers.ModelSerializer):
 
 
 class UniversityThroughSerializer(serializers.ModelSerializer):
-    university = BasicFormFieldSerializer()
+    university = UniversitySerializer()
     grade = fields.EnumField(enum=models.Grade)
-    major = BasicFormFieldSerializer()
+    major = FieldOfStudySerializer()
 
     class Meta:
         model = models.UniversityThrough
@@ -328,7 +329,8 @@ class RegularLanguageCertificateSerializer(LanguageCertificateSerializer):
 
     def validate_certificate_type(self, value):
         certificate_types = models.LanguageCertificateType
-        if value not in [certificate_types.IELTS, certificate_types.TOEFL]:
+        if value not in [LanguageCertificateType.IELTS_ACADEMIC, LanguageCertificateType.IELTS_GENERAL,
+                         certificate_types.TOEFL]:
             raise ValidationError(_("Value is not in allowed certificate types."))
         return value
 
@@ -431,8 +433,6 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
     gre_psychology_certificates = serializers.SerializerMethodField()
     duolingo_certificates = serializers.SerializerMethodField()
 
-    is_married = BasicFormFieldSerializer()
-
     universities = serializers.SerializerMethodField()
     want_to_applies = serializers.SerializerMethodField()
     publications = serializers.SerializerMethodField()
@@ -503,9 +503,9 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
 
 
 class StudentDetailedInfoRequestSerializer(serializers.ModelSerializer):
-    payment_affordability = fields.EnumField(enum=models.PaymentAffordability)
-    gender = fields.EnumField(enum=models.Gender)
-    military_service_status = fields.EnumField(enum=models.MilitaryServiceStatus)
+    payment_affordability = fields.EnumField(enum=models.PaymentAffordability, required=False)
+    gender = fields.EnumField(enum=models.Gender, required=False)
+    military_service_status = fields.EnumField(enum=models.MilitaryServiceStatus, required=False)
 
     class Meta:
         model = StudentDetailedInfo

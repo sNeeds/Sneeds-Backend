@@ -12,11 +12,11 @@ urlpatterns = [
 
     path('universities/', views.UniversityList.as_view(), name="university-list"),
     path('universities/<int:id>/', views.UniversityDetail.as_view(), name="university-detail"),
-
     path('form-universities/', views.UniversityForFormList.as_view(), name='form-university-list'),
 
     path('field-of-studies/', views.FieldOfStudyList.as_view(), name="field-of-study-list"),
     path('field-of-studies/<int:id>/', views.FieldOfStudyDetail.as_view(), name="field-of-study-detail"),
+    path('form-field-of-studies/', views.FieldOfStudyForFormList.as_view(), name='form-field-of-study-list'),
 
     path('consultant-profiles/', sNeeds.apps.consultants.views.ConsultantProfileList.as_view(),
          name="consultant-profile-list"),
@@ -83,6 +83,11 @@ urlpatterns = [
     path('want-to-applies/<int:id>/', views.WantToApplyRetrieveDestroyAPIView.as_view(),
          name="want-to-apply-detail"),
 
+    path('apply-semester-years/', views.StudentFormApplySemesterYearListAPIView.as_view(),
+         name="apply-semester-year-list"),
+    path('apply-semester-years/<int:id>', views.StudentFormApplySemesterYearRetrieveAPIView.as_view(),
+         name="apply-semester-year-detail"),
+
     path('student-detailed-university-throughs/',
          views.StudentDetailedUniversityThroughListCreateAPIView.as_view(),
          name="student-detailed-university-through-list"),
@@ -90,12 +95,9 @@ urlpatterns = [
          views.StudentDetailedUniversityThroughRetrieveDestroyAPIView.as_view(),
          name="student-detailed-university-through-detail"),
 
-    # path('student-detailed-language-certificate-type-throughs/',
-    #      views.StudentDetailedLanguageCertificateTypeThroughListCreateAPIView.as_view(),
-    #      name="student-detailed-language-certificate-type-through-list"),
-    # path('student-detailed-language-certificate-type-throughs/<int:id>/',
-    #      views.StudentDetailedLanguageCertificateTypeThroughRetrieveDestroyAPIView.as_view(),
-    #      name="student-detailed-language-certificate-type-through-detail"),
+    path('payment-affordability-choices/',
+         views.payment_affordability_choices,
+         name="payment-affordability-choice-list")
 ]
 
 
