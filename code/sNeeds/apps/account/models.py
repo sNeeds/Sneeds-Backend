@@ -1,4 +1,5 @@
 import datetime
+import uuid
 
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator, FileExtensionValidator
@@ -222,6 +223,12 @@ class Publication(models.Model):
 
 
 class StudentDetailedInfo(models.Model):
+    id = models.UUIDField(
+        max_length=36,
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
     user = models.OneToOneField(
         User,
         null=True,
@@ -331,8 +338,8 @@ class StudentDetailedInfo(models.Model):
     def is_complete(self):
         return True
 
-    class Meta:
-        ordering = ['-id', ]
+    # class Meta:
+    #     ordering = ['-id', ]
 
 
 class UniversityThrough(models.Model):

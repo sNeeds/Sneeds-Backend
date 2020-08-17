@@ -1,8 +1,12 @@
+import uuid
+
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.search import SearchQuery, SearchRank, TrigramSimilarity
+from django.core.exceptions import ValidationError
 from django.db.models import F, Sum, ExpressionWrapper, FloatField
 from django.db.models.functions import Length, Ln
+from django.utils.translation import ugettext_lazy as _
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, permissions, status, exceptions
 from rest_framework.decorators import api_view
@@ -502,6 +506,8 @@ def student_detailed_info_many_to_one_qs(user, sdi_id, model_class):
                     raise exceptions.PermissionDenied()
             except StudentDetailedInfo.DoesNotExist:
                 raise exceptions.NotFound()
+            except ValidationError:
+                raise exceptions.ValidationError(detail={"detail": "'{}' is not a valid UUID".format(sdi_id)})
 
         qs = model_class.objects.filter(student_detailed_info__user=user)
         return qs
