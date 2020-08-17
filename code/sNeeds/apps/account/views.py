@@ -2,7 +2,7 @@ import uuid
 
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.postgres.search import SearchQuery, SearchRank, TrigramSimilarity
+from django.contrib.postgres.search import SearchQuery, SearchRank, TrigramSimilarity, SearchVector
 from django.core.exceptions import ValidationError
 from django.db.models import F, Sum, ExpressionWrapper, FloatField
 from django.db.models.functions import Length, Ln
@@ -65,7 +65,7 @@ class UniversityForFormList(generics.ListAPIView):
     def get_queryset(self):
         request = self.request
         params = request.query_params.get('search', '')
-        search_terms = params.replace(',', ' ').split()
+        search_terms = params
         qs = models.University.objects.none()
 
         if not search_terms:
@@ -74,7 +74,7 @@ class UniversityForFormList(generics.ListAPIView):
         if len(search_terms) == 0:
             return qs
 
-        search_term = search_terms[0][:16]
+        search_term = search_terms[:16]
         if len(search_term) == 0 and len(search_term) < 4:
             return qs
 
@@ -97,7 +97,7 @@ class UniversityForFormList(generics.ListAPIView):
 
         """Very basicbut middle with 20 ms. rows with longer value in name column go down in results because more characters
                  reduce trigram similarity"""
-        # qs = models.University.objects.annotate(similarity=TrigramSimilarity('name', 'university')) \
+        # qs = models.University.objects.annotate(similarity=TrigramSimilarity('name', search_term)) \
         #     .filter(similarity__gt=0.1).order_by('-similarity')
 
         """ Very strange!! Best time cost with 17 ms with a little optimization in results"""
@@ -132,7 +132,7 @@ class FieldOfStudyForFormList(generics.ListAPIView):
     def get_queryset(self):
         request = self.request
         params = request.query_params.get('search', '')
-        search_terms = params.replace(',', ' ').split()
+        search_terms = params
         qs = models.FieldOfStudy.objects.none()
 
         if not search_terms:
@@ -141,7 +141,7 @@ class FieldOfStudyForFormList(generics.ListAPIView):
         if len(search_terms) == 0:
             return qs
 
-        search_term = search_terms[0][:16]
+        search_term = search_terms[:16]
         if len(search_term) == 0 and len(search_term) < 4:
             return qs
 
@@ -151,24 +151,32 @@ class FieldOfStudyForFormList(generics.ListAPIView):
         # TODO To see results use endpoint /form-universities?&search=colombia
 
         "Most close results but worse time about 32ms"
-        qs = models.FieldOfStudy.objects.\
-            annotate(similarity=TrigramSimilarity('name', search_term), name_length=ExpressionWrapper(0.5*Length('name'), output_field=FloatField())).\
-            annotate(t=F('similarity') * F('name_length')).\
-            filter(t__gt=0.5).order_by('-t')
+        # qs = models.FieldOfStudy.objects.\
+        #     annotate(similarity=TrigramSimilarity('name', search_term), name_length=ExpressionWrapper(Length('name'), output_field=FloatField())).\
+        #     annotate(t=F('similarity')).\
+        #     filter(t__gt=0.3).order_by('-t', 'name_length')
+
+        # vector = SearchVector('name')
+        # query = SearchQuery(search_term)
+        # qs = qs.annotate(rank=SearchRank(vector, query)).order_by('-rank')
 
         "Much close results but worse time about 28ms"
-        # qs = models.University.objects.\
-        #     annotate(similarity=TrigramSimilarity('name', search_term), name_length=Ln(Length('name'))).\
-        #     annotate(t=F('similarity') * F('name_length')).\
-        #     filter(t__gt=0.4).order_by('-t')
+        qs = models.FieldOfStudy.objects.\
+            annotate(similarity=TrigramSimilarity('name', search_term), name_length=Ln(Length('name'))).\
+            annotate(t=F('similarity') * F('name_length')).\
+            filter(t__gt=0.4).order_by('-t')
 
         """Very basicbut middle with 20 ms. rows with longer value in name column go down in results because more characters
                  reduce trigram similarity"""
-        # qs = models.University.objects.annotate(similarity=TrigramSimilarity('name', 'university')) \
+        # qs = models.FieldOfStudy.objects.annotate(similarity=TrigramSimilarity('name', search_term)) \
         #     .filter(similarity__gt=0.1).order_by('-similarity')
+        #
+        # vector = SearchVector('name')
+        # query = SearchQuery(search_term)
+        # qs = qs.annotate(rank=SearchRank(vector, query)).order_by('-rank')
 
         """ Very strange!! Best time cost with 17 ms with a little optimization in results"""
-        # qs = models.University.objects.annotate(similarity=TrigramSimilarity('name', search_term)).filter(
+        # qs = models.FieldOfStudy.objects.annotate(similarity=TrigramSimilarity('name', search_term)).filter(
         #     similarity__gt=20 / Length('name')).order_by('-similarity')
 
         qs = qs.distinct()
