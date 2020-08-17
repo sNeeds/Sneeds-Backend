@@ -158,15 +158,64 @@ class StudentDetailedFormReview:
         form = self.student_detailed_form
 
         # Supports IELTS general, academic and TOEFL
-        IELTS_generals = RegularLanguageCertificate.objects.filter(
-            student_detailed_info=form,
-            certificate_type = LanguageCertificateType.IELTS_ACADEMIC
-        )
-        IELTS_academic = RegularLanguageCertificate.objects.filter(
+        ielts_academic_qs = RegularLanguageCertificate.objects.filter(
             student_detailed_info=form,
             certificate_type=LanguageCertificateType.IELTS_GENERAL
         )
+        ielts_general_qs = RegularLanguageCertificate.objects.filter(
+            student_detailed_info=form,
+            certificate_type=LanguageCertificateType.IELTS_ACADEMIC
+        )
+        toefls_qs = RegularLanguageCertificate.objects.filter(
+            student_detailed_info=form,
+            certificate_type=LanguageCertificateType.TOEFL
+        )
 
+        data = {
+            "ielts-academic": None,
+            "ielts-general": None,
+            "toefl": None
+        }
+
+        if ielts_academic_qs.exists():
+            ielts_academic = ielts_academic_qs.first()
+            if ielts_academic.overall < 6:
+                data["ielts-academic"] = IELTS_ACADEMIC_VERY_BAD
+            elif 6 <= ielts_academic.overall < 6.5:
+                data["ielts-academic"] = IELTS_ACADEMIC_BAD
+            elif 6.5 <= ielts_academic.overall < 7:
+                data["ielts-academic"] = IELTS_ACADEMIC_AVERAGE
+            elif 7 <= ielts_academic.overall < 7.5:
+                data["ielts-academic"] = IELTS_ACADEMIC_GOOD
+            elif 7.5 <= ielts_academic.overall:
+                data["ielts-academic"] = IELTS_ACADEMIC_GREAT
+
+        if ielts_general_qs.exists():
+            ielts_general = ielts_general_qs.first()
+            data["ielts-general"] = CHANGE_GENERAL_WITH_ACADEMIC
+            if ielts_general.overall < 79:
+                data["ielts-general"] = IELTS_ACADEMIC_VERY_BAD
+            elif 6 <= ielts_general.overall < 6.5:
+                data["ielts-general"] = IELTS_ACADEMIC_BAD
+            elif 6.5 <= ielts_general.overall < 7:
+                data["ielts-general"] = IELTS_ACADEMIC_AVERAGE
+            elif 7 <= ielts_general.overall < 7.5:
+                data["ielts-general"] = IELTS_ACADEMIC_GOOD
+            elif 7.5 <= ielts_general.overall:
+                data["ielts-general"] = IELTS_ACADEMIC_GREAT
+
+        if toefls_qs.exists():
+            toefl = toefls_qs.first()
+            if toefl.overall < 79:
+                data["toefl"] = TOEFL_VERY_BAD
+            elif 79 <= toefl.overall < 92:
+                data["toefl"] = TOEFL_BAD
+            elif 92 <= toefl.overall < 100:
+                data["toefl"] = TOEFL_AVERAGE
+            elif 100 <= toefl.overall < 110:
+                data["toefl"] = TOEFL_GOOD
+            elif 110 <= toefl.overall:
+                data["toefl"] = TOEFL_GREAT
 
     def review_publications(self):
         def _get_appended_publication_qs_titles(qs):
