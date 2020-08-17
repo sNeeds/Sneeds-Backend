@@ -179,7 +179,7 @@ class StudentDetailedFormReview:
 
         if ielts_academic_qs.exists():
             ielts_academic = ielts_academic_qs.first()
-            ielts_academic = {
+            data['ielts_academic'] = {
                 "comment": None,
                 "is_mock": ielts_academic.is_mock
             }
@@ -196,7 +196,7 @@ class StudentDetailedFormReview:
 
         if ielts_general_qs.exists():
             ielts_general = ielts_general_qs.first()
-            ielts_general = {
+            data['ielts_general'] = {
                 "comment": None,
                 "is_mock": ielts_general.is_mock
             }
@@ -214,7 +214,7 @@ class StudentDetailedFormReview:
 
         if toefls_qs.exists():
             toefl = toefls_qs.first()
-            toefl = {
+            data['toefl'] = {
                 "comment": None,
                 "is_mock": toefl.is_mock
             }
