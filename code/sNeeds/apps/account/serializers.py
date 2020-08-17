@@ -98,17 +98,24 @@ class BasicFormFieldSerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 
+class GradeModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.GradeModel
+        fields = ['id', 'name']
+
+
 class WantToApplySerializer(serializers.ModelSerializer):
-    country = CountrySerializer()
+    countries = CountrySerializer(many=True)
     universities = UniversitySerializer(many=True)
-    grade = fields.EnumField(enum=Grade)
-    major = FieldOfStudySerializer()
-    semester_year = StudentFormApplySemesterYearSerializer()
+    # grade = fields.EnumField(enum=Grade)
+    grades = GradeModelSerializer(many=True)
+    majors = FieldOfStudySerializer(many=True)
+    semester_years = StudentFormApplySemesterYearSerializer(many=True)
 
     class Meta:
         model = models.WantToApply
         fields = [
-            'id', 'student_detailed_info', 'country', 'universities', 'grade', 'major', 'semester_year',
+            'id', 'student_detailed_info', 'countries', 'universities', 'grades', 'majors', 'semester_years',
         ]
 
     def create(self, validated_data):
@@ -118,17 +125,18 @@ class WantToApplySerializer(serializers.ModelSerializer):
 class WantToApplyRequestSerializer(serializers.ModelSerializer):
     student_detailed_info = serializers.PrimaryKeyRelatedField(
         queryset=models.StudentDetailedInfo.objects.all(),
-        pk_field=serializers.IntegerField(label='id'),
+        pk_field=serializers.UUIDField(label='id'),
         allow_null=False,
         allow_empty=False,
         required=True,
     )
-    country = serializers.PrimaryKeyRelatedField(
+    countries = serializers.PrimaryKeyRelatedField(
         queryset=models.Country.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
         allow_null=False,
         allow_empty=False,
         required=True,
+        many=True,
     )
     universities = serializers.PrimaryKeyRelatedField(
         queryset=models.University.objects.all(),
@@ -139,29 +147,40 @@ class WantToApplyRequestSerializer(serializers.ModelSerializer):
         many=True,
     )
 
-    grade = fields.EnumField(enum=Grade)
+    # grade = fields.EnumField(enum=Grade)
 
-    major = serializers.PrimaryKeyRelatedField(
+    grades = serializers.PrimaryKeyRelatedField(
+        queryset=models.GradeModel.objects.all(),
+        pk_field=serializers.IntegerField(label='id'),
+        allow_null=True,
+        allow_empty=True,
+        required=False,
+        many=True
+    )
+
+    majors = serializers.PrimaryKeyRelatedField(
         queryset=models.FieldOfStudy.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
         allow_null=True,
         allow_empty=True,
         required=False,
+        many=True
     )
-    semester_year = serializers.PrimaryKeyRelatedField(
+    semester_years = serializers.PrimaryKeyRelatedField(
         queryset=models.StudentFormApplySemesterYear.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
         allow_null=False,
         allow_empty=False,
         required=True,
+        many=True
     )
 
     class Meta:
         model = models.WantToApply
         fields = [
-            'id', 'student_detailed_info', 'country', 'universities',
-            'grade', 'major',
-            'semester_year',
+            'id', 'student_detailed_info', 'countries', 'universities',
+            'grades', 'majors',
+            'semester_years',
         ]
 
     def validate(self, attrs):
@@ -197,7 +216,7 @@ class PublicationSerializer(serializers.ModelSerializer):
 class PublicationRequestSerializer(serializers.ModelSerializer):
     student_detailed_info = serializers.PrimaryKeyRelatedField(
         queryset=models.StudentDetailedInfo.objects.all(),
-        pk_field=serializers.IntegerField(label='id'),
+        pk_field=serializers.UUIDField(label='id'),
         allow_null=False,
         allow_empty=False,
         required=True,
@@ -254,7 +273,7 @@ class UniversityThroughRequestSerializer(serializers.ModelSerializer):
 
     student_detailed_info = serializers.PrimaryKeyRelatedField(
         queryset=models.StudentDetailedInfo.objects.all(),
-        pk_field=serializers.IntegerField(label='id'),
+        pk_field=serializers.UUIDField(label='id'),
         allow_null=False,
         allow_empty=False,
         required=True,
@@ -293,7 +312,7 @@ class UniversityThroughRequestSerializer(serializers.ModelSerializer):
 class LanguageCertificateSerializer(serializers.ModelSerializer):
     student_detailed_info = serializers.PrimaryKeyRelatedField(
         queryset=models.StudentDetailedInfo.objects.all(),
-        pk_field=serializers.IntegerField(label='id'),
+        pk_field=serializers.UUIDField(label='id'),
         allow_null=False,
         allow_empty=False,
         required=True,

@@ -130,6 +130,10 @@ class FieldOfStudyType(BasicFormField):
     pass
 
 
+class GradeModel(BasicFormField):
+    pass
+
+
 class FieldOfStudy(models.Model):
     name = models.CharField(max_length=256, unique=True)
     description = models.TextField(blank=True, null=True)
@@ -172,25 +176,23 @@ class WantToApply(models.Model):
         'StudentDetailedInfo',
         on_delete=models.CASCADE
     )
-    country = models.ForeignKey(
+    countries = models.ManyToManyField(
         Country,
-        on_delete=models.PROTECT
     )
 
     universities = models.ManyToManyField(University)
 
-    grade = EnumField(Grade, default=Grade.BACHELOR)
-
-    major = models.ForeignKey(
-        FieldOfStudy,
-        on_delete=models.PROTECT,
-        null=True,
-        blank=True,
+    # grades = EnumField(Grade, default=Grade.BACHELOR)
+    grades = models.ManyToManyField(
+        GradeModel
     )
 
-    semester_year = models.ForeignKey(
+    majors = models.ManyToManyField(
+        FieldOfStudy,
+    )
+
+    semester_years = models.ManyToManyField(
         StudentFormApplySemesterYear,
-        on_delete=models.PROTECT,
     )
 
 
@@ -338,8 +340,8 @@ class StudentDetailedInfo(models.Model):
     def is_complete(self):
         return True
 
-    # class Meta:
-    #     ordering = ['-id', ]
+    class Meta:
+        ordering = ['created', ]
 
 
 class UniversityThrough(models.Model):
