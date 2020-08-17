@@ -179,43 +179,57 @@ class StudentDetailedFormReview:
 
         if ielts_academic_qs.exists():
             ielts_academic = ielts_academic_qs.first()
+            ielts_academic = {
+                "comment": None,
+                "is_mock": ielts_academic.is_mock
+            }
             if ielts_academic.overall < 6:
-                data["ielts-academic"] = IELTS_ACADEMIC_VERY_BAD
+                data["ielts-academic"]["comment"] = IELTS_ACADEMIC_VERY_BAD
             elif 6 <= ielts_academic.overall < 6.5:
-                data["ielts-academic"] = IELTS_ACADEMIC_BAD
+                data["ielts-academic"]["comment"] = IELTS_ACADEMIC_BAD
             elif 6.5 <= ielts_academic.overall < 7:
-                data["ielts-academic"] = IELTS_ACADEMIC_AVERAGE
+                data["ielts-academic"]["comment"] = IELTS_ACADEMIC_AVERAGE
             elif 7 <= ielts_academic.overall < 7.5:
-                data["ielts-academic"] = IELTS_ACADEMIC_GOOD
+                data["ielts-academic"]["comment"] = IELTS_ACADEMIC_GOOD
             elif 7.5 <= ielts_academic.overall:
-                data["ielts-academic"] = IELTS_ACADEMIC_GREAT
+                data["ielts-academic"]["comment"] = IELTS_ACADEMIC_GREAT
 
         if ielts_general_qs.exists():
             ielts_general = ielts_general_qs.first()
-            data["ielts-general"] = CHANGE_GENERAL_WITH_ACADEMIC
-            if ielts_general.overall < 79:
-                data["ielts-general"] = IELTS_ACADEMIC_VERY_BAD
+            ielts_general = {
+                "comment": None,
+                "is_mock": ielts_general.is_mock
+            }
+            data["ielts-general"]["comment"] = CHANGE_GENERAL_WITH_ACADEMIC
+            if ielts_general.overall < 6:
+                data["ielts-general"]["comment"] = IELTS_ACADEMIC_VERY_BAD
             elif 6 <= ielts_general.overall < 6.5:
-                data["ielts-general"] = IELTS_ACADEMIC_BAD
+                data["ielts-general"]["comment"] = IELTS_ACADEMIC_BAD
             elif 6.5 <= ielts_general.overall < 7:
-                data["ielts-general"] = IELTS_ACADEMIC_AVERAGE
+                data["ielts-general"]["comment"] = IELTS_ACADEMIC_AVERAGE
             elif 7 <= ielts_general.overall < 7.5:
-                data["ielts-general"] = IELTS_ACADEMIC_GOOD
+                data["ielts-general"]["comment"] = IELTS_ACADEMIC_GOOD
             elif 7.5 <= ielts_general.overall:
-                data["ielts-general"] = IELTS_ACADEMIC_GREAT
+                data["ielts-general"]["comment"] = IELTS_ACADEMIC_GREAT
 
         if toefls_qs.exists():
             toefl = toefls_qs.first()
+            toefl = {
+                "comment": None,
+                "is_mock": toefl.is_mock
+            }
             if toefl.overall < 79:
-                data["toefl"] = TOEFL_VERY_BAD
+                data["toefl"]["comment"] = TOEFL_VERY_BAD
             elif 79 <= toefl.overall < 92:
-                data["toefl"] = TOEFL_BAD
+                data["toefl"]["comment"] = TOEFL_BAD
             elif 92 <= toefl.overall < 100:
-                data["toefl"] = TOEFL_AVERAGE
+                data["toefl"]["comment"] = TOEFL_AVERAGE
             elif 100 <= toefl.overall < 110:
-                data["toefl"] = TOEFL_GOOD
+                data["toefl"]["comment"] = TOEFL_GOOD
             elif 110 <= toefl.overall:
-                data["toefl"] = TOEFL_GREAT
+                data["toefl"]["comment"] = TOEFL_GREAT
+
+        return data
 
     def review_publications(self):
         def _get_appended_publication_qs_titles(qs):
@@ -409,6 +423,8 @@ class StudentDetailedFormReview:
                 "title": "مقالات",
                 "data": self.review_publications()
             },
+            'language': self.review_language_certificates()
+            ,
             "age": {
                 "title": "سن و گپ تحصیلی",
                 "data": self.review_age()

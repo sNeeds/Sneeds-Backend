@@ -379,7 +379,9 @@ class LanguageCertificate(models.Model):
         StudentDetailedInfo,
         on_delete=models.CASCADE
     )
-    is_mock = models.BooleanField(default=True)
+    is_mock = models.BooleanField(
+        default=False
+    )
 
     objects = LanguageCertificateQuerysetManager.as_manager()
 
