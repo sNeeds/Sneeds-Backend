@@ -478,6 +478,11 @@ class StudentDetailedUniversityThroughRetrieveDestroyAPIView(custom_generic_apiv
     permission_classes = [IsUniversityThroughOwnerOrDetailedInfoWithoutUser]
 
 
+class GradeChoiceList(custom_generic_apiviews.BaseListAPIView):
+    queryset = models.GradeModel.objects.all()
+    serializer_class = serializers.GradeModelSerializer
+
+
 @api_view(['GET'])
 def payment_affordability_choices(request, format=None):
     choices = models.PaymentAffordability.choices()
