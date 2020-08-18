@@ -6,6 +6,7 @@ admin.site.register(models.Country)
 admin.site.register(models.UniversityThrough)
 admin.site.register(models.FieldOfStudyType)
 admin.site.register(models.WantToApply)
+admin.site.register(models.GradeModel)
 
 
 class UniversityThroughInline(admin.TabularInline):
