@@ -1,3 +1,8 @@
 from django.db import models
 
-# Create your models here.
+from sNeeds.apps.account.models import StudentDetailedInfoBase
+
+
+class AppliedStudentDetailedInfo(StudentDetailedInfoBase):
+    pass
+

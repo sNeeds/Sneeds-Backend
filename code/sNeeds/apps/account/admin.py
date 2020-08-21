@@ -89,11 +89,6 @@ class StudentDetailedInfoAdmin(StudentDetailedInfoBaseAdmin):
     list_display = ['id', 'user', 'age', 'is_married']
 
 
-@admin.register(models.AppliedStudentDetailedInfo)
-class AppliedStudentDetailedInfoAdmin(StudentDetailedInfoBaseAdmin):
-    pass
-
-
 @admin.register(models.University)
 class UniversityAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'rank', 'is_college']

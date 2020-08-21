@@ -1,3 +1,10 @@
 from django.contrib import admin
 
-# Register your models here.
+from . import models
+
+from sNeeds.apps.account.admin import StudentDetailedInfoBaseAdmin
+
+
+@admin.register(models.AppliedStudentDetailedInfo)
+class AppliedStudentDetailedInfoAdmin(StudentDetailedInfoBaseAdmin):
+    pass
