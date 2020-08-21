@@ -65,8 +65,7 @@ class PublicationInline(admin.TabularInline):
     extra = 1
 
 
-@admin.register(models.StudentDetailedInfo)
-class StudentDetailedInfoAdmin(admin.ModelAdmin):
+class StudentDetailedInfoBaseAdmin(admin.ModelAdmin):
     inlines = [
         UniversityThroughInline,
         WantToApplyInline,
@@ -82,7 +81,17 @@ class StudentDetailedInfoAdmin(admin.ModelAdmin):
         DuolingoCertificateCertificate,
     ]
 
+    list_display = ['id']
+
+
+@admin.register(models.StudentDetailedInfo)
+class StudentDetailedInfoAdmin(StudentDetailedInfoBaseAdmin):
     list_display = ['id', 'user', 'age', 'is_married']
+
+
+@admin.register(models.AppliedStudentDetailedInfo)
+class AppliedStudentDetailedInfoAdmin(StudentDetailedInfoBaseAdmin):
+    pass
 
 
 @admin.register(models.University)
@@ -93,5 +102,5 @@ class UniversityAdmin(admin.ModelAdmin):
 
 @admin.register(models.Publication)
 class PublicationAdmin(admin.ModelAdmin):
-    list_display = ['id', 'title', 'student_detailed_info' ,'value']
+    list_display = ['id', 'title', 'student_detailed_info', 'value']
     readonly_fields = ['value']

@@ -266,6 +266,10 @@ class StudentDetailedInfoBase(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
 
+class AppliedStudentDetailedInfo(StudentDetailedInfoBase):
+    pass
+
+
 class StudentDetailedInfo(StudentDetailedInfoBase):
     user = models.OneToOneField(
         User,
