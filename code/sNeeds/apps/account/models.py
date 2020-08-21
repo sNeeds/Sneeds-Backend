@@ -173,7 +173,7 @@ class StudentFormApplySemesterYear(models.Model):
 
 class WantToApply(models.Model):
     student_detailed_info = models.ForeignKey(
-        'StudentDetailedInfo',
+        'StudentDetailedInfoBase',
         on_delete=models.CASCADE
     )
     countries = models.ManyToManyField(
@@ -198,7 +198,7 @@ class WantToApply(models.Model):
 
 class Publication(models.Model):
     student_detailed_info = models.ForeignKey(
-        'StudentDetailedInfo',
+        'StudentDetailedInfoBase',
         on_delete=models.CASCADE
     )
     title = models.CharField(max_length=512)
@@ -224,13 +224,49 @@ class Publication(models.Model):
         return self.title
 
 
-class StudentDetailedInfo(models.Model):
+class StudentDetailedInfoBase(models.Model):
     id = models.UUIDField(
         max_length=36,
         primary_key=True,
         default=uuid.uuid4,
         editable=False
     )
+
+    universities = models.ManyToManyField(
+        University,
+        through='UniversityThrough'
+    )
+
+    resume = models.FileField(
+        upload_to=get_student_resume_path,
+        null=True,
+        blank=True,
+        validators=[
+            FileExtensionValidator(allowed_extensions=['pdf']), validate_resume_file_size
+        ]
+    )
+    related_work_experience = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        help_text="In months"
+    )
+    academic_break = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        help_text="In years"
+    )
+    olympiad = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
+
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+
+class StudentDetailedInfo(StudentDetailedInfoBase):
     user = models.OneToOneField(
         User,
         null=True,
@@ -265,11 +301,6 @@ class StudentDetailedInfo(models.Model):
         blank=True
     )
 
-    universities = models.ManyToManyField(
-        University,
-        through='UniversityThrough'
-    )
-
     payment_affordability = EnumField(
         PaymentAffordability,
         default=PaymentAffordability.MIDDLE,
@@ -296,30 +327,6 @@ class StudentDetailedInfo(models.Model):
 
     # Extra info
     comment = models.TextField(max_length=1024, null=True, blank=True)
-    resume = models.FileField(
-        upload_to=get_student_resume_path,
-        null=True,
-        blank=True,
-        validators=[
-            FileExtensionValidator(allowed_extensions=['pdf']), validate_resume_file_size
-        ]
-    )
-    related_work_experience = models.PositiveIntegerField(
-        null=True,
-        blank=True,
-        help_text="In months"
-    )
-    academic_break = models.PositiveIntegerField(
-        null=True,
-        blank=True,
-        validators=[MinValueValidator(0), MaxValueValidator(100)],
-        help_text="In years"
-    )
-    olympiad = models.CharField(
-        max_length=256,
-        blank=True,
-        null=True
-    )
     powerful_recommendation = models.BooleanField(
         default=False,
         null=True,
@@ -334,9 +341,6 @@ class StudentDetailedInfo(models.Model):
         null=True,
     )
 
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
-
     def is_complete(self):
         return True
 
@@ -349,7 +353,7 @@ class UniversityThrough(models.Model):
         University, on_delete=models.PROTECT
     )
     student_detailed_info = models.ForeignKey(
-        StudentDetailedInfo,
+        StudentDetailedInfoBase,
         on_delete=models.CASCADE
     )
     grade = EnumField(Grade, default=Grade.BACHELOR)
@@ -385,7 +389,7 @@ class LanguageCertificate(models.Model):
         help_text="Based on endpoint just some types are allowed to insert not all certificate types."
     )
     student_detailed_info = models.ForeignKey(
-        StudentDetailedInfo,
+        StudentDetailedInfoBase,
         on_delete=models.CASCADE
     )
     is_mock = models.BooleanField(
