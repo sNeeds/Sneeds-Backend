@@ -174,7 +174,8 @@ class StudentFormApplySemesterYear(models.Model):
 class WantToApply(models.Model):
     student_detailed_info = models.ForeignKey(
         'StudentDetailedInfoBase',
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name="want_to_apply"
     )
     countries = models.ManyToManyField(
         Country,
@@ -264,7 +265,6 @@ class StudentDetailedInfoBase(models.Model):
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-
 
 
 class StudentDetailedInfo(StudentDetailedInfoBase):
