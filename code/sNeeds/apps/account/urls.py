@@ -80,7 +80,7 @@ urlpatterns = [
 
     path('want-to-applies/', views.WantToApplyListCreateAPIView.as_view(),
          name="want-to-apply-list"),
-    path('want-to-applies/<int:id>/', views.WantToApplyRetrieveDestroyAPIView.as_view(),
+    path('want-to-applies/<int:id>/', views.WantToApplyRetrieveUpdateDestroyAPIView.as_view(),
          name="want-to-apply-detail"),
 
     path('apply-semester-years/', views.StudentFormApplySemesterYearListAPIView.as_view(),

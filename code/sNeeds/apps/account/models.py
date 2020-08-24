@@ -183,7 +183,6 @@ class WantToApply(models.Model):
 
     universities = models.ManyToManyField(University)
 
-    # grades = EnumField(Grade, default=Grade.BACHELOR)
     grades = models.ManyToManyField(
         GradeModel
     )

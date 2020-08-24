@@ -419,7 +419,7 @@ class WantToApplyListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView
         return super().post(request, *args, **kwargs)
 
 
-class WantToApplyRetrieveDestroyAPIView(custom_generic_apiviews.BaseRetrieveDestroyAPIView):
+class WantToApplyRetrieveUpdateDestroyAPIView(custom_generic_apiviews.BaseRetrieveUpdateDestroyAPIView):
     lookup_field = 'id'
     queryset = models.WantToApply.objects.all()
     serializer_class = serializers.WantToApplySerializer
@@ -526,5 +526,6 @@ def student_detailed_info_many_to_one_qs(user, sdi_id, model_class):
             except ValidationError:
                 raise exceptions.ValidationError(detail={"detail": "'{}' is not a valid UUID".format(sdi_id)})
 
-        qs = model_class.objects.filter(student_detailed_info__user=user)
+        user_sdi_ids = StudentDetailedInfo.objects.filter(user=user).values_list('id', flat=True)
+        qs = model_class.objects.filter(student_detailed_info__in=user_sdi_ids)
         return qs

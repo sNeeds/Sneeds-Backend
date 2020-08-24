@@ -47,7 +47,7 @@ class StudentDetailedInfoOwnerOrInteractConsultantOrWithoutUserPermission(permis
                 return qs_2.exists()
 
 
-class IsLanguageCertificateOwnerOrDetailedInfoWithoutUser(permissions.BasePermission):
+class SDIThirdModelsPermission(permissions.BasePermission):
     message = "Only owner can view or edit object."
 
     def has_object_permission(self, request, view, obj):
@@ -57,76 +57,24 @@ class IsLanguageCertificateOwnerOrDetailedInfoWithoutUser(permissions.BasePermis
         user = request.user
 
         if user and user.is_authenticated:
-            return obj.student_detailed_info.user == user
+            return obj.student_detailed_info.studentdetailedinfo.user == user
         if not user.is_authenticated:
-            return obj.student_detailed_info.user is None
+            return obj.student_detailed_info.studentdetailedinfo.user is None
 
         return False
 
 
-class IsPublicationOwnerOrDetailedInfoWithoutUser(permissions.BasePermission):
-    message = "Only owner can view or edit object."
-
-    def has_object_permission(self, request, view, obj):
-        if request.method == "OPTIONS":
-            return True
-
-        user = request.user
-
-        if user and user.is_authenticated:
-            return obj.student_detailed_info.user == user
-        if not user.is_authenticated:
-            return obj.student_detailed_info.user is None
-
-        return False
+class IsLanguageCertificateOwnerOrDetailedInfoWithoutUser(SDIThirdModelsPermission):
+    pass
 
 
-class IsWantToApplyOwnerOrDetailedInfoWithoutUser(permissions.BasePermission):
-    message = "Only owner can view or edit object."
-
-    def has_object_permission(self, request, view, obj):
-        if request.method == "OPTIONS":
-            return True
-
-        user = request.user
-
-        if user and user.is_authenticated:
-            return obj.student_detailed_info.user == user
-        if not user.is_authenticated:
-            return obj.student_detailed_info.user is None
-
-        return False
+class IsPublicationOwnerOrDetailedInfoWithoutUser(SDIThirdModelsPermission):
+    pass
 
 
-class IsUniversityThroughOwnerOrDetailedInfoWithoutUser(permissions.BasePermission):
-    message = "Only owner can view or edit object."
-
-    def has_object_permission(self, request, view, obj):
-        if request.method == "OPTIONS":
-            return True
-
-        user = request.user
-
-        if user and user.is_authenticated:
-            return obj.student_detailed_info.user == user
-        if not user.is_authenticated:
-            return obj.student_detailed_info.user is None
-
-        return False
+class IsWantToApplyOwnerOrDetailedInfoWithoutUser(SDIThirdModelsPermission):
+    pass
 
 
-class IsLanguageCertificateTypeThroughOwnerOrDetailedInfoWithoutUser(permissions.BasePermission):
-    message = "Only owner can view or edit object."
-
-    def has_object_permission(self, request, view, obj):
-        if request.method == "OPTIONS":
-            return True
-
-        user = request.user
-
-        if user and user.is_authenticated:
-            return obj.student_detailed_info.user == user
-        if not user.is_authenticated:
-            return obj.student_detailed_info.user is None
-
-        return False
+class IsUniversityThroughOwnerOrDetailedInfoWithoutUser(SDIThirdModelsPermission):
+    pass
