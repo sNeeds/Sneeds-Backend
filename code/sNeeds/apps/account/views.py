@@ -423,7 +423,22 @@ class WantToApplyRetrieveUpdateDestroyAPIView(custom_generic_apiviews.BaseRetrie
     lookup_field = 'id'
     queryset = models.WantToApply.objects.all()
     serializer_class = serializers.WantToApplySerializer
+    request_serializer_class = serializers.WantToApplyRequestSerializer
     permission_classes = [IsWantToApplyOwnerOrDetailedInfoWithoutUser]
+
+    @swagger_auto_schema(
+        request_body=request_serializer_class,
+        responses={200: serializer_class},
+    )
+    def put(self, request, *args, **kwargs):
+        return super().put(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        request_body=request_serializer_class,
+        responses={200: serializer_class},
+    )
+    def patch(self, request, *args, **kwargs):
+        return super().patch(request, *args, **kwargs)
 
 
 class PublicationListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):

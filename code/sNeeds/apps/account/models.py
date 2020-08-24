@@ -172,7 +172,7 @@ class StudentFormApplySemesterYear(models.Model):
 
 
 class WantToApply(models.Model):
-    student_detailed_info = models.ForeignKey(
+    student_detailed_info = models.OneToOneField(
         'StudentDetailedInfoBase',
         on_delete=models.CASCADE,
         related_name="want_to_apply"
