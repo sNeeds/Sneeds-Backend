@@ -488,7 +488,7 @@ def payment_affordability_choices(request, format=None):
     choices = []
 
     for choice in models.PaymentAffordability:
-        choices.append({"label": choice.name, "value": choice.value})
+        choices.append({"value": choice.name, "label": choice.value})
 
     return Response(
         data={"choices": choices},
