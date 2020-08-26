@@ -236,6 +236,14 @@ class SoldStorePackagePhaseDetail(models.Model):
         kwargs.pop('force_insert', None)
         super(SoldStorePackagePhaseDetail, self).save()
 
+    def get_sold_store_package(self):
+        content_type_model_class = self.content_type.model_class()
+        sold_store_package_phase = content_type_model_class.objects.filter(
+            id=self.object_id
+        ).first()
+        sold_store_package = sold_store_package_phase.sold_store_package
+        return sold_store_package
+
     class Meta:
         ordering = ['created']
 

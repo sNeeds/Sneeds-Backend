@@ -73,8 +73,8 @@ class ConsultantSoldStorePackageAcceptRequestAdmin(admin.ModelAdmin):
 
 @admin.register(SoldStorePackagePhaseDetail)
 class SoldStorePackagePhaseDetailAdmin(admin.ModelAdmin):
-    list_display = ['id', 'title', 'object_id', 'content_object', 'file']
-    search_fields = ['object_id']
+    search_fields = ['object_id', 'get_sold_store_package']
+    list_display = ['id', 'title', 'get_sold_store_package', 'content_object', 'file', ]
 
 
 admin.site.register(StorePackagePhaseDetail)
