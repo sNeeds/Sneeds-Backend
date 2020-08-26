@@ -56,9 +56,8 @@ class SoldStoreUnpaidPackagePhaseAdmin(admin.ModelAdmin):
 @admin.register(SoldStorePaidPackagePhase)
 class SoldStorePaidPackagePhaseAdmin(admin.ModelAdmin):
     exclude = ['sold_to', ]
-    readonly_fields = ['status', 'sold_store_package', ]
+    readonly_fields = ['status', 'sold_store_package', 'created', 'updated']
     list_display = ['id', 'title', 'price', 'sold_store_package', ]
-    readonly_fields = ('created', 'updated')
 
 
 @admin.register(StorePackagePhase)
@@ -72,5 +71,10 @@ class ConsultantSoldStorePackageAcceptRequestAdmin(admin.ModelAdmin):
     list_filter = ['sold_store_package', 'consultant', ]
 
 
+@admin.register(SoldStorePackagePhaseDetail)
+class SoldStorePackagePhaseDetailAdmin(admin.ModelAdmin):
+    list_display = ['id', 'title', 'object_id', 'content_object', 'file']
+    search_fields = ['object_id']
+
+
 admin.site.register(StorePackagePhaseDetail)
-admin.site.register(SoldStorePackagePhaseDetail)
