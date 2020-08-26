@@ -244,6 +244,12 @@ class SoldStorePackagePhaseDetail(models.Model):
         sold_store_package = sold_store_package_phase.sold_store_package
         return sold_store_package
 
+    def get_sold_store_package_consultant(self):
+        return self.get_sold_store_package().consultant
+
+    def get_sold_store_package_user(self):
+        return self.get_sold_store_package().sold_to
+
     class Meta:
         ordering = ['created']
 
