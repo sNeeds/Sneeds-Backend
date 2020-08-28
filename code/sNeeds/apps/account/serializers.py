@@ -183,6 +183,13 @@ class WantToApplyRequestSerializer(serializers.ModelSerializer):
             'semester_years',
         ]
 
+    def create(self, validated_data):
+        student_detailed_info = validated_data.get("student_detailed_info")
+        sdi_want_to_applies_qs = WantToApply.objects.filter(student_detailed_info=student_detailed_info)
+        if sdi_want_to_applies_qs.exists():
+            raise ValidationError(_("Student detailed info form already has a want to apply object assigned to it."))
+        return super().create(validated_data)
+
     def validate(self, attrs):
         request_user = None
         request = self.context.get("request")
@@ -513,7 +520,10 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
         return PublicationSerializer(qs, many=True, context=True).data
 
     def create(self, validated_data):
-        raise ValidationError(_("Creating object through this serializer is not allowed"))
+        raise ValidationError(_("Create object through this serializer is not allowed"))
+
+    def update(self, instance, validated_data):
+        raise ValidationError(_("Update object through this serializer is not allowed"))
 
     # Custom method
     def certificates(self, obj, model_class, serializer_class):

@@ -419,11 +419,26 @@ class WantToApplyListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView
         return super().post(request, *args, **kwargs)
 
 
-class WantToApplyRetrieveDestroyAPIView(custom_generic_apiviews.BaseRetrieveDestroyAPIView):
+class WantToApplyRetrieveUpdateDestroyAPIView(custom_generic_apiviews.BaseRetrieveUpdateDestroyAPIView):
     lookup_field = 'id'
     queryset = models.WantToApply.objects.all()
     serializer_class = serializers.WantToApplySerializer
+    request_serializer_class = serializers.WantToApplyRequestSerializer
     permission_classes = [IsWantToApplyOwnerOrDetailedInfoWithoutUser]
+
+    @swagger_auto_schema(
+        request_body=request_serializer_class,
+        responses={200: serializer_class},
+    )
+    def put(self, request, *args, **kwargs):
+        return super().put(request, *args, **kwargs)
+
+    @swagger_auto_schema(
+        request_body=request_serializer_class,
+        responses={200: serializer_class},
+    )
+    def patch(self, request, *args, **kwargs):
+        return super().patch(request, *args, **kwargs)
 
 
 class PublicationListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
@@ -485,7 +500,11 @@ class GradeChoiceList(custom_generic_apiviews.BaseListAPIView):
 
 @api_view(['GET'])
 def payment_affordability_choices(request, format=None):
-    choices = models.PaymentAffordability.choices()
+    choices = []
+
+    for choice in models.PaymentAffordability:
+        choices.append({"value": choice.name, "label": choice.value})
+
     return Response(
         data={"choices": choices},
         status=status.HTTP_200_OK,
@@ -522,5 +541,6 @@ def student_detailed_info_many_to_one_qs(user, sdi_id, model_class):
             except ValidationError:
                 raise exceptions.ValidationError(detail={"detail": "'{}' is not a valid UUID".format(sdi_id)})
 
-        qs = model_class.objects.filter(student_detailed_info__user=user)
+        user_sdi_ids = StudentDetailedInfo.objects.filter(user=user).values_list('id', flat=True)
+        qs = model_class.objects.filter(student_detailed_info__in=user_sdi_ids)
         return qs
