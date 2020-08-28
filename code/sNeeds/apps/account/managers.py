@@ -51,3 +51,16 @@ class LanguageCertificateQuerysetManager(models.QuerySet):
     def get_Duolingo(self):
         from sNeeds.apps.account.models import LanguageCertificateType
         return self.filter(certificate_type=LanguageCertificateType.DUOLINGO)
+
+
+class CountryManager(models.Manager):
+    def with_active_time_slot_consultants(self):
+        from sNeeds.apps.consultants.models import StudyInfo
+
+        active_consultant_study_infos = StudyInfo.objects.all().with_active_consultants()
+        country_list = list(
+            active_consultant_study_infos.values_list('university__country_id', flat=True)
+        )
+        qs = self.filter(id__in=country_list).exclude(slug="iran")
+
+        return qs

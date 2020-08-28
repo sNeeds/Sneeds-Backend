@@ -36,10 +36,29 @@ class CountryList(generics.ListAPIView):
     serializer_class = serializers.CountrySerializer
 
     def get_queryset(self):
-        from sNeeds.apps.consultants.models import StudyInfo
-        study_info_with_active_consultant_qs = StudyInfo.objects.all().with_active_consultants()
-        country_list = list(study_info_with_active_consultant_qs.values_list('university__country_id', flat=True))
-        return models.Country.objects.filter(id__in=country_list).exclude(slug="iran")
+        request = self.request
+        with_time_slot_consultants = request.query_params.get('with-time-slot-consultants', None)
+        search_terms = request.query_params.get('search', None)
+
+        qs = models.Country.objects.all()
+
+        if with_time_slot_consultants == 'true':
+            qs = models.Country.objects.with_active_time_slot_consultants().exclude(slug="iran")
+
+        if search_terms:
+            search_term = search_terms[:16]
+            if len(search_term) == 0:
+                return qs.none()
+
+            # To see execution time of queries, use this: python manage.py shell_plus --print-sql
+            # To see results use endpoint /form-universities?&search=colombia
+            qs = qs.annotate(similarity=TrigramSimilarity('search_name', search_term),
+                             search_name_length=Ln(Length('search_name'))). \
+                annotate(t=F('similarity') * F('search_name_length')). \
+                filter(t__gt=0.4).order_by('-t')
+
+        qs = qs.distinct()
+        return qs
 
 
 class UniversityDetail(generics.RetrieveAPIView):

@@ -10,7 +10,7 @@ from django.contrib.postgres.search import SearchVectorField
 from django.contrib.postgres.indexes import GinIndex
 from enumfields import Enum, EnumField
 
-from .managers import UniversityThroughQuerySetManager, LanguageCertificateQuerysetManager
+from .managers import UniversityThroughQuerySetManager, LanguageCertificateQuerysetManager, CountryManager
 from .validators import validate_resume_file_extension, validate_resume_file_size, ten_factor_validator
 from . import validators
 
@@ -104,6 +104,8 @@ class Country(models.Model):
     search_name = models.CharField(max_length=256, unique=True)
     picture = models.ImageField(upload_to=get_image_upload_path("country-pictures"))
     slug = models.SlugField(unique=True, help_text="Lowercase pls")
+
+    objects = CountryManager()
 
     class Meta:
         ordering = ["name"]
