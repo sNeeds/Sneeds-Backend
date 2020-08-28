@@ -80,8 +80,6 @@ class UniversityForFormList(generics.ListAPIView):
 
         # To see execution time of queries, use this: python manage.py shell_plus --print-sql
         # To see results use endpoint /form-universities?&search=colombia
-
-        "Much close results but worse time about 28ms"
         qs = models.University.objects. \
             annotate(similarity=TrigramSimilarity('search_name', search_term),
                      search_name_length=Ln(Length('search_name'))). \
@@ -131,8 +129,6 @@ class FieldOfStudyForFormList(generics.ListAPIView):
 
         # To see execution time of queries, use this: python manage.py shell_plus --print-sql
         # To see results use endpoint /form-universities?&search=colombia
-
-        "Much close results but worse time about 28ms"
         qs = models.FieldOfStudy.objects. \
             annotate(similarity=TrigramSimilarity('search_name', search_term),
                      search_name_length=Ln(Length('search_name'))). \

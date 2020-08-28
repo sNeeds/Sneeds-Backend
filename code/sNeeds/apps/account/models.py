@@ -101,6 +101,7 @@ class BasicFormField(models.Model):
 
 class Country(models.Model):
     name = models.CharField(max_length=256, unique=True)
+    search_name = models.CharField(max_length=256, unique=True)
     picture = models.ImageField(upload_to=get_image_upload_path("country-pictures"))
     slug = models.SlugField(unique=True, help_text="Lowercase pls")
 
