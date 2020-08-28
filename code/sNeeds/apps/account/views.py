@@ -78,31 +78,15 @@ class UniversityForFormList(generics.ListAPIView):
         if len(search_term) == 0 and len(search_term) < 4:
             return qs
 
-        # TODO try the below approaches and select the best one. Sorry for string comments.I wanted to be recognizable
-        # TODO explanations from codes
-        # TODO To see execution time of queries, use this: python manage.py shell_plus --print-sql
-        # TODO To see results use endpoint /form-universities?&search=colombia
-
-        "Most close results but worse time about 32ms"
-        # qs = models.University.objects.\
-        #     annotate(similarity=TrigramSimilarity('name', search_term), name_length=ExpressionWrapper(0.5*Length('name'), output_field=FloatField())).\
-        #     annotate(t=F('similarity') * F('name_length')).\
-        #     filter(t__gt=0.5).order_by('-t')
+        # To see execution time of queries, use this: python manage.py shell_plus --print-sql
+        # To see results use endpoint /form-universities?&search=colombia
 
         "Much close results but worse time about 28ms"
-        qs = models.University.objects.\
-            annotate(similarity=TrigramSimilarity('name', search_term), name_length=Ln(Length('name'))).\
-            annotate(t=F('similarity') * F('name_length')).\
+        qs = models.University.objects. \
+            annotate(similarity=TrigramSimilarity('search_name', search_term),
+                     search_name_length=Ln(Length('search_name'))). \
+            annotate(t=F('similarity') * F('search_name_length')). \
             filter(t__gt=0.4).order_by('-t')
-
-        """Very basicbut middle with 20 ms. rows with longer value in name column go down in results because more characters
-                 reduce trigram similarity"""
-        # qs = models.University.objects.annotate(similarity=TrigramSimilarity('name', search_term)) \
-        #     .filter(similarity__gt=0.1).order_by('-similarity')
-
-        """ Very strange!! Best time cost with 17 ms with a little optimization in results"""
-        # qs = models.University.objects.annotate(similarity=TrigramSimilarity('name', search_term)).filter(
-        #     similarity__gt=20 / Length('name')).order_by('-similarity')
 
         qs = qs.distinct()
 
@@ -145,39 +129,15 @@ class FieldOfStudyForFormList(generics.ListAPIView):
         if len(search_term) == 0 and len(search_term) < 4:
             return qs
 
-        # TODO try the below approaches and select the best one. Sorry for string comments.I wanted to be recognizable
-        # TODO explanations from codes
-        # TODO To see execution time of queries, use this: python manage.py shell_plus --print-sql
-        # TODO To see results use endpoint /form-universities?&search=colombia
-
-        "Most close results but worse time about 32ms"
-        # qs = models.FieldOfStudy.objects.\
-        #     annotate(similarity=TrigramSimilarity('name', search_term), name_length=ExpressionWrapper(Length('name'), output_field=FloatField())).\
-        #     annotate(t=F('similarity')).\
-        #     filter(t__gt=0.3).order_by('-t', 'name_length')
-
-        # vector = SearchVector('name')
-        # query = SearchQuery(search_term)
-        # qs = qs.annotate(rank=SearchRank(vector, query)).order_by('-rank')
+        # To see execution time of queries, use this: python manage.py shell_plus --print-sql
+        # To see results use endpoint /form-universities?&search=colombia
 
         "Much close results but worse time about 28ms"
-        qs = models.FieldOfStudy.objects.\
-            annotate(similarity=TrigramSimilarity('name', search_term), name_length=Ln(Length('name'))).\
-            annotate(t=F('similarity') * F('name_length')).\
+        qs = models.FieldOfStudy.objects. \
+            annotate(similarity=TrigramSimilarity('search_name', search_term),
+                     search_name_length=Ln(Length('search_name'))). \
+            annotate(t=F('similarity') * F('search_name_length')). \
             filter(t__gt=0.4).order_by('-t')
-
-        """Very basicbut middle with 20 ms. rows with longer value in name column go down in results because more characters
-                 reduce trigram similarity"""
-        # qs = models.FieldOfStudy.objects.annotate(similarity=TrigramSimilarity('name', search_term)) \
-        #     .filter(similarity__gt=0.1).order_by('-similarity')
-        #
-        # vector = SearchVector('name')
-        # query = SearchQuery(search_term)
-        # qs = qs.annotate(rank=SearchRank(vector, query)).order_by('-rank')
-
-        """ Very strange!! Best time cost with 17 ms with a little optimization in results"""
-        # qs = models.FieldOfStudy.objects.annotate(similarity=TrigramSimilarity('name', search_term)).filter(
-        #     similarity__gt=20 / Length('name')).order_by('-similarity')
 
         qs = qs.distinct()
 
