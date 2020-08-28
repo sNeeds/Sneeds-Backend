@@ -38,17 +38,23 @@ class CountryList(generics.ListAPIView):
     def get_queryset(self):
         request = self.request
         with_time_slot_consultants = request.query_params.get('with-time-slot-consultants', None)
-        search_terms = request.query_params.get('search', None)
+        search_terms = request.query_params.get('search', '')
+
+        other_qs = models.Country.objects. \
+            annotate(similarity=TrigramSimilarity('search_name', 'سایر'),
+                     search_name_length=Ln(Length('search_name'))). \
+            annotate(t=F('similarity') * F('search_name_length')). \
+            filter(t__gt=0.4).order_by('-t')
 
         qs = models.Country.objects.all()
 
         if with_time_slot_consultants == 'true':
             qs = models.Country.objects.with_active_time_slot_consultants().exclude(slug="iran")
 
-        if search_terms:
+        if search_terms is not None:
             search_term = search_terms[:16]
             if len(search_term) == 0:
-                return qs.none()
+                return other_qs
 
             # To see execution time of queries, use this: python manage.py shell_plus --print-sql
             # To see results use endpoint /form-universities?&search=colombia
@@ -56,6 +62,8 @@ class CountryList(generics.ListAPIView):
                              search_name_length=Ln(Length('search_name'))). \
                 annotate(t=F('similarity') * F('search_name_length')). \
                 filter(t__gt=0.4).order_by('-t')
+
+            qs |= other_qs
 
         qs = qs.distinct()
         return qs
@@ -85,17 +93,19 @@ class UniversityForFormList(generics.ListAPIView):
         request = self.request
         params = request.query_params.get('search', '')
         search_terms = params
-        qs = models.University.objects.none()
+
+        other_qs = models.University.objects. \
+            annotate(similarity=TrigramSimilarity('search_name', 'سایر'),
+                     search_name_length=Ln(Length('search_name'))). \
+            annotate(t=F('similarity') * F('search_name_length')). \
+            filter(t__gt=0.4).order_by('-t')
 
         if not search_terms:
-            return qs
-
-        if len(search_terms) == 0:
-            return qs
+            return other_qs
 
         search_term = search_terms[:16]
-        if len(search_term) == 0 and len(search_term) < 4:
-            return qs
+        if len(search_term) < 4:
+            return other_qs
 
         # To see execution time of queries, use this: python manage.py shell_plus --print-sql
         # To see results use endpoint /form-universities?&search=colombia
@@ -105,6 +115,7 @@ class UniversityForFormList(generics.ListAPIView):
             annotate(t=F('similarity') * F('search_name_length')). \
             filter(t__gt=0.4).order_by('-t')
 
+        qs = qs | other_qs
         qs = qs.distinct()
 
         return qs
@@ -134,17 +145,19 @@ class FieldOfStudyForFormList(generics.ListAPIView):
         request = self.request
         params = request.query_params.get('search', '')
         search_terms = params
-        qs = models.FieldOfStudy.objects.none()
+
+        other_qs = models.FieldOfStudy.objects. \
+            annotate(similarity=TrigramSimilarity('search_name', 'سایر'),
+                     search_name_length=Ln(Length('search_name'))). \
+            annotate(t=F('similarity') * F('search_name_length')). \
+            filter(t__gt=0.4).order_by('-t')
 
         if not search_terms:
-            return qs
-
-        if len(search_terms) == 0:
-            return qs
+            return other_qs
 
         search_term = search_terms[:16]
-        if len(search_term) == 0 and len(search_term) < 4:
-            return qs
+        if len(search_term) < 4:
+            return other_qs
 
         # To see execution time of queries, use this: python manage.py shell_plus --print-sql
         # To see results use endpoint /form-universities?&search=colombia
@@ -154,6 +167,7 @@ class FieldOfStudyForFormList(generics.ListAPIView):
             annotate(t=F('similarity') * F('search_name_length')). \
             filter(t__gt=0.4).order_by('-t')
 
+        qs = qs | other_qs
         qs = qs.distinct()
 
         return qs
