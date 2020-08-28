@@ -85,7 +85,7 @@ urlpatterns = [
 
     path('apply-semester-years/', views.StudentFormApplySemesterYearListAPIView.as_view(),
          name="apply-semester-year-list"),
-    path('apply-semester-years/<int:id>', views.StudentFormApplySemesterYearRetrieveAPIView.as_view(),
+    path('apply-semester-years/<int:id>/', views.StudentFormApplySemesterYearRetrieveAPIView.as_view(),
          name="apply-semester-year-detail"),
 
     path('student-detailed-university-throughs/',
