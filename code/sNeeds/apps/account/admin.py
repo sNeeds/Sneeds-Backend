@@ -69,7 +69,6 @@ class PublicationInline(admin.TabularInline):
 class StudentDetailedInfoBaseAdmin(admin.ModelAdmin):
     inlines = [
         UniversityThroughInline,
-        WantToApplyInline,
         PublicationInline,
 
         RegularLanguageCertificateTypeInline,
@@ -87,6 +86,7 @@ class StudentDetailedInfoBaseAdmin(admin.ModelAdmin):
 
 @admin.register(models.StudentDetailedInfo)
 class StudentDetailedInfoAdmin(StudentDetailedInfoBaseAdmin):
+    inlines = [WantToApplyInline] + StudentDetailedInfoBaseAdmin.inlines
     list_display = ['id', 'user', 'age', 'is_married']
 
 
