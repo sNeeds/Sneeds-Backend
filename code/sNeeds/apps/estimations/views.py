@@ -61,13 +61,13 @@ class ListUsers(APIView):
 
 
 class FormComments(APIView):
-    def get_object(self, id):
+    def get_form_object(self, id):
         try:
             return StudentDetailedInfo.objects.get(id=id)
         except StudentDetailedInfo.DoesNotExist:
             raise Http404
 
     def get(self, request, id, format=None):
-        form = self.get_object(id)
+        form = self.get_form_object(id)
         review = StudentDetailedFormReview(form)
         return Response(review.review_all())

@@ -3,6 +3,7 @@ from django.db import models
 
 from sNeeds.apps.account.models import StudentDetailedInfoBase, Country, University, GradeModel, FieldOfStudy, \
     StudentFormApplySemesterYear
+from sNeeds.apps.similarApply.managers import AppliedStudentDetailedInfoQuerySetManager
 
 
 class AppliedTo(models.Model):
@@ -38,7 +39,6 @@ class AppliedTo(models.Model):
     )
 
     fund = models.IntegerField(
-        validators=[MinValueValidator(1900), MaxValueValidator(2100)],
         help_text="In Dollars"
     )
 
@@ -50,4 +50,4 @@ class AppliedTo(models.Model):
 
 
 class AppliedStudentDetailedInfo(StudentDetailedInfoBase):
-    pass
+    objects = AppliedStudentDetailedInfoQuerySetManager.as_manager()
