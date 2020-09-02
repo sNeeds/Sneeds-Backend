@@ -446,10 +446,7 @@ class DuolingoCertificateSerializer(LanguageCertificateSerializer):
         return value
 
 
-class StudentDetailedInfoSerializer(serializers.ModelSerializer):
-    from sNeeds.apps.customAuth.serializers import SafeUserDataSerializer
-    user = SafeUserDataSerializer(read_only=True)
-
+class StudentDetailedInfoBaseSerializer(serializers.ModelSerializer):
     regular_certificates = serializers.SerializerMethodField()
     gmat_certificates = serializers.SerializerMethodField()
     gre_general_certificates = serializers.SerializerMethodField()
@@ -460,26 +457,16 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
     duolingo_certificates = serializers.SerializerMethodField()
 
     universities = serializers.SerializerMethodField()
-    want_to_applies = serializers.SerializerMethodField()
     publications = serializers.SerializerMethodField()
-
-    payment_affordability = fields.EnumField(enum=models.PaymentAffordability)
-    gender = fields.EnumField(enum=models.Gender)
-    military_service_status = fields.EnumField(enum=models.MilitaryServiceStatus)
 
     class Meta:
         model = StudentDetailedInfo
         fields = [
-            'id', 'user',
-            'age', 'is_married',
-            'universities', 'want_to_applies', 'publications',
-            'payment_affordability', 'gender', 'military_service_status',
+            'id', 'universities', 'publications',
             'regular_certificates', 'gmat_certificates', 'gre_general_certificates', 'gre_subject_certificates',
             'gre_biology_certificates', 'gre_physics_certificates', 'gre_psychology_certificates',
             'duolingo_certificates',
-            'prefers_full_fund', 'prefers_half_fund', 'prefers_self_fund',
-            'comment', 'resume', 'related_work_experience', 'academic_break', 'olympiad', 'powerful_recommendation',
-            'linkedin_url', 'homepage_url',
+            'resume', 'related_work_experience', 'academic_break', 'olympiad',
             'created', 'updated',
         ]
 
@@ -511,10 +498,6 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
         qs = UniversityThrough.objects.filter(student_detailed_info_id=obj.id)
         return UniversityThroughSerializer(qs, many=True, context=self.context).data
 
-    def get_want_to_applies(self, obj):
-        qs = WantToApply.objects.filter(student_detailed_info_id=obj.id)
-        return WantToApplySerializer(qs, many=True, context=self.context).data
-
     def get_publications(self, obj):
         qs = Publication.objects.filter(student_detailed_info_id=obj.id)
         return PublicationSerializer(qs, many=True, context=True).data
@@ -529,6 +512,29 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
     def certificates(self, obj, model_class, serializer_class):
         qs = model_class.objects.filter(student_detailed_info_id=obj.id)
         return serializer_class(qs, many=True, context=self.context).data
+
+
+class StudentDetailedInfoSerializer(serializers.ModelSerializer):
+    from sNeeds.apps.customAuth.serializers import SafeUserDataSerializer
+    user = SafeUserDataSerializer(read_only=True)
+
+    want_to_applies = serializers.SerializerMethodField()
+    payment_affordability = fields.EnumField(enum=models.PaymentAffordability)
+    gender = fields.EnumField(enum=models.Gender)
+    military_service_status = fields.EnumField(enum=models.MilitaryServiceStatus)
+
+    class Meta(StudentDetailedInfoBaseSerializer.Meta):
+        model = StudentDetailedInfo
+        fields = StudentDetailedInfoBaseSerializer.Meta.fields + [
+            'user', 'age', 'gender', 'military_service_status', 'is_married',
+            'want_to_applies', 'payment_affordability',
+            'prefers_full_fund', 'prefers_half_fund', 'prefers_self_fund',
+            'comment', 'powerful_recommendation', 'linkedin_url', 'homepage_url',
+        ]
+
+    def get_want_to_applies(self, obj):
+        qs = WantToApply.objects.filter(student_detailed_info_id=obj.id)
+        return WantToApplySerializer(qs, many=True, context=self.context).data
 
 
 class StudentDetailedInfoRequestSerializer(serializers.ModelSerializer):
