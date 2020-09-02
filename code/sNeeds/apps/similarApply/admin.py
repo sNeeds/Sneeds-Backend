@@ -5,7 +5,11 @@ from . import models
 from sNeeds.apps.account.admin import StudentDetailedInfoBaseAdmin
 
 
+class AppliedToInline(admin.TabularInline):
+    model = models.AppliedTo
+    extra = 1
+
+
 @admin.register(models.AppliedStudentDetailedInfo)
 class AppliedStudentDetailedInfoAdmin(StudentDetailedInfoBaseAdmin):
-    pass
-
+    inlines = [AppliedToInline] + StudentDetailedInfoBaseAdmin.inlines

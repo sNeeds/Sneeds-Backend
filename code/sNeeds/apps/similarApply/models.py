@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 from sNeeds.apps.account.models import StudentDetailedInfoBase, Country, University, GradeModel, FieldOfStudy, \
@@ -34,6 +35,17 @@ class AppliedTo(models.Model):
     semester_year = models.ForeignKey(
         StudentFormApplySemesterYear,
         on_delete=models.PROTECT
+    )
+
+    fund = models.IntegerField(
+        validators=[MinValueValidator(1900), MaxValueValidator(2100)],
+        help_text="In Dollars"
+    )
+
+    accepted = models.BooleanField()
+
+    comment = models.CharField(
+        max_length=1024
     )
 
 
