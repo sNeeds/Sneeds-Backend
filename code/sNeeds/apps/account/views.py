@@ -38,15 +38,14 @@ class CountryList(generics.ListAPIView):
     def get_queryset(self):
         request = self.request
         with_time_slot_consultants = request.query_params.get('with-time-slot-consultants', None)
-        search_terms = request.query_params.get('search', '')
+        search_terms = request.query_params.get('search', None)
 
+        qs = models.Country.objects.all()
         other_qs = models.Country.objects. \
             annotate(similarity=TrigramSimilarity('search_name', 'سایر'),
                      search_name_length=Ln(Length('search_name'))). \
             annotate(t=F('similarity') * F('search_name_length')). \
             filter(t__gt=0.4).order_by('-t')
-
-        qs = models.Country.objects.all()
 
         if with_time_slot_consultants == 'true':
             qs = models.Country.objects.with_active_time_slot_consultants().exclude(slug="iran")
