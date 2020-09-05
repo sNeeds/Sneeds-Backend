@@ -449,7 +449,7 @@ class DuolingoCertificateSerializer(LanguageCertificateSerializer):
 class StudentDetailedInfoBaseSerializer(serializers.ModelSerializer):
     regular_certificates = serializers.SerializerMethodField()
     gmat_certificates = serializers.SerializerMethodField()
-    gre_generaلl_certificates = serializers.SerializerMethodField()
+    gre_general_certificates = serializers.SerializerMethodField()
     gre_subject_certificates = serializers.SerializerMethodField()
     gre_biology_certificates = serializers.SerializerMethodField()
     gre_physics_certificates = serializers.SerializerMethodField()
@@ -499,7 +499,7 @@ class StudentDetailedInfoBaseSerializer(serializers.ModelSerializer):
         return UniversityThroughSerializer(qs, many=True, context=self.context).data
 
     def get_publications(self, obj):
-        qs = Publication.objects.filter(student_detailed_info_id=obj.id)
+        qs = Publication.objects.filter(student_detailed_info__id=obj.id)
         return PublicationSerializer(qs, many=True, context=True).data
 
     def create(self, validated_data):
@@ -514,7 +514,7 @@ class StudentDetailedInfoBaseSerializer(serializers.ModelSerializer):
         return serializer_class(qs, many=True, context=self.context).data
 
 
-class StudentDetailedInfoSerializer(serializers.ModelSerializer):
+class StudentDetailedInfoSerializer(StudentDetailedInfoBaseSerializer):
     from sNeeds.apps.customAuth.serializers import SafeUserDataSerializer
     user = SafeUserDataSerializer(read_only=True)
 
