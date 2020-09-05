@@ -449,7 +449,7 @@ class DuolingoCertificateSerializer(LanguageCertificateSerializer):
 class StudentDetailedInfoBaseSerializer(serializers.ModelSerializer):
     regular_certificates = serializers.SerializerMethodField()
     gmat_certificates = serializers.SerializerMethodField()
-    gre_general_certificates = serializers.SerializerMethodField()
+    gre_generaلl_certificates = serializers.SerializerMethodField()
     gre_subject_certificates = serializers.SerializerMethodField()
     gre_biology_certificates = serializers.SerializerMethodField()
     gre_physics_certificates = serializers.SerializerMethodField()

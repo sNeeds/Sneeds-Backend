@@ -7,7 +7,7 @@ from sNeeds.apps.similarApply.models import AppliedStudentDetailedInfo
 
 
 class SimilarUniversitiesListView(generics.RetrieveAPIView):
-    serializer_class =
+    serializer_class = None
 
     def get_form_object(self, form_id):
         try:
@@ -29,4 +29,4 @@ class SimilarUniversitiesListView(generics.RetrieveAPIView):
         related_forms |= AppliedStudentDetailedInfo.objects.same_origin_universities(origin_universities)
         related_forms |= AppliedStudentDetailedInfo.objects.applied_to_universities(want_to_apply_universities)
 
-        return
+        return None
