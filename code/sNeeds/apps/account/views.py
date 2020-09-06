@@ -71,7 +71,7 @@ class CountryList(generics.ListAPIView):
 class UniversityDetail(generics.RetrieveAPIView):
     queryset = models.University.objects.all()
     serializer_class = serializers.UniversitySerializer
-    lookup_field = 'slug'
+    lookup_field = 'id'
 
 
 class UniversityList(generics.ListAPIView):
@@ -123,7 +123,7 @@ class UniversityForFormList(generics.ListAPIView):
 class FieldOfStudyDetail(generics.RetrieveAPIView):
     queryset = models.FieldOfStudy.objects.all()
     serializer_class = serializers.FieldOfStudySerializer
-    lookup_field = 'slug'
+    lookup_field = 'id'
 
 
 class FieldOfStudyList(generics.ListAPIView):

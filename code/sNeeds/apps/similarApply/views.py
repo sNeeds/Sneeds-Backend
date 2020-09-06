@@ -35,5 +35,13 @@ class SimilarUniversitiesListView(APIView):
         except WantToApply.DoesNotExist:
             pass
 
-        data = AppliedStudentDetailedInfoSerializer(related_forms, many=True).data
+        data = AppliedStudentDetailedInfoSerializer(
+            related_forms,
+            context={'request': request},
+            many=True
+        ).data
+
+        print(type(data))
+        print(data)
+
         return Response(data)
