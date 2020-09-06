@@ -21,6 +21,7 @@ class SimilarUniversitiesListView(APIView):
     def get(self, request, form_id, format=None):
         form = self.get_form_obj(form_id)
         related_forms = AppliedStudentDetailedInfo.objects.none()
+        form_majors = form.get_related_majors()
 
         origin_universities = form.universities.all()
         related_forms |= AppliedStudentDetailedInfo.objects.same_origin_universities(origin_universities)
@@ -38,8 +39,5 @@ class SimilarUniversitiesListView(APIView):
             context={'request': request},
             many=True
         ).data
-
-        print(type(data))
-        print(data)
 
         return Response(data)

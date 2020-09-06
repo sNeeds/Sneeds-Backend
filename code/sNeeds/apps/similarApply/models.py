@@ -7,7 +7,7 @@ from sNeeds.apps.similarApply.managers import AppliedStudentDetailedInfoQuerySet
 
 
 class AppliedTo(models.Model):
-    student_detailed_info = models.OneToOneField(
+    applied_student_detailed_info = models.OneToOneField(
         'AppliedStudentDetailedInfo',
         on_delete=models.CASCADE,
         related_name="applied_to"

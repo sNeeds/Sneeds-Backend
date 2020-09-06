@@ -15,7 +15,7 @@ class AppliedToSerializer(serializers.ModelSerializer):
     class Meta:
         model = AppliedTo
         fields = [
-            'id', 'student_detailed_info',
+            'id', 'applied_student_detailed_info',
             'country', 'university', 'grade', 'major', 'semester_year', 'fund',
             'accepted', 'comment'
         ]
@@ -53,7 +53,7 @@ class AppliedStudentDetailedInfoSerializer(StudentDetailedInfoBaseSerializer):
 
     def get_applied_to(self, obj):
         try:
-            applied_to_obj = AppliedTo.objects.get(student_detailed_info__id=obj.id)
+            applied_to_obj = AppliedTo.objects.get(applied_student_detailed_info__id=obj.id)
             data = AppliedToSerializer(applied_to_obj).data
         except AppliedTo.DoesNotExist:
             data = None
