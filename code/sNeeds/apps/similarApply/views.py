@@ -12,7 +12,6 @@ from sNeeds.apps.similarApply.serializers import AppliedStudentDetailedInfoSeria
 
 
 class SimilarUniversitiesListView(APIView):
-
     def get_form_obj(self, form_id):
         try:
             return StudentDetailedInfo.objects.get(id=form_id)
@@ -20,7 +19,6 @@ class SimilarUniversitiesListView(APIView):
             return None
 
     def get(self, request, form_id, format=None):
-
         form = self.get_form_obj(form_id)
         related_forms = AppliedStudentDetailedInfo.objects.none()
 

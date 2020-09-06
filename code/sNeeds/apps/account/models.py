@@ -346,11 +346,27 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         null=True,
     )
 
+    class Meta:
+        ordering = ['created', ]
+
     def is_complete(self):
         return True
 
-    class Meta:
-        ordering = ['created', ]
+    def get_related_majors(self):
+        related_majors = FieldOfStudy.objects.none()
+
+        university_through_qs = UniversityThrough.objects.filter(
+            student_detailed_info__id=self.id
+        )
+        related_majors |= university_through_qs.values_list('major', flat=True)
+
+        try:
+            want_to_apply = WantToApply.objects.get(student_detailed_info__id=self.id)
+            related_majors |= want_to_apply.majors.all()
+        except WantToApply.DoesNotExist:
+            pass
+
+        return related_majors
 
 
 class UniversityThrough(models.Model):
