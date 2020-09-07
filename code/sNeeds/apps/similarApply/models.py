@@ -63,3 +63,15 @@ class AppliedStudentDetailedInfo(StudentDetailedInfoBase):
         for major in majors_list:
             found = found or self._applied_to_has_this_major(major)
         return found
+
+    def _applied_to_has_this_university(self, university):
+        return AppliedTo.objects.filter(
+            applied_student_detailed_info__id=self.id,
+            major=university
+        ).exists()
+
+    def applied_to_has_these_universities(self, universities_list):
+        found = False
+        for major in universities_list:
+            found = found or self._applied_to_has_this_university(major)
+        return found
