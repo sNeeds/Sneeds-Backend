@@ -3,7 +3,6 @@ from django.db.models import Q
 
 
 class UniversityThroughQuerySetManager(models.QuerySet):
-
     def get_bachelor(self):
         from sNeeds.apps.account.models import Grade
         try:

@@ -34,6 +34,12 @@ class SimilarUniversitiesListView(APIView):
         except WantToApply.DoesNotExist:
             pass
 
+        print(AppliedStudentDetailedInfo.objects.same_previous_major(form_majors))
+        print(type(AppliedStudentDetailedInfo.objects.same_previous_major(form_majors)))
+
+        related_forms |= AppliedStudentDetailedInfo.objects.same_previous_major(form_majors)
+        # related_forms |= AppliedStudentDetailedInfo.objects.same_applied_to_major(form_majors)
+
         data = AppliedStudentDetailedInfoSerializer(
             related_forms,
             context={'request': request},

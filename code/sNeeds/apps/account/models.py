@@ -270,6 +270,18 @@ class StudentDetailedInfoBase(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+    def _university_through_has_this_major(self, major):
+        return UniversityThrough.objects.filter(
+            student_detailed_info__id=self.id,
+            major=major
+        ).exists()
+
+    def university_through_has_these_majors(self, majors_list):
+        found = False
+        for major in majors_list:
+            found = found or self._university_through_has_this_major(major)
+        return found
+
 
 class StudentDetailedInfo(StudentDetailedInfoBase):
     user = models.OneToOneField(
@@ -353,20 +365,18 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         return True
 
     def get_related_majors(self):
-        related_majors = FieldOfStudy.objects.none()
-
+        related_major_ids = []
         university_through_qs = UniversityThrough.objects.filter(
             student_detailed_info__id=self.id
         )
-        related_majors |= university_through_qs.values_list('major', flat=True)
-
+        related_major_ids += list(university_through_qs.values_list('major__id', flat=True).distinct())
         try:
             want_to_apply = WantToApply.objects.get(student_detailed_info__id=self.id)
-            related_majors |= want_to_apply.majors.all()
+            related_major_ids += list(want_to_apply.majors.all().values_list('id', flat=True).distinct())
         except WantToApply.DoesNotExist:
             pass
 
-        return related_majors
+        return FieldOfStudy.objects.filter(id__in=related_major_ids)
 
 
 class UniversityThrough(models.Model):
