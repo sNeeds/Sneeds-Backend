@@ -23,16 +23,10 @@ class AppliedStudentDetailedInfoQuerySetManager(models.QuerySet):
         return qs
 
     def same_applied_to_major(self, major_qs):
-        from sNeeds.apps.similarApply.models import AppliedTo
-        major_ids = [m.id for m in major_qs]
-
-        related_majors_set = {}
+        qs = self.none()
 
         for obj in self._chain():
-            related_majors_set += AppliedTo.objects.filter(
-                student_detailed_info=obj,
-                major__in=major_ids
-            ).major
+            if obj.applied_to_has_these_majors(major_qs):
+                qs |= self.filter(id=obj.id)
 
-        related_majors_id_list = [m.id for m in related_majors_set]
-        return FieldOfStudy.objects.filter(id__in=related_majors_id_list)
+        return qs

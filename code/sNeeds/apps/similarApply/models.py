@@ -51,3 +51,15 @@ class AppliedTo(models.Model):
 
 class AppliedStudentDetailedInfo(StudentDetailedInfoBase):
     objects = AppliedStudentDetailedInfoQuerySetManager.as_manager()
+
+    def _applied_to_has_this_major(self, major):
+        return AppliedTo.objects.filter(
+            applied_student_detailed_info__id=self.id,
+            major=major
+        ).exists()
+
+    def applied_to_has_these_majors(self, majors_list):
+        found = False
+        for major in majors_list:
+            found = found or self._applied_to_has_this_major(major)
+        return found
