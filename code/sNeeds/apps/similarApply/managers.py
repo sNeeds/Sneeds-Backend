@@ -11,15 +11,12 @@ class AppliedStudentDetailedInfoQuerySetManager(models.QuerySet):
 
     def applied_to_universities(self, universities_qs):
         from sNeeds.apps.similarApply.models import AppliedTo
-        universitis
-
         qs = self.none()
 
         for obj in self._chain():
-            applied_to_qs = AppliedTo.objects.filter(
-                applied_student_detailed_info__id=obj.id,
-                university__in =
-            )
+            if obj.applied_to_has_these_universities(major_qs):
+                qs |= self.filter(id=obj.id)
+
         print(universities_qs)
         universities = [u.id for u in universities_qs]
         return self.filter(universities__in=universities)
