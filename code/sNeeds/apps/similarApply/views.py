@@ -31,6 +31,7 @@ class SimilarUniversitiesListView(APIView):
             # Want to apply is 1 to 1 with form
             want_to_apply = WantToApply.objects.get(student_detailed_info__id=form.id)
             want_to_apply_universities = want_to_apply.universities.all()
+            print("**" , want_to_apply_universities)
             related_forms |= AppliedStudentDetailedInfo.objects.applied_to_universities(want_to_apply_universities)
             print("2", related_forms)
         except WantToApply.DoesNotExist:

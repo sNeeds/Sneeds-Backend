@@ -14,12 +14,10 @@ class AppliedStudentDetailedInfoQuerySetManager(models.QuerySet):
         qs = self.none()
 
         for obj in self._chain():
-            if obj.applied_to_has_these_universities(major_qs):
+            if obj.applied_to_has_these_universities(universities_qs):
                 qs |= self.filter(id=obj.id)
 
-        print(universities_qs)
-        universities = [u.id for u in universities_qs]
-        return self.filter(universities__in=universities)
+        return qs
 
     def same_previous_major(self, major_qs):
         qs = self.none()

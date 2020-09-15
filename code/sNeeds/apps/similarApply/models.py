@@ -39,13 +39,17 @@ class AppliedTo(models.Model):
     )
 
     fund = models.IntegerField(
-        help_text="In Dollars"
+        help_text="In Dollars",
+        null=True,
+        blank=True
     )
 
     accepted = models.BooleanField()
 
     comment = models.CharField(
-        max_length=1024
+        max_length=1024,
+        null=True,
+        blank=True
     )
 
 
@@ -67,11 +71,11 @@ class AppliedStudentDetailedInfo(StudentDetailedInfoBase):
     def _applied_to_has_this_university(self, university):
         return AppliedTo.objects.filter(
             applied_student_detailed_info__id=self.id,
-            major=university
+            university=university
         ).exists()
 
     def applied_to_has_these_universities(self, universities_list):
         found = False
-        for major in universities_list:
-            found = found or self._applied_to_has_this_university(major)
+        for university in universities_list:
+            found = found or self._applied_to_has_this_university(university)
         return found
