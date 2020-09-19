@@ -232,6 +232,11 @@ class StudentDetailedFormReview:
 
         return data
 
+    def publications_total_value(self):
+        publications_qs = Publication.objects.filter(student_detailed_info=self.student_detailed_form)
+
+        return publications_qs.publications_total_value()
+
     def review_publications(self):
         def _get_appended_publication_qs_titles(qs):
             text = ""
@@ -445,8 +450,8 @@ class StudentDetailedFormReview:
                 "data": self.review_universities()
             },
             "publication": {
-                "title": "مقالات",
-                "data": self.review_publications()
+                "data": "Coming soon ...",
+                "total_value": self.publications_total_value()
             },
             'language': {
                 "title": "زبان",

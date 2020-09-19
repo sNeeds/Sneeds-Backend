@@ -9,8 +9,9 @@ class Node:
     def __str__(self):
         name = self.content
         if self.parent:
-            name +=  " -> " + self.parent.__str__()
+            name += " -> " + self.parent.__str__()
         return name
+
 
 content = None
 
@@ -27,14 +28,22 @@ with open('majors.html', 'r') as f:
 def check_and_add_h2_header(e):
     if e.name == 'h2':
         global current_h2_node
+        global current_h3_node
+        global current_h4_node
+
         node = Node(e.span.get_text())
         nodes_list.append(node)
         current_h2_node = node
+
+        current_h3_node = None
+        current_h4_node = None
 
 
 def check_and_add_h3_header(e):
     if e.name == 'h3':
         global current_h3_node
+        global current_h4_node
+        
         text = e.select("span.mw-headline")[0].get_text()
         node = Node(text, parent=current_h2_node)
         nodes_list.append(node)

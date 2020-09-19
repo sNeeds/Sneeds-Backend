@@ -10,7 +10,8 @@ from django.contrib.postgres.search import SearchVectorField
 from django.contrib.postgres.indexes import GinIndex
 from enumfields import Enum, EnumField
 
-from .managers import UniversityThroughQuerySetManager, LanguageCertificateQuerysetManager, CountryManager
+from .managers import UniversityThroughQuerySetManager, LanguageCertificateQuerysetManager, CountryManager, \
+    PublicationQuerySetManager
 from .validators import validate_resume_file_extension, validate_resume_file_size, ten_factor_validator
 from . import validators
 
@@ -224,6 +225,8 @@ class Publication(models.Model):
         validators=[MinValueValidator(0), MaxValueValidator(1)],
         editable=False
     )  # Updated in signal
+
+    objects = PublicationQuerySetManager.as_manager()
 
     def __str__(self):
         return self.title

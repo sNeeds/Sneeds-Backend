@@ -25,23 +25,18 @@ class SimilarUniversitiesListView(APIView):
 
         origin_universities = form.universities.all()
         related_forms |= AppliedStudentDetailedInfo.objects.same_origin_universities(origin_universities)
-        print("1", related_forms)
 
         try:
             # Want to apply is 1 to 1 with form
             want_to_apply = WantToApply.objects.get(student_detailed_info__id=form.id)
             want_to_apply_universities = want_to_apply.universities.all()
-            print("**" , want_to_apply_universities)
             related_forms |= AppliedStudentDetailedInfo.objects.applied_to_universities(want_to_apply_universities)
-            print("2", related_forms)
         except WantToApply.DoesNotExist:
             pass
 
         related_forms |= AppliedStudentDetailedInfo.objects.same_previous_major(form_majors)
-        print("3", related_forms)
 
         related_forms |= AppliedStudentDetailedInfo.objects.same_applied_to_major(form_majors)
-        print("4", related_forms)
 
         related_forms = related_forms.distinct()
         data = AppliedStudentDetailedInfoSerializer(

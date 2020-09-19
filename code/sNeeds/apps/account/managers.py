@@ -63,3 +63,10 @@ class CountryManager(models.Manager):
         qs = self.filter(id__in=country_list).exclude(slug="iran")
 
         return qs
+
+class PublicationQuerySetManager(models.QuerySet):
+    def publications_total_value(self):
+        print(self.all())
+
+        return 0
+
