@@ -430,6 +430,11 @@ class LanguageCertificate(models.Model):
         default=False
     )
 
+    value = models.FloatField(
+        validators=[MinValueValidator(0), MaxValueValidator(1)],
+        editable=False
+    )
+
     objects = LanguageCertificateQuerysetManager.as_manager()
 
     class Meta:
