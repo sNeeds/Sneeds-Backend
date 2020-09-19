@@ -234,8 +234,22 @@ class StudentDetailedFormReview:
 
     def publications_total_value(self):
         publications_qs = Publication.objects.filter(student_detailed_info=self.student_detailed_form)
+        total_value = publications_qs.publications_total_value()
 
-        return publications_qs.publications_total_value()
+        if 0.95 <= total_value:
+            return "A+"
+        elif 0.75 <= total_value < 0.95:
+            return "A"
+        elif 0.6 <= total_value < 0.75:
+            return "B+"
+        elif 0.5 <= total_value < 0.6:
+            return "B"
+        elif 0.4 <= total_value < 0.5:
+            return "C+"
+        elif 0.3 <= total_value < 0.4:
+            return "C"
+        elif total_value < 0.3:
+            return "D"
 
     def review_publications(self):
         def _get_appended_publication_qs_titles(qs):

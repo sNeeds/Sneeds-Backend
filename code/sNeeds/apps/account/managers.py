@@ -64,9 +64,15 @@ class CountryManager(models.Manager):
 
         return qs
 
+
 class PublicationQuerySetManager(models.QuerySet):
     def publications_total_value(self):
-        print(self.all())
+        qs = self.all().order_by('value')
+        total_val = 0
 
-        return 0
+        counter = 0
+        for p in qs:
+            total_val += max((p.value - counter), 0)
+            counter += 0.3
 
+        return total_val
