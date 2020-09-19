@@ -100,3 +100,13 @@ class UniversityAdmin(admin.ModelAdmin):
 class PublicationAdmin(admin.ModelAdmin):
     list_display = ['id', 'title', 'student_detailed_info', 'value']
     readonly_fields = ['value']
+
+
+@admin.register(models.RegularLanguageCertificate)
+class RegularLanguageCertificateAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(models.GREBiologyCertificate)
+class GREBiologyCertificateAdmin(admin.ModelAdmin):
+    pass

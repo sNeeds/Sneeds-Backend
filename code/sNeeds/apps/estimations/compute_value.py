@@ -1,4 +1,4 @@
-from sNeeds.apps.account.models import JournalReputation, WhichAuthor
+from sNeeds.apps.account.models import JournalReputation, WhichAuthor, RegularLanguageCertificate
 
 
 def compute_publication_value(publication):
@@ -25,3 +25,11 @@ def compute_publication_value(publication):
     value = (reputation_value ** 1.3) * which_author_value
 
     return value
+
+
+def compute_language_certificate_value(certificate):
+    if isinstance(certificate, RegularLanguageCertificate):
+        print("WOW")
+
+
+    return 0
