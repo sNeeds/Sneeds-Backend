@@ -1,4 +1,6 @@
-from sNeeds.apps.account.models import JournalReputation, WhichAuthor, RegularLanguageCertificate
+from sNeeds.apps.account.models import JournalReputation, WhichAuthor, RegularLanguageCertificate, \
+    LanguageCertificateType
+from sNeeds.apps.estimations import values
 
 
 def compute_publication_value(publication):
@@ -28,8 +30,34 @@ def compute_publication_value(publication):
 
 
 def compute_language_certificate_value(certificate):
-    if isinstance(certificate, RegularLanguageCertificate):
-        print("WOW")
+    value = None
 
+    if certificate.certificate_type == LanguageCertificateType.TOEFL:
+        if certificate.overall < values.TOEFL_D_END:
+            value = values.TOEFL_D_VALUE
+        elif values.TOEFL_C_START <= certificate.overall < values.TOEFL_C_END:
+            value = values.TOEFL_C_VALUE
+        elif values.TOEFL_B_START <= certificate.overall < values.TOEFL_B_END:
+            value = values.TOEFL_B_VALUE
+        elif values.TOEFL_BP_START <= certificate.overall < values.TOEFL_BP_END:
+            value = values.TOEFL_BP_VALUE
+        elif values.TOEFL_A_START <= certificate.overall < values.TOEFL_A_END:
+            value = values.TOEFL_A_VALUE
+        elif values.TOEFL_AP_START <= certificate.overall:
+            value = values.TOEFL_AP_VALUE
 
-    return 0
+    elif certificate.certificate_type == LanguageCertificateType.IELTS_GENERAL or certificate.certificate_type == LanguageCertificateType.IELTS_ACADEMIC:
+        if certificate.overall < values.IELTS_D_END:
+            value = values.IELTS_D_VALUE
+        elif values.IELTS_C_START <= certificate.overall < values.IELTS_C_END:
+            value = values.IELTS_C_VALUE
+        elif values.IELTS_B_START <= certificate.overall < values.IELTS_B_END:
+            value = values.IELTS_B_VALUE
+        elif values.IELTS_BP_START <= certificate.overall < values.IELTS_BP_END:
+            value = values.IELTS_BP_VALUE
+        elif values.IELTS_A_START <= certificate.overall < values.IELTS_A_END:
+            value = values.IELTS_A_VALUE
+        elif values.IELTS_AP_START <= certificate.overall:
+            value = values.IELTS_AP_VALUE
+
+    return value
