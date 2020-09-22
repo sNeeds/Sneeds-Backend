@@ -431,15 +431,15 @@ class UniversityThrough(models.Model):
         if university_rank < values.GREATE_UNIVERSITY_RANK:
             value *= 1
         elif values.GREATE_UNIVERSITY_RANK <= university_rank < values.GOOD_UNIVERSITY_RANK:
-            value *= 0.9
+            value *= 0.96
         elif values.GOOD_UNIVERSITY_RANK <= university_rank < values.AVERAGE_UNIVERSITY_RANK:
-            value *= 0.8
+            value *= 0.91
         elif values.AVERAGE_UNIVERSITY_RANK <= university_rank < values.BAD_UNIVERSITY_RANK:
-            value *= 0.7
+            value *= 0.85
         elif values.BAD_UNIVERSITY_RANK <= university_rank:
             value *= 0.6
 
-        value *= self.gpa / 20
+        value =  (value * (self.gpa / 10)) / 2
 
         return value
 
