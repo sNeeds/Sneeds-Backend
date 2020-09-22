@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from django.db.models.signals import pre_save, pre_delete, m2m_changed, post_save
 
 from sNeeds.apps.account.models import Publication, JournalReputation, WhichAuthor, LanguageCertificate, \
-    RegularLanguageCertificate, GRESubjectCertificate
+    RegularLanguageCertificate, GRESubjectCertificate, UniversityThrough
 from sNeeds.apps.estimations.compute_value import compute_publication_value
 
 
@@ -11,7 +11,11 @@ def pre_save_publication(sender, instance, *args, **kwargs):
 
 
 def pre_save_language_certificate(sender, instance, *args, **kwargs):
-    instance.value = instance.compute_language_certificate_value()[0]
+    instance.value = instance.compute_value()[0]
+
+
+def pre_save_university_through(sender, instance, *args, **kwargs):
+    instance.value = instance.compute_value()
 
 
 # Signal is not fired when subclasses were updated.
@@ -27,3 +31,4 @@ for subclass in GRESubjectCertificate.__subclasses__():
 
 pre_save.connect(pre_save_publication, sender=Publication)
 pre_save.connect(pre_save_language_certificate, sender=LanguageCertificate)
+pre_save.connect(pre_save_university_through, sender=UniversityThrough)

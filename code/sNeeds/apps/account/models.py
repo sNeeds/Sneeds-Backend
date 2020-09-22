@@ -424,6 +424,25 @@ class UniversityThrough(models.Model):
     class Meta:
         unique_together = ['student_detailed_info', 'grade']
 
+    def compute_value(self):
+        university_rank = self.university.rank
+        value = 1
+
+        if university_rank < values.GREATE_UNIVERSITY_RANK:
+            value *= 1
+        elif values.GREATE_UNIVERSITY_RANK <= university_rank < values.GOOD_UNIVERSITY_RANK:
+            value *= 0.9
+        elif values.GOOD_UNIVERSITY_RANK <= university_rank < values.AVERAGE_UNIVERSITY_RANK:
+            value *= 0.8
+        elif values.AVERAGE_UNIVERSITY_RANK <= university_rank < values.BAD_UNIVERSITY_RANK:
+            value *= 0.7
+        elif values.BAD_UNIVERSITY_RANK <= university_rank:
+            value *= 0.6
+
+        value *= self.gpa / 20
+
+        return value
+
 
 class LanguageCertificate(models.Model):
     certificate_type = EnumField(
@@ -451,7 +470,7 @@ class LanguageCertificate(models.Model):
     class Meta:
         unique_together = ('certificate_type', 'student_detailed_info')
 
-    def compute_language_certificate_value(self):
+    def compute_value(self):
         """
         Returned format: (value number, value string) E.g: (0.9, A)
         """
