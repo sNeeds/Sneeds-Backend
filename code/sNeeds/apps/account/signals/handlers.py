@@ -3,7 +3,7 @@ from django.db.models.signals import pre_save, pre_delete, m2m_changed, post_sav
 
 from sNeeds.apps.account.models import Publication, JournalReputation, WhichAuthor, LanguageCertificate, \
     RegularLanguageCertificate, GRESubjectCertificate
-from sNeeds.apps.estimations.compute_value import compute_publication_value, compute_language_certificate_value
+from sNeeds.apps.estimations.compute_value import compute_publication_value
 
 
 def pre_save_publication(sender, instance, *args, **kwargs):
@@ -11,7 +11,7 @@ def pre_save_publication(sender, instance, *args, **kwargs):
 
 
 def pre_save_language_certificate(sender, instance, *args, **kwargs):
-    instance.value = compute_language_certificate_value(instance)[0]
+    instance.value = instance.compute_language_certificate_value()[0]
 
 
 # Signal is not fired when subclasses were updated.

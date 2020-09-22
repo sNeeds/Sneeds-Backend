@@ -182,7 +182,7 @@ class StudentDetailedFormReview:
             data['ielts_academic'] = {
                 "comment": None,
                 "is_mock": ielts_academic.is_mock,
-                "value": ielts_academic.value
+                "value": ielts_academic.compute_language_certificate_value()[1]
             }
             if ielts_academic.overall < 6:
                 data["ielts-academic"]["comment"] = IELTS_ACADEMIC_VERY_BAD
@@ -195,13 +195,12 @@ class StudentDetailedFormReview:
             elif 7.5 <= ielts_academic.overall:
                 data["ielts-academic"]["comment"] = IELTS_ACADEMIC_GREAT
 
-
         if ielts_general_qs.exists():
             ielts_general = ielts_general_qs.first()
             data['ielts_general'] = {
                 "comment": None,
                 "is_mock": ielts_general.is_mock,
-                "value": ielts_general.value
+                "value": ielts_general.compute_language_certificate_value()[1]
             }
             data["ielts-general"]["comment"] = CHANGE_GENERAL_WITH_ACADEMIC
             if ielts_general.overall < 6:
@@ -218,8 +217,9 @@ class StudentDetailedFormReview:
         if toefls_qs.exists():
             toefl = toefls_qs.first()
             data['toefl'] = {
+                "comment": None,
                 "is_mock": toefl.is_mock,
-                "value": toefl.value
+                "value": toefl.compute_language_certificate_value()[1]
             }
             if toefl.overall < 79:
                 data["toefl"]["comment"] = TOEFL_VERY_BAD

@@ -10,6 +10,7 @@ from django.contrib.postgres.search import SearchVectorField
 from django.contrib.postgres.indexes import GinIndex
 from enumfields import Enum, EnumField
 
+from sNeeds.apps.estimations import values
 from .managers import UniversityThroughQuerySetManager, LanguageCertificateQuerysetManager, CountryManager, \
     PublicationQuerySetManager
 from .validators import validate_resume_file_extension, validate_resume_file_size, ten_factor_validator
@@ -440,6 +441,55 @@ class LanguageCertificate(models.Model):
 
     class Meta:
         unique_together = ('certificate_type', 'student_detailed_info')
+
+    def compute_language_certificate_value(self):
+        """
+        Returned format: (value number, value string) E.g: (0.9, A)
+        """
+        value = None
+        value_str = None
+
+        if self.certificate_type == LanguageCertificateType.TOEFL:
+            if self.overall < values.TOEFL_D_END:
+                value = values.TOEFL_D_VALUE
+                value_str = "D"
+            elif values.TOEFL_C_START <= self.overall < values.TOEFL_C_END:
+                value = values.TOEFL_C_VALUE
+                value_str = "C"
+            elif values.TOEFL_B_START <= self.overall < values.TOEFL_B_END:
+                value = values.TOEFL_B_VALUE
+                value_str = "B"
+            elif values.TOEFL_BP_START <= self.overall < values.TOEFL_BP_END:
+                value = values.TOEFL_BP_VALUE
+                value_str = "B+"
+            elif values.TOEFL_A_START <= self.overall < values.TOEFL_A_END:
+                value = values.TOEFL_A_VALUE
+                value_str = "A"
+            elif values.TOEFL_AP_START <= self.overall:
+                value = values.TOEFL_AP_VALUE
+                value_str = "A+"
+
+        elif self.certificate_type == LanguageCertificateType.IELTS_GENERAL or certificate.certificate_type == LanguageCertificateType.IELTS_ACADEMIC:
+            if self.overall < values.IELTS_D_END:
+                value = values.IELTS_D_VALUE
+                value_str = "D"
+            elif values.IELTS_C_START <= self.overall < values.IELTS_C_END:
+                value = values.IELTS_C_VALUE
+                value_str = "C"
+            elif values.IELTS_B_START <= self.overall < values.IELTS_B_END:
+                value = values.IELTS_B_VALUE
+                value_str = "B"
+            elif values.IELTS_BP_START <= self.overall < values.IELTS_BP_END:
+                value = values.IELTS_BP_VALUE
+                value_str = "B+"
+            elif values.IELTS_A_START <= self.overall < values.IELTS_A_END:
+                value = values.IELTS_A_VALUE
+                value_str = "A"
+            elif values.IELTS_AP_START <= self.overall:
+                value = values.IELTS_AP_VALUE
+                value_str = "A+"
+
+        return value, value_str
 
     def save(self, *args, **kwargs):
         self.full_clean()
