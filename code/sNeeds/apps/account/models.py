@@ -432,6 +432,7 @@ class LanguageCertificate(models.Model):
 
     value = models.FloatField(
         validators=[MinValueValidator(0), MaxValueValidator(1)],
+        null=True,
         editable=False
     )
 
