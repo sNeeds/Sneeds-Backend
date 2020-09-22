@@ -11,7 +11,7 @@ def pre_save_publication(sender, instance, *args, **kwargs):
 
 
 def pre_save_language_certificate(sender, instance, *args, **kwargs):
-    instance.value = compute_language_certificate_value(instance)
+    instance.value = compute_language_certificate_value(instance)[0]
 
 
 # Signal is not fired when subclasses were updated.

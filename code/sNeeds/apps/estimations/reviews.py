@@ -172,7 +172,6 @@ class StudentDetailedFormReview:
         )
 
         data = {
-            "title": "وضعیت نمره زبان",
             "ielts-academic": None,
             "ielts-general": None,
             "toefl": None
@@ -182,7 +181,8 @@ class StudentDetailedFormReview:
             ielts_academic = ielts_academic_qs.first()
             data['ielts_academic'] = {
                 "comment": None,
-                "is_mock": ielts_academic.is_mock
+                "is_mock": ielts_academic.is_mock,
+                "value": ielts_academic.value
             }
             if ielts_academic.overall < 6:
                 data["ielts-academic"]["comment"] = IELTS_ACADEMIC_VERY_BAD
@@ -195,11 +195,13 @@ class StudentDetailedFormReview:
             elif 7.5 <= ielts_academic.overall:
                 data["ielts-academic"]["comment"] = IELTS_ACADEMIC_GREAT
 
+
         if ielts_general_qs.exists():
             ielts_general = ielts_general_qs.first()
             data['ielts_general'] = {
                 "comment": None,
-                "is_mock": ielts_general.is_mock
+                "is_mock": ielts_general.is_mock,
+                "value": ielts_general.value
             }
             data["ielts-general"]["comment"] = CHANGE_GENERAL_WITH_ACADEMIC
             if ielts_general.overall < 6:
@@ -216,8 +218,8 @@ class StudentDetailedFormReview:
         if toefls_qs.exists():
             toefl = toefls_qs.first()
             data['toefl'] = {
-                "comment": None,
-                "is_mock": toefl.is_mock
+                "is_mock": toefl.is_mock,
+                "value": toefl.value
             }
             if toefl.overall < 79:
                 data["toefl"]["comment"] = TOEFL_VERY_BAD
