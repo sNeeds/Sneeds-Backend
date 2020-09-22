@@ -391,7 +391,10 @@ class UniversityThrough(models.Model):
         StudentDetailedInfoBase,
         on_delete=models.CASCADE
     )
-    grade = EnumField(Grade, default=Grade.BACHELOR)
+    grade = EnumField(
+        Grade,
+        default=Grade.BACHELOR
+    )
     major = models.ForeignKey(
         FieldOfStudy, on_delete=models.PROTECT
     )
@@ -410,6 +413,12 @@ class UniversityThrough(models.Model):
         decimal_places=2
 
     )
+    value = models.FloatField(
+        validators=[MinValueValidator(0), MaxValueValidator(1)],
+        null=True,
+        editable=False
+    )
+
     objects = UniversityThroughQuerySetManager.as_manager()
 
     class Meta:
