@@ -1,5 +1,5 @@
 from django.db import models, transaction
-from django.db.models import Q
+from django.db.models import Q, F
 
 
 class UniversityThroughQuerySetManager(models.QuerySet):
@@ -52,7 +52,7 @@ class LanguageCertificateQuerysetManager(models.QuerySet):
         return self.filter(certificate_type=LanguageCertificateType.DUOLINGO)
 
     def get_highest_value(self):
-        return self.all().order_by('value').first()
+        return self.all().order_by(F('value').desc(nulls_last=True)).first()
 
     def get_total_value(self):
         # The highest value among all certificates is total value
