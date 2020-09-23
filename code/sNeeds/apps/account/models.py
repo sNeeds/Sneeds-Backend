@@ -1,4 +1,5 @@
 import datetime
+import decimal
 import uuid
 
 from django.core.exceptions import ValidationError
@@ -427,21 +428,35 @@ class UniversityThrough(models.Model):
     def compute_value(self):
         university_rank = self.university.rank
         value = 1
+        value_str = None
 
-        if university_rank < values.GREATE_UNIVERSITY_RANK:
+        if university_rank < values.GREAT_UNIVERSITY_RANK:
             value *= 1
-        elif values.GREATE_UNIVERSITY_RANK <= university_rank < values.GOOD_UNIVERSITY_RANK:
+        elif values.GREAT_UNIVERSITY_RANK <= university_rank < values.GOOD_UNIVERSITY_RANK:
             value *= 0.96
         elif values.GOOD_UNIVERSITY_RANK <= university_rank < values.AVERAGE_UNIVERSITY_RANK:
             value *= 0.91
         elif values.AVERAGE_UNIVERSITY_RANK <= university_rank < values.BAD_UNIVERSITY_RANK:
             value *= 0.85
         elif values.BAD_UNIVERSITY_RANK <= university_rank:
-            value *= 0.6
+            value *= 0.65
 
-        value =  (value * (self.gpa / 10)) / 2
+        value = (decimal.Decimal(value) * (self.gpa / 10)) / 2
 
-        return value
+        if values.UNIVERSITY_AP_VALUE <= value:
+            value_str = "A+"
+        elif values.UNIVERSITY_A_VALUE <= value < values.UNIVERSITY_AP_VALUE:
+            value_str = "A"
+        elif values.UNIVERSITY_BP_VALUE <= value < values.UNIVERSITY_A_VALUE:
+            value_str = "B+"
+        elif values.UNIVERSITY_B_VALUE <= value < values.UNIVERSITY_BP_VALUE:
+            value_str = "B"
+        elif values.UNIVERSITY_C_VALUE <= value < values.UNIVERSITY_B_VALUE:
+            value_str = "C"
+        elif value < values.UNIVERSITY_C_VALUE:
+            value_str = "D"
+
+        return value, value_str
 
 
 class LanguageCertificate(models.Model):
@@ -474,48 +489,51 @@ class LanguageCertificate(models.Model):
         """
         Returned format: (value number, value string) E.g: (0.9, A)
         """
+        # TODO: Value is only attribute of RegularLanguageCertificate, Add this to others
         value = None
         value_str = None
 
-        if self.certificate_type == LanguageCertificateType.TOEFL:
-            if self.overall < values.TOEFL_D_END:
-                value = values.TOEFL_D_VALUE
-                value_str = "D"
-            elif values.TOEFL_C_START <= self.overall < values.TOEFL_C_END:
-                value = values.TOEFL_C_VALUE
-                value_str = "C"
-            elif values.TOEFL_B_START <= self.overall < values.TOEFL_B_END:
-                value = values.TOEFL_B_VALUE
-                value_str = "B"
-            elif values.TOEFL_BP_START <= self.overall < values.TOEFL_BP_END:
-                value = values.TOEFL_BP_VALUE
-                value_str = "B+"
-            elif values.TOEFL_A_START <= self.overall < values.TOEFL_A_END:
-                value = values.TOEFL_A_VALUE
-                value_str = "A"
-            elif values.TOEFL_AP_START <= self.overall:
-                value = values.TOEFL_AP_VALUE
-                value_str = "A+"
+        # Some of subclasses don't have overall
+        if getattr(self, 'overall', None):
+            if self.certificate_type == LanguageCertificateType.TOEFL:
+                if self.overall < values.TOEFL_D_END:
+                    value = values.TOEFL_D_VALUE
+                    value_str = "D"
+                elif values.TOEFL_C_START <= self.overall < values.TOEFL_C_END:
+                    value = values.TOEFL_C_VALUE
+                    value_str = "C"
+                elif values.TOEFL_B_START <= self.overall < values.TOEFL_B_END:
+                    value = values.TOEFL_B_VALUE
+                    value_str = "B"
+                elif values.TOEFL_BP_START <= self.overall < values.TOEFL_BP_END:
+                    value = values.TOEFL_BP_VALUE
+                    value_str = "B+"
+                elif values.TOEFL_A_START <= self.overall < values.TOEFL_A_END:
+                    value = values.TOEFL_A_VALUE
+                    value_str = "A"
+                elif values.TOEFL_AP_START <= self.overall:
+                    value = values.TOEFL_AP_VALUE
+                    value_str = "A+"
 
-        elif self.certificate_type == LanguageCertificateType.IELTS_GENERAL or certificate.certificate_type == LanguageCertificateType.IELTS_ACADEMIC:
-            if self.overall < values.IELTS_D_END:
-                value = values.IELTS_D_VALUE
-                value_str = "D"
-            elif values.IELTS_C_START <= self.overall < values.IELTS_C_END:
-                value = values.IELTS_C_VALUE
-                value_str = "C"
-            elif values.IELTS_B_START <= self.overall < values.IELTS_B_END:
-                value = values.IELTS_B_VALUE
-                value_str = "B"
-            elif values.IELTS_BP_START <= self.overall < values.IELTS_BP_END:
-                value = values.IELTS_BP_VALUE
-                value_str = "B+"
-            elif values.IELTS_A_START <= self.overall < values.IELTS_A_END:
-                value = values.IELTS_A_VALUE
-                value_str = "A"
-            elif values.IELTS_AP_START <= self.overall:
-                value = values.IELTS_AP_VALUE
-                value_str = "A+"
+            elif self.certificate_type == LanguageCertificateType.IELTS_GENERAL or certificate.certificate_type == LanguageCertificateType.IELTS_ACADEMIC:
+                if self.overall < values.IELTS_D_END:
+                    value = values.IELTS_D_VALUE
+                    value_str = "D"
+                elif values.IELTS_C_START <= self.overall < values.IELTS_C_END:
+                    value = values.IELTS_C_VALUE
+                    value_str = "C"
+                elif values.IELTS_B_START <= self.overall < values.IELTS_B_END:
+                    value = values.IELTS_B_VALUE
+                    value_str = "B"
+                elif values.IELTS_BP_START <= self.overall < values.IELTS_BP_END:
+                    value = values.IELTS_BP_VALUE
+                    value_str = "B+"
+                elif values.IELTS_A_START <= self.overall < values.IELTS_A_END:
+                    value = values.IELTS_A_VALUE
+                    value_str = "A"
+                elif values.IELTS_AP_START <= self.overall:
+                    value = values.IELTS_AP_VALUE
+                    value_str = "A+"
 
         return value, value_str
 

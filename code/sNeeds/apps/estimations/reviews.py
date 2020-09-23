@@ -7,6 +7,7 @@ class StudentDetailedFormReview:
     def __init__(self, student_detailed_form):
         self.student_detailed_form = student_detailed_form
         self.last_grade = None
+        self.last_university_through = None
 
     def _review_age(self):
         age = self.student_detailed_form.age
@@ -18,20 +19,26 @@ class StudentDetailedFormReview:
             return None
 
     def _set_grade(self):
-        last_grade = self.last_grade
         university_through = UniversityThrough.objects.filter(
             student_detailed_info=self.student_detailed_form
         )
-        if university_through.get_post_doc():
-            last_grade = Grade.POST_DOC
-        elif university_through.get_phd():
-            last_grade = Grade.PHD
-        elif university_through.get_master():
-            last_grade = Grade.MASTER
-        elif university_through.get_bachelor():
-            last_grade = Grade.BACHELOR
+        post_doc = university_through.get_post_doc()
+        phd = university_through.get_phd()
+        master = university_through.get_master()
+        bachelor = university_through.get_bachelor()
 
-        self.last_grade = last_grade
+        if post_doc:
+            self.last_grade = Grade.POST_DOC
+            self.last_university_through = post_doc
+        elif phd:
+            self.last_grade = Grade.PHD
+            self.last_university_through = phd
+        elif master:
+            self.last_grade = Grade.MASTER
+            self.last_university_through = master
+        elif bachelor:
+            self.last_grade = Grade.BACHELOR
+            self.last_university_through = bachelor
 
     def review_universities(self):
         last_grade = self.last_grade
@@ -124,6 +131,7 @@ class StudentDetailedFormReview:
                     data['معدل کارشناسی'] = BACHELOR_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_BETWEEN_16_18
                 if 18 < last_grade_university.gpa:
                     data['معدل کارشناسی'] = BACHELOR_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_ABOVE_18
+
         return data
 
     def review_age(self):
@@ -157,6 +165,9 @@ class StudentDetailedFormReview:
     def review_language_certificates(self):
         form = self.student_detailed_form
 
+        language_certificates = LanguageCertificate.objects.filter(
+            student_detailed_info=form
+        )
         # Supports IELTS general, academic and TOEFL
         ielts_academic_qs = RegularLanguageCertificate.objects.filter(
             student_detailed_info=form,
@@ -174,7 +185,8 @@ class StudentDetailedFormReview:
         data = {
             "ielts-academic": None,
             "ielts-general": None,
-            "toefl": None
+            "toefl": None,
+            "total_value": None
         }
 
         if ielts_academic_qs.exists():
@@ -231,6 +243,8 @@ class StudentDetailedFormReview:
                 data["toefl"]["comment"] = TOEFL_GOOD
             elif 110 <= toefl.overall:
                 data["toefl"]["comment"] = TOEFL_GREAT
+
+        data["total_value"] = language_certificates.get_total_value()
 
         return data
 
@@ -462,15 +476,14 @@ class StudentDetailedFormReview:
         self._set_grade()
         data = {
             "university": {
-                "title": "دانشگاه",
-                "data": self.review_universities()
+                "data": self.review_universities(),
+                "value": self.last_university_through.compute_value()[1]
             },
             "publication": {
                 "data": "Coming soon ...",
                 "total_value": self.publications_total_value()
             },
             'language': {
-                "title": "زبان",
                 "data": self.review_language_certificates()
             },
             "age": {

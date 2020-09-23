@@ -15,7 +15,7 @@ def pre_save_language_certificate(sender, instance, *args, **kwargs):
 
 
 def pre_save_university_through(sender, instance, *args, **kwargs):
-    instance.value = instance.compute_value()
+    instance.value = instance.compute_value()[0]
 
 
 # Signal is not fired when subclasses were updated.
