@@ -56,7 +56,7 @@ class LanguageCertificateQuerysetManager(models.QuerySet):
 
     def get_total_value(self):
         # The highest value among all certificates is total value
-        return self.get_highest_value().compute_value()[1]
+        return self.get_highest_value().compute_value()
 
 
 class CountryManager(models.Manager):

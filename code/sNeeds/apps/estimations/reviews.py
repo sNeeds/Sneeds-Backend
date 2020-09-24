@@ -186,7 +186,8 @@ class StudentDetailedFormReview:
             "ielts-academic": None,
             "ielts-general": None,
             "toefl": None,
-            "total_value": None
+            "total_value": None,
+            "total_value_str": None
         }
 
         if ielts_academic_qs.exists():
@@ -194,7 +195,8 @@ class StudentDetailedFormReview:
             data['ielts_academic'] = {
                 "comment": None,
                 "is_mock": ielts_academic.is_mock,
-                "value": ielts_academic.compute_value()[1]
+                "value": ielts_academic.compute_value()[0],
+                "value_str": ielts_academic.compute_value()[1]
             }
             if ielts_academic.overall < 6:
                 data["ielts-academic"]["comment"] = IELTS_ACADEMIC_VERY_BAD
@@ -212,7 +214,8 @@ class StudentDetailedFormReview:
             data['ielts_general'] = {
                 "comment": None,
                 "is_mock": ielts_general.is_mock,
-                "value": ielts_general.compute_value()[1]
+                "value": ielts_general.compute_value()[0],
+                "value_str": ielts_general.compute_value()[1]
             }
             data["ielts-general"]["comment"] = CHANGE_GENERAL_WITH_ACADEMIC
             if ielts_general.overall < 6:
@@ -231,7 +234,8 @@ class StudentDetailedFormReview:
             data['toefl'] = {
                 "comment": None,
                 "is_mock": toefl.is_mock,
-                "value": toefl.compute_value()[1]
+                "value": toefl.compute_value()[0],
+                "value_str": toefl.compute_value()[1]
             }
             if toefl.overall < 79:
                 data["toefl"]["comment"] = TOEFL_VERY_BAD
@@ -244,7 +248,8 @@ class StudentDetailedFormReview:
             elif 110 <= toefl.overall:
                 data["toefl"]["comment"] = TOEFL_GREAT
 
-        data["total_value"] = language_certificates.get_total_value()
+        data["total_value"] = language_certificates.get_total_value()[0]
+        data["total_value_str"] = language_certificates.get_total_value()[1]
 
         return data
 
