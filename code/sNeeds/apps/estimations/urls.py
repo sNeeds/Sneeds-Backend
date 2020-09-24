@@ -5,7 +5,7 @@ from . import views
 app_name = "estimations"
 
 urlpatterns = [
-    path('form-comments/<int:id>/', views.FormComments.as_view()),
+    path('form-comments/<uuid:form_id>/', views.FormComments.as_view()),
 
     path('import-top-universities/', views.ListUsers.as_view(), ),
 ]

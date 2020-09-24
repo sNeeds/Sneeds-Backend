@@ -1,9 +1,8 @@
 from django.db import models, transaction
-from django.db.models import Q
+from django.db.models import Q, F
 
 
 class UniversityThroughQuerySetManager(models.QuerySet):
-
     def get_bachelor(self):
         from sNeeds.apps.account.models import Grade
         try:
@@ -52,6 +51,13 @@ class LanguageCertificateQuerysetManager(models.QuerySet):
         from sNeeds.apps.account.models import LanguageCertificateType
         return self.filter(certificate_type=LanguageCertificateType.DUOLINGO)
 
+    def get_highest_value(self):
+        return self.all().order_by(F('value').desc(nulls_last=True)).first()
+
+    def get_total_value(self):
+        # The highest value among all certificates is total value
+        return self.get_highest_value().compute_value()
+
 
 class CountryManager(models.Manager):
     def with_active_time_slot_consultants(self):
@@ -64,3 +70,37 @@ class CountryManager(models.Manager):
         qs = self.filter(id__in=country_list).exclude(slug="iran")
 
         return qs
+
+
+class PublicationQuerySetManager(models.QuerySet):
+    def qs_total_value(self):
+        qs = self.all().order_by('value')
+        total_val = 0
+
+        counter = 0
+        for p in qs:
+            total_val += max((p.value - counter), 0)
+            counter += 0.3
+
+        return total_val
+
+    def qs_total_value_str(self):
+        total_value = self.qs_total_value()
+        total_value_str = None
+
+        if 0.95 <= total_value:
+            total_value_str = "A+"
+        elif 0.75 <= total_value < 0.95:
+            total_value_str = "A"
+        elif 0.6 <= total_value < 0.75:
+            total_value_str = "B+"
+        elif 0.5 <= total_value < 0.6:
+            total_value_str = "B"
+        elif 0.4 <= total_value < 0.5:
+            total_value_str = "C+"
+        elif 0.3 <= total_value < 0.4:
+            total_value_str = "C"
+        elif total_value < 0.3:
+            total_value_str = "D"
+
+        return total_value_str

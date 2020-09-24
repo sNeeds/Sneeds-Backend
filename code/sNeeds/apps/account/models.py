@@ -1,5 +1,6 @@
 import datetime
 from math import ceil, floor
+import decimal
 import uuid
 
 from django.core.exceptions import ValidationError
@@ -12,7 +13,9 @@ from django.contrib.postgres.search import SearchVectorField
 from django.contrib.postgres.indexes import GinIndex
 from enumfields import Enum, EnumField
 
-from .managers import UniversityThroughQuerySetManager, LanguageCertificateQuerysetManager, CountryManager
+from sNeeds.apps.estimations import values
+from .managers import UniversityThroughQuerySetManager, LanguageCertificateQuerysetManager, CountryManager, \
+    PublicationQuerySetManager
 from .validators import validate_resume_file_extension, validate_resume_file_size, ten_factor_validator
 from . import validators
 
@@ -135,6 +138,12 @@ class University(models.Model):
     class Meta:
         ordering = ["name"]
 
+    @property
+    def value(self):
+        rank = min(self.rank, 2000)
+        rank = 2000 - rank
+        return rank / 2000
+
     def __str__(self):
         return self.name
 
@@ -233,6 +242,8 @@ class Publication(models.Model):
         validators=[MinValueValidator(0), MaxValueValidator(1)],
         editable=False
     )  # Updated in signal
+
+    objects = PublicationQuerySetManager.as_manager()
 
     PUBLICATIONS_SCORE__STORE_LABEL_RANGE = 0.5
     PUBLICATIONS_SCORE__VIEW_LABEL_RANGE = 1
@@ -410,6 +421,18 @@ class StudentDetailedInfoBase(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+    def _university_through_has_this_major(self, major):
+        return UniversityThrough.objects.filter(
+            student_detailed_info__id=self.id,
+            major=major
+        ).exists()
+
+    def university_through_has_these_majors(self, majors_list):
+        found = False
+        for major in majors_list:
+            found = found or self._university_through_has_this_major(major)
+        return found
+
 
 class StudentDetailedInfo(StudentDetailedInfoBase):
     user = models.OneToOneField(
@@ -486,30 +509,101 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         null=True,
     )
 
+    # total_value =
     class Meta:
         ordering = ['created', ]
 
     RELATED_WORK_EXPERIENCE_STORE_LABEL_RANGE = 2
     RELATED_WORK_EXPERIENCE_VIEW_LABEL_RANGE = 6
 
+    # @property
+    # def get_rank_among_all(self):
+    #     higher_than = self.objects.filter(
+    #         total_value
+    #     )
+    #
+
+    @property
+    def total_value(self):
+        publications = Publication.objects.filter(
+            student_detailed_info__id=self.id
+        )
+        languages = LanguageCertificate.objects.filter(
+            student_detailed_info__id = self.id
+        )
+
+        total_value = 0
+        total_value += 2 * self.get_last_university_through().value
+        total_value += publications.qs_total_value()
+        total_value += languages.get_total_value()[0]
+        total_value += self.others_value
+
+        return total_value
+
+    @property
+    def others_value(self):
+        value = 0.5
+
+        if self.powerful_recommendation:
+            value += 0.2
+
+        if self.olympiad:
+            value += 0.2
+
+        if self.related_work_experience:
+            if 8 < self.related_work_experience:
+                value += 0.2
+
+        if self.academic_break:
+            if 4 < self.academic_break:
+                value -= 0.2
+
+        value = max(value, 0)
+        value = min(value, 1)
+
+        return value
+
     def is_complete(self):
         return True
 
-    def get_related_majors(self):
-        related_majors = FieldOfStudy.objects.none()
+    def get_last_university_grade(self):
+        return self.get_last_university_through().grade
 
+    def get_last_university_through(self):
+        last_university_through = None
+
+        university_through = UniversityThrough.objects.filter(
+            student_detailed_info__id=self.id
+        )
+        post_doc = university_through.get_post_doc()
+        phd = university_through.get_phd()
+        master = university_through.get_master()
+        bachelor = university_through.get_bachelor()
+
+        if post_doc:
+            last_university_through = post_doc
+        elif phd:
+            last_university_through = phd
+        elif master:
+            last_university_through = master
+        elif bachelor:
+            last_university_through = bachelor
+
+        return last_university_through
+
+    def get_related_majors(self):
+        related_major_ids = []
         university_through_qs = UniversityThrough.objects.filter(
             student_detailed_info__id=self.id
         )
-        related_majors |= university_through_qs.values_list('major', flat=True)
-
+        related_major_ids += list(university_through_qs.values_list('major__id', flat=True).distinct())
         try:
             want_to_apply = WantToApply.objects.get(student_detailed_info__id=self.id)
-            related_majors |= want_to_apply.majors.all()
+            related_major_ids += list(want_to_apply.majors.all().values_list('id', flat=True).distinct())
         except WantToApply.DoesNotExist:
             pass
 
-        return related_majors
+        return FieldOfStudy.objects.filter(id__in=related_major_ids)
 
     def get_powerful_recommendation__store_label(self):
         return MISSING_LABEL if not self.powerful_recommendation or self.powerful_recommendation is None\
@@ -573,7 +667,10 @@ class UniversityThrough(models.Model):
         StudentDetailedInfoBase,
         on_delete=models.CASCADE
     )
-    grade = EnumField(Grade, default=Grade.BACHELOR)
+    grade = EnumField(
+        Grade,
+        default=Grade.BACHELOR
+    )
     major = models.ForeignKey(
         FieldOfStudy, on_delete=models.PROTECT
     )
@@ -592,6 +689,12 @@ class UniversityThrough(models.Model):
         decimal_places=2
 
     )
+    value = models.FloatField(
+        validators=[MinValueValidator(0), MaxValueValidator(1)],
+        null=True,
+        editable=False
+    )
+
     objects = UniversityThroughQuerySetManager.as_manager()
 
     class Meta:
@@ -599,6 +702,44 @@ class UniversityThrough(models.Model):
 
     GPA_STORE_LABEL_RANGE = 0.25
     GPA_VIEW_LABEL_RANGE = 1
+
+    @property
+    def gpa_value(self):
+        gpa = max(self.gpa, 14) - 14
+        return gpa / 6
+
+    def compute_value(self):
+        university_rank = self.university.rank
+        value = 1
+        value_str = None
+
+        if university_rank < values.GREAT_UNIVERSITY_RANK:
+            value *= 1
+        elif values.GREAT_UNIVERSITY_RANK <= university_rank < values.GOOD_UNIVERSITY_RANK:
+            value *= 0.96
+        elif values.GOOD_UNIVERSITY_RANK <= university_rank < values.AVERAGE_UNIVERSITY_RANK:
+            value *= 0.91
+        elif values.AVERAGE_UNIVERSITY_RANK <= university_rank < values.BAD_UNIVERSITY_RANK:
+            value *= 0.85
+        elif values.BAD_UNIVERSITY_RANK <= university_rank:
+            value *= 0.65
+
+        value = (decimal.Decimal(value) * (self.gpa / 10)) / 2
+
+        if values.UNIVERSITY_AP_VALUE <= value:
+            value_str = "A+"
+        elif values.UNIVERSITY_A_VALUE <= value < values.UNIVERSITY_AP_VALUE:
+            value_str = "A"
+        elif values.UNIVERSITY_BP_VALUE <= value < values.UNIVERSITY_A_VALUE:
+            value_str = "B+"
+        elif values.UNIVERSITY_B_VALUE <= value < values.UNIVERSITY_BP_VALUE:
+            value_str = "B"
+        elif values.UNIVERSITY_C_VALUE <= value < values.UNIVERSITY_B_VALUE:
+            value_str = "C"
+        elif value < values.UNIVERSITY_C_VALUE:
+            value_str = "D"
+
+        return value, value_str
 
     def get_gpa__store_label(self):
         item_range = self.GPA_STORE_LABEL_RANGE
@@ -644,24 +785,90 @@ class UniversityThrough(models.Model):
 
 
 class LanguageCertificate(models.Model):
+    student_detailed_info = models.ForeignKey(
+        StudentDetailedInfoBase,
+        on_delete=models.CASCADE
+    )
     certificate_type = EnumField(
         LanguageCertificateType,
         default=LanguageCertificateType.TOEFL,
         max_length=64,
         help_text="Based on endpoint just some types are allowed to insert not all certificate types."
     )
-    student_detailed_info = models.ForeignKey(
-        StudentDetailedInfoBase,
-        on_delete=models.CASCADE
-    )
     is_mock = models.BooleanField(
         default=False
+    )
+
+    value = models.FloatField(
+        validators=[MinValueValidator(0), MaxValueValidator(1)],
+        null=True,
+        editable=False
     )
 
     objects = LanguageCertificateQuerysetManager.as_manager()
 
     class Meta:
         unique_together = ('certificate_type', 'student_detailed_info')
+
+    def is_regular_language_certificate_instance(self):
+        try:
+            self.regularlanguagecertificate
+            return True
+        except RegularLanguageCertificate:
+            return False
+
+    def compute_value(self):
+        """
+        Returned format: (value number, value string) E.g: (0.9, A)
+        """
+        # TODO: Value is only attribute of RegularLanguageCertificate, Add this to others
+        value = None
+        value_str = None
+
+        # Some of subclasses don't have overall
+        if self.is_regular_language_certificate_instance():
+            overall = self.regularlanguagecertificate.overall
+            if self.certificate_type == LanguageCertificateType.TOEFL:
+                if overall < values.TOEFL_D_END:
+                    value = values.TOEFL_D_VALUE
+                    value_str = "D"
+                elif values.TOEFL_C_START <= overall < values.TOEFL_C_END:
+                    value = values.TOEFL_C_VALUE
+                    value_str = "C"
+                elif values.TOEFL_B_START <= overall < values.TOEFL_B_END:
+                    value = values.TOEFL_B_VALUE
+                    value_str = "B"
+                elif values.TOEFL_BP_START <= overall < values.TOEFL_BP_END:
+                    value = values.TOEFL_BP_VALUE
+                    value_str = "B+"
+                elif values.TOEFL_A_START <= overall < values.TOEFL_A_END:
+                    value = values.TOEFL_A_VALUE
+                    value_str = "A"
+                elif values.TOEFL_AP_START <= overall:
+                    value = values.TOEFL_AP_VALUE
+                    value_str = "A+"
+
+            elif self.certificate_type == LanguageCertificateType.IELTS_GENERAL or self.certificate_type == LanguageCertificateType.IELTS_ACADEMIC:
+                if overall < values.IELTS_D_END:
+                    value = values.IELTS_D_VALUE
+                    value_str = "D"
+                elif values.IELTS_C_START <= overall < values.IELTS_C_END:
+                    value = values.IELTS_C_VALUE
+                    value_str = "C"
+                elif values.IELTS_B_START <= overall < values.IELTS_B_END:
+                    value = values.IELTS_B_VALUE
+                    value_str = "B"
+                elif values.IELTS_BP_START <= overall < values.IELTS_BP_END:
+                    value = values.IELTS_BP_VALUE
+                    value_str = "B+"
+                elif values.IELTS_A_START <= overall < values.IELTS_A_END:
+                    value = values.IELTS_A_VALUE
+                    value_str = "A"
+                elif values.IELTS_AP_START <= overall:
+                    value = values.IELTS_AP_VALUE
+                    value_str = "A+"
+
+        return value, value_str
 
     def save(self, *args, **kwargs):
         self.full_clean()

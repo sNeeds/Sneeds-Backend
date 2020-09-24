@@ -7,6 +7,7 @@ class StudentDetailedFormReview:
     def __init__(self, student_detailed_form):
         self.student_detailed_form = student_detailed_form
         self.last_grade = None
+        self.last_university_through = None
 
     def _review_age(self):
         age = self.student_detailed_form.age
@@ -18,20 +19,8 @@ class StudentDetailedFormReview:
             return None
 
     def _set_grade(self):
-        last_grade = self.last_grade
-        university_through = UniversityThrough.objects.filter(
-            student_detailed_info=self.student_detailed_form
-        )
-        if university_through.get_post_doc():
-            last_grade = Grade.POST_DOC
-        elif university_through.get_phd():
-            last_grade = Grade.PHD
-        elif university_through.get_master():
-            last_grade = Grade.MASTER
-        elif university_through.get_bachelor():
-            last_grade = Grade.BACHELOR
-
-        self.last_grade = last_grade
+        self.last_grade = self.student_detailed_form.get_last_university_grade()
+        self.last_university_through = self.student_detailed_form.get_last_university_through()
 
     def review_universities(self):
         last_grade = self.last_grade
@@ -124,6 +113,7 @@ class StudentDetailedFormReview:
                     data['معدل کارشناسی'] = BACHELOR_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_BETWEEN_16_18
                 if 18 < last_grade_university.gpa:
                     data['معدل کارشناسی'] = BACHELOR_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_ABOVE_18
+
         return data
 
     def review_age(self):
@@ -157,6 +147,9 @@ class StudentDetailedFormReview:
     def review_language_certificates(self):
         form = self.student_detailed_form
 
+        language_certificates = LanguageCertificate.objects.filter(
+            student_detailed_info=form
+        )
         # Supports IELTS general, academic and TOEFL
         ielts_academic_qs = RegularLanguageCertificate.objects.filter(
             student_detailed_info=form,
@@ -172,17 +165,20 @@ class StudentDetailedFormReview:
         )
 
         data = {
-            "title": "وضعیت نمره زبان",
             "ielts-academic": None,
             "ielts-general": None,
-            "toefl": None
+            "toefl": None,
+            "total_value": None,
+            "total_value_str": None
         }
 
         if ielts_academic_qs.exists():
             ielts_academic = ielts_academic_qs.first()
             data['ielts_academic'] = {
                 "comment": None,
-                "is_mock": ielts_academic.is_mock
+                "is_mock": ielts_academic.is_mock,
+                "value": ielts_academic.compute_value()[0],
+                "value_str": ielts_academic.compute_value()[1]
             }
             if ielts_academic.overall < 6:
                 data["ielts-academic"]["comment"] = IELTS_ACADEMIC_VERY_BAD
@@ -199,7 +195,9 @@ class StudentDetailedFormReview:
             ielts_general = ielts_general_qs.first()
             data['ielts_general'] = {
                 "comment": None,
-                "is_mock": ielts_general.is_mock
+                "is_mock": ielts_general.is_mock,
+                "value": ielts_general.compute_value()[0],
+                "value_str": ielts_general.compute_value()[1]
             }
             data["ielts-general"]["comment"] = CHANGE_GENERAL_WITH_ACADEMIC
             if ielts_general.overall < 6:
@@ -217,7 +215,9 @@ class StudentDetailedFormReview:
             toefl = toefls_qs.first()
             data['toefl'] = {
                 "comment": None,
-                "is_mock": toefl.is_mock
+                "is_mock": toefl.is_mock,
+                "value": toefl.compute_value()[0],
+                "value_str": toefl.compute_value()[1]
             }
             if toefl.overall < 79:
                 data["toefl"]["comment"] = TOEFL_VERY_BAD
@@ -230,7 +230,28 @@ class StudentDetailedFormReview:
             elif 110 <= toefl.overall:
                 data["toefl"]["comment"] = TOEFL_GREAT
 
+        data["total_value"] = language_certificates.get_total_value()[0]
+        data["total_value_str"] = language_certificates.get_total_value()[1]
+
         return data
+
+    def publications_total_value(self):
+        publications_qs = Publication.objects.filter(
+            student_detailed_info=self.student_detailed_form
+        )
+
+        total_value = publications_qs.qs_total_value()
+
+        return total_value
+
+    def publications_total_value_str(self):
+        publications_qs = Publication.objects.filter(
+            student_detailed_info=self.student_detailed_form
+        )
+
+        total_value_str = publications_qs.qs_total_value_str()
+
+        return total_value_str
 
     def review_publications(self):
         def _get_appended_publication_qs_titles(qs):
@@ -440,26 +461,29 @@ class StudentDetailedFormReview:
     def review_all(self):
         self._set_grade()
         data = {
-            "university": {
-                "title": "دانشگاه",
-                "data": self.review_universities()
+            "university and gpa": {
+                "data": self.review_universities(),
+                "value": self.last_university_through.value,
+                "value_str": self.last_university_through.compute_value()[1],
+                "university_value": self.last_university_through.university.value,
+                "gpa_value": self.last_university_through.gpa_value
             },
             "publication": {
-                "title": "مقالات",
-                "data": self.review_publications()
+                "data": "Coming soon ...",
+                "total_value": self.publications_total_value(),
+                "total_value_str": self.publications_total_value_str()
             },
             'language': {
-                "title": "زبان",
                 "data": self.review_language_certificates()
             },
-            "age": {
-                "title": "سن و گپ تحصیلی",
-                "data": self.review_age()
+            "age and gap": {
+                "data": self.review_age(),
             },
             "others": {
-                "title": "موارد دیگر",
-                "data": self.review_others()
-            }
+                "data": self.review_others(),
+                "value": self.student_detailed_form.others_value
+            },
+            "total_value": self.student_detailed_form.total_value
         }
 
         return data
