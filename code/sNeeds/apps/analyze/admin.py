@@ -1,3 +1,12 @@
+from sNeeds.apps.analyze.models import Chart, ChartItemData
 from django.contrib import admin
 
-# Register your models here.
+
+class ChartItemDataInline(admin.TabularInline):
+    model = ChartItemData
+    extra = 1
+
+
+@admin.register(Chart)
+class ChartAdmin(admin.ModelAdmin):
+    inlines = [ChartItemDataInline]
