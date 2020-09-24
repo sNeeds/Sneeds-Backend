@@ -1,6 +1,4 @@
 from django.db.models import F, Sum
-from django.db.models import FloatField
-from django.db.models.functions import Cast
 from rest_framework import serializers
 from sNeeds.apps.analyze.models import ChartItemData
 from sNeeds.apps.account import models as account_models
