@@ -369,8 +369,16 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         null=True,
     )
 
+    # total_value =
     class Meta:
         ordering = ['created', ]
+
+    # @property
+    # def get_rank_among_all(self):
+    #     higher_than = self.objects.filter(
+    #         total_value
+    #     )
+    #
 
     @property
     def total_value(self):
