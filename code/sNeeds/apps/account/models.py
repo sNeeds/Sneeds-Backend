@@ -129,6 +129,12 @@ class University(models.Model):
     class Meta:
         ordering = ["name"]
 
+    @property
+    def value(self):
+        rank = min(self.rank, 2000)
+        rank = 2000 - rank
+        return rank / 2000
+
     def __str__(self):
         return self.name
 
@@ -366,6 +372,29 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
     class Meta:
         ordering = ['created', ]
 
+    @property
+    def others_value(self):
+        value = 0.5
+
+        if self.powerful_recommendation:
+            value += 0.2
+
+        if self.olympiad:
+            value += 0.2
+
+        if self.related_work_experience:
+            if 8 < self.related_work_experience:
+                value += 0.2
+
+        if self.academic_break:
+            if 4 < self.academic_break:
+                value -= 0.2
+
+        value = max(value, 0)
+        value = min(value, 1)
+
+        return value
+
     def is_complete(self):
         return True
 
@@ -424,6 +453,11 @@ class UniversityThrough(models.Model):
 
     class Meta:
         unique_together = ['student_detailed_info', 'grade']
+
+    @property
+    def gpa_value(self):
+        gpa = max(self.gpa, 14) - 14
+        return gpa / 6
 
     def compute_value(self):
         university_rank = self.university.rank

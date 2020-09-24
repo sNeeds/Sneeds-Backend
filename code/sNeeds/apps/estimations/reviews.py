@@ -250,22 +250,26 @@ class StudentDetailedFormReview:
 
     def publications_total_value(self):
         publications_qs = Publication.objects.filter(student_detailed_info=self.student_detailed_form)
+
         total_value = publications_qs.publications_total_value()
+        total_value_str = None
 
         if 0.95 <= total_value:
-            return "A+"
+            total_value_str = "A+"
         elif 0.75 <= total_value < 0.95:
-            return "A"
+            total_value_str = "A"
         elif 0.6 <= total_value < 0.75:
-            return "B+"
+            total_value_str = "B+"
         elif 0.5 <= total_value < 0.6:
-            return "B"
+            total_value_str = "B"
         elif 0.4 <= total_value < 0.5:
-            return "C+"
+            total_value_str = "C+"
         elif 0.3 <= total_value < 0.4:
-            return "C"
+            total_value_str = "C"
         elif total_value < 0.3:
-            return "D"
+            total_value_str = "D"
+
+        return total_value, total_value_str
 
     def review_publications(self):
         def _get_appended_publication_qs_titles(qs):
@@ -475,24 +479,27 @@ class StudentDetailedFormReview:
     def review_all(self):
         self._set_grade()
         data = {
-            "university": {
+            "university and gpa": {
                 "data": self.review_universities(),
-                "value": self.last_university_through.compute_value()[1]
+                "value": self.last_university_through.value,
+                "value_str": self.last_university_through.compute_value()[1],
+                "university_value": self.last_university_through.university.value,
+                "gpa_value": self.last_university_through.gpa_value
             },
             "publication": {
                 "data": "Coming soon ...",
-                "total_value": self.publications_total_value()
+                "total_value": self.publications_total_value()[0],
+                "total_value_str": self.publications_total_value()[1]
             },
             'language': {
                 "data": self.review_language_certificates()
             },
             "age": {
-                "title": "سن و گپ تحصیلی",
-                "data": self.review_age()
+                "data": self.review_age(),
             },
             "others": {
-                "title": "موارد دیگر",
-                "data": self.review_others()
+                "data": self.review_others(),
+                "value": self.student_detailed_form.others_value
             }
         }
 
