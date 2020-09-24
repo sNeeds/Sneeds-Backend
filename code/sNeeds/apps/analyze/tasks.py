@@ -294,8 +294,6 @@ def update_powerful_recommendation_count_chart(instance, is_delete=False):
     #             obj.save()
 
 
-
-
 @shared_task
 def update_publications_score_chart(instance, is_delete=False):
     get_publications_score_label = account_models.Publication.get_publications_score__store_label
@@ -606,46 +604,46 @@ def update_language_certificates_charts(instance, is_delete=False):
 
 
 def update_ielts_chart(instance, is_delete=False):
-    instance = instance.regularlanguagcertificate
+    # instance = instance.regularlanguagcertificate
     update_common_chart(ChartTitle.IELTS, account_models.RegularLanguageCertificate,
                         account_models.RegularLanguageCertificate.get_ielts__store_label,
                         instance, is_delete)
 
 
 def update_toefl_chart(instance, is_delete=False):
-    instance = instance.regularlanguagcertificate
+    # instance = instance.regularlanguagcertificate
     update_common_chart(ChartTitle.TOEFL, account_models.RegularLanguageCertificate,
                         account_models.RegularLanguageCertificate.get_toefl__store_label,
                         instance, is_delete)
 
 
 def update_gmat_chart(instance, is_delete=False):
-    instance = instance.gmatcertificate
+    # instance = instance.gmatcertificate
     update_common_chart(ChartTitle.GMAT, account_models.GMATCertificate,
                         account_models.GMATCertificate.get_store_label,
                         instance, is_delete)
 
 
 def update_gre_general_writing_chart(instance, is_delete=False):
-    instance = instance.gregeneralcertificate
+    # instance = instance.gregeneralcertificate
     update_common_chart(ChartTitle.GRE_GENERAL_WRITING, account_models.GREGeneralCertificate,
                         account_models.GREGeneralCertificate.get_writing_store_label, instance, is_delete)
 
 
 def update_gre_general_quantitative_and_verbal_chart(instance, is_delete=False):
-    instance = instance.gregeneralcertificate
+    # instance = instance.gregeneralcertificate
     update_common_chart(ChartTitle.GRE_GENERAL_QUANTITATIVE_AND_VERBAL, account_models.GREGeneralCertificate,
                         account_models.GREGeneralCertificate.get_q_and_v_store_label, instance, is_delete)
 
 
 def update_gre_subject_total_chart(instance, is_delete=False):
-    instance = instance.gresubjectcertificate
+    # instance = instance.gresubjectcertificate
     update_common_chart(ChartTitle.GRE_SUBJECT_TOTAL, account_models.GRESubjectCertificate,
                         account_models.GRESubjectCertificate.get_total_store_label, instance, is_delete)
 
 
 def update_duolingo_chart(instance, is_delete=False):
-    instance = instance.duolingocertificate
+    # instance = instance.duolingocertificate
     update_common_chart(ChartTitle.DUOLINGO, account_models.DuolingoCertificate,
                         account_models.DuolingoCertificate.get_store_label, instance, is_delete)
 
