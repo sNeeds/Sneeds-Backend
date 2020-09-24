@@ -1,3 +1,7 @@
+from rest_framework.exceptions import NotFound
+from rest_framework.response import Response
+from rest_framework import status
+
 from sNeeds.utils.custom.views import custom_generic_apiviews as c_generics
 from sNeeds.apps.analyze import serializers
 from sNeeds.apps.analyze.models import Chart, ChartTitle
@@ -10,9 +14,16 @@ class BaseChartAPIView(c_generics.BaseGenericAPIView):
 
     def get(self, request, *args, **kwargs):
         """Handle get method"""
-        instance = Chart.objects.get(title=self.chart_title)
+        try:
+            instance = Chart.objects.get(title=self.chart_title)
+        except Chart.DoesNotExist:
+            raise NotFound(detail="No chart found!")
         serializer = self.serializer_class(instance, many=False, context={'request': request})
-        return serializer.data
+        serializer.save()
+        return Response(
+            data=serializer.data,
+            status=status.HTTP_200_OK,
+        )
 
 
 class GradePointAverageChartRetrieveAPIView(BaseChartAPIView):

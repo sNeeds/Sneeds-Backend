@@ -1,4 +1,6 @@
 from django.db.models import F, Sum
+from django.db.models import FloatField
+from django.db.models.functions import Cast
 from rest_framework import serializers
 from sNeeds.apps.analyze.models import ChartItemData
 from sNeeds.apps.account import models as account_models
@@ -13,13 +15,14 @@ def get_unchanged_chart_items(qs):
     return data
 
 
-def get_converted_chart_items(qs, label_convert_function):
+def get_converted_chart_items(qs, label_convert_function, data_number=None):
     data = dict()
     for obj in qs:
         view_label = label_convert_function(obj.label)
         item = data[view_label] = data.get(view_label, {})
         item['count'] = item.get('count', 0) + obj.count
         item['percent'] = item.get('percent', 0) + obj.percent
+        # item['percent'] = item.get('percent', 0.0) + obj.count / data_number
     return data
 
 
@@ -33,7 +36,7 @@ def get_store_to_view_labels(store_labels, label_convert_function=None):
     return view_labels
 
 
-def get_user_status(user_positions, items_qs, compare_func):
+def get_user_status(user_positions, items_qs, compare_func, store_to_view_convert_func=None):
     if len(user_positions) == 0:
         return None
 
@@ -49,7 +52,10 @@ def get_user_status(user_positions, items_qs, compare_func):
         if compare_func(user_best_position_label, obj.label) == user_best_position_label:
             worse_cases_count += obj.count
             worse_cases_percent += obj.percent
-    data['user_best_position_label'] = user_best_position_label
+    if store_to_view_convert_func is None:
+        data['user_best_position_label'] = user_best_position_label
+    else:
+        data['user_best_position_label'] = store_to_view_convert_func(user_best_position_label)
     data['worse_cases_count'] = worse_cases_count
     data['worse_cases_percent'] = worse_cases_percent
     return data
@@ -90,13 +96,14 @@ class CommonChartSerializer(serializers.Serializer):
 class GradePointAverageChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
+        self._data = dict()
         chart = self.instance
         qs = ChartItemData.objects.filter(chart=chart)
         data_number = qs.aggregate(Sum('count')).get('count__sum')
         items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
 
-        self._data['title'] = self.chart.title
+        self._data['title'] = chart.title.value
 
         self._data['label_range'] = account_models.UniversityThrough.GPA_VIEW_LABEL_RANGE
 
@@ -137,12 +144,13 @@ class GradePointAverageChartSerializer(CommonChartSerializer):
 class PublicationCountChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
+        self._data = dict()
         chart = self.instance
         qs = ChartItemData.objects.filter(chart=chart)
         data_number = qs.aggregate(Sum('count')).get('count__sum')
         items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
-        self._data['title'] = self.chart.title
+        self._data['title'] = chart.title.value
 
         self._data['label_range'] = None
 
@@ -182,12 +190,13 @@ class PublicationCountChartSerializer(CommonChartSerializer):
 class PublicationsTypeChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
+        self._data = dict()
         chart = self.instance
         qs = ChartItemData.objects.filter(chart=chart)
         data_number = qs.aggregate(Sum('count')).get('count__sum')
         items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
-        self._data['title'] = self.chart.title
+        self._data['title'] = chart.title.value
 
         self._data['label_range'] = None
 
@@ -224,12 +233,13 @@ class PublicationsTypeChartSerializer(CommonChartSerializer):
 class PublicationsScoreChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
+        self._data = dict()
         chart = self.instance
         qs = ChartItemData.objects.filter(chart=chart)
         data_number = qs.aggregate(Sum('count')).get('count__sum')
         items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
-        self._data['title'] = self.chart.title
+        self._data['title'] = chart.title.value
 
         self._data['label_range'] = account_models.Publication.PUBLICATIONS_SCORE__VIEW_LABEL_RANGE
 
@@ -269,12 +279,13 @@ class PublicationsScoreChartSerializer(CommonChartSerializer):
 class PublicationsImpactFactorChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
+        self._data = dict()
         chart = self.instance
         qs = ChartItemData.objects.filter(chart=chart)
         data_number = qs.aggregate(Sum('count')).get('count__sum')
         items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
-        self._data['title'] = self.chart.title
+        self._data['title'] = chart.title.value
 
         self._data['label_range'] = None
 
@@ -313,12 +324,13 @@ class PublicationsImpactFactorChartSerializer(CommonChartSerializer):
 class PowerfulRecommendationChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
+        self._data = dict()
         chart = self.instance
         qs = ChartItemData.objects.filter(chart=chart)
         data_number = qs.aggregate(Sum('count')).get('count__sum')
         items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
-        self._data['title'] = self.chart.title
+        self._data['title'] = chart.title.value
 
         self._data['label_range'] = None
 
@@ -358,12 +370,13 @@ class PowerfulRecommendationChartSerializer(CommonChartSerializer):
 class OlympiadChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
+        self._data = dict()
         chart = self.instance
         qs = ChartItemData.objects.filter(chart=chart)
         data_number = qs.aggregate(Sum('count')).get('count__sum')
         items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
-        self._data['title'] = self.chart.title
+        self._data['title'] = chart.title.value
 
         self._data['label_range'] = None
 
@@ -402,12 +415,15 @@ class OlympiadChartSerializer(CommonChartSerializer):
 class RelatedWorkExperienceChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
+        self._data = dict()
         chart = self.instance
         qs = ChartItemData.objects.filter(chart=chart)
-        data_number = qs.aggregate(Sum('count')).get('count__sum')
+        data_number = float(qs.aggregate(Sum('count')).get('count__sum'))
         items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
+        # for obj in items_qs:
+        #     print(obj.percent)
         user_store_based_positions = self.get_user_positions(chart)
-        self._data['title'] = self.chart.title
+        self._data['title'] = chart.title.value
 
         self._data['label_range'] = account_models.StudentDetailedInfo.RELATED_WORK_EXPERIENCE_VIEW_LABEL_RANGE
 
@@ -421,11 +437,13 @@ class RelatedWorkExperienceChartSerializer(CommonChartSerializer):
 
         self._data['user_status'] = get_user_status(user_store_based_positions,
                                                     items_qs,
-                                                    account_models.StudentDetailedInfo.compare_related_work_labels)
+                                                    account_models.StudentDetailedInfo.compare_related_work_labels,
+                                                    account_models.StudentDetailedInfo.convert_related_work_store_to_view_label
+                                                    )
 
     def get_chart_items(self, qs):
         return get_converted_chart_items(qs,
-                                         account_models.StudentDetailedInfo.convert_related_work_store_to_view_label
+                                         account_models.StudentDetailedInfo.convert_related_work_store_to_view_label,
                                          )
 
     def get_user_positions(self, obj):
@@ -448,12 +466,13 @@ class RelatedWorkExperienceChartSerializer(CommonChartSerializer):
 class ToeflChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
+        self._data = dict()
         chart = self.instance
         qs = ChartItemData.objects.filter(chart=chart)
         data_number = qs.aggregate(Sum('count')).get('count__sum')
         items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
-        self._data['title'] = self.chart.title
+        self._data['title'] = chart.title.value
 
         self._data['label_range'] = account_models.RegularLanguageCertificate.TOEFL__VIEW_LABEL_RANGE
 
@@ -494,12 +513,13 @@ class ToeflChartSerializer(CommonChartSerializer):
 class IeltsChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
+        self._data = dict()
         chart = self.instance
         qs = ChartItemData.objects.filter(chart=chart)
         data_number = qs.aggregate(Sum('count')).get('count__sum')
         items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
-        self._data['title'] = self.chart.title
+        self._data['title'] = chart.title.value
 
         self._data['label_range'] = account_models.RegularLanguageCertificate.IELTS__VIEW_LABEL_RANGE
 
@@ -540,13 +560,14 @@ class IeltsChartSerializer(CommonChartSerializer):
 class GMATChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
+        self._data = dict()
         chart = self.instance
         qs = ChartItemData.objects.filter(chart=chart)
         data_number = qs.aggregate(Sum('count')).get('count__sum')
         items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
 
-        self._data['title'] = self.chart.title
+        self._data['title'] = chart.title.value
 
         self._data['label_range'] = account_models.GMATCertificate.TOTAL_VIEW_LABEL_RANGE
 
@@ -587,13 +608,14 @@ class GMATChartSerializer(CommonChartSerializer):
 class GREGeneralWritingChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
+        self._data = dict()
         chart = self.instance
         qs = ChartItemData.objects.filter(chart=chart)
         data_number = qs.aggregate(Sum('count')).get('count__sum')
         items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
 
-        self._data['title'] = self.chart.title
+        self._data['title'] = chart.title.value
 
         self._data['label_range'] = account_models.GREGeneralCertificate.WRITING_VIEW_LABEL_RANGE
 
@@ -634,13 +656,14 @@ class GREGeneralWritingChartSerializer(CommonChartSerializer):
 class GREGeneralQuantitativeAndVerbalChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
+        self._data = dict()
         chart = self.instance
         qs = ChartItemData.objects.filter(chart=chart)
         data_number = qs.aggregate(Sum('count')).get('count__sum')
         items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
 
-        self._data['title'] = self.chart.title
+        self._data['title'] = chart.title.value
 
         self._data['label_range'] = account_models.GREGeneralCertificate.Q_AND_V_VIEW_LABEL_RANGE
 
@@ -681,12 +704,13 @@ class GREGeneralQuantitativeAndVerbalChartSerializer(CommonChartSerializer):
 class GRESubjectTotalChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
+        self._data = dict()
         chart = self.instance
         qs = ChartItemData.objects.filter(chart=chart)
         data_number = qs.aggregate(Sum('count')).get('count__sum')
         items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
-        self._data['title'] = self.chart.title
+        self._data['title'] = chart.title.value
 
         self._data['label_range'] = account_models.GRESubjectCertificate.TOTAL_VIEW_LABEL_RANGE
 
@@ -727,12 +751,13 @@ class GRESubjectTotalChartSerializer(CommonChartSerializer):
 class DuolingoChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
+        self._data = dict()
         chart = self.instance
         qs = ChartItemData.objects.filter(chart=chart)
         data_number = qs.aggregate(Sum('count')).get('count__sum')
         items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
-        self._data['title'] = self.chart.title
+        self._data['title'] = chart.title.value
 
         self._data['label_range'] = account_models.DuolingoCertificate.OVERALL_VIEW_LABEL_RANGE
 

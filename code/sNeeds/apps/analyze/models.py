@@ -43,7 +43,7 @@ class ChartItemData(models.Model):
     label = models.CharField(
         max_length=128,
     )
-    count = models.PositiveIntegerField(
+    count = models.FloatField(
         default=0,
     )
     chart = models.ForeignKey(
@@ -66,7 +66,7 @@ class Chart(models.Model):
         max_length=128,
         unique=True
     )
-    created = models.DateTimeField(auto_created=True)
+    created = models.DateTimeField(auto_created=True, auto_now=True)
     # data_number = models.PositiveIntegerField(
     #     default=0,
     # )
