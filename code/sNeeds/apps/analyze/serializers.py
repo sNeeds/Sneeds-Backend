@@ -1,6 +1,6 @@
 from django.db.models import F, Sum
 from rest_framework import serializers
-from sNeeds.apps.analyze import models
+from sNeeds.apps.analyze.models import ChartItemData
 from sNeeds.apps.account import models as account_models
 
 
@@ -91,9 +91,9 @@ class GradePointAverageChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
         chart = self.instance
-        qs = models.ChartItemData.objects.filter(chart=chart)
+        qs = ChartItemData.objects.filter(chart=chart)
         data_number = qs.aggregate(Sum('count')).get('count__sum')
-        items_qs = models.ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
+        items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
 
         self._data['title'] = self.chart.title
@@ -138,9 +138,9 @@ class PublicationCountChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
         chart = self.instance
-        qs = models.ChartItemData.objects.filter(chart=chart)
+        qs = ChartItemData.objects.filter(chart=chart)
         data_number = qs.aggregate(Sum('count')).get('count__sum')
-        items_qs = models.ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
+        items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
         self._data['title'] = self.chart.title
 
@@ -183,9 +183,9 @@ class PublicationsTypeChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
         chart = self.instance
-        qs = models.ChartItemData.objects.filter(chart=chart)
+        qs = ChartItemData.objects.filter(chart=chart)
         data_number = qs.aggregate(Sum('count')).get('count__sum')
-        items_qs = models.ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
+        items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
         self._data['title'] = self.chart.title
 
@@ -225,9 +225,9 @@ class PublicationsScoreChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
         chart = self.instance
-        qs = models.ChartItemData.objects.filter(chart=chart)
+        qs = ChartItemData.objects.filter(chart=chart)
         data_number = qs.aggregate(Sum('count')).get('count__sum')
-        items_qs = models.ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
+        items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
         self._data['title'] = self.chart.title
 
@@ -270,9 +270,9 @@ class PublicationsImpactFactorChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
         chart = self.instance
-        qs = models.ChartItemData.objects.filter(chart=chart)
+        qs = ChartItemData.objects.filter(chart=chart)
         data_number = qs.aggregate(Sum('count')).get('count__sum')
-        items_qs = models.ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
+        items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
         self._data['title'] = self.chart.title
 
@@ -314,9 +314,9 @@ class PowerfulRecommendationChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
         chart = self.instance
-        qs = models.ChartItemData.objects.filter(chart=chart)
+        qs = ChartItemData.objects.filter(chart=chart)
         data_number = qs.aggregate(Sum('count')).get('count__sum')
-        items_qs = models.ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
+        items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
         self._data['title'] = self.chart.title
 
@@ -359,9 +359,9 @@ class OlympiadChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
         chart = self.instance
-        qs = models.ChartItemData.objects.filter(chart=chart)
+        qs = ChartItemData.objects.filter(chart=chart)
         data_number = qs.aggregate(Sum('count')).get('count__sum')
-        items_qs = models.ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
+        items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
         self._data['title'] = self.chart.title
 
@@ -403,9 +403,9 @@ class RelatedWorkExperienceChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
         chart = self.instance
-        qs = models.ChartItemData.objects.filter(chart=chart)
+        qs = ChartItemData.objects.filter(chart=chart)
         data_number = qs.aggregate(Sum('count')).get('count__sum')
-        items_qs = models.ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
+        items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
         self._data['title'] = self.chart.title
 
@@ -449,9 +449,9 @@ class ToeflChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
         chart = self.instance
-        qs = models.ChartItemData.objects.filter(chart=chart)
+        qs = ChartItemData.objects.filter(chart=chart)
         data_number = qs.aggregate(Sum('count')).get('count__sum')
-        items_qs = models.ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
+        items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
         self._data['title'] = self.chart.title
 
@@ -495,9 +495,9 @@ class IeltsChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
         chart = self.instance
-        qs = models.ChartItemData.objects.filter(chart=chart)
+        qs = ChartItemData.objects.filter(chart=chart)
         data_number = qs.aggregate(Sum('count')).get('count__sum')
-        items_qs = models.ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
+        items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
         self._data['title'] = self.chart.title
 
@@ -541,9 +541,9 @@ class GMATChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
         chart = self.instance
-        qs = models.ChartItemData.objects.filter(chart=chart)
+        qs = ChartItemData.objects.filter(chart=chart)
         data_number = qs.aggregate(Sum('count')).get('count__sum')
-        items_qs = models.ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
+        items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
 
         self._data['title'] = self.chart.title
@@ -588,9 +588,9 @@ class GREGeneralWritingChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
         chart = self.instance
-        qs = models.ChartItemData.objects.filter(chart=chart)
+        qs = ChartItemData.objects.filter(chart=chart)
         data_number = qs.aggregate(Sum('count')).get('count__sum')
-        items_qs = models.ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
+        items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
 
         self._data['title'] = self.chart.title
@@ -635,9 +635,9 @@ class GREGeneralQuantitativeAndVerbalChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
         chart = self.instance
-        qs = models.ChartItemData.objects.filter(chart=chart)
+        qs = ChartItemData.objects.filter(chart=chart)
         data_number = qs.aggregate(Sum('count')).get('count__sum')
-        items_qs = models.ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
+        items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
 
         self._data['title'] = self.chart.title
@@ -682,9 +682,9 @@ class GRESubjectTotalChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
         chart = self.instance
-        qs = models.ChartItemData.objects.filter(chart=chart)
+        qs = ChartItemData.objects.filter(chart=chart)
         data_number = qs.aggregate(Sum('count')).get('count__sum')
-        items_qs = models.ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
+        items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
         self._data['title'] = self.chart.title
 
@@ -728,9 +728,9 @@ class DuolingoChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
         chart = self.instance
-        qs = models.ChartItemData.objects.filter(chart=chart)
+        qs = ChartItemData.objects.filter(chart=chart)
         data_number = qs.aggregate(Sum('count')).get('count__sum')
-        items_qs = models.ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
+        items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
         self._data['title'] = self.chart.title
 
