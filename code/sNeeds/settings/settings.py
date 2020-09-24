@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'sNeeds.apps.notifications',
     'sNeeds.apps.estimations',
     'sNeeds.apps.similarApply',
+    'sNeeds.apps.analyze',
 
     'django.contrib.auth',
     'django.contrib.admin',
