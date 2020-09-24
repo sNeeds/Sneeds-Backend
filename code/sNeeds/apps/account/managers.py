@@ -73,7 +73,7 @@ class CountryManager(models.Manager):
 
 
 class PublicationQuerySetManager(models.QuerySet):
-    def publications_total_value(self):
+    def qs_total_value(self):
         qs = self.all().order_by('value')
         total_val = 0
 
@@ -83,3 +83,24 @@ class PublicationQuerySetManager(models.QuerySet):
             counter += 0.3
 
         return total_val
+
+    def qs_total_value_str(self):
+        total_value = self.qs_total_value()
+        total_value_str = None
+
+        if 0.95 <= total_value:
+            total_value_str = "A+"
+        elif 0.75 <= total_value < 0.95:
+            total_value_str = "A"
+        elif 0.6 <= total_value < 0.75:
+            total_value_str = "B+"
+        elif 0.5 <= total_value < 0.6:
+            total_value_str = "B"
+        elif 0.4 <= total_value < 0.5:
+            total_value_str = "C+"
+        elif 0.3 <= total_value < 0.4:
+            total_value_str = "C"
+        elif total_value < 0.3:
+            total_value_str = "D"
+
+        return total_value_str

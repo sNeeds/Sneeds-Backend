@@ -373,6 +373,24 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         ordering = ['created', ]
 
     @property
+    def total_value(self):
+        publications = Publication.objects.filter(
+            student_detailed_info__id=self.id
+        )
+        languages = LanguageCertificate.objects.filter(
+            student_detailed_info__id = self.id
+        )
+
+        total_value = 0
+        total_value += 2 * self.get_last_university_through().value
+        total_value += publications.qs_total_value()
+        total_value += languages.get_total_value()[0]
+        total_value += self.others_value
+
+        return total_value
+
+
+    @property
     def others_value(self):
         value = 0.5
 
@@ -397,6 +415,31 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
 
     def is_complete(self):
         return True
+
+    def get_last_university_grade(self):
+        return self.get_last_university_through().grade
+
+    def get_last_university_through(self):
+        last_university_through = None
+
+        university_through = UniversityThrough.objects.filter(
+            student_detailed_info__id=self.id
+        )
+        post_doc = university_through.get_post_doc()
+        phd = university_through.get_phd()
+        master = university_through.get_master()
+        bachelor = university_through.get_bachelor()
+
+        if post_doc:
+            last_university_through = post_doc
+        elif phd:
+            last_university_through = phd
+        elif master:
+            last_university_through = master
+        elif bachelor:
+            last_university_through = bachelor
+
+        return last_university_through
 
     def get_related_majors(self):
         related_major_ids = []
@@ -494,15 +537,15 @@ class UniversityThrough(models.Model):
 
 
 class LanguageCertificate(models.Model):
+    student_detailed_info = models.ForeignKey(
+        StudentDetailedInfoBase,
+        on_delete=models.CASCADE
+    )
     certificate_type = EnumField(
         LanguageCertificateType,
         default=LanguageCertificateType.TOEFL,
         max_length=64,
         help_text="Based on endpoint just some types are allowed to insert not all certificate types."
-    )
-    student_detailed_info = models.ForeignKey(
-        StudentDetailedInfoBase,
-        on_delete=models.CASCADE
     )
     is_mock = models.BooleanField(
         default=False

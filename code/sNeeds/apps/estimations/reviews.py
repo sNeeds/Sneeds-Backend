@@ -19,26 +19,8 @@ class StudentDetailedFormReview:
             return None
 
     def _set_grade(self):
-        university_through = UniversityThrough.objects.filter(
-            student_detailed_info=self.student_detailed_form
-        )
-        post_doc = university_through.get_post_doc()
-        phd = university_through.get_phd()
-        master = university_through.get_master()
-        bachelor = university_through.get_bachelor()
-
-        if post_doc:
-            self.last_grade = Grade.POST_DOC
-            self.last_university_through = post_doc
-        elif phd:
-            self.last_grade = Grade.PHD
-            self.last_university_through = phd
-        elif master:
-            self.last_grade = Grade.MASTER
-            self.last_university_through = master
-        elif bachelor:
-            self.last_grade = Grade.BACHELOR
-            self.last_university_through = bachelor
+        self.last_grade = self.student_detailed_form.get_last_university_grade()
+        self.last_university_through = self.student_detailed_form.get_last_university_through()
 
     def review_universities(self):
         last_grade = self.last_grade
@@ -254,27 +236,22 @@ class StudentDetailedFormReview:
         return data
 
     def publications_total_value(self):
-        publications_qs = Publication.objects.filter(student_detailed_info=self.student_detailed_form)
+        publications_qs = Publication.objects.filter(
+            student_detailed_info=self.student_detailed_form
+        )
 
-        total_value = publications_qs.publications_total_value()
-        total_value_str = None
+        total_value = publications_qs.qs_total_value()
 
-        if 0.95 <= total_value:
-            total_value_str = "A+"
-        elif 0.75 <= total_value < 0.95:
-            total_value_str = "A"
-        elif 0.6 <= total_value < 0.75:
-            total_value_str = "B+"
-        elif 0.5 <= total_value < 0.6:
-            total_value_str = "B"
-        elif 0.4 <= total_value < 0.5:
-            total_value_str = "C+"
-        elif 0.3 <= total_value < 0.4:
-            total_value_str = "C"
-        elif total_value < 0.3:
-            total_value_str = "D"
+        return total_value
 
-        return total_value, total_value_str
+    def publications_total_value_str(self):
+        publications_qs = Publication.objects.filter(
+            student_detailed_info=self.student_detailed_form
+        )
+
+        total_value_str = publications_qs.qs_total_value_str()
+
+        return total_value_str
 
     def review_publications(self):
         def _get_appended_publication_qs_titles(qs):
@@ -493,8 +470,8 @@ class StudentDetailedFormReview:
             },
             "publication": {
                 "data": "Coming soon ...",
-                "total_value": self.publications_total_value()[0],
-                "total_value_str": self.publications_total_value()[1]
+                "total_value": self.publications_total_value(),
+                "total_value_str": self.publications_total_value_str()
             },
             'language': {
                 "data": self.review_language_certificates()
@@ -505,7 +482,8 @@ class StudentDetailedFormReview:
             "others": {
                 "data": self.review_others(),
                 "value": self.student_detailed_form.others_value
-            }
+            },
+            "total_value": self.student_detailed_form.total_value
         }
 
         return data
