@@ -1,6 +1,8 @@
 from django.urls import path
 from sNeeds.apps.analyze import views
 
+app_name = "analyze"
+
 urlpatterns = [
     path('grade-point-average/', views.GradePointAverageChartRetrieveAPIView.as_view(),
          name='grade-point-average-detail'),

@@ -1,14 +1,10 @@
-import math
-
 from celery import shared_task
 
-from django.utils import timezone
-from django.db.models import Q, F, Sum
+from django.db.models import Sum
 from django.db.utils import IntegrityError
 
 from sNeeds.apps.account import models as account_models
 from sNeeds.apps.analyze.models import Chart, ChartTitle, ChartItemData
-from sNeeds.apps.account.models import REWARDED_LABEL, MISSING_LABEL, ZERO_LABEL
 
 
 # @shared_task

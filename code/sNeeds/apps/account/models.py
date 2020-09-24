@@ -9,17 +9,12 @@ from django.db import models
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
-from django.contrib.postgres.search import SearchVectorField
-from django.contrib.postgres.indexes import GinIndex
 from enumfields import Enum, EnumField
 
 from sNeeds.apps.estimations import values
 from .managers import UniversityThroughQuerySetManager, LanguageCertificateQuerysetManager, CountryManager, \
     PublicationQuerySetManager
 from .validators import validate_resume_file_extension, validate_resume_file_size, ten_factor_validator
-from . import validators
-
-from sNeeds.utils.custom.custom_functions import add_this_arg
 
 MISSING_LABEL = 'missing'
 REWARDED_LABEL = 'rewarded'

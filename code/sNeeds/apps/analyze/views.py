@@ -78,7 +78,7 @@ class IeltsChartRetrieveAPIView(BaseChartAPIView):
 class GMATChartRetrieveAPIView(BaseChartAPIView):
     serializer_class = serializers.GMATChartSerializer
     # chart_title = 'gmat'
-    chart_title = ChartTitle.GMAt
+    chart_title = ChartTitle.GMAT
 
 
 class GREGeneralWritingChartRetrieveAPIView(BaseChartAPIView):
