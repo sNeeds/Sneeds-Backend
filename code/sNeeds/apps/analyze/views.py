@@ -15,7 +15,7 @@ class BaseChartAPIView(c_generics.BaseGenericAPIView):
     def get(self, request, *args, **kwargs):
         """Handle get method"""
         try:
-            instance = Chart.objects.get(title=self.chart_title_enum.value)
+            instance = Chart.objects.get(title=self.chart_title_enum)
         except Chart.DoesNotExist:
             raise NotFound(detail="No chart found!")
         serializer = self.serializer_class(instance, many=False, context={'request': request})

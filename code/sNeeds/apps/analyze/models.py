@@ -67,17 +67,17 @@ class ChartItemData(models.Model):
 
 
 class Chart(models.Model):
-    title = models.CharField(
-        choices=get_chart_titles_choices(),
-        max_length=256,
-        unique=True,
-    )
-
-    # title = EnumField(
-    #     ChartTitle,
-    #     max_length=128,
-    #     unique=True
+    # title = models.CharField(
+    #     choices=get_chart_titles_choices(),
+    #     max_length=256,
+    #     unique=True,
     # )
+
+    title = EnumField(
+        ChartTitle,
+        max_length=128,
+        unique=True
+    )
     created = models.DateTimeField(auto_created=True, auto_now=True)
     # data_number = models.PositiveIntegerField(
     #     default=0,
