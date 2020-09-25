@@ -1332,11 +1332,11 @@ class DuolingoCertificate(LanguageCertificate):
 
     def get_store_label(self):
         item_range = self.OVERALL_STORE_LABEL_RANGE
-        return str(floor(self.overall / item_range) * item_range)
+        return str(floor(self.overall / item_range) * item_range + 10)
 
     def get_view_label(self):
         item_range = self.OVERALL_VIEW_LABEL_RANGE
-        value = floor(self.overall / item_range) * item_range
+        value = floor(self.overall / item_range) * item_range + 10
         return str(value) + '-' + str(value + item_range)
 
     @classmethod
