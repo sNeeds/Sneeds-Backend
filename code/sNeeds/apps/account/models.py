@@ -917,24 +917,24 @@ class RegularLanguageCertificate(LanguageCertificate):
 
     def get_ielts__store_label(self):
         item_range = self.IELTS__STORE_LABEL_RANGE
-        return str(floor(self.overall / item_range) * item_range)
+        return str(floor(float(self.overall) / item_range) * item_range)
 
     def get_toefl__store_label(self):
         item_range = self.TOEFL__STORE_LABEL_RANGE
-        return str(floor(self.overall / item_range) * item_range)
+        return str(floor(float(self.overall) / item_range) * item_range)
 
     def get_ielts__view_label(self):
         item_range = self.IELTS__VIEW_LABEL_RANGE
-        return str(floor(self.overall / item_range) * item_range)
+        return str(floor(float(self.overall) / item_range) * item_range)
 
     def get_toefl__view_label(self):
         item_range = self.TOEFL__VIEW_LABEL_RANGE
-        value = floor(self.overall / item_range) * item_range
+        value = floor(float(self.overall) / item_range) * item_range
         return str(value) + '-' + str(value + item_range)
 
     @classmethod
     def convert_ielts_store_to_view_label(cls, label):
-        value = int(label)
+        value = float(label)
         item_range = cls.IELTS__VIEW_LABEL_RANGE
         return str(floor(value / item_range) * item_range)
 
