@@ -1336,13 +1336,15 @@ class DuolingoCertificate(LanguageCertificate):
 
     def get_view_label(self):
         item_range = self.OVERALL_VIEW_LABEL_RANGE
-        return str(floor(self.overall / item_range) * item_range)
+        value = floor(self.overall / item_range) * item_range
+        return str(value) + '-' + str(value + item_range)
 
     @classmethod
     def convert_store_to_view_label(cls, label):
-        value = int(label)
+        input_value = int(label)
         item_range = cls.OVERALL_VIEW_LABEL_RANGE
-        return str(floor(value / item_range) * item_range)
+        value = floor(input_value / item_range) * item_range
+        return str(value) + '-' + str(value + item_range)
 
     @classmethod
     def get__user_store_based_positions(cls, sdi):
