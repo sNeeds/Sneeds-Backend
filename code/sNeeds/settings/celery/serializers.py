@@ -6,7 +6,10 @@ from django.conf import settings
 # https://stackoverflow.com/questions/21631878/celery-is-there-a-way-to-write-custom-json-encoder-decoder
 class CEncoder(json.JSONEncoder):
     def default(self, obj):
+        print("HERE 111")
+        print(type(obj))
         if isinstance(obj, Enum):
+            print('HERE 222')
             return {
                 '__type__': '__enum__',
                 'name': obj.name,
