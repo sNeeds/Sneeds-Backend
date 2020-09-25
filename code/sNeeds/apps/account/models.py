@@ -995,13 +995,13 @@ class RegularLanguageCertificate(LanguageCertificate):
 
     @classmethod
     def compare_ielts_labels(cls, label1, label2):
-        if int(label1) >= int(label2):
+        if float(label1) >= float(label2):
             return label1
         return label2
 
     @classmethod
     def compare_toefl_labels(cls, label1, label2):
-        if int(label1) >= int(label2):
+        if float(label1) >= float(label2):
             return label1
         return label2
 
