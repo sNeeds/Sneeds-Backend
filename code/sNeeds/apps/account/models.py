@@ -310,7 +310,7 @@ class Publication(models.Model):
     @classmethod
     def convert_count_chart_store_to_view_label(cls, label):
         count = int(label)
-        if count < 3:
+        if count <= 3:
             return label
         if count >= 4:
             return '+4'
