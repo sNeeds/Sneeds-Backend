@@ -11,18 +11,18 @@ from sNeeds.apps.analyze import tasks
 
 def pre_save_publication(sender, instance, *args, **kwargs):
     instance.value = compute_publication_value(instance)
-    tasks.update_publication_count_chart.delay(instance, is_delete=False)
-    tasks.update_publication_type_count_chart.delay(instance, is_delete=False)
-    tasks.update_publication_impact_factor_chart.delay(instance, is_delete=False)
-    tasks.update_publications_score_chart.delay(instance, is_delete=False)
+    # tasks.update_publication_count_chart.delay(instance, is_delete=False)
+    # tasks.update_publication_type_count_chart.delay(instance, is_delete=False)
+    # tasks.update_publication_impact_factor_chart.delay(instance, is_delete=False)
+    # tasks.update_publications_score_chart.delay(instance, is_delete=False)
 
 
 def pre_delete_publication(sender, instance, *args, **kwargs):
     instance.value = compute_publication_value(instance)
-    tasks.update_publication_count_chart.delay(instance, is_delete=True)
-    tasks.update_publication_type_count_chart.delay(instance, is_delete=True)
-    tasks.update_publication_impact_factor_chart.delay(instance, is_delete=True)
-    tasks.update_publications_score_chart.delay(instance, is_delete=True)
+    # tasks.update_publication_count_chart.delay(instance, is_delete=True)
+    # tasks.update_publication_type_count_chart.delay(instance, is_delete=True)
+    # tasks.update_publication_impact_factor_chart.delay(instance, is_delete=True)
+    # tasks.update_publications_score_chart.delay(instance, is_delete=True)
 
 
 def pre_save_language_certificate(sender, instance, *args, **kwargs):
