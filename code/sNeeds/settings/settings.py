@@ -197,3 +197,10 @@ permissions.IsAuthenticated = CustomIsAuthenticated
 # To prevent 413 error
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
 # ---------------------
+
+# This variable will be filled in models.py files
+# For know reason of existence of this variable take a look in settings/celery/serializers
+ENUM_CLASSES = {
+
+}
+

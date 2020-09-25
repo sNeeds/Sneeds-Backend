@@ -87,7 +87,7 @@ from sNeeds.apps.analyze.models import Chart, ChartTitle, ChartItemData
 
 @shared_task
 def update_publication_count_chart(instance, is_delete=False):
-    chart = Chart.objects.get_or_create(title=ChartTitle.PUBLICATIONS_COUNT)
+    chart = Chart.objects.get_or_create(title=ChartTitle.PUBLICATIONS_COUNT.value)
 
     if is_delete:
         # We check that the instance is the last publication is being removed from sdi publications set
@@ -141,7 +141,7 @@ def update_publication_count_chart(instance, is_delete=False):
 
 @shared_task
 def update_publication_count_chart_sdi_creation(instance, is_delete=False):
-    chart = Chart.objects.get_or_create(title=ChartTitle.PUBLICATIONS_COUNT)
+    chart = Chart.objects.get_or_create(title=ChartTitle.PUBLICATIONS_COUNT.value)
 
     # Save has been called in order to update an entry
     try:
@@ -166,7 +166,7 @@ def update_publication_count_chart_sdi_creation(instance, is_delete=False):
 
 @shared_task
 def update_publication_count_chart_sdi_deletion(instance, is_delete=False):
-    chart = Chart.objects.get_or_create(title=ChartTitle.PUBLICATIONS_COUNT)
+    chart = Chart.objects.get_or_create(title=ChartTitle.PUBLICATIONS_COUNT.value)
 
     if is_delete:
         publications_count = instance.publication_set.count()
@@ -182,7 +182,7 @@ def update_publication_count_chart_sdi_deletion(instance, is_delete=False):
 
 @shared_task
 def update_publication_type_count_chart(instance, is_delete=False):
-    update_common_chart(ChartTitle.PUBLICATIONS_TYPE, account_models.Publication,
+    update_common_chart(ChartTitle.PUBLICATIONS_TYPE.value, account_models.Publication,
                         account_models.Publication.get_type__store_label, instance, is_delete)
 
     # try:
@@ -238,7 +238,7 @@ def update_publication_type_count_chart(instance, is_delete=False):
 
 @shared_task
 def update_powerful_recommendation_count_chart(instance, is_delete=False):
-    update_common_chart(ChartTitle.POWERFUL_RECOMMENDATION, account_models.StudentDetailedInfo,
+    update_common_chart(ChartTitle.POWERFUL_RECOMMENDATION.value, account_models.StudentDetailedInfo,
                         account_models.StudentDetailedInfo.get_powerful_recommendation__store_label,
                         instance, is_delete)
 
@@ -293,7 +293,7 @@ def update_powerful_recommendation_count_chart(instance, is_delete=False):
 @shared_task
 def update_publications_score_chart(instance, is_delete=False):
     get_publications_score_label = account_models.Publication.get_publications_score__store_label
-    chart = Chart.objects.get_or_create(title=ChartTitle.PUBLICATIONS_SCORE)
+    chart = Chart.objects.get_or_create(title=ChartTitle.PUBLICATIONS_SCORE.value)
 
     if is_delete:
         old_publications_values = instance.student_detailed_info.publication_set. \
@@ -367,7 +367,7 @@ def update_publications_score_chart(instance, is_delete=False):
 
 @shared_task
 def update_olympiad_count_chart(instance, is_delete=False):
-    update_common_chart(ChartTitle.OLYMPIAD, account_models.StudentDetailedInfo,
+    update_common_chart(ChartTitle.OLYMPIAD.value, account_models.StudentDetailedInfo,
                         account_models.StudentDetailedInfo.get_olympiad__store_label, instance, is_delete)
 
     # try:
@@ -420,19 +420,19 @@ def update_olympiad_count_chart(instance, is_delete=False):
 
 @shared_task
 def update_related_work_experience_chart(instance, is_delete=False):
-    update_common_chart(ChartTitle.RELATED_WORK_EXPERIENCE, account_models.StudentDetailedInfo,
+    update_common_chart(ChartTitle.RELATED_WORK_EXPERIENCE.value, account_models.StudentDetailedInfo,
                         account_models.StudentDetailedInfo.get_related_work__store_label, instance, is_delete)
 
 
 @shared_task
 def update_publication_impact_factor_chart(instance, is_delete=False):
-    update_common_chart(ChartTitle.PUBLICATIONS_IMPACT_FACTOR, account_models.Publication,
+    update_common_chart(ChartTitle.PUBLICATIONS_IMPACT_FACTOR.value, account_models.Publication,
                         account_models.Publication.get_impact_factor__store_label, instance, is_delete)
 
 
 @shared_task
 def update_gpa_chart(instance, is_delete=False):
-    chart = Chart.objects.get(title=ChartTitle.GRADE_POINT_AVERAGE)
+    chart = Chart.objects.get(title=ChartTitle.GRADE_POINT_AVERAGE.value)
     # chart = analyze_models.IeltsChart.objects.get_or_create()
     if is_delete:
         # We check that the instance is the last education is being removed from sdi educations set
@@ -601,46 +601,46 @@ def update_language_certificates_charts(instance, is_delete=False):
 
 def update_ielts_chart(instance, is_delete=False):
     # instance = instance.regularlanguagcertificate
-    update_common_chart(ChartTitle.IELTS, account_models.RegularLanguageCertificate,
+    update_common_chart(ChartTitle.IELTS.value, account_models.RegularLanguageCertificate,
                         account_models.RegularLanguageCertificate.get_ielts__store_label,
                         instance, is_delete)
 
 
 def update_toefl_chart(instance, is_delete=False):
     # instance = instance.regularlanguagcertificate
-    update_common_chart(ChartTitle.TOEFL, account_models.RegularLanguageCertificate,
+    update_common_chart(ChartTitle.TOEFL.value, account_models.RegularLanguageCertificate,
                         account_models.RegularLanguageCertificate.get_toefl__store_label,
                         instance, is_delete)
 
 
 def update_gmat_chart(instance, is_delete=False):
     # instance = instance.gmatcertificate
-    update_common_chart(ChartTitle.GMAT, account_models.GMATCertificate,
+    update_common_chart(ChartTitle.GMAT.value, account_models.GMATCertificate,
                         account_models.GMATCertificate.get_store_label,
                         instance, is_delete)
 
 
 def update_gre_general_writing_chart(instance, is_delete=False):
     # instance = instance.gregeneralcertificate
-    update_common_chart(ChartTitle.GRE_GENERAL_WRITING, account_models.GREGeneralCertificate,
+    update_common_chart(ChartTitle.GRE_GENERAL_WRITING.value, account_models.GREGeneralCertificate,
                         account_models.GREGeneralCertificate.get_writing_store_label, instance, is_delete)
 
 
 def update_gre_general_quantitative_and_verbal_chart(instance, is_delete=False):
     # instance = instance.gregeneralcertificate
-    update_common_chart(ChartTitle.GRE_GENERAL_QUANTITATIVE_AND_VERBAL, account_models.GREGeneralCertificate,
+    update_common_chart(ChartTitle.GRE_GENERAL_QUANTITATIVE_AND_VERBAL.value, account_models.GREGeneralCertificate,
                         account_models.GREGeneralCertificate.get_q_and_v_store_label, instance, is_delete)
 
 
 def update_gre_subject_total_chart(instance, is_delete=False):
     # instance = instance.gresubjectcertificate
-    update_common_chart(ChartTitle.GRE_SUBJECT_TOTAL, account_models.GRESubjectCertificate,
+    update_common_chart(ChartTitle.GRE_SUBJECT_TOTAL.value, account_models.GRESubjectCertificate,
                         account_models.GRESubjectCertificate.get_total_store_label, instance, is_delete)
 
 
 def update_duolingo_chart(instance, is_delete=False):
     # instance = instance.duolingocertificate
-    update_common_chart(ChartTitle.DUOLINGO, account_models.DuolingoCertificate,
+    update_common_chart(ChartTitle.DUOLINGO.value, account_models.DuolingoCertificate,
                         account_models.DuolingoCertificate.get_store_label, instance, is_delete)
 
 

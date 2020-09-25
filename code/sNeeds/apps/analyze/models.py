@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from enumfields import Enum, EnumField
 
@@ -39,6 +40,16 @@ class ChartTitle(Enum):
     DUOLINGO =                             'Duolingo'
 
 
+settings.ENUM_CLASSES[ChartTitle.__name__] = ChartTitle
+
+
+def get_chart_titles_choices():
+    choices = []
+    for choice in ChartTitle:
+        choices.append((choice.value, choice.name))
+    return choices
+
+
 class ChartItemData(models.Model):
     label = models.CharField(
         max_length=128,
@@ -56,16 +67,17 @@ class ChartItemData(models.Model):
 
 
 class Chart(models.Model):
-    # title = models.CharField(
-    #     max_length=256,
-    #     unique=True,
-    # )
-
-    title = EnumField(
-        ChartTitle,
-        max_length=128,
-        unique=True
+    title = models.CharField(
+        choices=get_chart_titles_choices(),
+        max_length=256,
+        unique=True,
     )
+
+    # title = EnumField(
+    #     ChartTitle,
+    #     max_length=128,
+    #     unique=True
+    # )
     created = models.DateTimeField(auto_created=True, auto_now=True)
     # data_number = models.PositiveIntegerField(
     #     default=0,

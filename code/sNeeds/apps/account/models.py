@@ -3,6 +3,8 @@ from math import ceil, floor
 import decimal
 import uuid
 
+from django.conf import settings
+
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator, FileExtensionValidator
 from django.db import models
@@ -38,9 +40,15 @@ class Grade(Enum):
     POST_DOC = 'پست دکتری'
 
 
+settings.ENUM_CLASSES[Grade.__name__] = Grade
+
+
 class PublicationType(Enum):
     JOURNAL = 'ژورنالی'
     CONFERENCE = 'کنفرانسی'
+
+
+settings.ENUM_CLASSES[PublicationType.__name__] = PublicationType
 
 
 class LanguageCertificateType(Enum):
@@ -58,10 +66,16 @@ class LanguageCertificateType(Enum):
     DUOLINGO = 'Duolingo'
 
 
+settings.ENUM_CLASSES[LanguageCertificateType.__name__] = LanguageCertificateType
+
+
 class PaymentAffordability(Enum):
     LOW = 'کم'
     MIDDLE = 'متوسط'
     MUCH = 'زیاد'
+
+
+settings.ENUM_CLASSES[PaymentAffordability.__name__] = PaymentAffordability
 
 
 class Gender(Enum):
@@ -69,9 +83,15 @@ class Gender(Enum):
     FEMALE = 'خانم'
 
 
+settings.ENUM_CLASSES[Gender.__name__] = Gender
+
+
 class MilitaryServiceStatus(Enum):
     PASSED = 'گذرانده شده'
     UNDID = 'گذرانده نشده'
+
+
+settings.ENUM_CLASSES[MilitaryServiceStatus.__name__] = MilitaryServiceStatus
 
 
 class WhichAuthor(Enum):
@@ -81,10 +101,16 @@ class WhichAuthor(Enum):
     FOURTH_OR_MORE = 'نویسنده چهارم به بعد'
 
 
+settings.ENUM_CLASSES[WhichAuthor.__name__] = WhichAuthor
+
+
 class JournalReputation(Enum):
     ONE_TO_THREE = 'از یک تا سه'
     FOUR_TO_TEN = 'از چهار تا ده'
     ABOVE_TEN = 'بیشتر از ده'
+
+
+settings.ENUM_CLASSES[JournalReputation.__name__] = JournalReputation
 
 
 def current_year():

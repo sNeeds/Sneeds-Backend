@@ -10,12 +10,12 @@ from sNeeds.apps.analyze.models import Chart, ChartTitle
 class BaseChartAPIView(c_generics.BaseGenericAPIView):
 
     serializer_class = None
-    chart_title = None
+    chart_title_enum = None
 
     def get(self, request, *args, **kwargs):
         """Handle get method"""
         try:
-            instance = Chart.objects.get(title=self.chart_title)
+            instance = Chart.objects.get(title=self.chart_title_enum.value)
         except Chart.DoesNotExist:
             raise NotFound(detail="No chart found!")
         serializer = self.serializer_class(instance, many=False, context={'request': request})
@@ -29,88 +29,88 @@ class BaseChartAPIView(c_generics.BaseGenericAPIView):
 class GradePointAverageChartRetrieveAPIView(BaseChartAPIView):
     serializer_class = serializers.GradePointAverageChartSerializer
     # chart_title = 'grade_point_average'
-    chart_title = ChartTitle.GRADE_POINT_AVERAGE
+    chart_title_enum = ChartTitle.GRADE_POINT_AVERAGE
 
 
 class PublicationsCountChartRetrieveAPIView(BaseChartAPIView):
     serializer_class = serializers.PublicationCountChartSerializer
     # chart_title = 'publications_count'
-    chart_title = ChartTitle.PUBLICATIONS_COUNT
+    chart_title_enum = ChartTitle.PUBLICATIONS_COUNT
 
 
 class PublicationsTypeChartRetrieveAPIView(BaseChartAPIView):
     serializer_class = serializers.PublicationsTypeChartSerializer
     # chart_title = 'publications_type'
-    chart_title = ChartTitle.PUBLICATIONS_TYPE
+    chart_title_enum = ChartTitle.PUBLICATIONS_TYPE
 
 
 class PublicationsScoreChartRetrieveAPIView(BaseChartAPIView):
     serializer_class = serializers.PublicationsScoreChartSerializer
     # chart_title = 'publications_score'
-    chart_title = ChartTitle.PUBLICATIONS_SCORE
+    chart_title_enum = ChartTitle.PUBLICATIONS_SCORE
 
 
 class PublicationsImpactFactorChartRetrieveAPIView(BaseChartAPIView):
     serializer_class = serializers.PublicationsImpactFactorChartSerializer
     # chart_title = 'publications_impact_factor'
-    chart_title = ChartTitle.PUBLICATIONS_IMPACT_FACTOR
+    chart_title_enum = ChartTitle.PUBLICATIONS_IMPACT_FACTOR
 
 
 class PowerfulRecommendationChartRetrieveAPIView(BaseChartAPIView):
     serializer_class = serializers.PowerfulRecommendationChartSerializer
     # chart_title = 'powerful_recommendation'
-    chart_title = ChartTitle.POWERFUL_RECOMMENDATION
+    chart_title_enum = ChartTitle.POWERFUL_RECOMMENDATION
 
 
 class OlympiadChartRetrieveAPIView(BaseChartAPIView):
     serializer_class = serializers.OlympiadChartSerializer
     # chart_title = 'olympiad'
-    chart_title = ChartTitle.OLYMPIAD
+    chart_title_enum = ChartTitle.OLYMPIAD
 
 
 class RelatedWorkExperienceChartRetrieveAPIView(BaseChartAPIView):
     serializer_class = serializers.RelatedWorkExperienceChartSerializer
     # chart_title = 'related_work_experience'
-    chart_title = ChartTitle.RELATED_WORK_EXPERIENCE
+    chart_title_enum = ChartTitle.RELATED_WORK_EXPERIENCE
 
 
 class ToeflChartRetrieveAPIView(BaseChartAPIView):
     serializer_class = serializers.ToeflChartSerializer
     # chart_title = 'toefl'
-    chart_title = ChartTitle.TOEFL
+    chart_title_enum = ChartTitle.TOEFL
 
 
 class IeltsChartRetrieveAPIView(BaseChartAPIView):
     serializer_class = serializers.IeltsChartSerializer
     # chart_title = 'ielts'
-    chart_title = ChartTitle.IELTS
+    chart_title_enum = ChartTitle.IELTS
 
 
 class GMATChartRetrieveAPIView(BaseChartAPIView):
     serializer_class = serializers.GMATChartSerializer
     # chart_title = 'gmat'
-    chart_title = ChartTitle.GMAT
+    chart_title_enum = ChartTitle.GMAT
 
 
 class GREGeneralWritingChartRetrieveAPIView(BaseChartAPIView):
     serializer_class = serializers.GREGeneralWritingChartSerializer
     # chart_title = 'gre_general_writing'
-    chart_title = ChartTitle.GRE_GENERAL_WRITING
+    chart_title_enum = ChartTitle.GRE_GENERAL_WRITING
 
 
 class GREGeneralQuantitativeAndVerbalChartRetrieveAPIView(BaseChartAPIView):
     serializer_class = serializers.GREGeneralQuantitativeAndVerbalChartSerializer
     # chart_title = 'gre_general_quantitative_and_verbal'
-    chart_title = ChartTitle.GRE_GENERAL_QUANTITATIVE_AND_VERBAL
+    chart_title_enum = ChartTitle.GRE_GENERAL_QUANTITATIVE_AND_VERBAL
 
 
 class GRESubjectTotalChartRetrieveAPIView(BaseChartAPIView):
     serializer_class = serializers.GRESubjectTotalChartSerializer
     # chart_title = 'gre_subject_total'
-    chart_title = ChartTitle.GRE_SUBJECT_TOTAL
+    chart_title_enum = ChartTitle.GRE_SUBJECT_TOTAL
 
 
 class DuolingoChartRetrieveAPIView(BaseChartAPIView):
     serializer_class = serializers.DuolingoChartSerializer
     # chart_title = 'duolingo'
-    chart_title = ChartTitle.DUOLINGO
+    chart_title_enum = ChartTitle.DUOLINGO
