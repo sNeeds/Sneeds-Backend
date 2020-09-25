@@ -908,6 +908,8 @@ class RegularLanguageCertificate(LanguageCertificate):
                                          LanguageCertificateType.TOEFL]:
             raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})
 
+    # IELTS overall 1 to 9
+    # TOEFL overall 0 to 120
     IELTS__STORE_LABEL_RANGE = 0.5
     IELTS__VIEW_LABEL_RANGE = 1
     TOEFL__STORE_LABEL_RANGE = 10
@@ -927,7 +929,8 @@ class RegularLanguageCertificate(LanguageCertificate):
 
     def get_toefl__view_label(self):
         item_range = self.TOEFL__VIEW_LABEL_RANGE
-        return str(floor(self.overall / item_range) * item_range)
+        value = floor(self.overall / item_range) * item_range
+        return str(value) + '-' + str(value + item_range)
 
     @classmethod
     def convert_ielts_store_to_view_label(cls, label):
@@ -937,9 +940,10 @@ class RegularLanguageCertificate(LanguageCertificate):
 
     @classmethod
     def convert_toefl_store_to_view_label(cls, label):
-        value = int(label)
+        input_value = int(label)
         item_range = cls.TOEFL__VIEW_LABEL_RANGE
-        return str(floor(value / item_range) * item_range)
+        value = floor(input_value / item_range) * item_range
+        return str(value) + '-' + str(value + item_range)
 
     @classmethod
     def get_toefl_user_store_based_positions(cls, sdi):
