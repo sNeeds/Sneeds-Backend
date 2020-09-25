@@ -1207,13 +1207,15 @@ class GRESubjectCertificate(LanguageCertificate):
 
     def get_total_view_label(self):
         item_range = self.TOTAL_VIEW_LABEL_RANGE
-        return str(floor(self.total / item_range) * item_range)
+        value = floor(self.total / item_range) * item_range
+        return str(value) + '-' + str(value + item_range)
 
     @classmethod
     def convert_total_store_to_view_label(cls, label):
-        value = float(label)
+        input_value = float(label)
         item_range = cls.TOTAL_VIEW_LABEL_RANGE
-        return str(floor(value / item_range) * item_range)
+        value = floor(input_value / item_range) * item_range
+        return str(value) + '-' + str(value + item_range)
 
     @classmethod
     def compare_total_labels(cls, label1, label2):
