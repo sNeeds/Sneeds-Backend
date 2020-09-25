@@ -295,7 +295,7 @@ class Publication(models.Model):
     @classmethod
     def get_publications_score__view_label(cls, input_value):
         if input_value >= 4:
-            return '+4'
+            return '4+'
         item_range = cls.PUBLICATIONS_SCORE__VIEW_LABEL_RANGE
         value = floor(input_value / item_range) * item_range
         return str(value) + ' - ' + str(value + item_range)
@@ -313,7 +313,7 @@ class Publication(models.Model):
         if count <= 3:
             return label
         if count >= 4:
-            return '+4'
+            return '4+'
 
     @classmethod
     def get_publication_count_user_store_based_positions(cls, sdi):
@@ -647,7 +647,7 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
 
     def get_related_work__view_label(self):
         if self.related_work_experience >= 36:
-            return '+36'
+            return '36+'
         item_range = self.RELATED_WORK_EXPERIENCE_VIEW_LABEL_RANGE
         value = floor(self.related_work_experience / item_range) * item_range
         return str(value) + ' - ' + str(value + item_range)
@@ -656,7 +656,7 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
     def convert_related_work_store_to_view_label(cls, label):
         input_value = int(label)
         if input_value >= 36:
-            return '+36'
+            return '36+'
         item_range = cls.RELATED_WORK_EXPERIENCE_VIEW_LABEL_RANGE
         value = floor(input_value / item_range) * item_range
         return str(value) + ' - ' + str(value + item_range)
