@@ -925,7 +925,8 @@ class RegularLanguageCertificate(LanguageCertificate):
 
     def get_ielts__view_label(self):
         item_range = self.IELTS__VIEW_LABEL_RANGE
-        return str(floor(float(self.overall) / item_range) * item_range)
+        value = floor(float(self.overall) / item_range) * item_range
+        return str(value) + '-' + str(value + item_range)
 
     def get_toefl__view_label(self):
         item_range = self.TOEFL__VIEW_LABEL_RANGE
@@ -934,9 +935,10 @@ class RegularLanguageCertificate(LanguageCertificate):
 
     @classmethod
     def convert_ielts_store_to_view_label(cls, label):
-        value = float(label)
+        input_value = float(label)
         item_range = cls.IELTS__VIEW_LABEL_RANGE
-        return str(floor(value / item_range) * item_range)
+        value = floor(input_value / item_range) * item_range
+        return str(value) + '-' + str(value + item_range)
 
     @classmethod
     def convert_toefl_store_to_view_label(cls, label):
