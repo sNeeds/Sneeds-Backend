@@ -47,7 +47,8 @@ def get_user_status(user_positions, items_qs, compare_func, store_to_view_conver
         user_best_position_label = compare_func(user_best_position_label, position)
 
     for obj in items_qs:
-        if compare_func(user_best_position_label, obj.label) == user_best_position_label:
+        if compare_func(user_best_position_label, obj.label) == user_best_position_label and \
+                user_best_position_label != obj.label:
             worse_cases_count += obj.count
             worse_cases_percent += obj.percent
     if store_to_view_convert_func is None:

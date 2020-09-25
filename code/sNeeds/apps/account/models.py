@@ -276,10 +276,10 @@ class Publication(models.Model):
         return str(self.student_detailed_info.publication_set.count())
 
     def get_type__store_label(self):
-        return self.type.name
+        return self.type.value
 
     def get_impact_factor__store_label(self):
-        return self.journal_reputation.name
+        return self.journal_reputation.value
 
     @classmethod
     def get_publications_score__store_label(cls, value):
@@ -287,10 +287,10 @@ class Publication(models.Model):
         return str(floor(value / item_range) * item_range)
 
     def get_type__view_label(self):
-        return self.type.name
+        return self.type.value
 
     def get_impact_factor__view_label(self):
-        return self.journal_reputation.name
+        return self.journal_reputation.value
 
     @classmethod
     def get_publications_score__view_label(cls, input_value):
