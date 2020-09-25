@@ -764,18 +764,18 @@ class UniversityThrough(models.Model):
 
     def get_gpa__store_label(self):
         item_range = self.GPA_STORE_LABEL_RANGE
-        return str(floor(self.gpa / item_range) * item_range)
+        return str(floor(float(self.gpa) / item_range) * item_range)
 
     def get_gpa__view_label(self):
         if self.gpa < 12:
             return '-12'
         item_range = self.GPA_VIEW_LABEL_RANGE
-        value = floor(self.gpa / item_range) * item_range
+        value = floor(float(self.gpa) / item_range) * item_range
         return str(value) + ' - ' + str(value + item_range)
 
     @classmethod
     def convert_gpa_store_to_view_label(cls, label):
-        input_value = int(label)
+        input_value = float(label)
         if input_value < 12:
             return '-12'
         item_range = cls.GPA_VIEW_LABEL_RANGE
