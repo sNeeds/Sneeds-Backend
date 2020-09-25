@@ -1102,23 +1102,27 @@ class GREGeneralCertificate(LanguageCertificate):
 
     def get_writing_view_label(self):
         item_range = self.WRITING_VIEW_LABEL_RANGE
-        return str(floor(self.analytical_writing / item_range) * item_range)
+        value = floor(float(self.analytical_writing) / item_range) * item_range
+        return str(value) + '-' + str(value + item_range)
 
     def get_q_and_v_view_label(self):
         item_range = self.Q_AND_V_VIEW_LABEL_RANGE
-        return str(floor((self.quantitative + self.verbal) / item_range) * item_range)
+        value = floor((self.quantitative + self.verbal) / item_range) * item_range
+        return str(value) + '-' + str(value + item_range)
 
     @classmethod
     def convert_writing_store_to_view_label(cls, label):
-        value = float(label)
+        input_value = float(label)
         item_range = cls.WRITING_VIEW_LABEL_RANGE
-        return str(floor(value / item_range) * item_range)
+        value = floor(input_value / item_range) * item_range
+        return str(value) + '-' + str(value + item_range)
 
     @classmethod
     def convert_q_and_v_store_to_view_label(cls, label):
-        value = int(label)
+        input_value = int(label)
         item_range = cls.Q_AND_V_VIEW_LABEL_RANGE
-        return str(floor(value / item_range) * item_range)
+        value = floor(input_value / item_range) * item_range
+        return str(value) + '-' + str(value + item_range)
 
     @classmethod
     def get_writing_user_store_based_positions(cls, sdi):
