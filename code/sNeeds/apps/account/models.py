@@ -1088,8 +1088,8 @@ class GREGeneralCertificate(LanguageCertificate):
             raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})
 
     WRITING_STORE_LABEL_RANGE = 0.5
-    WRITING_VIEW_LABEL_RANGE = 10
-    Q_AND_V_STORE_LABEL_RANGE = 0.5
+    WRITING_VIEW_LABEL_RANGE = 1
+    Q_AND_V_STORE_LABEL_RANGE = 10
     Q_AND_V_VIEW_LABEL_RANGE = 20
 
     def get_writing_store_label(self):
