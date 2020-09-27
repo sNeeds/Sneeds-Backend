@@ -111,3 +111,28 @@ class PublicationQuerySetManager(models.QuerySet):
             total_value_str = "D"
 
         return total_value_str
+
+
+class StudentDetailedInfoManager(models.QuerySet):
+    def get_with_value_rank_list(self):
+        result = []
+
+        rank = 1
+        counter = 0
+        prev = self.first()
+
+        for obj in self.all().order_by('-value'):
+            counter += 1
+            if obj.value != prev.value:
+                rank = counter
+            prev = obj
+            result.append((obj, rank))
+            print("obj.value: ", obj.value, " | rank: ", rank, " | counter: ", counter)
+
+        return result
+
+    def add_one_to_rank(self):
+        print("---" , len(self.all()))
+        for obj in self.all():
+            obj.rank += 1
+            obj.save()

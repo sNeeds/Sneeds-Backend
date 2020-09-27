@@ -13,7 +13,7 @@ from enumfields import Enum, EnumField
 
 from sNeeds.apps.estimations import values
 from .managers import UniversityThroughQuerySetManager, LanguageCertificateQuerysetManager, CountryManager, \
-    PublicationQuerySetManager
+    PublicationQuerySetManager, StudentDetailedInfoManager
 from .validators import validate_resume_file_extension, validate_resume_file_size, ten_factor_validator
 from . import validators
 
@@ -380,8 +380,15 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         editable=False
     )
 
+    objects = StudentDetailedInfoManager.as_manager()
+
     class Meta:
         ordering = ['-created', ]
+
+    # https://stackoverflow.com/questions/36719566/identify-the-changed-fields-in-django-post-save-signal
+    def __init__(self, *args, **kwargs):
+        super(StudentDetailedInfo, self).__init__(*args, **kwargs)
+        self.__original_rank = self.rank
 
     def update_rank(self):
         better_rank_qs = self.__class__.objects.filter(value__gt=self.value)

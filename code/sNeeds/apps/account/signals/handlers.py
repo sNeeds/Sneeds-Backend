@@ -3,21 +3,24 @@ from django.db.models.signals import pre_save, pre_delete, m2m_changed, post_sav
 
 from sNeeds.apps.account.models import Publication, JournalReputation, WhichAuthor, LanguageCertificate, \
     RegularLanguageCertificate, GRESubjectCertificate, UniversityThrough, StudentDetailedInfo
-from sNeeds.apps.account.tasks import update_student_detailed_info_ranks
+from sNeeds.apps.account.tasks import update_student_detailed_info_ranks, add_one_to_rank_with_values_greater_than_this
 from sNeeds.apps.estimations.compute_value import compute_publication_value
 
 
 def pre_save_student_detailed_info(sender, instance, *args, **kwargs):
     instance.value = instance.compute_value()
 
-    if instance.id is None:  # new object will be created
-        instance.rank = instance.update_rank()
-        update_student_detailed_info_ranks()
-    else:
+    try:
         previous = StudentDetailedInfo.objects.get(id=instance.id)
         if previous.value != instance.value:  # value is updated
+            update_student_detailed_info_ranks(exclude_id=instance.id)
+            add_one_to_rank_with_values_greater_than_this(value=instance.value)
             instance.rank = instance.update_rank()
-            update_student_detailed_info_ranks()
+
+    except StudentDetailedInfo.DoesNotExist:  # new object will be created
+        update_student_detailed_info_ranks(exclude_id=instance.id)
+        add_one_to_rank_with_values_greater_than_this(value=instance.value)
+        instance.rank = instance.update_rank()
 
 
 def pre_save_publication(sender, instance, *args, **kwargs):
