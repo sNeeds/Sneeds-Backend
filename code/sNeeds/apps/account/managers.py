@@ -33,7 +33,6 @@ class UniversityThroughQuerySetManager(models.QuerySet):
 
 
 class LanguageCertificateQuerysetManager(models.QuerySet):
-
     def get_IELTS(self):
         from sNeeds.apps.account.models import LanguageCertificateType
         return self.filter(Q(certificate_type=LanguageCertificateType.IELTS_GENERAL)
@@ -65,6 +64,7 @@ class LanguageCertificateQuerysetManager(models.QuerySet):
         if self._get_highest_value_obj():
             return self._get_highest_value_obj().compute_value()[1]
         return None
+
 
 class CountryManager(models.Manager):
     def with_active_time_slot_consultants(self):

@@ -381,7 +381,7 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
     )
 
     class Meta:
-        ordering = ['created', ]
+        ordering = ['-created', ]
 
     def update_rank(self):
         better_rank_qs = self.__class__.objects.filter(value__gt=self.value)
