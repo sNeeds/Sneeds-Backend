@@ -383,7 +383,7 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
     #     higher_than = self.objects.filter(
     #         total_value
     #     )
-    #
+
 
     def compute_value(self):
         publications = Publication.objects.filter(
@@ -579,7 +579,7 @@ class LanguageCertificate(models.Model):
         try:
             self.regularlanguagecertificate
             return True
-        except RegularLanguageCertificate:
+        except RegularLanguageCertificate.DoesNotExist:
             return False
 
     def compute_value(self):

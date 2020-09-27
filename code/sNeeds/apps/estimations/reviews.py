@@ -153,11 +153,11 @@ class StudentDetailedFormReview:
         # Supports IELTS general, academic and TOEFL
         ielts_academic_qs = RegularLanguageCertificate.objects.filter(
             student_detailed_info=form,
-            certificate_type=LanguageCertificateType.IELTS_GENERAL
+            certificate_type=LanguageCertificateType.IELTS_ACADEMIC
         )
         ielts_general_qs = RegularLanguageCertificate.objects.filter(
             student_detailed_info=form,
-            certificate_type=LanguageCertificateType.IELTS_ACADEMIC
+            certificate_type=LanguageCertificateType.IELTS_GENERAL
         )
         toefls_qs = RegularLanguageCertificate.objects.filter(
             student_detailed_info=form,
@@ -174,7 +174,7 @@ class StudentDetailedFormReview:
 
         if ielts_academic_qs.exists():
             ielts_academic = ielts_academic_qs.first()
-            data['ielts_academic'] = {
+            data['ielts-academic'] = {
                 "comment": None,
                 "is_mock": ielts_academic.is_mock,
                 "value": ielts_academic.compute_value()[0],
@@ -193,7 +193,7 @@ class StudentDetailedFormReview:
 
         if ielts_general_qs.exists():
             ielts_general = ielts_general_qs.first()
-            data['ielts_general'] = {
+            data['ielts-general'] = {
                 "comment": None,
                 "is_mock": ielts_general.is_mock,
                 "value": ielts_general.compute_value()[0],
@@ -483,7 +483,7 @@ class StudentDetailedFormReview:
                 "data": self.review_others(),
                 "value": self.student_detailed_form.others_value
             },
-            "total_value": self.student_detailed_form.total_value
+            "total_value": self.student_detailed_form.value
         }
 
         return data
