@@ -375,15 +375,17 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         editable=False
     )
 
+    rank = models.IntegerField(
+        validators=[MinValueValidator(1)],
+        editable=False
+    )
+
     class Meta:
         ordering = ['created', ]
 
-    # @property
-    # def get_rank_among_all(self):
-    #     higher_than = self.objects.filter(
-    #         total_value
-    #     )
-
+    def update_rank(self):
+        better_rank_qs = self.__class__.objects.filter(value__gt=self.value)
+        return better_rank_qs.count() + 1
 
     def compute_value(self):
         publications = Publication.objects.filter(
@@ -394,9 +396,10 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         )
 
         total_value = 0
-        total_value += 2 * self.get_last_university_through().value
+        if self.get_last_university_through():
+            total_value += 2 * self.get_last_university_through().value
         total_value += publications.qs_total_value()
-        total_value += languages.get_total_value()[0]
+        total_value += languages.get_total_value()
         total_value += self.others_value
 
         total_value = total_value / 5

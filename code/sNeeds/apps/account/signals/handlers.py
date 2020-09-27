@@ -8,6 +8,7 @@ from sNeeds.apps.estimations.compute_value import compute_publication_value
 
 def pre_save_student_detailed_info(sender, instance, *args, **kwargs):
     instance.value = instance.compute_value()
+    instance.rank = instance.update_rank()
 
 
 def pre_save_publication(sender, instance, *args, **kwargs):

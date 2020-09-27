@@ -51,13 +51,20 @@ class LanguageCertificateQuerysetManager(models.QuerySet):
         from sNeeds.apps.account.models import LanguageCertificateType
         return self.filter(certificate_type=LanguageCertificateType.DUOLINGO)
 
-    def get_highest_value(self):
+    def _get_highest_value_obj(self):
         return self.all().order_by(F('value').desc(nulls_last=True)).first()
 
     def get_total_value(self):
         # The highest value among all certificates is total value
-        return self.get_highest_value().compute_value()
+        if self._get_highest_value_obj():
+            return self._get_highest_value_obj().compute_value()[0]
+        return 0
 
+    def get_total_value_str(self):
+        # The highest value among all certificates is total value
+        if self._get_highest_value_obj():
+            return self._get_highest_value_obj().compute_value()[1]
+        return None
 
 class CountryManager(models.Manager):
     def with_active_time_slot_consultants(self):

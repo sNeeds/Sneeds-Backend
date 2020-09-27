@@ -230,8 +230,8 @@ class StudentDetailedFormReview:
             elif 110 <= toefl.overall:
                 data["toefl"]["comment"] = TOEFL_GREAT
 
-        data["total_value"] = language_certificates.get_total_value()[0]
-        data["total_value_str"] = language_certificates.get_total_value()[1]
+        data["total_value"] = language_certificates.get_total_value()
+        data["total_value_str"] = language_certificates.get_total_value_str()
 
         return data
 
