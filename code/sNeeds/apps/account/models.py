@@ -369,7 +369,12 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         null=True,
     )
 
-    # total_value =
+    value = models.FloatField(
+        validators=[MinValueValidator(0), MaxValueValidator(1)],
+        null=True,
+        editable=False
+    )
+
     class Meta:
         ordering = ['created', ]
 
@@ -380,13 +385,12 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
     #     )
     #
 
-    @property
-    def total_value(self):
+    def compute_value(self):
         publications = Publication.objects.filter(
             student_detailed_info__id=self.id
         )
         languages = LanguageCertificate.objects.filter(
-            student_detailed_info__id = self.id
+            student_detailed_info__id=self.id
         )
 
         total_value = 0
@@ -395,8 +399,9 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         total_value += languages.get_total_value()[0]
         total_value += self.others_value
 
-        return total_value
+        total_value = total_value / 5
 
+        return total_value
 
     @property
     def others_value(self):
