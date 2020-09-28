@@ -60,7 +60,7 @@ class ListUsers(APIView):
         return HttpResponse()
 
 
-class FormComments(APIView):
+class FormCommentsDetail(APIView):
     def get_form_obj(self, form_id):
         try:
             return StudentDetailedInfo.objects.get(id=form_id)
@@ -71,3 +71,10 @@ class FormComments(APIView):
         form = self.get_form_obj(form_id)
         review = StudentDetailedFormReview(form)
         return Response(review.review_all())
+
+
+class FormCommentsList(APIView):
+    def get(self, request, format=None):
+        forms = StudentDetailedInfo.objects.filter(user=request.user)
+        reviews = [StudentDetailedFormReview(form).review_all() for form in forms]
+        return Response(reviews)

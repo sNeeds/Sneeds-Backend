@@ -8,6 +8,7 @@ from sNeeds.apps.account.models import Publication, LanguageCertificate, Student
 from sNeeds.apps.estimations.compute_value import compute_publication_value
 from sNeeds.apps.analyze import tasks
 
+
 @transaction.atomic
 def pre_save_student_detailed_info(sender, instance, *args, **kwargs):
     # TODO: Temporary removed delay from celery tasks
@@ -62,7 +63,6 @@ def post_save_language_certificate(sender, instance, *args, **kwargs):
 def pre_save_university_through(sender, instance, *args, **kwargs):
     instance.value = instance.compute_value()[0]
     # tasks.update_gpa_chart.delay(instance, is_delete=False)
-    pass
 
 
 def pre_delete_university_through(sender, instance, *args, **kwargs):
@@ -112,7 +112,7 @@ for subclass in GRESubjectCertificate.__subclasses__():
 
 pre_save.connect(pre_save_student_detailed_info, sender=StudentDetailedInfo)
 pre_save.connect(pre_save_publication, sender=Publication)
-# pre_save.connect(pre_save_language_certificate, sender=LanguageCertificate)
+pre_save.connect(pre_save_language_certificate, sender=LanguageCertificate)
 pre_save.connect(pre_save_university_through, sender=UniversityThrough)
 
 post_save.connect(post_save_language_certificate, sender=LanguageCertificate)

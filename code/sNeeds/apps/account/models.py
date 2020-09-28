@@ -546,7 +546,6 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
     class Meta:
         ordering = ['-created', ]
 
-
     RELATED_WORK_EXPERIENCE_STORE_LABEL_RANGE = 2
     RELATED_WORK_EXPERIENCE_VIEW_LABEL_RANGE = 6
 
@@ -580,7 +579,6 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
 
         return total_value
 
-
     @property
     def others_value(self):
         value = 0.5
@@ -608,7 +606,7 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         return True
 
     def get_last_university_grade(self):
-        return self.get_last_university_through().grade
+        return None if self.get_last_university_through() is None else self.get_last_university_through().grade
 
     def get_last_university_through(self):
         last_university_through = None
@@ -647,7 +645,7 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         return FieldOfStudy.objects.filter(id__in=related_major_ids)
 
     def get_powerful_recommendation__store_label(self):
-        return MISSING_LABEL if not self.powerful_recommendation or self.powerful_recommendation is None\
+        return MISSING_LABEL if not self.powerful_recommendation or self.powerful_recommendation is None \
             else REWARDED_LABEL
 
     def get_olympiad__store_label(self):
@@ -765,7 +763,7 @@ class UniversityThrough(models.Model):
         elif values.BAD_UNIVERSITY_RANK <= university_rank:
             value *= 0.65
 
-        value = (decimal.Decimal(value) * (self.gpa / 10)) / 2
+        value = (decimal.Decimal(value) * decimal.Decimal(self.gpa / 10)) / 2
 
         if values.UNIVERSITY_AP_VALUE <= value:
             value_str = "A+"
