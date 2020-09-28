@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+from django.db import transaction
 from django.db.models.signals import pre_save, pre_delete, post_save
 
 from sNeeds.apps.account.tasks import update_student_detailed_info_ranks, add_one_to_rank_with_values_greater_than_this
@@ -7,21 +8,20 @@ from sNeeds.apps.account.models import Publication, LanguageCertificate, Student
 from sNeeds.apps.estimations.compute_value import compute_publication_value
 from sNeeds.apps.analyze import tasks
 
-
+@transaction.atomic
 def pre_save_student_detailed_info(sender, instance, *args, **kwargs):
     # TODO: Temporary removed delay from celery tasks
     instance.value = instance.compute_value()
-
     try:
         previous = StudentDetailedInfo.objects.get(id=instance.id)
         if previous.value != instance.value:  # value is updated
             update_student_detailed_info_ranks(exclude_id=instance.id)
-            add_one_to_rank_with_values_greater_than_this(value=instance.value)
+            add_one_to_rank_with_values_greater_than_this(value=instance.value, exclude_id=instance.id)
             instance.rank = instance.update_rank()
 
     except StudentDetailedInfo.DoesNotExist:  # new object will be created
         update_student_detailed_info_ranks(exclude_id=instance.id)
-        add_one_to_rank_with_values_greater_than_this(value=instance.value)
+        add_one_to_rank_with_values_greater_than_this(value=instance.value, exclude_id=instance.id)
         instance.rank = instance.update_rank()
 
 

@@ -127,12 +127,10 @@ class StudentDetailedInfoManager(models.QuerySet):
                 rank = counter
             prev = obj
             result.append((obj, rank))
-            print("obj.value: ", obj.value, " | rank: ", rank, " | counter: ", counter)
 
         return result
 
     def add_one_to_rank(self):
-        print("---" , len(self.all()))
         for obj in self.all():
             obj.rank += 1
             obj.save()
