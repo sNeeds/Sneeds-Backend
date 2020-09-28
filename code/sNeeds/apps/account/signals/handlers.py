@@ -9,18 +9,19 @@ from sNeeds.apps.analyze import tasks
 
 
 def pre_save_student_detailed_info(sender, instance, *args, **kwargs):
+    # TODO: Temporary removed delay from celery tasks
     instance.value = instance.compute_value()
 
     try:
         previous = StudentDetailedInfo.objects.get(id=instance.id)
         if previous.value != instance.value:  # value is updated
-            update_student_detailed_info_ranks(exclude_id=instance.id).delay()
-            add_one_to_rank_with_values_greater_than_this(value=instance.value).delay()
+            update_student_detailed_info_ranks(exclude_id=instance.id)
+            add_one_to_rank_with_values_greater_than_this(value=instance.value)
             instance.rank = instance.update_rank()
 
     except StudentDetailedInfo.DoesNotExist:  # new object will be created
-        update_student_detailed_info_ranks(exclude_id=instance.id).delay()
-        add_one_to_rank_with_values_greater_than_this(value=instance.value).delay()
+        update_student_detailed_info_ranks(exclude_id=instance.id)
+        add_one_to_rank_with_values_greater_than_this(value=instance.value)
         instance.rank = instance.update_rank()
 
 

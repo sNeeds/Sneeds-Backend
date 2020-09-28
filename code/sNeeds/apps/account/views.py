@@ -197,7 +197,7 @@ class StudentDetailedInfoRetrieveUpdateAPIView(custom_generic_apiviews.BaseRetri
     queryset = StudentDetailedInfo.objects.all()
     serializer_class = StudentDetailedInfoSerializer
     request_serializer_class = StudentDetailedInfoRequestSerializer
-    permission_classes = (StudentDetailedInfoOwnerOrInteractConsultantOrWithoutUserPermission,)
+    # permission_classes = (StudentDetailedInfoOwnerOrInteractConsultantOrWithoutUserPermission,)
 
     @swagger_auto_schema(
         request_body=request_serializer_class,

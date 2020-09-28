@@ -49,6 +49,8 @@ def check_and_add_h3_header(e):
         nodes_list.append(node)
         current_h3_node = node
 
+        current_h4_node = None
+
 
 def check_and_add_h4_header(e):
     if e.name == 'h4':
@@ -57,6 +59,13 @@ def check_and_add_h4_header(e):
         node = Node(text, parent=current_h3_node)
         nodes_list.append(node)
         current_h4_node = node
+
+
+def check_and_add_table_list(e):
+    if e.name == 'div':
+        text = e.select("span.mw-headline")[0].get_text()
+        node = Node(text, parent=current_h3_node)
+        nodes_list.append(node)
 
 
 soup = BeautifulSoup(content, 'lxml')
@@ -68,6 +77,7 @@ for e in main_body.children:
         check_and_add_h2_header(e)
         check_and_add_h3_header(e)
         check_and_add_h4_header(e)
+        check_and_add_table_list(e)
 
 for n in nodes_list:
     print(n)
