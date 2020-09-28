@@ -454,6 +454,28 @@ class StudentDetailedInfoBase(models.Model):
             found = found or self._university_through_has_this_major(major)
         return found
 
+    def get_last_university_through(self):
+        last_university_through = None
+
+        university_through = UniversityThrough.objects.filter(
+            student_detailed_info__id=self.id
+        )
+        post_doc = university_through.get_post_doc()
+        phd = university_through.get_phd()
+        master = university_through.get_master()
+        bachelor = university_through.get_bachelor()
+
+        if post_doc:
+            last_university_through = post_doc
+        elif phd:
+            last_university_through = phd
+        elif master:
+            last_university_through = master
+        elif bachelor:
+            last_university_through = bachelor
+
+        return last_university_through
+
 
 class StudentDetailedInfo(StudentDetailedInfoBase):
     user = models.OneToOneField(
@@ -607,28 +629,6 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
 
     def get_last_university_grade(self):
         return None if self.get_last_university_through() is None else self.get_last_university_through().grade
-
-    def get_last_university_through(self):
-        last_university_through = None
-
-        university_through = UniversityThrough.objects.filter(
-            student_detailed_info__id=self.id
-        )
-        post_doc = university_through.get_post_doc()
-        phd = university_through.get_phd()
-        master = university_through.get_master()
-        bachelor = university_through.get_bachelor()
-
-        if post_doc:
-            last_university_through = post_doc
-        elif phd:
-            last_university_through = phd
-        elif master:
-            last_university_through = master
-        elif bachelor:
-            last_university_through = bachelor
-
-        return last_university_through
 
     def get_related_majors(self):
         related_major_ids = []
