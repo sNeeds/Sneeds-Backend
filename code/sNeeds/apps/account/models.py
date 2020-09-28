@@ -1,21 +1,27 @@
 import datetime
+from math import ceil, floor
 import decimal
 import uuid
+
+from django.conf import settings
 
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator, FileExtensionValidator
 from django.db import models
+from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
-from django.contrib.postgres.search import SearchVectorField
-from django.contrib.postgres.indexes import GinIndex
 from enumfields import Enum, EnumField
 
 from sNeeds.apps.estimations import values
 from .managers import UniversityThroughQuerySetManager, LanguageCertificateQuerysetManager, CountryManager, \
     PublicationQuerySetManager, StudentDetailedInfoManager
 from .validators import validate_resume_file_extension, validate_resume_file_size, ten_factor_validator
-from . import validators
+
+MISSING_LABEL = 'missing'
+REWARDED_LABEL = 'rewarded'
+
+ZERO_LABEL = '0'
 
 User = get_user_model()
 
@@ -34,9 +40,15 @@ class Grade(Enum):
     POST_DOC = 'پست دکتری'
 
 
+settings.ENUM_CLASSES[Grade.__name__] = Grade
+
+
 class PublicationType(Enum):
     JOURNAL = 'ژورنالی'
     CONFERENCE = 'کنفرانسی'
+
+
+settings.ENUM_CLASSES[PublicationType.__name__] = PublicationType
 
 
 class LanguageCertificateType(Enum):
@@ -54,10 +66,16 @@ class LanguageCertificateType(Enum):
     DUOLINGO = 'Duolingo'
 
 
+settings.ENUM_CLASSES[LanguageCertificateType.__name__] = LanguageCertificateType
+
+
 class PaymentAffordability(Enum):
     LOW = 'کم'
     MIDDLE = 'متوسط'
     MUCH = 'زیاد'
+
+
+settings.ENUM_CLASSES[PaymentAffordability.__name__] = PaymentAffordability
 
 
 class Gender(Enum):
@@ -65,9 +83,15 @@ class Gender(Enum):
     FEMALE = 'خانم'
 
 
+settings.ENUM_CLASSES[Gender.__name__] = Gender
+
+
 class MilitaryServiceStatus(Enum):
     PASSED = 'گذرانده شده'
     UNDID = 'گذرانده نشده'
+
+
+settings.ENUM_CLASSES[MilitaryServiceStatus.__name__] = MilitaryServiceStatus
 
 
 class WhichAuthor(Enum):
@@ -77,10 +101,16 @@ class WhichAuthor(Enum):
     FOURTH_OR_MORE = 'نویسنده چهارم به بعد'
 
 
+settings.ENUM_CLASSES[WhichAuthor.__name__] = WhichAuthor
+
+
 class JournalReputation(Enum):
     ONE_TO_THREE = 'از یک تا سه'
     FOUR_TO_TEN = 'از چهار تا ده'
     ABOVE_TEN = 'بیشتر از ده'
+
+
+settings.ENUM_CLASSES[JournalReputation.__name__] = JournalReputation
 
 
 def current_year():
@@ -236,8 +266,139 @@ class Publication(models.Model):
 
     objects = PublicationQuerySetManager.as_manager()
 
+    PUBLICATIONS_SCORE__STORE_LABEL_RANGE = 0.5
+    PUBLICATIONS_SCORE__VIEW_LABEL_RANGE = 1
+
     def __str__(self):
         return self.title
+
+    def get_count_chart__store_label(self):
+        return str(self.student_detailed_info.publication_set.count())
+
+    def get_type__store_label(self):
+        return self.type.value
+
+    def get_impact_factor__store_label(self):
+        return self.journal_reputation.value
+
+    @classmethod
+    def get_publications_score__store_label(cls, value):
+        item_range = cls.PUBLICATIONS_SCORE__STORE_LABEL_RANGE
+        return str(floor(value / item_range) * item_range)
+
+    def get_type__view_label(self):
+        return self.type.value
+
+    def get_impact_factor__view_label(self):
+        return self.journal_reputation.value
+
+    @classmethod
+    def get_publications_score__view_label(cls, input_value):
+        if input_value >= 4:
+            return '4+'
+        item_range = cls.PUBLICATIONS_SCORE__VIEW_LABEL_RANGE
+        value = floor(input_value / item_range) * item_range
+        return str(value) + ' - ' + str(value + item_range)
+
+    @classmethod
+    def convert_publications_score__store_to_view_label(cls, label):
+        input_value = float(label)
+        item_range = cls.PUBLICATIONS_SCORE__VIEW_LABEL_RANGE
+        value = floor(input_value / item_range) * item_range
+        return str(value) + ' - ' + str(value + item_range)
+
+    @classmethod
+    def convert_count_chart_store_to_view_label(cls, label):
+        count = int(label)
+        if count <= 3:
+            return label
+        if count >= 4:
+            return '4+'
+
+    @classmethod
+    def get_publication_count_user_store_based_positions(cls, sdi):
+        return [str(cls.objects.filter(student_detailed_info=sdi).count())]
+
+    @classmethod
+    def get_publication_count_user_view_based_positions(cls, sdi):
+        return [cls.convert_count_chart_store_to_view_label(str(cls.objects.filter(student_detailed_info=sdi).count()))]
+
+    @classmethod
+    def get_publication_type_user_store_based_positions(cls, sdi):
+        qs = cls.objects.filter(student_detailed_info=sdi)
+        positions = []
+
+        for obj in qs:
+            positions.append(obj.get_type__store_label())
+        return positions
+
+    @classmethod
+    def get_publication_type_user_view_based_positions(cls, sdi):
+        qs = cls.objects.filter(student_detailed_info=sdi)
+        positions = []
+
+        for obj in qs:
+            positions.append(obj.get_type__view_label())
+        return positions
+
+    @classmethod
+    def get_publications_score_user_store_based_positions(cls, sdi):
+        qs = cls.objects.filter(student_detailed_info=sdi)
+        positions = []
+
+        for obj in qs:
+            positions.append(obj.value)
+        return positions
+
+    @classmethod
+    def get_publications_score_user_view_based_positions(cls, sdi):
+        qs = cls.objects.filter(student_detailed_info=sdi)
+        positions = []
+
+        for obj in qs:
+            positions.append(obj.value)
+        return positions
+
+    @classmethod
+    def get_publication_impact_factor_user_store_based_positions(cls, sdi):
+        qs = cls.objects.filter(student_detailed_info=sdi)
+        positions = []
+
+        for obj in qs:
+            positions.append(obj.get_impact_factor__store_label())
+        return positions
+
+    @classmethod
+    def get_publication_impact_factor_user_view_based_positions(cls, sdi):
+        qs = cls.objects.filter(student_detailed_info=sdi)
+        positions = []
+
+        for obj in qs:
+            positions.append(obj.get_impact_factor__view_label())
+        return positions
+
+    @classmethod
+    def compare_publication_count_labels(cls, label1, label2):
+        if int(label1) >= int(label2):
+            return label1
+        return label2
+
+    @classmethod
+    def compare_publications_score_labels(cls, label1, label2):
+        if float(label1) >= float(label2):
+            return label1
+        return label2
+
+    @classmethod
+    def compare_publication_impact_factor_labels(cls, label1, label2):
+        if (label1 == JournalReputation.ONE_TO_THREE) or \
+                (label1 == JournalReputation.FOUR_TO_TEN and label2 == JournalReputation.ABOVE_TEN):
+            return label1
+
+        elif (label1 == JournalReputation.ABOVE_TEN) or \
+                (label1 == JournalReputation.FOUR_TO_TEN and label2 == JournalReputation.ONE_TO_THREE):
+            return label2
+        return label1
 
 
 class StudentDetailedInfoBase(models.Model):
@@ -385,10 +546,16 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
     class Meta:
         ordering = ['-created', ]
 
-    # https://stackoverflow.com/questions/36719566/identify-the-changed-fields-in-django-post-save-signal
-    def __init__(self, *args, **kwargs):
-        super(StudentDetailedInfo, self).__init__(*args, **kwargs)
-        self.__original_rank = self.rank
+
+    RELATED_WORK_EXPERIENCE_STORE_LABEL_RANGE = 2
+    RELATED_WORK_EXPERIENCE_VIEW_LABEL_RANGE = 6
+
+    # @property
+    # def get_rank_among_all(self):
+    #     higher_than = self.objects.filter(
+    #         total_value
+    #     )
+    #
 
     def update_rank(self):
         better_rank_qs = self.__class__.objects.filter(value__gt=self.value)
@@ -412,6 +579,7 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         total_value = total_value / 5
 
         return total_value
+
 
     @property
     def others_value(self):
@@ -478,6 +646,59 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
 
         return FieldOfStudy.objects.filter(id__in=related_major_ids)
 
+    def get_powerful_recommendation__store_label(self):
+        return MISSING_LABEL if not self.powerful_recommendation or self.powerful_recommendation is None\
+            else REWARDED_LABEL
+
+    def get_olympiad__store_label(self):
+        return MISSING_LABEL if self.olympiad is None or len(self.olympiad) == 0 else REWARDED_LABEL
+
+    def get_related_work__store_label(self):
+        if self.related_work_experience is None:
+            return '0'
+        item_range = self.RELATED_WORK_EXPERIENCE_STORE_LABEL_RANGE
+        return str(floor(self.related_work_experience / item_range) * item_range)
+
+    def get_powerful_recommendation__view_label(self):
+        return REWARDED_LABEL if self.powerful_recommendation else MISSING_LABEL
+
+    def get_olympiad__view_label(self):
+        return MISSING_LABEL if self.olympiad is None or len(self.olympiad) == 0 else REWARDED_LABEL
+
+    def get_related_work__view_label(self):
+        if self.related_work_experience >= 36:
+            return '36+'
+        item_range = self.RELATED_WORK_EXPERIENCE_VIEW_LABEL_RANGE
+        value = floor(self.related_work_experience / item_range) * item_range
+        return str(value) + ' - ' + str(value + item_range)
+
+    @classmethod
+    def convert_related_work_store_to_view_label(cls, label):
+        input_value = int(label)
+        if input_value >= 36:
+            return '36+'
+        item_range = cls.RELATED_WORK_EXPERIENCE_VIEW_LABEL_RANGE
+        value = floor(input_value / item_range) * item_range
+        return str(value) + ' - ' + str(value + item_range)
+
+    @classmethod
+    def compare_powerful_recommendation_labels(cls, label1, label2):
+        if label1 == label2 or label1 == REWARDED_LABEL:
+            return label1
+        return label2
+
+    @classmethod
+    def compare_olympiad_labels(cls, label1, label2):
+        if label1 == label2 or label1 == REWARDED_LABEL:
+            return label1
+        return label2
+
+    @classmethod
+    def compare_related_work_labels(cls, label1, label2):
+        if int(label1) >= int(label2):
+            return label1
+        return label2
+
 
 class UniversityThrough(models.Model):
     university = models.ForeignKey(
@@ -520,6 +741,9 @@ class UniversityThrough(models.Model):
     class Meta:
         unique_together = ['student_detailed_info', 'grade']
 
+    GPA_STORE_LABEL_RANGE = 0.25
+    GPA_VIEW_LABEL_RANGE = 1
+
     @property
     def gpa_value(self):
         gpa = max(self.gpa, 14) - 14
@@ -557,6 +781,48 @@ class UniversityThrough(models.Model):
             value_str = "D"
 
         return value, value_str
+
+    def get_gpa__store_label(self):
+        item_range = self.GPA_STORE_LABEL_RANGE
+        return str(floor(float(self.gpa) / item_range) * item_range)
+
+    def get_gpa__view_label(self):
+        if self.gpa < 12:
+            return '-12'
+        item_range = self.GPA_VIEW_LABEL_RANGE
+        value = floor(float(self.gpa) / item_range) * item_range
+        return str(value) + ' - ' + str(value + item_range)
+
+    @classmethod
+    def convert_gpa_store_to_view_label(cls, label):
+        input_value = float(label)
+        if input_value < 12:
+            return '-12'
+        item_range = cls.GPA_VIEW_LABEL_RANGE
+        value = floor(input_value / item_range) * item_range
+        return str(value) + ' - ' + str(value + item_range)
+
+    @classmethod
+    def get_gpa_user_store_based_positions(cls, sdi):
+        user_last_grade = cls.objects.filter(student_detailed_info=sdi) \
+            .order_by('-graduate_in').first()
+        if user_last_grade is None:
+            return None
+        return [user_last_grade.get_gpa__store_label()]
+
+    @classmethod
+    def get_gpa_user_view_based_positions(cls, sdi):
+        user_last_grade = cls.objects.filter(student_detailed_info=sdi) \
+            .order_by('-graduate_in').first()
+        if user_last_grade is None:
+            return None
+        return [user_last_grade.get_gpa__view_label()]
+
+    @classmethod
+    def compare_gpa_labels(cls, label1, label2):
+        if float(label1) >= float(label2):
+            return label1
+        return label2
 
 
 class LanguageCertificate(models.Model):
@@ -662,6 +928,105 @@ class RegularLanguageCertificate(LanguageCertificate):
                                          LanguageCertificateType.TOEFL]:
             raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})
 
+    # IELTS overall 1 to 9
+    # TOEFL overall 0 to 120
+    IELTS__STORE_LABEL_RANGE = 0.5
+    IELTS__VIEW_LABEL_RANGE = 1
+    TOEFL__STORE_LABEL_RANGE = 10
+    TOEFL__VIEW_LABEL_RANGE = 20
+
+    def get_ielts__store_label(self):
+        item_range = self.IELTS__STORE_LABEL_RANGE
+        return str(floor(float(self.overall) / item_range) * item_range)
+
+    def get_toefl__store_label(self):
+        item_range = self.TOEFL__STORE_LABEL_RANGE
+        return str(floor(float(self.overall) / item_range) * item_range)
+
+    def get_ielts__view_label(self):
+        item_range = self.IELTS__VIEW_LABEL_RANGE
+        value = floor(float(self.overall) / item_range) * item_range
+        return str(value) + '-' + str(value + item_range)
+
+    def get_toefl__view_label(self):
+        item_range = self.TOEFL__VIEW_LABEL_RANGE
+        value = floor(float(self.overall) / item_range) * item_range
+        return str(value) + '-' + str(value + item_range)
+
+    @classmethod
+    def convert_ielts_store_to_view_label(cls, label):
+        input_value = float(label)
+        item_range = cls.IELTS__VIEW_LABEL_RANGE
+        value = floor(input_value / item_range) * item_range
+        return str(value) + '-' + str(value + item_range)
+
+    @classmethod
+    def convert_toefl_store_to_view_label(cls, label):
+        input_value = int(label)
+        item_range = cls.TOEFL__VIEW_LABEL_RANGE
+        value = floor(input_value / item_range) * item_range
+        return str(value) + '-' + str(value + item_range)
+
+    @classmethod
+    def get_toefl_user_store_based_positions(cls, sdi):
+        positions = []
+        user_toefl_certificates = cls.objects.filter(student_detailed_info=sdi,
+                                                     certificate_type=LanguageCertificateType.TOEFL
+                                                     )
+        for obj in user_toefl_certificates:
+            positions.append(obj.get_toefl__store_label())
+
+        return positions
+
+    @classmethod
+    def get_toefl_user_view_based_positions(cls, sdi):
+        positions = []
+        user_toefl_certificates = cls.objects.filter(student_detailed_info=sdi,
+                                                     certificate_type=LanguageCertificateType.TOEFL
+                                                     )
+        for obj in user_toefl_certificates:
+            positions.append(obj.get_toefl__view_label())
+
+        return positions
+
+    @classmethod
+    def get_ielts_user_store_based_positions(cls, sdi):
+        positions = []
+        user_toefl_certificates = cls.objects.filter(Q(student_detailed_info=sdi) and
+                                                     (Q(certificate_type=LanguageCertificateType.IELTS_GENERAL) or
+                                                      Q(certificate_type=LanguageCertificateType.IELTS_ACADEMIC))
+                                                     )
+
+        for obj in user_toefl_certificates:
+            positions.append(obj.get_ielts__store_label())
+
+        return positions
+
+    @classmethod
+    def get_ielts_user_view_based_positions(cls, sdi):
+        positions = []
+        user_toefl_certificates = cls.objects.filter(Q(student_detailed_info=sdi) and
+                                                     (Q(certificate_type=LanguageCertificateType.IELTS_GENERAL) or
+                                                      Q(certificate_type=LanguageCertificateType.IELTS_ACADEMIC))
+                                                     )
+
+        for obj in user_toefl_certificates:
+            positions.append(obj.get_ielts__view_label())
+
+        return positions
+
+    @classmethod
+    def compare_ielts_labels(cls, label1, label2):
+        if float(label1) >= float(label2):
+            return label1
+        return label2
+
+    @classmethod
+    def compare_toefl_labels(cls, label1, label2):
+        if float(label1) >= float(label2):
+            return label1
+        return label2
+
 
 class GMATCertificate(LanguageCertificate):
     analytical_writing_assessment = models.DecimalField(
@@ -678,9 +1043,52 @@ class GMATCertificate(LanguageCertificate):
         validators=[MinValueValidator(200), MaxValueValidator(800)],
     )
 
+    TOTAL_STORE_LABEL_RANGE = 20
+    TOTAL_VIEW_LABEL_RANGE = 100
+
     def clean(self, *args, **kwargs):
         if self.certificate_type not in [LanguageCertificateType.GMAT]:
             raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})
+
+    def get_store_label(self):
+        item_range = self.TOTAL_STORE_LABEL_RANGE
+        return str(floor(self.total / item_range) * item_range)
+
+    def get_view_label(self):
+        item_range = self.TOTAL_VIEW_LABEL_RANGE
+        value = floor(self.total / item_range) * item_range
+        return str(value) + '-' + str(value + item_range)
+
+    @classmethod
+    def convert_store_to_view_label(cls, label):
+        input_value = int(label)
+        item_range = cls.TOTAL_VIEW_LABEL_RANGE
+        value = floor(input_value / item_range) * item_range
+        return str(value) + '-' + str(value + item_range)
+
+    @classmethod
+    def get_user_store_based_positions(cls, sdi):
+        positions = []
+        user_toefl_certificates = cls.objects.filter(student_detailed_info=sdi)
+        for obj in user_toefl_certificates:
+            positions.append(obj.get_store_label())
+
+        return positions
+
+    @classmethod
+    def get_user_view_based_positions(cls, sdi):
+        positions = []
+        user_toefl_certificates = cls.objects.filter(student_detailed_info=sdi)
+        for obj in user_toefl_certificates:
+            positions.append(obj.get_view_label())
+
+        return positions
+
+    @classmethod
+    def compare_labels(cls, label1, label2):
+        if int(label1) >= int(label2):
+            return label1
+        return label2
 
 
 class GREGeneralCertificate(LanguageCertificate):
@@ -698,6 +1106,95 @@ class GREGeneralCertificate(LanguageCertificate):
     def clean(self, *args, **kwargs):
         if self.certificate_type not in [LanguageCertificateType.GRE_GENERAL]:
             raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})
+
+    WRITING_STORE_LABEL_RANGE = 0.5
+    WRITING_VIEW_LABEL_RANGE = 1
+    Q_AND_V_STORE_LABEL_RANGE = 10
+    Q_AND_V_VIEW_LABEL_RANGE = 20
+
+    def get_writing_store_label(self):
+        item_range = self.WRITING_STORE_LABEL_RANGE
+        return str(floor(self.analytical_writing / item_range) * item_range)
+
+    def get_q_and_v_store_label(self):
+        item_range = self.Q_AND_V_STORE_LABEL_RANGE
+        return str(floor((self.quantitative + self.verbal) / item_range) * item_range)
+
+    def get_writing_view_label(self):
+        item_range = self.WRITING_VIEW_LABEL_RANGE
+        value = floor(float(self.analytical_writing) / item_range) * item_range
+        return str(value) + '-' + str(value + item_range)
+
+    def get_q_and_v_view_label(self):
+        item_range = self.Q_AND_V_VIEW_LABEL_RANGE
+        value = floor((self.quantitative + self.verbal) / item_range) * item_range
+        return str(value) + '-' + str(value + item_range)
+
+    @classmethod
+    def convert_writing_store_to_view_label(cls, label):
+        input_value = float(label)
+        item_range = cls.WRITING_VIEW_LABEL_RANGE
+        value = floor(input_value / item_range) * item_range
+        return str(value) + '-' + str(value + item_range)
+
+    @classmethod
+    def convert_q_and_v_store_to_view_label(cls, label):
+        input_value = int(label)
+        item_range = cls.Q_AND_V_VIEW_LABEL_RANGE
+        value = floor(input_value / item_range) * item_range
+        return str(value) + '-' + str(value + item_range)
+
+    @classmethod
+    def get_writing_user_store_based_positions(cls, sdi):
+        positions = []
+        user_gre_general_certificates = cls.objects.filter(student_detailed_info=sdi)
+
+        for obj in user_gre_general_certificates:
+            positions.append(obj.get_writing_store_label())
+
+        return positions
+
+    @classmethod
+    def get_writing_user_view_based_positions(cls, sdi):
+        positions = []
+        user_gre_general_certificates = cls.objects.filter(student_detailed_info=sdi)
+
+        for obj in user_gre_general_certificates:
+            positions.append(obj.get_writing_view_label())
+
+        return positions
+
+    @classmethod
+    def get_q_and_v_user_store_based_positions(cls, sdi):
+        positions = []
+        user_gre_general_certificates = cls.objects.filter(student_detailed_info=sdi)
+
+        for obj in user_gre_general_certificates:
+            positions.append(obj.get_q_and_v_store_label())
+
+        return positions
+
+    @classmethod
+    def get_q_and_v_user_view_based_positions(cls, sdi):
+        positions = []
+        user_gre_general_certificates = cls.objects.filter(student_detailed_info=sdi)
+
+        for obj in user_gre_general_certificates:
+            positions.append(obj.get_q_and_v_view_label())
+
+        return positions
+
+    @classmethod
+    def compare_writing_labels(cls, label1, label2):
+        if float(label1) >= float(label2):
+            return label1
+        return label2
+
+    @classmethod
+    def compare_q_and_v_labels(cls, label1, label2):
+        if int(label1) >= int(label2):
+            return label1
+        return label2
 
 
 class GRESubjectCertificate(LanguageCertificate):
@@ -720,6 +1217,51 @@ class GRESubjectCertificate(LanguageCertificate):
         if self.certificate_type not in [LanguageCertificateType.GRE_CHEMISTRY, LanguageCertificateType.GRE_LITERATURE,
                                          LanguageCertificateType.GRE_MATHEMATICS]:
             raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})
+
+    TOTAL_STORE_LABEL_RANGE = 20
+    TOTAL_VIEW_LABEL_RANGE = 100
+
+    def get_total_store_label(self):
+        item_range = self.TOTAL_STORE_LABEL_RANGE
+        return str(floor(self.total / item_range) * item_range)
+
+    def get_total_view_label(self):
+        item_range = self.TOTAL_VIEW_LABEL_RANGE
+        value = floor(self.total / item_range) * item_range
+        return str(value) + '-' + str(value + item_range)
+
+    @classmethod
+    def convert_total_store_to_view_label(cls, label):
+        input_value = float(label)
+        item_range = cls.TOTAL_VIEW_LABEL_RANGE
+        value = floor(input_value / item_range) * item_range
+        return str(value) + '-' + str(value + item_range)
+
+    @classmethod
+    def compare_total_labels(cls, label1, label2):
+        if int(label1) >= int(label2):
+            return label1
+        return label2
+
+    @classmethod
+    def get_total_user_store_based_positions(cls, sdi):
+        positions = []
+        user_gre_general_certificates = cls.objects.filter(student_detailed_info=sdi)
+
+        for obj in user_gre_general_certificates:
+            positions.append(obj.get_total_store_label())
+
+        return positions
+
+    @classmethod
+    def get_total_user_view_based_positions(cls, sdi):
+        positions = []
+        user_gre_general_certificates = cls.objects.filter(student_detailed_info=sdi)
+
+        for obj in user_gre_general_certificates:
+            positions.append(obj.get_total_view_label())
+
+        return positions
 
 
 class GREBiologyCertificate(GRESubjectCertificate):
@@ -804,3 +1346,46 @@ class DuolingoCertificate(LanguageCertificate):
     def clean(self, *args, **kwargs):
         if self.certificate_type not in [LanguageCertificateType.DUOLINGO]:
             raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})
+
+    OVERALL_STORE_LABEL_RANGE = 15
+    OVERALL_VIEW_LABEL_RANGE = 30
+
+    def get_store_label(self):
+        item_range = self.OVERALL_STORE_LABEL_RANGE
+        return str(floor(self.overall / item_range) * item_range + 10)
+
+    def get_view_label(self):
+        item_range = self.OVERALL_VIEW_LABEL_RANGE
+        value = floor(self.overall / item_range) * item_range + 10
+        return str(value) + '-' + str(value + item_range)
+
+    @classmethod
+    def convert_store_to_view_label(cls, label):
+        input_value = int(label)
+        item_range = cls.OVERALL_VIEW_LABEL_RANGE
+        value = floor(input_value / item_range) * item_range
+        return str(value) + '-' + str(value + item_range)
+
+    @classmethod
+    def get__user_store_based_positions(cls, sdi):
+        positions = []
+        user_toefl_certificates = cls.objects.filter(student_detailed_info=sdi)
+        for obj in user_toefl_certificates:
+            positions.append(obj.get_store_label())
+
+        return positions
+
+    @classmethod
+    def get__user_view_based_positions(cls, sdi):
+        positions = []
+        user_toefl_certificates = cls.objects.filter(student_detailed_info=sdi)
+        for obj in user_toefl_certificates:
+            positions.append(obj.get_view_label())
+
+        return positions
+
+    @classmethod
+    def compare_labels(cls, label1, label2):
+        if int(label1) >= int(label2):
+            return label1
+        return label2

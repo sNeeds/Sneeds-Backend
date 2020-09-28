@@ -48,5 +48,6 @@ urlpatterns = [
                   path('custom-form/', include('sNeeds.apps.customForms.urls')),
                   path('estimation/', include('sNeeds.apps.estimations.urls')),
                   path('similar-applies/', include('sNeeds.apps.similarApply.urls')),
+                  path('analyze-and-charts/', include('sNeeds.apps.analyze.urls')),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
