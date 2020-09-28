@@ -53,7 +53,7 @@ class WantToApplyChanceSerializer(serializers.Serializer):
                     "admission": "Very High",
                     "admission_value": 1,
                     "scholarship": "High",
-                    "scholarship": 0.95,
+                    "scholarship_value": 0.95,
                     "full_fund": "Medium",
                     "full_fund_value": 0.9
                 }
