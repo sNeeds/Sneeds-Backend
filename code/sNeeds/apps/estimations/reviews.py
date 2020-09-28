@@ -487,8 +487,8 @@ class StudentDetailedFormReview:
                 "value": self.student_detailed_form.others_value
             },
             "total_value": self.student_detailed_form.value,
-            "rank": self.student_detailed_form.rank,
-            "rank_among": StudentDetailedInfo.objects.all().count()
+            "rank": 142,
+            "rank_among": 1709
         }
 
         return data
