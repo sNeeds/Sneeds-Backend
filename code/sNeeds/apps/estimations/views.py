@@ -15,6 +15,7 @@ from rest_framework.views import APIView
 from sNeeds.apps.account.models import University, FieldOfStudy, FieldOfStudyType, StudentDetailedInfo, \
     UniversityThrough, PaymentAffordability, WantToApply
 from sNeeds.apps.estimations.reviews import StudentDetailedFormReview
+from sNeeds.apps.estimations.serializers import WantToApplyChanceSerializer
 
 
 class ListUsersAutoFixture(autofixture.AutoFixture):
@@ -99,3 +100,21 @@ class AdmissionRankingChance(APIView):
                 },
             }
         )
+
+
+class WantToApplyChance(APIView):
+    def get_form_obj(self, form_id):
+        try:
+            return StudentDetailedInfo.objects.get(id=form_id)
+        except StudentDetailedInfo.DoesNotExist:
+            raise Http404
+
+    def get(self, request, form_id, format=None):
+        form = self.get_form_obj(form_id)
+        try:
+            want_to_apply = WantToApply.objects.get(student_detailed_info=form)
+            want_to_apply_chance_serializer = WantToApplyChanceSerializer(want_to_apply)
+            return Response(want_to_apply_chance_serializer.data)
+
+        except WantToApply.DoesNotExist:
+            return Response({})
