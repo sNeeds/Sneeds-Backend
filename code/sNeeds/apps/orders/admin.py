@@ -1,13 +1,12 @@
 from django.contrib import admin
 
 from .models import Order
-from advanced_filters.admin import AdminAdvancedFiltersMixin
 
 from ..carts.models import Cart
 
-
+#TODO: Removed AdminAdvancedFiltersMixin, check if working
 @admin.register(Order)
-class OrderAdmin(AdminAdvancedFiltersMixin, admin.ModelAdmin):
+class OrderAdmin(admin.ModelAdmin):
     list_display = ["id", "order_id", "user", "total", "subtotal", "created"]
     fields = (
         ("order_id", "status"), "user", "sold_products", ("used_discount",

@@ -1,6 +1,5 @@
 from django.contrib import admin
 from .models import TimeSlotSale, SoldTimeSlotSale, Product, SoldTimeSlotSalePaymentInfo
-from advanced_filters.admin import AdminAdvancedFiltersMixin
 
 from ..orders.models import Order
 
@@ -13,8 +12,8 @@ class TimeSlotSaleAdmin(admin.ModelAdmin):
     readonly_fields = ["price", "active", ]
     list_filter = ['consultant', ]
 
-
-class SoldTimeSlotSaleAdmin(AdminAdvancedFiltersMixin, admin.ModelAdmin):
+#TODO: Changed AdminAdvancedFiltersMixin, check if working fine
+class SoldTimeSlotSaleAdmin(admin.ModelAdmin):
     list_display = ["id", "consultant", "start_time", "end_time", "sold_to", "price"]
     list_filter = ('consultant',)
     search_fields = ["id", ]
