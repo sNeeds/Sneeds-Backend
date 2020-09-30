@@ -101,6 +101,10 @@ class PublicationAdmin(admin.ModelAdmin):
     list_display = ['id', 'title', 'student_detailed_info', 'value']
     readonly_fields = ['value']
 
+    def delete_queryset(self, request, queryset):
+        for obj in queryset:
+            obj.delete()
+
 
 @admin.register(models.RegularLanguageCertificate)
 class RegularLanguageCertificateAdmin(admin.ModelAdmin):

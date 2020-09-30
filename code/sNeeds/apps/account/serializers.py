@@ -8,7 +8,7 @@ from . import fields
 
 from . import models
 from . import validators
-from .models import StudentDetailedInfo, StudentFormApplySemesterYear, BasicFormField, University, \
+from sNeeds.apps.account.models import StudentDetailedInfo, StudentFormApplySemesterYear, BasicFormField, University, \
     WantToApply, Publication, UniversityThrough, LanguageCertificateType, Grade, WhichAuthor
 
 User = get_user_model()
@@ -218,6 +218,28 @@ class PublicationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         raise ValidationError(_("Creating object through this serializer is not allowed"))
+
+
+# class PublicationSerializerCelery(serializers.Serializer):
+#
+#     which_author = fields.EnumField(enum=models.WhichAuthor)
+#     type = fields.EnumField(enum=models.PublicationType)
+#     journal_reputation = fields.EnumField(enum=models.JournalReputation)
+#     student_detailed_info = serializers.SerializerMethodField()
+#
+#     class Meta:
+#         fields = [
+#             'id', 'student_detailed_info', 'title', 'publish_year', 'which_author', 'type', 'journal_reputation',
+#         ]
+#
+#     def get_student_detailed_info(self, obj):
+#
+#
+#     def create(self, validated_data):
+#         pass
+#
+#     def update(self, instance, validated_data):
+#         pass
 
 
 class PublicationRequestSerializer(serializers.ModelSerializer):
@@ -577,3 +599,31 @@ class StudentDetailedInfoRequestSerializer(serializers.ModelSerializer):
                 raise ValidationError(_("User already has a student detailed info"))
         student_detailed_info_obj = StudentDetailedInfo.objects.create(**validated_data)
         return student_detailed_info_obj
+
+
+class StudentDetailedInfoTaskSerializer(serializers.ModelSerializer):
+    payment_affordability = fields.EnumField(enum=models.PaymentAffordability)
+    gender = fields.EnumField(enum=models.Gender)
+    military_service_status = fields.EnumField(enum=models.MilitaryServiceStatus)
+
+    class Meta(StudentDetailedInfoBaseSerializer.Meta):
+        model = StudentDetailedInfo
+        fields = [
+            'id',
+            'resume', 'related_work_experience', 'academic_break', 'olympiad',
+            'created', 'updated',
+
+            'user', 'age', 'gender', 'military_service_status', 'is_married', 'payment_affordability',
+            'prefers_full_fund', 'prefers_half_fund', 'prefers_self_fund',
+            'comment', 'powerful_recommendation', 'linkedin_url', 'homepage_url',
+        ]
+
+    def save(self, **kwargs):
+        return StudentDetailedInfo(**self.validated_data)
+
+    def create(self, validated_data):
+        # pass
+        return StudentDetailedInfo(**validated_data)
+
+    def update(self, instance, validated_data):
+        pass

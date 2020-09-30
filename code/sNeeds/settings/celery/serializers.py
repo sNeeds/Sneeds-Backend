@@ -1,20 +1,24 @@
 import json
 from enumfields import Enum, EnumField
 from django.conf import settings
+from uuid import UUID
 
 
 # https://stackoverflow.com/questions/21631878/celery-is-there-a-way-to-write-custom-json-encoder-decoder
+# https://stackoverflow.com/questions/24481852/serialising-an-enum-member-to-json
+# https://stackoverflow.com/questions/36588126/uuid-is-not-json-serializable
 class CEncoder(json.JSONEncoder):
     def default(self, obj):
-        print("HERE 111")
-        print(type(obj))
         if isinstance(obj, Enum):
-            print('HERE 222')
             return {
                 '__type__': '__enum__',
                 'name': obj.name,
                 'enum_class': obj.__class__.__name__,
             }
+
+        if isinstance(obj, UUID):
+            # if the obj is uuid, we simply return the value of uuid
+            return obj.hex
         else:
             return json.JSONEncoder.default(self, obj)
 
