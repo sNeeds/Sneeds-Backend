@@ -10,9 +10,7 @@ INSTALLED_APPS = [
     'django_rest_passwordreset',
     'polymorphic',  # For django-polymorphic
     'ckeditor',
-    'advanced_filters',
     'django_extensions',
-    'autofixture',
 
     'sNeeds.apps.customAuth',
     'sNeeds.apps.account',
@@ -204,3 +202,7 @@ ENUM_CLASSES = {
 
 }
 
+# ---------------------
+SWAGGER_SETTINGS = {
+    "DEFAULT_GENERATOR_CLASS": "rest_framework.schemas.generators.BaseSchemaGenerator",
+}

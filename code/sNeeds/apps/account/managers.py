@@ -33,7 +33,6 @@ class UniversityThroughQuerySetManager(models.QuerySet):
 
 
 class LanguageCertificateQuerysetManager(models.QuerySet):
-
     def get_IELTS(self):
         from sNeeds.apps.account.models import LanguageCertificateType
         return self.filter(Q(certificate_type=LanguageCertificateType.IELTS_GENERAL)
@@ -51,12 +50,20 @@ class LanguageCertificateQuerysetManager(models.QuerySet):
         from sNeeds.apps.account.models import LanguageCertificateType
         return self.filter(certificate_type=LanguageCertificateType.DUOLINGO)
 
-    def get_highest_value(self):
+    def _get_highest_value_obj(self):
         return self.all().order_by(F('value').desc(nulls_last=True)).first()
 
     def get_total_value(self):
         # The highest value among all certificates is total value
-        return self.get_highest_value().compute_value()
+        if self._get_highest_value_obj():
+            return self._get_highest_value_obj().compute_value()[0]
+        return 0
+
+    def get_total_value_str(self):
+        # The highest value among all certificates is total value
+        if self._get_highest_value_obj():
+            return self._get_highest_value_obj().compute_value()[1]
+        return None
 
 
 class CountryManager(models.Manager):
@@ -82,6 +89,7 @@ class PublicationQuerySetManager(models.QuerySet):
             total_val += max((p.value - counter), 0)
             counter += 0.3
 
+        total_val = max(total_val, 1)
         return total_val
 
     def qs_total_value_str(self):
@@ -104,3 +112,26 @@ class PublicationQuerySetManager(models.QuerySet):
             total_value_str = "D"
 
         return total_value_str
+
+
+class StudentDetailedInfoManager(models.QuerySet):
+    def get_with_value_rank_list(self):
+        result = []
+
+        rank = 1
+        counter = 0
+        prev = self.first()
+
+        for obj in self.all().order_by('-value'):
+            counter += 1
+            if obj.value != prev.value:
+                rank = counter
+            prev = obj
+            result.append((obj, rank))
+
+        return result
+
+    def add_one_to_rank(self):
+        for obj in self.all():
+            obj.rank += 1
+            obj.save()

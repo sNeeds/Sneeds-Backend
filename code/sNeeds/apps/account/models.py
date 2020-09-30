@@ -15,7 +15,7 @@ from enumfields import Enum, EnumField
 
 from sNeeds.apps.estimations import values
 from .managers import UniversityThroughQuerySetManager, LanguageCertificateQuerysetManager, CountryManager, \
-    PublicationQuerySetManager
+    PublicationQuerySetManager, StudentDetailedInfoManager
 from .validators import validate_resume_file_extension, validate_resume_file_size, ten_factor_validator
 
 MISSING_LABEL = 'missing'
@@ -454,6 +454,28 @@ class StudentDetailedInfoBase(models.Model):
             found = found or self._university_through_has_this_major(major)
         return found
 
+    def get_last_university_through(self):
+        last_university_through = None
+
+        university_through = UniversityThrough.objects.filter(
+            student_detailed_info__id=self.id
+        )
+        post_doc = university_through.get_post_doc()
+        phd = university_through.get_phd()
+        master = university_through.get_master()
+        bachelor = university_through.get_bachelor()
+
+        if post_doc:
+            last_university_through = post_doc
+        elif phd:
+            last_university_through = phd
+        elif master:
+            last_university_through = master
+        elif bachelor:
+            last_university_through = bachelor
+
+        return last_university_through
+
 
 class StudentDetailedInfo(StudentDetailedInfoBase):
     user = models.OneToOneField(
@@ -530,9 +552,21 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         null=True,
     )
 
-    # total_value =
+    value = models.FloatField(
+        validators=[MinValueValidator(0), MaxValueValidator(1)],
+        null=True,
+        editable=False
+    )
+
+    rank = models.IntegerField(
+        validators=[MinValueValidator(1)],
+        editable=False
+    )
+
+    objects = StudentDetailedInfoManager.as_manager()
+
     class Meta:
-        ordering = ['created', ]
+        ordering = ['-created', ]
 
     RELATED_WORK_EXPERIENCE_STORE_LABEL_RANGE = 2
     RELATED_WORK_EXPERIENCE_VIEW_LABEL_RANGE = 6
@@ -544,20 +578,26 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
     #     )
     #
 
-    @property
-    def total_value(self):
+    def update_rank(self):
+        better_rank_qs = self.__class__.objects.filter(value__gt=self.value)
+        return better_rank_qs.count() + 1
+
+    def compute_value(self):
         publications = Publication.objects.filter(
             student_detailed_info__id=self.id
         )
         languages = LanguageCertificate.objects.filter(
-            student_detailed_info__id = self.id
+            student_detailed_info__id=self.id
         )
 
         total_value = 0
-        total_value += 2 * self.get_last_university_through().value
+        if self.get_last_university_through():
+            total_value += 2 * self.get_last_university_through().value
         total_value += publications.qs_total_value()
-        total_value += languages.get_total_value()[0]
+        total_value += languages.get_total_value()
         total_value += self.others_value
+
+        total_value = total_value / 5
 
         return total_value
 
@@ -588,29 +628,7 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         return True
 
     def get_last_university_grade(self):
-        return self.get_last_university_through().grade
-
-    def get_last_university_through(self):
-        last_university_through = None
-
-        university_through = UniversityThrough.objects.filter(
-            student_detailed_info__id=self.id
-        )
-        post_doc = university_through.get_post_doc()
-        phd = university_through.get_phd()
-        master = university_through.get_master()
-        bachelor = university_through.get_bachelor()
-
-        if post_doc:
-            last_university_through = post_doc
-        elif phd:
-            last_university_through = phd
-        elif master:
-            last_university_through = master
-        elif bachelor:
-            last_university_through = bachelor
-
-        return last_university_through
+        return None if self.get_last_university_through() is None else self.get_last_university_through().grade
 
     def get_related_majors(self):
         related_major_ids = []
@@ -627,7 +645,7 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         return FieldOfStudy.objects.filter(id__in=related_major_ids)
 
     def get_powerful_recommendation__store_label(self):
-        return MISSING_LABEL if not self.powerful_recommendation or self.powerful_recommendation is None\
+        return MISSING_LABEL if not self.powerful_recommendation or self.powerful_recommendation is None \
             else REWARDED_LABEL
 
     def get_olympiad__store_label(self):
@@ -745,7 +763,7 @@ class UniversityThrough(models.Model):
         elif values.BAD_UNIVERSITY_RANK <= university_rank:
             value *= 0.65
 
-        value = (decimal.Decimal(value) * (self.gpa / 10)) / 2
+        value = (decimal.Decimal(value) * decimal.Decimal(self.gpa / 10)) / 2
 
         if values.UNIVERSITY_AP_VALUE <= value:
             value_str = "A+"
@@ -835,7 +853,7 @@ class LanguageCertificate(models.Model):
         try:
             self.regularlanguagecertificate
             return True
-        except RegularLanguageCertificate:
+        except RegularLanguageCertificate.DoesNotExist:
             return False
 
     def compute_value(self):

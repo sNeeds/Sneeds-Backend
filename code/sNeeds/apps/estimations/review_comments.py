@@ -70,6 +70,8 @@ BACHELOR_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_ABOVE_18 = BACHELOR_LAST_GRADE_ABOVE
 # Age
 AGE_DESCRIPTION_COMMENT = "سن متقاضی نکته خیلی تاثیر گذاری نیست و به هیچ وجه مانع حساب نمی‌شه فقط در مواردی می‌تونه مشکل ساز بشه. سن رو دو چیز می‌تونه تاثیر بذاره، اخذ پذیرش و گرفتن ویزا."
 
+AGE_OKAY_MESSAGE = "Since you don't have academic break we have no comment on this section."
+
 AGE_BETWEEN_28_AND_30 = AGE_DESCRIPTION_COMMENT + "سنت هیچ مشکلی رو ایجاد نمی‌کنه. "
 AGE_BETWEEN_28_AND_30_WITHOUT_ACADEMIC_BREAK = AGE_BETWEEN_28_AND_30 + "گپ تحصیلی هم که نداری. "
 AGE_BETWEEN_28_AND_30_WITH_ACADEMIC_BREAK = AGE_BETWEEN_28_AND_30 + "فقط اگه می‌تونی گپ تحصیلی رو توی SOP و گرفتن ویزا با دلایلی منطقی که ارتباطت رو با رشتت نشون بده توجیه کن. "

@@ -16,7 +16,7 @@ class SimilarUniversitiesListView(APIView):
         try:
             return StudentDetailedInfo.objects.get(id=form_id)
         except StudentDetailedInfo.DoesNotExist:
-            return None
+            return Http404
 
     def get(self, request, form_id, format=None):
         form = self.get_form_obj(form_id)

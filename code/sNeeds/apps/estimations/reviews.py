@@ -1,6 +1,6 @@
 from .review_comments import *
 from ..account.models import Grade, University, UniversityThrough, LanguageCertificate, Publication, \
-    RegularLanguageCertificate, LanguageCertificateType
+    RegularLanguageCertificate, LanguageCertificateType, StudentDetailedInfo
 
 
 class StudentDetailedFormReview:
@@ -29,14 +29,16 @@ class StudentDetailedFormReview:
         )
 
         self._set_grade()
-        # User has no previous university!
-        if self.last_grade is None:
-            return NONE_UNIVERSITY_COMMENT
 
         # User has previous university
-        last_grade_university = university_through.get(grade=self.last_grade)
+        if self.last_grade:
+            last_grade_university = university_through.get(grade=self.last_grade)
 
-        data = {}
+        data = {
+            'phd': None,
+            'master': None,
+            'bachelor': None
+        }
 
         if last_grade == Grade.PHD:
             # TODO: PHD remained
@@ -44,75 +46,75 @@ class StudentDetailedFormReview:
         elif last_grade == Grade.MASTER:
             if last_grade_university.university.rank < 850:
                 if last_grade_university.gpa <= 14:
-                    data['معدل ارشد'] = MASTER_LAST_GRADE_TOP_850_COMMENTS_GPA_UNDER_14
+                    data['master'] = MASTER_LAST_GRADE_TOP_850_COMMENTS_GPA_UNDER_14
                 if 14 < last_grade_university.gpa <= 16:
-                    data['معدل ارشد'] = MASTER_LAST_GRADE_TOP_850_COMMENTS_GPA_BETWEEN_14_16
+                    data['master'] = MASTER_LAST_GRADE_TOP_850_COMMENTS_GPA_BETWEEN_14_16
                 if 16 < last_grade_university.gpa <= 18:
-                    data['معدل ارشد'] = MASTER_LAST_GRADE_TOP_850_COMMENTS_GPA_BETWEEN_16_18
+                    data['master'] = MASTER_LAST_GRADE_TOP_850_COMMENTS_GPA_BETWEEN_16_18
                 if 18 < last_grade_university.gpa:
-                    data['معدل ارشد'] = MASTER_LAST_GRADE_TOP_850_COMMENTS_GPA_ABOVE_18
+                    data['master'] = MASTER_LAST_GRADE_TOP_850_COMMENTS_GPA_ABOVE_18
 
             elif 850 <= last_grade_university.university.rank <= 1100:
                 if last_grade_university.gpa <= 14:
-                    data['معدل ارشد'] = MASTER_LAST_GRADE_BETWEEN_850_1100_COMMENTS_GPA_UNDER_14
+                    data['master'] = MASTER_LAST_GRADE_BETWEEN_850_1100_COMMENTS_GPA_UNDER_14
                 if 14 < last_grade_university.gpa <= 16:
-                    data['معدل ارشد'] = MASTER_LAST_GRADE_BETWEEN_850_1100_COMMENTS_GPA_BETWEEN_14_16
+                    data['master'] = MASTER_LAST_GRADE_BETWEEN_850_1100_COMMENTS_GPA_BETWEEN_14_16
                 if 16 < last_grade_university.gpa <= 18:
-                    data['معدل ارشد'] = MASTER_LAST_GRADE_BETWEEN_850_1100_COMMENTS_GPA_BETWEEN_16_18
+                    data['master'] = MASTER_LAST_GRADE_BETWEEN_850_1100_COMMENTS_GPA_BETWEEN_16_18
                 if 18 < last_grade_university.gpa:
-                    data['معدل ارشد'] = MASTER_LAST_GRADE_BETWEEN_850_1100_COMMENTS_GPA_ABOVE_18
+                    data['master'] = MASTER_LAST_GRADE_BETWEEN_850_1100_COMMENTS_GPA_ABOVE_18
 
             elif 1100 < last_grade_university.university.rank:
                 if last_grade_university.gpa <= 14:
-                    data['معدل ارشد'] = MASTER_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_UNDER_14
+                    data['master'] = MASTER_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_UNDER_14
                 if 14 < last_grade_university.gpa <= 16:
-                    data['معدل ارشد'] = MASTER_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_BETWEEN_14_16
+                    data['master'] = MASTER_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_BETWEEN_14_16
                 if 16 < last_grade_university.gpa <= 18:
-                    data['معدل ارشد'] = MASTER_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_BETWEEN_16_18
+                    data['master'] = MASTER_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_BETWEEN_16_18
                 if 18 < last_grade_university.gpa:
-                    data['معدل ارشد'] = MASTER_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_ABOVE_18
+                    data['master'] = MASTER_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_ABOVE_18
 
             bachelor = university_through.get_bachelor()
             if bachelor is not None:
                 if bachelor.gpa <= 14:
-                    data['معدل کارشناسی'] = MASTER_WITH_BACHELOR_BAD_GPA
+                    data['bachelor'] = MASTER_WITH_BACHELOR_BAD_GPA
                 elif 14 < bachelor.gpa <= 16:
-                    data['معدل کارشناسی'] = MASTER_WITH_BACHELOR_MODERATE_GPA
+                    data['bachelor'] = MASTER_WITH_BACHELOR_MODERATE_GPA
                 elif 16 < bachelor.gpa <= 18:
-                    data['معدل کارشناسی'] = MASTER_WITH_BACHELOR_GOOD_GPA
+                    data['bachelor'] = MASTER_WITH_BACHELOR_GOOD_GPA
                 elif 18 < bachelor.gpa:
-                    data['معدل کارشناسی'] = MASTER_WITH_BACHELOR_EXCELLENT_GPA
+                    data['bachelor'] = MASTER_WITH_BACHELOR_EXCELLENT_GPA
 
         elif last_grade == Grade.BACHELOR:
             if last_grade_university.university.rank < 850:
                 if last_grade_university.gpa <= 14:
-                    data['معدل کارشناسی'] = BACHELOR_LAST_GRADE_TOP_850_COMMENTS_GPA_UNDER_14
+                    data['bachelor'] = BACHELOR_LAST_GRADE_TOP_850_COMMENTS_GPA_UNDER_14
                 if 14 < last_grade_university.gpa <= 16:
-                    data['معدل کارشناسی'] = BACHELOR_LAST_GRADE_TOP_850_COMMENTS_GPA_BETWEEN_14_16
+                    data['bachelor'] = BACHELOR_LAST_GRADE_TOP_850_COMMENTS_GPA_BETWEEN_14_16
                 if 16 < last_grade_university.gpa <= 18:
-                    data['معدل کارشناسی'] = BACHELOR_LAST_GRADE_TOP_850_COMMENTS_GPA_BETWEEN_16_18
+                    data['bachelor'] = BACHELOR_LAST_GRADE_TOP_850_COMMENTS_GPA_BETWEEN_16_18
                 if 18 < last_grade_university.gpa:
-                    data['معدل کارشناسی'] = BACHELOR_LAST_GRADE_TOP_850_COMMENTS_GPA_ABOVE_18
+                    data['bachelor'] = BACHELOR_LAST_GRADE_TOP_850_COMMENTS_GPA_ABOVE_18
 
             elif 850 <= last_grade_university.university.rank <= 1100:
                 if last_grade_university.gpa <= 14:
-                    data['معدل کارشناسی'] = BACHELOR_LAST_GRADE_BETWEEN_850_1100_COMMENTS_GPA_UNDER_14
+                    data['bachelor'] = BACHELOR_LAST_GRADE_BETWEEN_850_1100_COMMENTS_GPA_UNDER_14
                 if 14 < last_grade_university.gpa <= 16:
-                    data['معدل کارشناسی'] = BACHELOR_LAST_GRADE_BETWEEN_850_1100_COMMENTS_GPA_BETWEEN_14_16
+                    data['bachelor'] = BACHELOR_LAST_GRADE_BETWEEN_850_1100_COMMENTS_GPA_BETWEEN_14_16
                 if 16 < last_grade_university.gpa <= 18:
-                    data['معدل کارشناسی'] = BACHELOR_LAST_GRADE_BETWEEN_850_1100_COMMENTS_GPA_BETWEEN_16_18
+                    data['bachelor'] = BACHELOR_LAST_GRADE_BETWEEN_850_1100_COMMENTS_GPA_BETWEEN_16_18
                 if 18 < last_grade_university.gpa:
-                    data['معدل کارشناسی'] = BACHELOR_LAST_GRADE_BETWEEN_850_1100_COMMENTS_GPA_ABOVE_18
+                    data['bachelor'] = BACHELOR_LAST_GRADE_BETWEEN_850_1100_COMMENTS_GPA_ABOVE_18
 
             elif 1100 < last_grade_university.university.rank:
                 if last_grade_university.gpa <= 14:
-                    data['معدل کارشناسی'] = BACHELOR_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_UNDER_14
+                    data['bachelor'] = BACHELOR_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_UNDER_14
                 if 14 < last_grade_university.gpa <= 16:
-                    data['معدل کارشناسی'] = BACHELOR_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_BETWEEN_14_16
+                    data['bachelor'] = BACHELOR_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_BETWEEN_14_16
                 if 16 < last_grade_university.gpa <= 18:
-                    data['معدل کارشناسی'] = BACHELOR_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_BETWEEN_16_18
+                    data['bachelor'] = BACHELOR_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_BETWEEN_16_18
                 if 18 < last_grade_university.gpa:
-                    data['معدل کارشناسی'] = BACHELOR_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_ABOVE_18
+                    data['bachelor'] = BACHELOR_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_ABOVE_18
 
         return data
 
@@ -121,10 +123,10 @@ class StudentDetailedFormReview:
         form = self.student_detailed_form
 
         if age is None:
-            return None
+            return AGE_OKAY_MESSAGE
 
         elif age < 28:
-            return None
+            return AGE_OKAY_MESSAGE
 
         elif 28 <= age < 30:
             if form.academic_break is None:
@@ -153,11 +155,11 @@ class StudentDetailedFormReview:
         # Supports IELTS general, academic and TOEFL
         ielts_academic_qs = RegularLanguageCertificate.objects.filter(
             student_detailed_info=form,
-            certificate_type=LanguageCertificateType.IELTS_GENERAL
+            certificate_type=LanguageCertificateType.IELTS_ACADEMIC
         )
         ielts_general_qs = RegularLanguageCertificate.objects.filter(
             student_detailed_info=form,
-            certificate_type=LanguageCertificateType.IELTS_ACADEMIC
+            certificate_type=LanguageCertificateType.IELTS_GENERAL
         )
         toefls_qs = RegularLanguageCertificate.objects.filter(
             student_detailed_info=form,
@@ -174,7 +176,7 @@ class StudentDetailedFormReview:
 
         if ielts_academic_qs.exists():
             ielts_academic = ielts_academic_qs.first()
-            data['ielts_academic'] = {
+            data['ielts-academic'] = {
                 "comment": None,
                 "is_mock": ielts_academic.is_mock,
                 "value": ielts_academic.compute_value()[0],
@@ -193,7 +195,7 @@ class StudentDetailedFormReview:
 
         if ielts_general_qs.exists():
             ielts_general = ielts_general_qs.first()
-            data['ielts_general'] = {
+            data['ielts-general'] = {
                 "comment": None,
                 "is_mock": ielts_general.is_mock,
                 "value": ielts_general.compute_value()[0],
@@ -230,8 +232,8 @@ class StudentDetailedFormReview:
             elif 110 <= toefl.overall:
                 data["toefl"]["comment"] = TOEFL_GREAT
 
-        data["total_value"] = language_certificates.get_total_value()[0]
-        data["total_value_str"] = language_certificates.get_total_value()[1]
+        data["total_value"] = language_certificates.get_total_value()
+        data["total_value_str"] = language_certificates.get_total_value_str()
 
         return data
 
@@ -304,23 +306,20 @@ class StudentDetailedFormReview:
 
         more_than_one_publications = bool(publications_qs.count())
 
-        data = {
-            "کارشناسی": None,
-            "ارشد": None
-        }
+        data = None
 
         if self.last_grade == Grade.BACHELOR:
             if publications_qs.count() == 0:
-                data["کارشناسی"] = NO_PUBLICATION_BACHELOR
+                data = NO_PUBLICATION_BACHELOR
             elif publications_qs.count() == 1:
-                data["کارشناسی"] = ONE_PUBLICATION_BACHELOR
+                data = ONE_PUBLICATION_BACHELOR
             elif publications_qs.count() == 2:
-                data["کارشناسی"] = TWO_PUBLICATION_BACHELOR
+                data = TWO_PUBLICATION_BACHELOR
             elif publications_qs.count() >= 3:
-                data["کارشناسی"] = THREE_OR_MORE_PUBLICATION_BACHELOR
+                data = THREE_OR_MORE_PUBLICATION_BACHELOR
 
             if excellent_publications.exists():
-                data["کارشناسی"] += _add_review(
+                data += _add_review(
                     excellent_publications,
                     BACHELOR_HAS_EXCELLENT_PUBLICATION_SINGULAR,
                     HAS_EXCELLENT_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
@@ -330,7 +329,7 @@ class StudentDetailedFormReview:
                     more_than_one_publications
                 )
             if great_publications.exists():
-                data["کارشناسی"] += _add_review(
+                data += _add_review(
                     great_publications,
                     BACHELOR_HAS_GREAT_PUBLICATION_SINGULAR,
                     HAS_GREAT_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
@@ -340,7 +339,7 @@ class StudentDetailedFormReview:
                     more_than_one_publications
                 )
             if good_publications.exists():
-                data["کارشناسی"] += _add_review(
+                data += _add_review(
                     good_publications,
                     BACHELOR_HAS_GOOD_PUBLICATION_SINGULAR,
                     HAS_GOOD_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
@@ -350,7 +349,7 @@ class StudentDetailedFormReview:
                     more_than_one_publications
                 )
             if average_publications.exists():
-                data["کارشناسی"] += _add_review(
+                data += _add_review(
                     average_publications,
                     BACHELOR_HAS_AVERAGE_PUBLICATION_SINGULAR,
                     HAS_AVERAGE_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
@@ -360,7 +359,7 @@ class StudentDetailedFormReview:
                     more_than_one_publications
                 )
             if bad_publications.exists():
-                data["کارشناسی"] += _add_review(
+                data += _add_review(
                     bad_publications,
                     BACHELOR_HAS_BAD_PUBLICATION_SINGULAR,
                     HAS_BAD_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
@@ -372,18 +371,18 @@ class StudentDetailedFormReview:
 
         if self.last_grade == Grade.MASTER:
             if publications_qs.count() == 0:
-                data["ارشد"] = NO_PUBLICATION_MASTER
+                data = NO_PUBLICATION_MASTER
             elif publications_qs.count() == 1:
-                data["ارشد"] = ONE_PUBLICATION_MASTER
+                data = ONE_PUBLICATION_MASTER
             elif publications_qs.count() == 2:
-                data["ارشد"] = TWO_PUBLICATION_MASTER
+                data = TWO_PUBLICATION_MASTER
             elif publications_qs.count() == 3:
-                data["ارشد"] = THREE_PUBLICATION_MASTER
+                data = THREE_PUBLICATION_MASTER
             elif publications_qs.count() >= 4:
-                data["ارشد"] = FOUR_OR_MORE_PUBLICATION_MASTER
+                data = FOUR_OR_MORE_PUBLICATION_MASTER
 
             if excellent_publications.exists():
-                data["ارشد"] += _add_review(
+                data += _add_review(
                     excellent_publications,
                     MASTER_HAS_EXCELLENT_PUBLICATION_SINGULAR,
                     HAS_EXCELLENT_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
@@ -393,7 +392,7 @@ class StudentDetailedFormReview:
                     more_than_one_publications
                 )
             if great_publications.exists():
-                data["ارشد"] += _add_review(
+                data += _add_review(
                     great_publications,
                     MASTER_HAS_GREAT_PUBLICATION_SINGULAR,
                     HAS_GREAT_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
@@ -403,7 +402,7 @@ class StudentDetailedFormReview:
                     more_than_one_publications
                 )
             if good_publications.exists():
-                data["ارشد"] += _add_review(
+                data += _add_review(
                     good_publications,
                     MASTER_HAS_GOOD_PUBLICATION_SINGULAR,
                     HAS_GOOD_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
@@ -413,7 +412,7 @@ class StudentDetailedFormReview:
                     more_than_one_publications
                 )
             if average_publications.exists():
-                data["ارشد"] += _add_review(
+                data += _add_review(
                     average_publications,
                     MASTER_HAS_AVERAGE_PUBLICATION_SINGULAR,
                     HAS_AVERAGE_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
@@ -423,7 +422,7 @@ class StudentDetailedFormReview:
                     more_than_one_publications
                 )
             if bad_publications.exists():
-                data["ارشد"] += _add_review(
+                data += _add_review(
                     bad_publications,
                     MASTER_HAS_BAD_PUBLICATION_SINGULAR,
                     HAS_BAD_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
@@ -453,29 +452,33 @@ class StudentDetailedFormReview:
 
     def review_others(self):
         data = ""
+
         data += self._review_recommendation()
         data += self._review_work_experience()
+
+        if data is "":
+            data = "Since you have powerful recommendation and you don't have work experience we have no comments in this section."
 
         return data
 
     def review_all(self):
         self._set_grade()
         data = {
+            "student_detailed_info": self.student_detailed_form.id,
             "university and gpa": {
                 "data": self.review_universities(),
-                "value": self.last_university_through.value,
-                "value_str": self.last_university_through.compute_value()[1],
-                "university_value": self.last_university_through.university.value,
-                "gpa_value": self.last_university_through.gpa_value
+                "value": None if self.last_university_through is None else self.last_university_through.value,
+                "value_str": None if self.last_university_through is None else
+                self.last_university_through.compute_value()[1],
+                "university_value": None if self.last_university_through is None else self.last_university_through.university.value,
+                "gpa_value": None if self.last_university_through is None else self.last_university_through.gpa_value
             },
             "publication": {
-                "data": "Coming soon ...",
+                "data": self.review_publications(),
                 "total_value": self.publications_total_value(),
                 "total_value_str": self.publications_total_value_str()
             },
-            'language': {
-                "data": self.review_language_certificates()
-            },
+            'language': self.review_language_certificates(),
             "age and gap": {
                 "data": self.review_age(),
             },
@@ -483,7 +486,9 @@ class StudentDetailedFormReview:
                 "data": self.review_others(),
                 "value": self.student_detailed_form.others_value
             },
-            "total_value": self.student_detailed_form.total_value
+            "total_value": self.student_detailed_form.value,
+            "rank": 142,
+            "rank_among": 1709
         }
 
         return data
