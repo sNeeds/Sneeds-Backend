@@ -24,6 +24,7 @@ from ..carts.models import Cart
 from ..notifications.tasks import send_email_notifications
 from ..storePackages.models import SoldStorePackagePhaseDetail
 from ...settings.config.variables import FRONTEND_URL
+from ...utils.custom.custom_permissions import IsConsultantPermission
 
 ZARINPAL_MERCHANT = settings.ZARINPAL_MERCHANT
 
@@ -149,7 +150,7 @@ class VerifyTest(APIView):
 
 class ConsultantDepositInfoListAPIView(generics.ListAPIView):
     serializer_class = ConsultantDepositInfoSerializer
-    permission_classes = [permissions.IsAuthenticated, IsConsultant]
+    permission_classes = [permissions.IsAuthenticated, IsConsultantPermission]
 
     def get_queryset(self):
         user = self.request.user
@@ -162,4 +163,4 @@ class ConsultantDepositInfoDetailAPIView(generics.RetrieveAPIView):
     lookup_field = 'consultant_deposit_info_id'
     queryset = qs = ConsultantDepositInfo.objects.all()
     serializer_class = ConsultantDepositInfoSerializer
-    permission_classes = [permissions.IsAuthenticated, IsConsultant, ConsultantDepositInfoOwner]
+    permission_classes = [permissions.IsAuthenticated, IsConsultantPermission, ConsultantDepositInfoOwner]
