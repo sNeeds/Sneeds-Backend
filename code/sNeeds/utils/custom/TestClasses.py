@@ -1,20 +1,15 @@
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
-import time
 
 from django.contrib.auth import get_user_model
-from django.urls import reverse
-from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 from django.conf import settings
 
-from sNeeds.apps.account.models import Country, University, FieldOfStudy, StudentDetailedInfo
-from sNeeds.apps.carts.models import Cart
-from sNeeds.apps.carts.serializers import CartSerializer
-from sNeeds.apps.consultants.models import ConsultantProfile, StudyInfo
-from sNeeds.apps.store.models import TimeSlotSale, SoldTimeSlotSale
-from sNeeds.apps.store.serializers import TimeSlotSaleSerializer
-from sNeeds.apps.storePackages.models import (
+from sNeeds.apps.users.account import Country, University, FieldOfStudy, StudentDetailedInfo
+from sNeeds.apps.store.carts.models import Cart
+from sNeeds.apps.users.consultants.models import ConsultantProfile, StudyInfo
+from sNeeds.apps.store.storeBase.models import TimeSlotSale, SoldTimeSlotSale
+from sNeeds.apps.store.storePackages import (
     StorePackagePhase, StorePackagePhaseThrough, StorePackage,
     SoldStorePackage, SoldStorePaidPackagePhase, SoldStoreUnpaidPackagePhase,
     SoldStorePackagePhaseDetail)

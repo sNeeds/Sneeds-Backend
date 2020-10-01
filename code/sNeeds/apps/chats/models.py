@@ -5,12 +5,11 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 
-from ckeditor.fields import RichTextField
 from polymorphic.models import PolymorphicModel
 from polymorphic.managers import PolymorphicManager
 
 from sNeeds.apps.chats.utils import chat_last_message_updated
-from sNeeds.apps.consultants.models import ConsultantProfile
+from sNeeds.apps.users.consultants.models import ConsultantProfile
 
 User = get_user_model()
 
