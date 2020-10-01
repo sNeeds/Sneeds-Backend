@@ -15,7 +15,7 @@ from rest_framework import generics
 from sNeeds.apps.orders.models import Order
 
 from .serializers import ConsultantDepositInfoSerializer
-from .permissions import IsConsultant, ConsultantDepositInfoOwner
+from .permissions import  CnsultantDepositInfoOwner
 from .models import ConsultantDepositInfo
 from sNeeds.apps.consultants.models import ConsultantProfile
 
