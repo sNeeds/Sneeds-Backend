@@ -1,6 +1,6 @@
 from .review_comments import *
-from sNeeds.apps.users.account.models import Grade, UniversityThrough, LanguageCertificate, Publication, \
-    RegularLanguageCertificate, LanguageCertificateType
+from sNeeds.apps.users.account.models import GradeChoices, UniversityThrough, LanguageCertificate, Publication, \
+    RegularLanguageCertificate
 
 
 class StudentDetailedFormReview:
@@ -40,10 +40,10 @@ class StudentDetailedFormReview:
             'bachelor': None
         }
 
-        if last_grade == Grade.PHD:
+        if last_grade == GradeChoices.PHD:
             # TODO: PHD remained
             pass
-        elif last_grade == Grade.MASTER:
+        elif last_grade == GradeChoices.MASTER:
             if last_grade_university.university.rank < 850:
                 if last_grade_university.gpa <= 14:
                     data['master'] = MASTER_LAST_GRADE_TOP_850_COMMENTS_GPA_UNDER_14
@@ -85,7 +85,7 @@ class StudentDetailedFormReview:
                 elif 18 < bachelor.gpa:
                     data['bachelor'] = MASTER_WITH_BACHELOR_EXCELLENT_GPA
 
-        elif last_grade == Grade.BACHELOR:
+        elif last_grade == GradeChoices.BACHELOR:
             if last_grade_university.university.rank < 850:
                 if last_grade_university.gpa <= 14:
                     data['bachelor'] = BACHELOR_LAST_GRADE_TOP_850_COMMENTS_GPA_UNDER_14

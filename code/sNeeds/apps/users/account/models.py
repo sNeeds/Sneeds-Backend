@@ -11,7 +11,6 @@ from django.db import models
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
-from enumfields import Enum, EnumField
 
 from sNeeds.apps.estimation.estimations import values
 from .managers import UniversityThroughQuerySetManager, LanguageCertificateQuerysetManager, CountryManager, \
@@ -26,69 +25,12 @@ ZERO_LABEL = '0'
 User = get_user_model()
 
 
+class GradeChoices(models.TextChoices):
+    BACHELOR = 'Bachelor'
+    MASTER = 'Master'
+    PHD = 'PH.D'
+    POST_DOC = 'Post Doc'
 
-
-settings.ENUM_CLASSES[Grade.__name__] = Grade
-
-
-class PublicationType(Enum):
-    JOURNAL = 'ژورنالی'
-    CONFERENCE = 'کنفرانسی'
-
-
-settings.ENUM_CLASSES[PublicationType.__name__] = PublicationType
-
-
-class LanguageCertificateType(Enum):
-    IELTS_GENERAL = 'IELTS General'
-    IELTS_ACADEMIC = 'IELTS Academic'
-    TOEFL = 'TOEFL'
-    GMAT = 'GMAT'
-    GRE_GENERAL = 'GRE General'
-    GRE_CHEMISTRY = 'GRE Chemistry'
-    GRE_MATHEMATICS = 'GRE Mathematics'
-    GRE_LITERATURE = 'GRE Literature'
-    GRE_BIOLOGY = 'GRE Biology'
-    GRE_PHYSICS = 'GRE Physics'
-    GRE_PSYCHOLOGY = 'GRE Psychology'
-    DUOLINGO = 'Duolingo'
-
-
-settings.ENUM_CLASSES[LanguageCertificateType.__name__] = LanguageCertificateType
-
-
-class PaymentAffordability(Enum):
-    LOW = 'کم'
-    MIDDLE = 'متوسط'
-    MUCH = 'زیاد'
-
-
-settings.ENUM_CLASSES[PaymentAffordability.__name__] = PaymentAffordability
-
-
-class Gender(Enum):
-    MALE = 'آقا'
-    FEMALE = 'خانم'
-
-
-settings.ENUM_CLASSES[Gender.__name__] = Gender
-
-
-class MilitaryServiceStatus(Enum):
-    PASSED = 'گذرانده شده'
-    UNDID = 'گذرانده نشده'
-
-
-settings.ENUM_CLASSES[MilitaryServiceStatus.__name__] = MilitaryServiceStatus
-
-
-class JournalReputation(Enum):
-    ONE_TO_THREE = 'از یک تا سه'
-    FOUR_TO_TEN = 'از چهار تا ده'
-    ABOVE_TEN = 'بیشتر از ده'
-
-
-settings.ENUM_CLASSES[JournalReputation.__name__] = JournalReputation
 
 
 def current_year():
@@ -234,6 +176,18 @@ class Publication(models.Model):
         THIRD = 'Third'
         FOURTH_OR_MORE = 'Fourth or more'
 
+    class PublicationChoices(models.TextChoices):
+        JOURNAL = 'Journal'
+        CONFERENCE = 'Conference'
+
+    class JournalReputationChoices(models.TextChoices):
+        ONE_TO_THREE = 'One to three'
+        FOUR_TO_TEN = 'Four to ten'
+        ABOVE_TEN = 'Above ten'
+
+    PUBLICATIONS_SCORE__STORE_LABEL_RANGE = 0.5
+    PUBLICATIONS_SCORE__VIEW_LABEL_RANGE = 1
+
     student_detailed_info = models.ForeignKey(
         'StudentDetailedInfoBase',
         on_delete=models.CASCADE
@@ -248,12 +202,14 @@ class Publication(models.Model):
         max_length=128,
         default=WhichAuthorChoices.FOURTH_OR_MORE
     )
-    type = EnumField(PublicationType, max_length=20, default=PublicationType.JOURNAL)
-
-    journal_reputation = EnumField(
-        JournalReputation,
+    type = models.CharField(
+        choices=PublicationChoices.choices,
+        max_length=20,
+        default=PublicationChoices.JOURNAL
+    )
+    journal_reputation = models.CharField(
         max_length=128,
-        null=True,
+        choices=JournalReputationChoices.choices,
     )
 
     value = models.FloatField(
@@ -262,9 +218,6 @@ class Publication(models.Model):
     )  # Updated in signal
 
     objects = PublicationQuerySetManager.as_manager()
-
-    PUBLICATIONS_SCORE__STORE_LABEL_RANGE = 0.5
-    PUBLICATIONS_SCORE__VIEW_LABEL_RANGE = 1
 
     def __str__(self):
         return self.title
@@ -475,6 +428,19 @@ class StudentDetailedInfoBase(models.Model):
 
 
 class StudentDetailedInfo(StudentDetailedInfoBase):
+    class PaymentAffordabilityChoices(models.TextChoices):
+        LOW = 'Low'
+        AVERAGE = 'Average'
+        HIGH = 'High'
+
+    class GenderChoices(models.TextChoices):
+        MALE = 'Male'
+        FEMALE = 'Female'
+
+    class MilitaryServiceChoices(models.TextChoices):
+        PASSED = 'Passed'
+        UNDID = 'Undid'
+
     user = models.OneToOneField(
         User,
         null=True,
@@ -488,19 +454,20 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         blank=True,
     )
 
-    gender = EnumField(
-        Gender,
-        default=Gender.MALE,
+    gender = models.CharField(
         null=True,
         blank=True,
+        max_length=128,
+        choices=GenderChoices.choices,
+        default=GenderChoices.MALE,
     )
 
-    military_service_status = EnumField(
-        MilitaryServiceStatus,
-        default=MilitaryServiceStatus.UNDID,
-        max_length=30,
+    military_service_status = models.CharField(
         null=True,
         blank=True,
+        max_length=128,
+        choices=MilitaryServiceChoices.choices,
+        default=MilitaryServiceChoices.UNDID,
     )
 
     is_married = models.BooleanField(
@@ -509,12 +476,12 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         blank=True
     )
 
-    payment_affordability = EnumField(
-        PaymentAffordability,
-        default=PaymentAffordability.MIDDLE,
-        max_length=30,
+    payment_affordability = models.CharField(
         null=True,
         blank=True,
+        max_length=30,
+        choices=PaymentAffordabilityChoices.choices,
+        default=PaymentAffordabilityChoices.AVERAGE,
     )
 
     prefers_full_fund = models.BooleanField(
@@ -696,12 +663,6 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
 
 
 class UniversityThrough(models.Model):
-    class GradeChoices(models.TextChoices):
-        BACHELOR = 'Bachelor'
-        MASTER = 'Master'
-        PHD = 'PH.D'
-        POST_DOC = 'Post Doc'
-
     university = models.ForeignKey(
         University, on_delete=models.PROTECT
     )
@@ -710,6 +671,7 @@ class UniversityThrough(models.Model):
         on_delete=models.CASCADE
     )
     grade = models.CharField(
+        max_length=128,
         choices=GradeChoices.choices,
         default=GradeChoices.BACHELOR
     )
@@ -827,13 +789,27 @@ class UniversityThrough(models.Model):
 
 
 class LanguageCertificate(models.Model):
+    class LanguageCertificateChoices(models.TextChoices):
+        IELTS_GENERAL = 'IELTS General'
+        IELTS_ACADEMIC = 'IELTS Academic'
+        TOEFL = 'TOEFL'
+        GMAT = 'GMAT'
+        GRE_GENERAL = 'GRE General'
+        GRE_CHEMISTRY = 'GRE Chemistry'
+        GRE_MATHEMATICS = 'GRE Mathematics'
+        GRE_LITERATURE = 'GRE Literature'
+        GRE_BIOLOGY = 'GRE Biology'
+        GRE_PHYSICS = 'GRE Physics'
+        GRE_PSYCHOLOGY = 'GRE Psychology'
+        DUOLINGO = 'Duolingo'
+
     student_detailed_info = models.ForeignKey(
         StudentDetailedInfoBase,
         on_delete=models.CASCADE
     )
-    certificate_type = EnumField(
-        LanguageCertificateType,
-        default=LanguageCertificateType.TOEFL,
+    certificate_type = models.CharField(
+        choices=LanguageCertificateChoices.choices,
+        default=LanguageCertificateChoices.TOEFL,
         max_length=64,
         help_text="Based on endpoint just some types are allowed to insert not all certificate types."
     )
@@ -982,9 +958,10 @@ class RegularLanguageCertificate(LanguageCertificate):
     @classmethod
     def get_toefl_user_view_based_positions(cls, sdi):
         positions = []
-        user_toefl_certificates = cls.objects.filter(student_detailed_info=sdi,
-                                                     certificate_type=LanguageCertificateType.TOEFL
-                                                     )
+        user_toefl_certificates = cls.objects.filter(
+            student_detailed_info=sdi,
+            certificate_type=LanguageCertificate.LanguageCertificateChoices.TOEFL
+        )
         for obj in user_toefl_certificates:
             positions.append(obj.get_toefl__view_label())
 
@@ -993,10 +970,11 @@ class RegularLanguageCertificate(LanguageCertificate):
     @classmethod
     def get_ielts_user_store_based_positions(cls, sdi):
         positions = []
-        user_toefl_certificates = cls.objects.filter(Q(student_detailed_info=sdi) and
-                                                     (Q(certificate_type=LanguageCertificateType.IELTS_GENERAL) or
-                                                      Q(certificate_type=LanguageCertificateType.IELTS_ACADEMIC))
-                                                     )
+        user_toefl_certificates = cls.objects.filter(
+            Q(student_detailed_info=sdi) and
+            (Q(certificate_type=LanguageCertificate.LanguageCertificateChoices.IELTS_GENERAL) or
+             Q(certificate_type=LanguageCertificate.LanguageCertificateChoices.IELTS_ACADEMIC))
+        )
 
         for obj in user_toefl_certificates:
             positions.append(obj.get_ielts__store_label())
@@ -1006,10 +984,11 @@ class RegularLanguageCertificate(LanguageCertificate):
     @classmethod
     def get_ielts_user_view_based_positions(cls, sdi):
         positions = []
-        user_toefl_certificates = cls.objects.filter(Q(student_detailed_info=sdi) and
-                                                     (Q(certificate_type=LanguageCertificateType.IELTS_GENERAL) or
-                                                      Q(certificate_type=LanguageCertificateType.IELTS_ACADEMIC))
-                                                     )
+        user_toefl_certificates = cls.objects.filter(
+            Q(student_detailed_info=sdi) and
+            (Q(certificate_type=LanguageCertificate.LanguageCertificateChoices.IELTS_GENERAL) or
+             Q(certificate_type=LanguageCertificate.LanguageCertificateChoices.IELTS_ACADEMIC))
+        )
 
         for obj in user_toefl_certificates:
             positions.append(obj.get_ielts__view_label())

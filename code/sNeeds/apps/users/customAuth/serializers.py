@@ -12,7 +12,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from sNeeds.apps.users.consultants.serializers import ShortConsultantProfileSerializer
 from sNeeds.apps.users.consultants.models import ConsultantProfile
 from .fields import EnumField
-from .models import UserTypeChoices
 
 User = get_user_model()
 
@@ -155,7 +154,6 @@ class SafeUserDataSerializer(serializers.ModelSerializer):
 
 class MyAccountSerializer(serializers.ModelSerializer):
     consultant = serializers.SerializerMethodField()
-    user_type = EnumField(enum=UserTypeChoices)
 
     class Meta:
         model = User

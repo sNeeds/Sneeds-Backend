@@ -7,7 +7,7 @@ from rest_framework.validators import ValidationError
 from . import fields
 
 from . import models
-from .models import StudentDetailedInfo, StudentFormApplySemesterYear, BasicFormField, WantToApply, UniversityThrough, LanguageCertificateType, \
+from .models import StudentDetailedInfo, StudentFormApplySemesterYear, BasicFormField, WantToApply, UniversityThrough, \
     Publication
 
 User = get_user_model()
@@ -106,7 +106,6 @@ class GradeModelSerializer(serializers.ModelSerializer):
 class WantToApplySerializer(serializers.ModelSerializer):
     countries = CountrySerializer(many=True)
     universities = UniversitySerializer(many=True)
-    # grade = fields.EnumField(enum=Grade)
     grades = GradeModelSerializer(many=True)
     majors = FieldOfStudySerializer(many=True)
     semester_years = StudentFormApplySemesterYearSerializer(many=True)
@@ -145,8 +144,6 @@ class WantToApplyRequestSerializer(serializers.ModelSerializer):
         required=False,
         many=True,
     )
-
-    # grade = fields.EnumField(enum=Grade)
 
     grades = serializers.PrimaryKeyRelatedField(
         queryset=models.GradeModel.objects.all(),
@@ -205,9 +202,6 @@ class WantToApplyRequestSerializer(serializers.ModelSerializer):
 
 
 class PublicationSerializer(serializers.ModelSerializer):
-    type = fields.EnumField(enum=models.PublicationType)
-    journal_reputation = fields.EnumField(enum=models.JournalReputation)
-
     class Meta:
         model = models.Publication
         fields = [
@@ -226,9 +220,6 @@ class PublicationRequestSerializer(serializers.ModelSerializer):
         allow_empty=False,
         required=True,
     )
-
-    type = fields.EnumField(enum=models.PublicationType)
-    journal_reputation = fields.EnumField(enum=models.JournalReputation)
 
     class Meta:
         model = models.Publication
@@ -253,7 +244,6 @@ class PublicationRequestSerializer(serializers.ModelSerializer):
 
 class UniversityThroughSerializer(serializers.ModelSerializer):
     university = UniversitySerializer()
-    grade = fields.EnumField(enum=models.Grade)
     major = FieldOfStudySerializer()
 
     class Meta:
@@ -290,8 +280,6 @@ class UniversityThroughRequestSerializer(serializers.ModelSerializer):
         required=True,
     )
 
-    grade = fields.EnumField(enum=models.Grade)
-
     class Meta:
         model = models.UniversityThrough
         fields = [
@@ -321,8 +309,6 @@ class LanguageCertificateSerializer(serializers.ModelSerializer):
         allow_empty=False,
         required=True,
     )
-
-    certificate_type = fields.EnumField(enum=LanguageCertificateType)
 
     class Meta:
         model = models.LanguageCertificate
@@ -512,21 +498,18 @@ class StudentDetailedInfoBaseSerializer(serializers.ModelSerializer):
 
 
 class StudentDetailedInfoSerializer(StudentDetailedInfoBaseSerializer):
-    #TODO:HIGHHHH
+    # TODO:HIGHHHH
 
     # from sNeeds.apps.users.customAuth.serializers import SafeUserDataSerializer
     #
     # user = SafeUserDataSerializer(read_only=True)
 
     want_to_applies = serializers.SerializerMethodField()
-    payment_affordability = fields.EnumField(enum=models.PaymentAffordability)
-    gender = fields.EnumField(enum=models.Gender)
-    military_service_status = fields.EnumField(enum=models.MilitaryServiceStatus)
 
     class Meta(StudentDetailedInfoBaseSerializer.Meta):
         model = StudentDetailedInfo
         fields = StudentDetailedInfoBaseSerializer.Meta.fields + [
-             'age', 'gender', 'military_service_status', 'is_married',
+            'age', 'gender', 'military_service_status', 'is_married',
             'want_to_applies', 'payment_affordability',
             'prefers_full_fund', 'prefers_half_fund', 'prefers_self_fund',
             'comment', 'powerful_recommendation', 'linkedin_url', 'homepage_url',
@@ -538,10 +521,6 @@ class StudentDetailedInfoSerializer(StudentDetailedInfoBaseSerializer):
 
 
 class StudentDetailedInfoRequestSerializer(serializers.ModelSerializer):
-    payment_affordability = fields.EnumField(enum=models.PaymentAffordability, required=False)
-    gender = fields.EnumField(enum=models.Gender, required=False)
-    military_service_status = fields.EnumField(enum=models.MilitaryServiceStatus, required=False)
-
     class Meta:
         model = StudentDetailedInfo
         fields = [

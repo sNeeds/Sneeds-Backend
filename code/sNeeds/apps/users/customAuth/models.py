@@ -1,7 +1,4 @@
-from enum import Enum
-
 from django.core.exceptions import ValidationError
-from enumfields import EnumIntegerField
 
 from django.db import models
 from django.utils import timezone
@@ -9,11 +6,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.mail import send_mail
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
-
-class UserTypeChoices(Enum):
-    student = 1
-    consultant = 2
-    admin_consultant = 3  # For automatic chat and ...
 
 
 class CustomUserManager(BaseUserManager):
@@ -58,15 +50,21 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     Username and password are required. Other fields are optional.
     """
+    class UserTypeChoices(models.TextChoices):
+        STUDENT = "Student"
+        CONSULTANT = "Consultant"
+        ADMIN_CONSULTANT = "Admin consultant" # For automatic chat and ...
+
 
     email = models.EmailField(_('email address'), unique=True, max_length=256)
     phone_number = models.CharField(_('phone number'), unique=True, max_length=11, blank=True, null=True)
     first_name = models.CharField(_('first name'), null=True, max_length=30, blank=True)
     last_name = models.CharField(_('last name'), null=True, max_length=150, blank=True)
 
-    user_type = EnumIntegerField(
-        enum=UserTypeChoices,
-        default=UserTypeChoices.student,
+    user_type = models.CharField(
+        max_length=128,
+        choices=UserTypeChoices.choices,
+        default=UserTypeChoices.STUDENT,
     )
     is_staff = models.BooleanField(
         _('staff status'),
@@ -112,39 +110,39 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def update_user_type(self):
         from sNeeds.apps.users.consultants.models import ConsultantProfile
-        if self.user_type == UserTypeChoices.admin_consultant:
+        if self.user_type == self.UserTypeChoices.admin_consultant:
             return
 
         if ConsultantProfile.objects.filter(user__id=self.id).exists():
-            self.user_type = UserTypeChoices.consultant
+            self.user_type = self.UserTypeChoices.consultant
         else:
-            self.user_type = UserTypeChoices.student
+            self.user_type = self.UserTypeChoices.student
 
     def is_consultant(self):
-        if self.user_type == UserTypeChoices.consultant:
+        if self.user_type == self.UserTypeChoices.consultant:
             return True
         return False
 
     def is_student(self):
-        if self.user_type == UserTypeChoices.student:
+        if self.user_type == self.UserTypeChoices.student:
             return True
         return False
 
     def is_admin_consultant(self):
-        if self.user_type == UserTypeChoices.admin_consultant:
+        if self.user_type == self.UserTypeChoices.admin_consultant:
             return True
         return False
 
     def set_user_type_consultant(self):
-        self.user_type = UserTypeChoices.consultant
+        self.user_type = self.UserTypeChoices.consultant
         self.save()
 
     def set_user_type_student(self):
-        self.user_type = UserTypeChoices.student
+        self.user_type = self.UserTypeChoices.student
         self.save()
 
     def set_user_admin_consultant(self):
-        self.user_type = UserTypeChoices.admin_consultant
+        self.user_type = self.UserTypeChoices.admin_consultant
         self.save()
 
     def get_full_name(self):

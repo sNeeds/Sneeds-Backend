@@ -1,51 +1,29 @@
 from django.conf import settings
 from django.db import models
-from enumfields import Enum, EnumField
-
 
 CHARTS_TITLES = [
-    ('grade_point_average',                 'GradePointAverage'),
-    ('publications_count',                  'PublicationsCount'),
-    ('publications_type',                   'PublicationsType'),
-    ('publications_score',                  'PublicationsScore'),
-    ('publications_impact_factor',          'PublicationsImpactFactor'),
-    ('powerful_recommendation',             'PowerfulRecommendation'),
-    ('olympiad',                            'Olympiad'),
-    ('related_work_experience',             'RelatedWorkExperience'),
-    ('toefl',                               'Toefl'),
-    ('ielts',                               'Ielts'),
-    ('gmat',                                'GMAT'),
-    ('gre_general_writing',                 'GREGeneralWriting'),
+    ('grade_point_average', 'GradePointAverage'),
+    ('publications_count', 'PublicationsCount'),
+    ('publications_type', 'PublicationsType'),
+    ('publications_score', 'PublicationsScore'),
+    ('publications_impact_factor', 'PublicationsImpactFactor'),
+    ('powerful_recommendation', 'PowerfulRecommendation'),
+    ('olympiad', 'Olympiad'),
+    ('related_work_experience', 'RelatedWorkExperience'),
+    ('toefl', 'Toefl'),
+    ('ielts', 'Ielts'),
+    ('gmat', 'GMAT'),
+    ('gre_general_writing', 'GREGeneralWriting'),
     ('gre_general_quantitative_and_verbal', 'GREGeneralQuantitativeAndVerbal'),
-    ('gre_subject_total',                   'GRESubjectTotal'),
-    ('duolingo',                            'Duolingo'),
+    ('gre_subject_total', 'GRESubjectTotal'),
+    ('duolingo', 'Duolingo'),
 ]
 
-
-class ChartTitle(Enum):
-    GRADE_POINT_AVERAGE =                  'Grade Point Average'
-    PUBLICATIONS_COUNT =                   'Publications Count'
-    PUBLICATIONS_TYPE =                    'Publications Type'
-    PUBLICATIONS_SCORE =                   'Publications Score'
-    PUBLICATIONS_IMPACT_FACTOR =           'Publications Impact Factor'
-    POWERFUL_RECOMMENDATION =              'Powerful Recommendation'
-    OLYMPIAD =                             'Olympiad'
-    RELATED_WORK_EXPERIENCE =              'Related Work Experience'
-    TOEFL =                                'Toefl'
-    IELTS =                                'Ielts'
-    GMAT =                                 'GMAT'
-    GRE_GENERAL_WRITING =                  'GRE General Writing'
-    GRE_GENERAL_QUANTITATIVE_AND_VERBAL =  'GRE General Quantitative And Verbal'
-    GRE_SUBJECT_TOTAL =                    'GRE Subject Total'
-    DUOLINGO =                             'Duolingo'
-
-
-settings.ENUM_CLASSES[ChartTitle.__name__] = ChartTitle
 
 
 def get_chart_titles_choices():
     choices = []
-    for choice in ChartTitle:
+    for choice in Chart.ChartTitleChoices.choices:
         choices.append((choice.value, choice.name))
     return choices
 
@@ -67,18 +45,37 @@ class ChartItemData(models.Model):
 
 
 class Chart(models.Model):
+    class ChartTitleChoices(models.TextChoices):
+        GRADE_POINT_AVERAGE = 'Grade Point Average'
+        PUBLICATIONS_COUNT = 'Publications Count'
+        PUBLICATIONS_TYPE = 'Publications Type'
+        PUBLICATIONS_SCORE = 'Publications Score'
+        PUBLICATIONS_IMPACT_FACTOR = 'Publications Impact Factor'
+        POWERFUL_RECOMMENDATION = 'Powerful Recommendation'
+        OLYMPIAD = 'Olympiad'
+        RELATED_WORK_EXPERIENCE = 'Related Work Experience'
+        TOEFL = 'Toefl'
+        IELTS = 'Ielts'
+        GMAT = 'GMAT'
+        GRE_GENERAL_WRITING = 'GRE General Writing'
+        GRE_GENERAL_QUANTITATIVE_AND_VERBAL = 'GRE General Quantitative And Verbal'
+        GRE_SUBJECT_TOTAL = 'GRE Subject Total'
+        DUOLINGO = 'Duolingo'
+
+
     # title = models.CharField(
     #     choices=get_chart_titles_choices(),
     #     max_length=256,
     #     unique=True,
     # )
 
-    title = EnumField(
-        ChartTitle,
+    title = models.CharField(
+        choices=ChartTitleChoices.choices,
         max_length=128,
         unique=True
     )
     created = models.DateTimeField(auto_created=True, auto_now=True)
+
     # data_number = models.PositiveIntegerField(
     #     default=0,
     # )
@@ -86,7 +83,6 @@ class Chart(models.Model):
 
     def __str__(self):
         return self.title.value
-
 
 # class GradePointAverageChart(Chart):
 #     #
@@ -160,4 +156,3 @@ class Chart(models.Model):
 # class DuolingoChart(Chart):
 #     #
 #     pass
-
