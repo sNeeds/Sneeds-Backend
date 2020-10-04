@@ -57,14 +57,14 @@ class StudentDetailedInfoTests(APITestCase):
         )
 
         # Field of Studies -------
-        self.field_of_study1 = FieldOfStudy.objects.create(
+        self.major1 = FieldOfStudy.objects.create(
             name="field of study1",
             description="Test desc1",
             picture=None,
             slug="field-of-study1"
         )
 
-        self.field_of_study2 = FieldOfStudy.objects.create(
+        self.major2 = FieldOfStudy.objects.create(
             name="field of study2",
             description="Test desc2",
             picture=None,

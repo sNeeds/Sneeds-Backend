@@ -129,8 +129,8 @@ class FieldOfStudyList(generics.ListAPIView):
     def get_queryset(self):
         from sNeeds.apps.users.consultants.models import StudyInfo
         study_info_with_active_consultant_qs = StudyInfo.objects.all().with_active_consultants()
-        field_of_study_list = list(study_info_with_active_consultant_qs.values_list('field_of_study__id', flat=True))
-        return models.Major.objects.filter(id__in=field_of_study_list)
+        major_list = list(study_info_with_active_consultant_qs.values_list('major__id', flat=True))
+        return models.Major.objects.filter(id__in=major_list)
 
 
 class FieldOfStudyForFormList(generics.ListAPIView):

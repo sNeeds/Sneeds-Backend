@@ -70,12 +70,12 @@ class ConsultantProfileSerializer(serializers.ModelSerializer):
 
 class StudyInfoSerializer(serializers.ModelSerializer):
     university = UniversitySerializer(read_only=True)
-    field_of_study = FieldOfStudySerializer(read_only=True)
+    major = FieldOfStudySerializer(read_only=True)
     country = serializers.SerializerMethodField()
 
     class Meta:
         model = sNeeds.apps.users.consultants.models.StudyInfo
-        fields = ('id', 'university', 'field_of_study', 'country', 'grade')
+        fields = ('id', 'university', 'major', 'country', 'grade')
 
     def get_country(self, obj):
         if obj.university.country:
