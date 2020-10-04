@@ -7,7 +7,6 @@ from django.core.mail import send_mail
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
 
-
 class CustomUserManager(BaseUserManager):
     def _create_user(self, email, password,
                      is_staff, is_superuser, **extra_fields):
@@ -38,7 +37,7 @@ class CustomUserManager(BaseUserManager):
 
     def get_admin_consultant_or_none(self):
         try:
-            return self.get(user_type=UserTypeChoices.admin_consultant)
+            return self.get(user_type=CustomUser.UserTypeChoices.ADMIN_CONSULTANT)
         except CustomUser.DoesNotExist:
             return None
 
@@ -50,11 +49,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     Username and password are required. Other fields are optional.
     """
+
     class UserTypeChoices(models.TextChoices):
         STUDENT = "Student"
         CONSULTANT = "Consultant"
-        ADMIN_CONSULTANT = "Admin consultant" # For automatic chat and ...
-
+        ADMIN_CONSULTANT = "Admin consultant"  # For automatic chat and ...
 
     email = models.EmailField(_('email address'), unique=True, max_length=256)
     phone_number = models.CharField(_('phone number'), unique=True, max_length=11, blank=True, null=True)
