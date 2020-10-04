@@ -23,7 +23,7 @@ CHARTS_TITLES = [
 
 def get_chart_titles_choices():
     choices = []
-    for choice in Chart.ChartTitleChoices.choices:
+    for choice in Chart.ChartTitle.choices:
         choices.append((choice.value, choice.name))
     return choices
 
@@ -45,7 +45,7 @@ class ChartItemData(models.Model):
 
 
 class Chart(models.Model):
-    class ChartTitleChoices(models.TextChoices):
+    class ChartTitle(models.TextChoices):
         GRADE_POINT_AVERAGE = 'Grade Point Average', _('Grade Point Average')
         PUBLICATIONS_COUNT = 'Publications Count', _('Publications Count')
         PUBLICATION_TYPE = 'Publication Type', _('Publication Type')
@@ -64,7 +64,7 @@ class Chart(models.Model):
         DUOLINGO = 'Duolingo', _('Duolingo')
 
     title = models.CharField(
-        choices=ChartTitleChoices.choices,
+        choices=ChartTitle.choices,
         max_length=128,
         unique=True
     )
@@ -77,76 +77,3 @@ class Chart(models.Model):
 
     def __str__(self):
         return self.title.value
-
-# class GradePointAverageChart(Chart):
-#     #
-#     pass
-#
-#
-# class PublicationCountChart(Chart):
-#     #
-#     pass
-#
-#
-# class PublicationTypeCountChart(Chart):
-#     #
-#     pass
-#
-#
-# class PublicationsScoreChart(Chart):
-#     pass
-#
-#
-# class PublicationsImpactFactorChart(Chart):
-#     #
-#     pass
-#
-#
-# class PowerfulRecommendationCountChart(Chart):
-#     #
-#     pass
-#
-#
-# class OlympiadCountChart(Chart):
-#     #
-#     pass
-#
-#
-# class RelatedWorkExperienceChart(Chart):
-#     #
-#     pass
-#
-#
-# class ToeflChart(Chart):
-#     #
-#     pass
-#
-#
-# class IeltsChart(Chart):
-#     #
-#     pass
-#
-#
-# class GMATChart(Chart):
-#     #
-#     pass
-#
-#
-# class GREGeneralWritingChart(Chart):
-#     #
-#     pass
-#
-#
-# class GREGeneralQuantitativeAndVerbalChart(Chart):
-#     #
-#     pass
-#
-#
-# class GRESubjectTotalChart(Chart):
-#     #
-#     pass
-#
-#
-# class DuolingoChart(Chart):
-#     #
-#     pass

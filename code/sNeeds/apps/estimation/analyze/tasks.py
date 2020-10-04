@@ -5,7 +5,7 @@ from django.db.models import Sum, F
 from django.db import transaction
 from django.db.utils import IntegrityError
 
-from sNeeds.apps.estimation.form import models as account_models
+from sNeeds.apps.estimation.form import models as form_models
 from sNeeds.apps.estimation.analyze.models import Chart, ChartItemData
 from sNeeds.apps.estimation.form.serializers import StudentDetailedInfoSerializer
 
@@ -108,7 +108,7 @@ def update_publication_count_chart(publications_count, data, db_data, is_delete=
         des_db_obj = next(deserialize('json', db_data))
         db_instance = des_db_obj.object
 
-    chart, created = Chart.objects.get_or_create(title=Chart.ChartTitleChoices.PUBLICATIONS_COUNT)
+    chart, created = Chart.objects.get_or_create(title=Chart.ChartTitle.PUBLICATIONS_COUNT)
 
     if is_delete:
         # We check that the instance is the last publication is being removed from sdi publications set
@@ -191,7 +191,7 @@ def update_publication_count_chart_sdi_creation(data, db_data, is_delete=False):
     else:
         des_db_obj = next(deserialize('json', db_data))
         db_instance = des_db_obj.object
-    chart, created = Chart.objects.get_or_create(title=Chart.ChartTitleChoices.PUBLICATIONS_COUNT)
+    chart, created = Chart.objects.get_or_create(title=Chart.ChartTitle.PUBLICATIONS_COUNT)
 
     # Save has been called in order to update an entry
     if db_instance is not None:
@@ -225,7 +225,7 @@ def update_publication_count_chart_sdi_deletion(publications_count, data, db_dat
     else:
         des_db_obj = next(deserialize('json', db_data))
         db_instance = des_db_obj.object
-    chart, created = Chart.objects.get_or_create(title=Chart.ChartTitleChoices.PUBLICATIONS_COUNT)
+    chart, created = Chart.objects.get_or_create(title=Chart.ChartTitle.PUBLICATIONS_COUNT)
 
     if is_delete:
         # publications_count = instance.publication_set.count()
@@ -251,8 +251,8 @@ def update_publication_type_chart(data, db_data, is_delete=False):
         des_db_obj = next(deserialize('json', db_data))
         db_instance = des_db_obj.object
 
-    update_common_chart(Chart.ChartTitleChoices.PUBLICATIONS_TYPE, account_models.Publication,
-                        account_models.Publication.get_type__store_label, instance, db_instance, is_delete)
+    update_common_chart(Chart.ChartTitle.PUBLICATIONS_TYPE, form_models.Publication,
+                        form_models.Publication.get_type__store_label, instance, db_instance, is_delete)
 
     # try:
     #     chart = analyze_models.PublicationTypeCountChart.objects.all().first()
@@ -320,8 +320,8 @@ def update_publications_score_chart(data, db_data, is_delete=False):
         des_db_obj = next(deserialize('json', db_data))
         db_instance = des_db_obj.object
 
-    get_publications_score_label = account_models.Publication.get_publications_score__store_label
-    chart, created = Chart.objects.get_or_create(title=Chart.ChartTitleChoices.PUBLICATIONS_SCORE)
+    get_publications_score_label = form_models.Publication.get_publications_score__store_label
+    chart, created = Chart.objects.get_or_create(title=Chart.ChartTitle.PUBLICATIONS_SCORE)
 
     if is_delete:
         old_publications_values = instance.student_detailed_info.studentdetailedinfo.publication_set. \
@@ -400,8 +400,8 @@ def update_powerful_recommendation_chart(data, db_data, is_delete=False):
     else:
         des_db_obj = next(deserialize('json', db_data))
         db_instance = des_db_obj.object
-    update_common_chart(Chart.ChartTitleChoices.POWERFUL_RECOMMENDATION, account_models.StudentDetailedInfo,
-                        account_models.StudentDetailedInfo.get_powerful_recommendation__store_label,
+    update_common_chart(Chart.ChartTitle.POWERFUL_RECOMMENDATION, form_models.StudentDetailedInfo,
+                        form_models.StudentDetailedInfo.get_powerful_recommendation__store_label,
                         instance, db_instance, is_delete)
 
     # try:
@@ -468,8 +468,8 @@ def update_olympiad_chart(data, db_data, is_delete=False):
     else:
         des_db_obj = next(deserialize('json', db_data))
         db_instance = des_db_obj.object
-    update_common_chart(Chart.ChartTitleChoices.OLYMPIAD, account_models.StudentDetailedInfo,
-                        account_models.StudentDetailedInfo.get_olympiad__store_label, instance, db_instance, is_delete)
+    update_common_chart(Chart.ChartTitle.OLYMPIAD, form_models.StudentDetailedInfo,
+                        form_models.StudentDetailedInfo.get_olympiad__store_label, instance, db_instance, is_delete)
 
     # try:
     #     chart = analyze_models.OlympiadCountChart.objects.all().first()
@@ -532,7 +532,7 @@ def update_related_work_experience_chart(data, db_data, is_delete=False):
     # ser.is_valid()
     # instance = ser.create(ser.validated_data)
 
-    instance = account_models.StudentDetailedInfo(**data)
+    instance = form_models.StudentDetailedInfo(**data)
 
     print('task rel work', instance)
 
@@ -547,8 +547,8 @@ def update_related_work_experience_chart(data, db_data, is_delete=False):
 
     print('task self.related_work_experience', instance.related_work_experience)
 
-    update_common_chart(Chart.ChartTitleChoices.RELATED_WORK_EXPERIENCE, account_models.StudentDetailedInfo,
-                        account_models.StudentDetailedInfo.get_related_work__store_label, instance, db_instance,
+    update_common_chart(Chart.ChartTitle.RELATED_WORK_EXPERIENCE, form_models.StudentDetailedInfo,
+                        form_models.StudentDetailedInfo.get_related_work__store_label, instance, db_instance,
                         is_delete)
 
 
@@ -562,8 +562,8 @@ def update_publication_impact_factor_chart(data, db_data, is_delete=False):
     else:
         des_db_obj = next(deserialize('json', db_data))
         db_instance = des_db_obj.object
-    update_common_chart(Chart.ChartTitleChoices.PUBLICATIONS_IMPACT_FACTOR, account_models.Publication,
-                        account_models.Publication.get_impact_factor__store_label, instance, db_instance, is_delete)
+    update_common_chart(Chart.ChartTitle.PUBLICATIONS_IMPACT_FACTOR, form_models.Publication,
+                        form_models.Publication.get_impact_factor__store_label, instance, db_instance, is_delete)
 
 
 @shared_task
@@ -577,15 +577,15 @@ def update_gpa_chart(data, db_data, is_delete=False):
         des_db_obj = next(deserialize('json', db_data))
         db_instance = des_db_obj.object
 
-    chart, created = Chart.objects.get_or_create(title=Chart.ChartTitleChoices.GRADE_POINT_AVERAGE)
+    chart, created = Chart.objects.get_or_create(title=Chart.ChartTitle.GRADE_POINT_AVERAGE)
 
     if is_delete:
         # We check that the instance is the last education is being removed from sdi educations set
-        qs = account_models.UniversityThrough.objects.filter(student_detailed_info=instance.student_detailed_info). \
+        qs = form_models.UniversityThrough.objects.filter(student_detailed_info=instance.student_detailed_info). \
             order_by('-graduate_in')
         last_grade = qs.first()
         if last_grade == instance:
-            label = account_models.UniversityThrough.get_gpa__store_label(last_grade)
+            label = form_models.UniversityThrough.get_gpa__store_label(last_grade)
             with transaction.atomic():
                 obj, created = ChartItemData.objects.get_or_create(chart=chart, label=label,
                                                                    defaults={'count': 0})
@@ -595,7 +595,7 @@ def update_gpa_chart(data, db_data, is_delete=False):
             # now we look for last grade after instance
             new_last_grade = qs.exclude(pk=instance.pk).first()
             if new_last_grade is not None:
-                label = account_models.UniversityThrough.get_gpa__store_label(new_last_grade)
+                label = form_models.UniversityThrough.get_gpa__store_label(new_last_grade)
                 with transaction.atomic():
                     obj, created = ChartItemData.objects.get_or_create(chart=chart, label=label,
                                                                        defaults={'count': 1})
@@ -605,7 +605,7 @@ def update_gpa_chart(data, db_data, is_delete=False):
     else:
         # Save has been called in order to update an entry
         if db_instance is not None:
-            qs = account_models.UniversityThrough.objects.filter(
+            qs = form_models.UniversityThrough.objects.filter(
                 student_detailed_info=instance.student_detailed_info
             ).order_by('-graduate_in')
 
@@ -619,14 +619,14 @@ def update_gpa_chart(data, db_data, is_delete=False):
                 if instance.graduate_in < last_grade.graduate_in \
                         and next_last_grade is not None and instance.graduate_in < next_last_grade.graduate_in:
 
-                    label = account_models.UniversityThrough.get_gpa__store_label(last_grade)
+                    label = form_models.UniversityThrough.get_gpa__store_label(last_grade)
                     with transaction.atomic():
                         obj, created = ChartItemData.objects.get_or_create(chart=chart, label=label,
                                                                            defaults={'count': 0})
                         if not created:
                             ChartItemData.objects.filter(pk=obj.pk).update(count=F('count') - 1)
 
-                    label = account_models.UniversityThrough.get_gpa__store_label(next_last_grade)
+                    label = form_models.UniversityThrough.get_gpa__store_label(next_last_grade)
                     with transaction.atomic():
                         obj, created = ChartItemData.objects.get_or_create(chart=chart, label=label,
                                                                            defaults={'count': 1})
@@ -638,8 +638,8 @@ def update_gpa_chart(data, db_data, is_delete=False):
                 # We check gpa changes. If we do not enter the previous if statement it means the instance still is
                 # last grade.We check that by is_chart_updated flag.
                 if instance.gpa != db_instance.gpa and not is_chart_updated:
-                    old_label = account_models.UniversityThrough.get_gpa__store_label(db_instance)
-                    new_label = account_models.UniversityThrough.get_gpa__store_label(instance)
+                    old_label = form_models.UniversityThrough.get_gpa__store_label(db_instance)
+                    new_label = form_models.UniversityThrough.get_gpa__store_label(instance)
                     if new_label != old_label:
                         with transaction.atomic():
                             obj, created = ChartItemData.objects.get_or_create(chart=chart, label=old_label,
@@ -655,14 +655,14 @@ def update_gpa_chart(data, db_data, is_delete=False):
 
             # The instance was not last grade education but maybe it become last grade by increasing graduate_in value!
             elif instance.graduate_in > last_grade.graduate_in:
-                old_label = account_models.UniversityThrough.get_gpa__store_label(last_grade)
+                old_label = form_models.UniversityThrough.get_gpa__store_label(last_grade)
                 with transaction.atomic():
                     obj, created = ChartItemData.objects.get_or_create(chart=chart, label=old_label,
                                                                        defaults={'count': 0})
                     if not created:
                         ChartItemData.objects.filter(pk=obj.pk).update(count=F('count') - 1)
 
-                new_label = account_models.UniversityThrough.get_gpa__store_label(instance)
+                new_label = form_models.UniversityThrough.get_gpa__store_label(instance)
                 with transaction.atomic():
                     obj, created = ChartItemData.objects.get_or_create(chart=chart, label=new_label,
                                                                        defaults={'count': 1})
@@ -671,14 +671,14 @@ def update_gpa_chart(data, db_data, is_delete=False):
 
         # Save has been called in order to create an entry
         else:
-            qs = account_models.UniversityThrough.objects.filter(
+            qs = form_models.UniversityThrough.objects.filter(
                 student_detailed_info=instance.student_detailed_info
             ).order_by('-graduate_in')
 
             last_grade = qs.first()
 
             if last_grade is None:
-                label = account_models.UniversityThrough.get_gpa__store_label(instance)
+                label = form_models.UniversityThrough.get_gpa__store_label(instance)
                 with transaction.atomic():
                     obj, created = ChartItemData.objects.get_or_create(chart=chart, label=label,
                                                                        defaults={'count': 1})
@@ -686,14 +686,14 @@ def update_gpa_chart(data, db_data, is_delete=False):
                         ChartItemData.objects.filter(pk=obj.pk).update(count=F('count') + 1)
 
             elif instance.graduate_in > last_grade.graduate_in:
-                old_label = account_models.UniversityThrough.get_gpa__store_label(last_grade)
+                old_label = form_models.UniversityThrough.get_gpa__store_label(last_grade)
                 with transaction.atomic():
                     obj, created = ChartItemData.objects.get_or_create(chart=chart, label=old_label,
                                                                        defaults={'count': 0})
                     if not created:
                         ChartItemData.objects.filter(pk=obj.pk).update(count=F('count') - 1)
 
-                new_label = account_models.UniversityThrough.get_gpa__store_label(instance)
+                new_label = form_models.UniversityThrough.get_gpa__store_label(instance)
                 with transaction.atomic():
                     obj, created = ChartItemData.objects.get_or_create(chart=chart, label=new_label,
                                                                        defaults={'count': 1})
@@ -709,29 +709,29 @@ def update_language_certificates_charts(data, db_data, is_delete=False):
     if instance.is_mock:
         return
 
-    if instance.certificate_type == account_models.LanguageCertificateType.IELTS_GENERAL or \
-            instance.certificate_type == account_models.LanguageCertificateType.IELTS_ACADEMIC:
+    if instance.certificate_type == form_models.LanguageCertificateType.IELTS_GENERAL or \
+            instance.certificate_type == form_models.LanguageCertificateType.IELTS_ACADEMIC:
         update_ielts_chart(data=data, db_data=db_data, is_delete=is_delete)
 
-    elif instance.certificate_type == account_models.LanguageCertificateType.TOEFL:
+    elif instance.certificate_type == form_models.LanguageCertificateType.TOEFL:
         update_toefl_chart(data=data, db_data=db_data, is_delete=is_delete)
 
-    elif instance.certificate_type == account_models.LanguageCertificateType.GMAT:
+    elif instance.certificate_type == form_models.LanguageCertificateType.GMAT:
         update_gmat_chart(data=data, db_data=db_data, is_delete=is_delete)
 
-    elif instance.certificate_type == account_models.LanguageCertificateType.GRE_GENERAL:
+    elif instance.certificate_type == form_models.LanguageCertificateType.GRE_GENERAL:
         update_gre_general_writing_chart(data=data, db_data=db_data, is_delete=is_delete)
         update_gre_general_quantitative_and_verbal_chart(data=data, db_data=db_data, is_delete=is_delete)
 
-    elif instance.certificate_type == account_models.LanguageCertificateType.GRE_MATHEMATICS or \
-            instance.certificate_type == account_models.LanguageCertificateType.GRE_CHEMISTRY or \
-            instance.certificate_type == account_models.LanguageCertificateType.GRE_LITERATURE or \
-            instance.certificate_type == account_models.LanguageCertificateType.GRE_PHYSICS or \
-            instance.certificate_type == account_models.LanguageCertificateType.GRE_BIOLOGY or \
-            instance.certificate_type == account_models.LanguageCertificateType.GRE_PSYCHOLOGY:
+    elif instance.certificate_type == form_models.LanguageCertificateType.GRE_MATHEMATICS or \
+            instance.certificate_type == form_models.LanguageCertificateType.GRE_CHEMISTRY or \
+            instance.certificate_type == form_models.LanguageCertificateType.GRE_LITERATURE or \
+            instance.certificate_type == form_models.LanguageCertificateType.GRE_PHYSICS or \
+            instance.certificate_type == form_models.LanguageCertificateType.GRE_BIOLOGY or \
+            instance.certificate_type == form_models.LanguageCertificateType.GRE_PSYCHOLOGY:
         update_gre_subject_total_chart(data=data, db_data=db_data, is_delete=is_delete)
 
-    elif instance.certificate_type == account_models.LanguageCertificateType.DUOLINGO:
+    elif instance.certificate_type == form_models.LanguageCertificateType.DUOLINGO:
         update_duolingo_chart(data=data, db_data=db_data, is_delete=is_delete)
 
     # elif instance.certificate_type == account_models.LanguageCertificateType.GRE_PHYSICS:
@@ -754,8 +754,8 @@ def update_ielts_chart(data, db_data, is_delete=False):
         des_db_obj = next(deserialize('json', db_data))
         db_instance = des_db_obj.object
     # instance = instance.regularlanguagcertificate
-    update_common_chart(Chart.ChartTitleChoices.IELTS, account_models.RegularLanguageCertificate,
-                        account_models.RegularLanguageCertificate.get_ielts__store_label,
+    update_common_chart(Chart.ChartTitle.IELTS, form_models.RegularLanguageCertificate,
+                        form_models.RegularLanguageCertificate.get_ielts__store_label,
                         instance, is_delete)
 
 
@@ -769,8 +769,8 @@ def update_toefl_chart(data, db_data, is_delete=False):
         des_db_obj = next(deserialize('json', db_data))
         db_instance = des_db_obj.object
     # instance = instance.regularlanguagcertificate
-    update_common_chart(Chart.ChartTitleChoices.TOEFL, account_models.RegularLanguageCertificate,
-                        account_models.RegularLanguageCertificate.get_toefl__store_label,
+    update_common_chart(Chart.ChartTitle.TOEFL, form_models.RegularLanguageCertificate,
+                        form_models.RegularLanguageCertificate.get_toefl__store_label,
                         instance, is_delete)
 
 
@@ -784,8 +784,8 @@ def update_gmat_chart(data, db_data, is_delete=False):
         des_db_obj = next(deserialize('json', db_data))
         db_instance = des_db_obj.object
     # instance = instance.gmatcertificate
-    update_common_chart(Chart.ChartTitleChoices.GMAT, account_models.GMATCertificate,
-                        account_models.GMATCertificate.get_store_label,
+    update_common_chart(Chart.ChartTitle.GMAT, form_models.GMATCertificate,
+                        form_models.GMATCertificate.get_store_label,
                         instance, is_delete)
 
 
@@ -799,8 +799,8 @@ def update_gre_general_writing_chart(data, db_data, is_delete=False):
         des_db_obj = next(deserialize('json', db_data))
         db_instance = des_db_obj.object
     # instance = instance.gregeneralcertificate
-    update_common_chart(Chart.ChartTitleChoices.GRE_GENERAL_WRITING, account_models.GREGeneralCertificate,
-                        account_models.GREGeneralCertificate.get_writing_store_label, instance, db_instance, is_delete)
+    update_common_chart(Chart.ChartTitle.GRE_GENERAL_WRITING, form_models.GREGeneralCertificate,
+                        form_models.GREGeneralCertificate.get_writing_store_label, instance, db_instance, is_delete)
 
 
 def update_gre_general_quantitative_and_verbal_chart(data, db_data, is_delete=False):
@@ -813,8 +813,8 @@ def update_gre_general_quantitative_and_verbal_chart(data, db_data, is_delete=Fa
         des_db_obj = next(deserialize('json', db_data))
         db_instance = des_db_obj.object
     # instance = instance.gregeneralcertificate
-    update_common_chart(Chart.ChartTitleChoices.GRE_GENERAL_QUANTITATIVE_AND_VERBAL, account_models.GREGeneralCertificate,
-                        account_models.GREGeneralCertificate.get_q_and_v_store_label, instance, db_instance, is_delete)
+    update_common_chart(Chart.ChartTitle.GRE_GENERAL_QUANTITATIVE_AND_VERBAL, form_models.GREGeneralCertificate,
+                        form_models.GREGeneralCertificate.get_q_and_v_store_label, instance, db_instance, is_delete)
 
 
 def update_gre_subject_total_chart(data, db_data, is_delete=False):
@@ -827,8 +827,8 @@ def update_gre_subject_total_chart(data, db_data, is_delete=False):
         des_db_obj = next(deserialize('json', db_data))
         db_instance = des_db_obj.object
     # instance = instance.gresubjectcertificate
-    update_common_chart(Chart.ChartTitleChoices.GRE_SUBJECT_TOTAL, account_models.GRESubjectCertificate,
-                        account_models.GRESubjectCertificate.get_total_store_label, instance, db_instance, is_delete)
+    update_common_chart(Chart.ChartTitle.GRE_SUBJECT_TOTAL, form_models.GRESubjectCertificate,
+                        form_models.GRESubjectCertificate.get_total_store_label, instance, db_instance, is_delete)
 
 
 def update_duolingo_chart(data, db_data, is_delete=False):
@@ -841,8 +841,8 @@ def update_duolingo_chart(data, db_data, is_delete=False):
         des_db_obj = next(deserialize('json', db_data))
         db_instance = des_db_obj.object
     # instance = instance.duolingocertificate
-    update_common_chart(Chart.ChartTitleChoices.DUOLINGO, account_models.DuolingoCertificate,
-                        account_models.DuolingoCertificate.get_store_label, instance, db_instance, is_delete)
+    update_common_chart(Chart.ChartTitle.DUOLINGO, form_models.DuolingoCertificate,
+                        form_models.DuolingoCertificate.get_store_label, instance, db_instance, is_delete)
 
 
 def update_common_chart(chart_title, instance_model, label_function, instance, db_instance, is_delete=False):
