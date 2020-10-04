@@ -9,12 +9,13 @@ from rest_framework import generics
 
 from sNeeds.apps.store.orders.models import Order
 from .serializers import ConsultantDepositInfoSerializer
-from .permissions import IsConsultant, ConsultantDepositInfoOwner
+from .permissions import ConsultantDepositInfoOwner
 from .models import ConsultantDepositInfo
 from sNeeds.apps.users.consultants.models import ConsultantProfile
 from .models import PayPayment
 from sNeeds.apps.store.carts.models import Cart
 from sNeeds.settings.config.variables import FRONTEND_URL
+from sNeeds.utils.custom.custom_permissions import IsConsultantPermission
 
 ZARINPAL_MERCHANT = settings.ZARINPAL_MERCHANT
 
@@ -140,7 +141,7 @@ class VerifyTest(APIView):
 
 class ConsultantDepositInfoListAPIView(generics.ListAPIView):
     serializer_class = ConsultantDepositInfoSerializer
-    permission_classes = [permissions.IsAuthenticated, IsConsultant]
+    permission_classes = [permissions.IsAuthenticated, IsConsultantPermission]
 
     def get_queryset(self):
         user = self.request.user
@@ -153,4 +154,4 @@ class ConsultantDepositInfoDetailAPIView(generics.RetrieveAPIView):
     lookup_field = 'consultant_deposit_info_id'
     queryset = qs = ConsultantDepositInfo.objects.all()
     serializer_class = ConsultantDepositInfoSerializer
-    permission_classes = [permissions.IsAuthenticated, IsConsultant, ConsultantDepositInfoOwner]
+    permission_classes = [permissions.IsAuthenticated, IsConsultantPermission, ConsultantDepositInfoOwner]
