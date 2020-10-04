@@ -1,4 +1,6 @@
 import os
+import pytz
+from datetime import timedelta
 
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
@@ -6,6 +8,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 from sNeeds.apps.users.consultants.models import ConsultantProfile
 from sNeeds.apps.store.storeBase.models import Product, SoldProduct
@@ -41,6 +44,11 @@ def get_store_package_image_upload_path(instance, file_name):
 
 def get_sold_store_package_image_upload_path(instance, file_name):
     return "storePackage/images/sold-store-package-images/{}/{}".format(instance.id, file_name)
+
+
+def default_show_on_marketplace_until():
+    now = timezone.now()
+    return now + timedelta(days=3)
 
 
 class StorePackagePhaseDetail(models.Model):
@@ -157,6 +165,7 @@ class SoldStorePackage(models.Model):
     paid_price = models.PositiveIntegerField()
     total_price = models.PositiveIntegerField()
 
+    show_on_marketplace_until = models.DateTimeField(default=default_show_on_marketplace_until)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -182,7 +191,7 @@ class SoldStorePackage(models.Model):
         self._update_total_price()
 
     class Meta:
-        ordering = ['-updated']
+        ordering = ['-created']
 
 
 class SoldStorePackagePhaseDetail(models.Model):
@@ -224,6 +233,20 @@ class SoldStorePackagePhaseDetail(models.Model):
 
         kwargs.pop('force_insert', None)
         super(SoldStorePackagePhaseDetail, self).save()
+
+    def get_sold_store_package(self):
+        content_type_model_class = self.content_type.model_class()
+        sold_store_package_phase = content_type_model_class.objects.filter(
+            id=self.object_id
+        ).first()
+        sold_store_package = sold_store_package_phase.sold_store_package
+        return sold_store_package
+
+    def get_sold_store_package_consultant(self):
+        return self.get_sold_store_package().consultant
+
+    def get_sold_store_package_user(self):
+        return self.get_sold_store_package().sold_to
 
     class Meta:
         ordering = ['created']

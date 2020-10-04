@@ -136,9 +136,11 @@ class VoiceMessageSerializer(MessageSerializer):
 
     class Meta(MessageSerializer.Meta):
         model = VoiceMessage
-        fields = MessageSerializer.Meta.fields + ['voice_field',
-                                                  'name',
-                                                  'volume']
+        fields = MessageSerializer.Meta.fields + [
+            'voice_field',
+            'name',
+            'volume'
+        ]
 
     def get_name(self, obj):
         try:

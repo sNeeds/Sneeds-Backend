@@ -63,6 +63,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     'sNeeds.settings.middlewares.middlewares.CORSMiddleware',
+    'sNeeds.settings.middlewares.middlewares.TimezoneMiddleware',
 ]
 
 TEMPLATES = [
@@ -201,3 +202,8 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
 SWAGGER_SETTINGS = {
     "DEFAULT_GENERATOR_CLASS": "rest_framework.schemas.generators.BaseSchemaGenerator",
 }
+
+# Add new DateTimeFormat
+from django.conf.global_settings import DATETIME_INPUT_FORMATS
+
+DATETIME_INPUT_FORMATS += ('%Y-%m-%dT%H:%M:%S',)

@@ -1,6 +1,6 @@
 from rest_framework.test import APITestCase, APIClient
 
-from sNeeds.apps.data.account import StudentDetailedInfo, FieldOfStudy, University, Country
+from sNeeds.apps.data.account.models import StudentDetailedInfo, Major, University, Country
 from sNeeds.apps.users.consultants.models import ConsultantProfile
 from sNeeds.apps.store.storeBase.models import SoldTimeSlotSale
 from sNeeds.apps.store.storePackages import SoldStorePackage
@@ -57,14 +57,14 @@ class StudentDetailedInfoTests(APITestCase):
         )
 
         # Field of Studies -------
-        self.field_of_study1 = FieldOfStudy.objects.create(
+        self.major1 = Major.objects.create(
             name="field of study1",
             description="Test desc1",
             picture=None,
             slug="field-of-study1"
         )
 
-        self.field_of_study2 = FieldOfStudy.objects.create(
+        self.major2 = Major.objects.create(
             name="field of study2",
             description="Test desc2",
             picture=None,

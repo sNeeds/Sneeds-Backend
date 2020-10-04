@@ -35,7 +35,7 @@ class UniversitySerializer(serializers.ModelSerializer):
         fields = ('id', 'url', 'name', 'country', 'description', 'picture')
 
 
-class FieldOfStudySerializer(serializers.ModelSerializer):
+class MajorSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name="account:field-of-study-detail",
         lookup_field='id',

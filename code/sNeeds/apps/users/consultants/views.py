@@ -52,12 +52,12 @@ class ConsultantProfileList(generics.ListAPIView):
 
         university = self.request.query_params.getlist("university")
         country = self.request.query_params.getlist("country")
-        field_of_study = self.request.query_params.getlist("field_of_study")
+        major = self.request.query_params.getlist("major")
 
-        if university != [] or country != [] or field_of_study != []:
+        if university != [] or country != [] or major != []:
             qs_for_university = qs.none()
             qs_for_country = qs.none()
-            qs_for_field_of_study = qs.none()
+            qs_for_major = qs.none()
 
             if university is not None:
                 qs_for_university = qs.filter_consultants({"universities": university})
@@ -65,10 +65,10 @@ class ConsultantProfileList(generics.ListAPIView):
             if country is not None:
                 qs_for_country = qs.filter_consultants({"countries": country})
 
-            if field_of_study is not None:
-                qs_for_field_of_study = qs.filter_consultants({"field_of_studies": field_of_study})
+            if major is not None:
+                qs_for_major = qs.filter_consultants({"field_of_studies": major})
 
-            qs = qs_for_university | qs_for_country | qs_for_field_of_study
+            qs = qs_for_university | qs_for_country | qs_for_major
             qs = qs.distinct()
 
         if self.request.query_params.get("ordering") is not None:

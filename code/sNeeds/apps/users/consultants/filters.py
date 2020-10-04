@@ -61,7 +61,7 @@ class CountryModelMultipleChoiceFilter(filters.ModelMultipleChoiceFilter):
         return qs.distinct()
 
 
-class FieldOfStudyModelMultipleChoiceFilter(filters.ModelMultipleChoiceFilter):
+class MajorModelMultipleChoiceFilter(filters.ModelMultipleChoiceFilter):
 
     def filter(self, qs, value):
         if not value:
@@ -76,7 +76,7 @@ class FieldOfStudyModelMultipleChoiceFilter(filters.ModelMultipleChoiceFilter):
             if v == self.null_value:
                 v = None
             if v is not None:
-                q |= Q(field_of_study=v)
+                q |= Q(major=v)
 
         study_info_qs = StudyInfo.objects.filter(q).only('consultant')
 
@@ -98,8 +98,8 @@ class ConsultantProfileFilter(FilterSet):
         field_name='country', queryset=Country.objects.all(), label='country'
     )
 
-    field_of_study = FieldOfStudyModelMultipleChoiceFilter(
-        field_name='field_of_study', queryset=Major.objects.all(), label='field_of_study'
+    major = MajorModelMultipleChoiceFilter(
+        field_name='major', queryset=Major.objects.all(), label='major'
     )
 
     class Meta:

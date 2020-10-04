@@ -37,7 +37,7 @@ class ConsultantProfileQuerySetManager(models.QuerySet):
         if params.get('countries') is not None:
             qs = qs.filter(studyinfo__university__country__id__in=params.get('countries'))
         if params.get('field_of_studies') is not None:
-            qs = qs.filter(studyinfo__field_of_study__id__in=params.get('field_of_studies'))
+            qs = qs.filter(studyinfo__major__id__in=params.get('field_of_studies'))
         if params.get('universities') is not None:
             qs = qs.filter(studyinfo__university__id__in=params.get('universities'))
             pass
@@ -87,7 +87,7 @@ class ConsultantProfile(models.Model):
 class StudyInfo(models.Model):
     consultant = models.ForeignKey(ConsultantProfile, on_delete=models.CASCADE)
     university = models.ForeignKey(University, on_delete=models.CASCADE)
-    field_of_study = models.ForeignKey(Major, on_delete=models.CASCADE)
+    major = models.ForeignKey(Major, on_delete=models.CASCADE)
     grade = models.CharField(max_length=256, choices=STUDY_GRADE_CHOICES)
     order = models.PositiveIntegerField(help_text="Enter number above 0")
 
@@ -95,7 +95,7 @@ class StudyInfo(models.Model):
 
     class Meta:
         ordering = ["order"]
-        unique_together = ["consultant", "university", "field_of_study", "grade", "order"]
+        unique_together = ["consultant", "university", "major", "grade", "order"]
 
     def __str__(self):
         return self.consultant.slug + ", " + self.university.name

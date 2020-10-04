@@ -68,6 +68,8 @@ class Major(models.Model):
     )
     parent_major = models.ForeignKey(
         'self',
+        null=True,
+        blank=True,
         on_delete=models.PROTECT
     )
 
