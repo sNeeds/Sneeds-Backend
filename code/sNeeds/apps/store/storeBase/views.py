@@ -1,0 +1,66 @@
+from rest_framework import generics, permissions
+
+from . import serializers
+from . import filtersets
+from .models import TimeSlotSale, SoldTimeSlotSale
+from .permissions import (
+    TimeSlotSaleOwnerPermission,
+    SoldTimeSlotSaleOwnerPermission,
+)
+from sNeeds.utils.custom.custom_permissions import IsConsultantUnsafePermission
+from sNeeds.apps.users.consultants.models import ConsultantProfile
+
+
+class TimeSlotSaleListAPIView(generics.ListCreateAPIView):
+    queryset = TimeSlotSale.objects.all()
+    serializer_class = serializers.TimeSlotSaleSerializer
+    filterset_class = filtersets.TimeSlotSaleFilter
+    permission_classes = [IsConsultantUnsafePermission, permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        return super(TimeSlotSaleListAPIView, self).get_queryset().order_by('-start_time')
+
+
+class TimeSlotSaleDetailAPIView(generics.RetrieveDestroyAPIView):
+    lookup_field = "id"
+    queryset = TimeSlotSale.objects.all()
+    serializer_class = serializers.TimeSlotSaleSerializer
+    permission_classes = [TimeSlotSaleOwnerPermission, permissions.IsAuthenticatedOrReadOnly]
+
+
+class SoldTimeSlotSaleListAPIView(generics.ListAPIView):
+    queryset = SoldTimeSlotSale.objects.all()
+    serializer_class = serializers.SoldTimeSlotSaleSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    ordering_fields = ['start_time', ]
+    filterset_fields = ['used', 'consultant']
+
+    def get_queryset(self):
+        user = self.request.user
+        consultant_profile_qs = ConsultantProfile.objects.filter(user=user)
+
+        if consultant_profile_qs.exists():
+            consultant_profile = consultant_profile_qs.first()
+            return SoldTimeSlotSale.objects.filter(consultant=consultant_profile).order_by('start_time')
+        else:
+            return SoldTimeSlotSale.objects.filter(sold_to=user).order_by('start_time')
+
+
+class SoldTimeSlotSaleDetailAPIView(generics.RetrieveAPIView):
+    lookup_field = "id"
+    queryset = SoldTimeSlotSale.objects.all()
+    serializer_class = serializers.SoldTimeSlotSaleSerializer
+    permission_classes = [SoldTimeSlotSaleOwnerPermission, permissions.IsAuthenticated]
+
+
+class SoldTimeSlotSaleSafeListAPIView(generics.ListAPIView):
+    queryset = SoldTimeSlotSale.objects.all()
+    serializer_class = serializers.SoldTimeSlotSaleSafeSerializer
+    ordering_fields = ['start_time', ]
+    filterset_fields = ['used', 'consultant']
+
+
+class SoldTimeSlotSaleSafeDetailAPIView(generics.RetrieveAPIView):
+    lookup_field = 'id'
+    queryset = SoldTimeSlotSale.objects.all()
+    serializer_class = serializers.SoldTimeSlotSaleSafeSerializer

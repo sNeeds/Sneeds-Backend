@@ -1,0 +1,52 @@
+from django.urls import path
+from sNeeds.apps.estimation.analyze import views
+
+app_name = "analyze"
+
+urlpatterns = [
+    path('grade-point-average/', views.GradePointAverageChartRetrieveAPIView.as_view(),
+         name='grade-point-average-detail'),
+
+    path('publications-count/', views.PublicationsCountChartRetrieveAPIView.as_view(),
+         name='publications-count-detail'),
+
+    path('publications-type/', views.PublicationTypeChartRetrieveAPIView.as_view(),
+         name='publications-type-detail'),
+
+    path('publications-score/', views.PublicationsScoreChartRetrieveAPIView.as_view(),
+         name='publications-score-detail'),
+
+    path('publications-impact-factor/', views.PublicationImpactFactorChartRetrieveAPIView.as_view(),
+         name='publications-impact-factor-detail'),
+
+    path('powerful-recommendation/', views.PowerfulRecommendationChartRetrieveAPIView.as_view(),
+         name='powerful-recommendation-detail'),
+
+    path('olympiad/', views.OlympiadChartRetrieveAPIView.as_view(),
+         name='olympiad-detail'),
+
+    path('related-work-experience/', views.RelatedWorkExperienceChartRetrieveAPIView.as_view(),
+         name='related-work-experience-detail'),
+
+    path('toefl/', views.ToeflChartRetrieveAPIView.as_view(),
+         name='toefl-detail'),
+
+    path('ielts/', views.IeltsChartRetrieveAPIView.as_view(),
+         name='ielts-detail'),
+
+    path('gmat/', views.GMATChartRetrieveAPIView.as_view(),
+         name='gmat-detail'),
+
+    path('gre-general-writing/', views.GREGeneralWritingChartRetrieveAPIView.as_view(),
+         name='gre-general-writing-detail'),
+
+    path('gre-general-quantitative-and-verbal/',
+         views.GREGeneralQuantitativeAndVerbalChartRetrieveAPIView.as_view(),
+         name='gre-general-quantitative-and-verbal-detail'),
+
+    path('gre-subject-total/', views.GRESubjectTotalChartRetrieveAPIView.as_view(),
+         name='gre-subject-total-detail'),
+
+    path('duolingo/', views.DuolingoChartRetrieveAPIView.as_view(),
+         name='duolingo-detail'),
+]

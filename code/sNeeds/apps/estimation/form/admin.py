@@ -1,0 +1,109 @@
+from django.contrib import admin
+
+# Register your models here.
+from . import models
+
+admin.site.register(models.StudentFormApplySemesterYear)
+admin.site.register(models.GradeModel)
+admin.site.register(models.UniversityThrough)
+admin.site.register(models.WantToApply)
+
+
+class UniversityThroughInline(admin.TabularInline):
+    model = models.UniversityThrough
+    extra = 1
+
+
+class RegularLanguageCertificateTypeInline(admin.TabularInline):
+    model = models.RegularLanguageCertificate
+    extra = 1
+
+
+class GMATCertificateTypeInline(admin.TabularInline):
+    model = models.GMATCertificate
+    extra = 1
+
+
+class GREGeneralCertificateTypeInline(admin.TabularInline):
+    model = models.GREGeneralCertificate
+    extra = 1
+
+
+class GRESubjectCertificateTypeInline(admin.TabularInline):
+    model = models.GRESubjectCertificate
+    extra = 1
+
+
+class GREBiologyCertificateTypeInline(admin.TabularInline):
+    model = models.GREBiologyCertificate
+    extra = 1
+
+
+class GREPhysicsCertificateTypeInline(admin.TabularInline):
+    model = models.GREPhysicsCertificate
+    extra = 1
+
+
+class GREPsychologyCertificate(admin.TabularInline):
+    model = models.GREPsychologyCertificate
+    extra = 1
+
+
+class DuolingoCertificateCertificate(admin.TabularInline):
+    model = models.DuolingoCertificate
+    extra = 1
+
+
+class WantToApplyInline(admin.TabularInline):
+    model = models.WantToApply
+    extra = 1
+    filter_horizontal = ['universities']
+
+
+class PublicationInline(admin.TabularInline):
+    model = models.Publication
+    extra = 1
+
+
+class StudentDetailedInfoBaseAdmin(admin.ModelAdmin):
+    inlines = [
+        UniversityThroughInline,
+        PublicationInline,
+
+        RegularLanguageCertificateTypeInline,
+        GMATCertificateTypeInline,
+        GREGeneralCertificateTypeInline,
+        GRESubjectCertificateTypeInline,
+        GREBiologyCertificateTypeInline,
+        GREPhysicsCertificateTypeInline,
+        GREPsychologyCertificate,
+        DuolingoCertificateCertificate,
+    ]
+
+    list_display = ['id']
+
+
+@admin.register(models.StudentDetailedInfo)
+class StudentDetailedInfoAdmin(StudentDetailedInfoBaseAdmin):
+    inlines = [WantToApplyInline] + StudentDetailedInfoBaseAdmin.inlines
+    list_display = ['id', 'user', 'value', 'rank', 'created', 'updated']
+
+
+@admin.register(models.Publication)
+class PublicationAdmin(admin.ModelAdmin):
+    list_display = ['id', 'title', 'student_detailed_info', 'value']
+    readonly_fields = ['value']
+
+    def delete_queryset(self, request, queryset):
+        for obj in queryset:
+            obj.delete()
+
+
+@admin.register(models.RegularLanguageCertificate)
+class RegularLanguageCertificateAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(models.GREBiologyCertificate)
+class GREBiologyCertificateAdmin(admin.ModelAdmin):
+    pass

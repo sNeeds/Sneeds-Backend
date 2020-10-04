@@ -12,27 +12,27 @@ INSTALLED_APPS = [
     'ckeditor',
     'django_extensions',
 
-    'sNeeds.apps.customAuth',
-    'sNeeds.apps.account',
-    'sNeeds.apps.consultants',
-    'sNeeds.apps.store',
     'sNeeds.apps.docs',
-    'sNeeds.apps.carts',
-    'sNeeds.apps.orders',
-    'sNeeds.apps.comments',
-    'sNeeds.apps.payments',
-    'sNeeds.apps.userfiles',
-    'sNeeds.apps.discounts',
-    'sNeeds.apps.videochats',
     'sNeeds.apps.chats',
-    'sNeeds.apps.storePackages',
     'sNeeds.apps.customUtils',
-    'sNeeds.apps.basicProducts',
-    'sNeeds.apps.customForms',
     'sNeeds.apps.notifications',
-    'sNeeds.apps.estimations',
-    'sNeeds.apps.similarApply',
-    'sNeeds.apps.analyze',
+    'sNeeds.apps.users.userFiles',
+    'sNeeds.apps.users.customAuth',
+    'sNeeds.apps.users.consultants',
+    'sNeeds.apps.store.storeBase',
+    'sNeeds.apps.store.carts',
+    'sNeeds.apps.store.orders',
+    'sNeeds.apps.store.comments',
+    'sNeeds.apps.store.payments',
+    'sNeeds.apps.store.discounts',
+    'sNeeds.apps.store.videochats',
+    'sNeeds.apps.store.storePackages',
+    'sNeeds.apps.store.basicProducts',
+    'sNeeds.apps.estimation.estimations',
+    'sNeeds.apps.estimation.similarApply',
+    'sNeeds.apps.estimation.analyze',
+    'sNeeds.apps.estimation.form',
+    'sNeeds.apps.data.account',
 
     'django.contrib.auth',
     'django.contrib.admin',
@@ -196,11 +196,6 @@ permissions.IsAuthenticated = CustomIsAuthenticated
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
 # ---------------------
 
-# This variable will be filled in models.py files
-# For know reason of existence of this variable take a look in settings/celery/serializers
-ENUM_CLASSES = {
-
-}
 
 # ---------------------
 SWAGGER_SETTINGS = {

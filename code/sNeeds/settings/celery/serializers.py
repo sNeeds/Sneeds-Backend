@@ -1,5 +1,4 @@
 import json
-from enumfields import Enum, EnumField
 from django.conf import settings
 from uuid import UUID
 

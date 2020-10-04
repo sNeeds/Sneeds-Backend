@@ -1,9 +1,7 @@
 import json
-from enum import Enum
 from jsonfield import JSONField
 
 from django.db import models
-from enumfields import EnumIntegerField
 
 
 class Notification(models.Model):

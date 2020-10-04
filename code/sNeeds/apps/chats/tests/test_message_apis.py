@@ -5,15 +5,14 @@ from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase, APIClient, APIRequestFactory
+from rest_framework.test import APITestCase, APIClient
 
-from sNeeds.apps.account.models import Country, University, FieldOfStudy
-from sNeeds.apps.carts.models import Cart
-from sNeeds.apps.carts.serializers import CartSerializer
-from sNeeds.apps.consultants.models import ConsultantProfile
-from sNeeds.apps.store.models import TimeSlotSale, SoldTimeSlotSale
+from sNeeds.apps.data.account import Country, University, FieldOfStudy
+from sNeeds.apps.store.carts.models import Cart
+from sNeeds.apps.users.consultants.models import ConsultantProfile
+from sNeeds.apps.store.storeBase.models import TimeSlotSale, SoldTimeSlotSale
 from sNeeds.apps.chats.models import (
-    Chat, Message, TextMessage, ImageMessage, FileMessage, VoiceMessage
+    Chat, TextMessage
 )
 
 User = get_user_model()

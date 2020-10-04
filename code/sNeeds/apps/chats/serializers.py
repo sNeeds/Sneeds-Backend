@@ -5,8 +5,7 @@ from rest_framework.exceptions import ValidationError
 
 from rest_polymorphic.serializers import PolymorphicSerializer
 
-from sNeeds.apps.store.models import SoldTimeSlotSale
-from sNeeds.apps.consultants.models import ConsultantProfile
+from sNeeds.apps.users.consultants.models import ConsultantProfile
 from .models import Chat, Message, TextMessage, VoiceMessage, FileMessage, ImageMessage
 
 
@@ -45,7 +44,7 @@ class ChatSerializer(serializers.ModelSerializer):
             return None
 
     def get_other_person(self, obj):
-        from sNeeds.apps.customAuth.serializers import SafeUserDataSerializer
+        from sNeeds.apps.users.customAuth import SafeUserDataSerializer
 
         request = self.context.get('request')
         user = request.user
