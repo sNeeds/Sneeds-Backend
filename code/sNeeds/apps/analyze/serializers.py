@@ -142,7 +142,7 @@ class GradePointAverageChartSerializer(CommonChartSerializer):
             return None
 
 
-class PublicationCountChartSerializer(CommonChartSerializer):
+class PublicationsCountChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
         self._data = dict()
@@ -190,7 +190,7 @@ class PublicationCountChartSerializer(CommonChartSerializer):
             return None
 
 
-class PublicationsTypeChartSerializer(CommonChartSerializer):
+class PublicationTypeChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
         self._data = dict()
@@ -283,7 +283,7 @@ class PublicationsScoreChartSerializer(CommonChartSerializer):
             return None
 
 
-class PublicationsImpactFactorChartSerializer(CommonChartSerializer):
+class PublicationImpactFactorChartSerializer(CommonChartSerializer):
 
     def save(self, **kwargs):
         self._data = dict()

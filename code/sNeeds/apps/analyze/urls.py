@@ -10,13 +10,13 @@ urlpatterns = [
     path('publications-count/', views.PublicationsCountChartRetrieveAPIView.as_view(),
          name='publications-count-detail'),
 
-    path('publications-type/', views.PublicationsTypeChartRetrieveAPIView.as_view(),
+    path('publications-type/', views.PublicationTypeChartRetrieveAPIView.as_view(),
          name='publications-type-detail'),
 
     path('publications-score/', views.PublicationsScoreChartRetrieveAPIView.as_view(),
          name='publications-score-detail'),
 
-    path('publications-impact-factor/', views.PublicationsImpactFactorChartRetrieveAPIView.as_view(),
+    path('publications-impact-factor/', views.PublicationImpactFactorChartRetrieveAPIView.as_view(),
          name='publications-impact-factor-detail'),
 
     path('powerful-recommendation/', views.PowerfulRecommendationChartRetrieveAPIView.as_view(),

@@ -6,7 +6,7 @@ from django.db import transaction
 from django.db.utils import IntegrityError
 
 from sNeeds.apps.account import models as account_models
-from sNeeds.apps.analyze.models import Chart, ChartTitle, ChartItemData
+from sNeeds.apps.analyze.models import Chart, ChartItemData
 
 from sNeeds.apps.account.models import GradeModel
 
@@ -110,7 +110,7 @@ def update_publication_count_chart(publications_count, data, db_data, is_delete=
         des_db_obj = next(deserialize('json', db_data))
         db_instance = des_db_obj.object
 
-    chart, created = Chart.objects.get_or_create(title=ChartTitle.PUBLICATIONS_COUNT)
+    chart, created = Chart.objects.get_or_create(title=Chart.ChartTitle.PUBLICATIONS_COUNT)
 
     if is_delete:
         # We check that the instance is the last publication is being removed from sdi publications set
@@ -193,7 +193,7 @@ def update_publication_count_chart_sdi_creation(data, db_data, is_delete=False):
     else:
         des_db_obj = next(deserialize('json', db_data))
         db_instance = des_db_obj.object
-    chart, created = Chart.objects.get_or_create(title=ChartTitle.PUBLICATIONS_COUNT)
+    chart, created = Chart.objects.get_or_create(title=Chart.ChartTitle.PUBLICATIONS_COUNT)
 
     # Save has been called in order to update an entry
     if db_instance is not None:
@@ -227,7 +227,7 @@ def update_publication_count_chart_sdi_deletion(publications_count, data, db_dat
     else:
         des_db_obj = next(deserialize('json', db_data))
         db_instance = des_db_obj.object
-    chart, created = Chart.objects.get_or_create(title=ChartTitle.PUBLICATIONS_COUNT)
+    chart, created = Chart.objects.get_or_create(title=Chart.ChartTitle.PUBLICATIONS_COUNT)
 
     if is_delete:
         # publications_count = instance.publication_set.count()
@@ -253,7 +253,7 @@ def update_publication_type_chart(data, db_data, is_delete=False):
         des_db_obj = next(deserialize('json', db_data))
         db_instance = des_db_obj.object
 
-    update_common_chart(ChartTitle.PUBLICATIONS_TYPE, account_models.Publication,
+    update_common_chart(Chart.ChartTitle.PUBLICATIONS_TYPE, account_models.Publication,
                         account_models.Publication.get_type__store_label, instance, db_instance, is_delete)
 
     # try:
@@ -323,7 +323,7 @@ def update_publications_score_chart(data, db_data, is_delete=False):
         db_instance = des_db_obj.object
 
     get_publications_score_label = account_models.Publication.get_publications_score__store_label
-    chart, created = Chart.objects.get_or_create(title=ChartTitle.PUBLICATIONS_SCORE)
+    chart, created = Chart.objects.get_or_create(title=Chart.ChartTitle.PUBLICATIONS_SCORE)
 
     if is_delete:
         old_publications_values = instance.student_detailed_info.studentdetailedinfo.publication_set. \
@@ -402,7 +402,7 @@ def update_powerful_recommendation_chart(data, db_data, is_delete=False):
     else:
         des_db_obj = next(deserialize('json', db_data))
         db_instance = des_db_obj.object
-    update_common_chart(ChartTitle.POWERFUL_RECOMMENDATION, account_models.StudentDetailedInfo,
+    update_common_chart(Chart.ChartTitle.POWERFUL_RECOMMENDATION, account_models.StudentDetailedInfo,
                         account_models.StudentDetailedInfo.get_powerful_recommendation__store_label,
                         instance, db_instance, is_delete)
 
@@ -470,7 +470,7 @@ def update_olympiad_chart(data, db_data, is_delete=False):
     else:
         des_db_obj = next(deserialize('json', db_data))
         db_instance = des_db_obj.object
-    update_common_chart(ChartTitle.OLYMPIAD, account_models.StudentDetailedInfo,
+    update_common_chart(Chart.ChartTitle.OLYMPIAD, account_models.StudentDetailedInfo,
                         account_models.StudentDetailedInfo.get_olympiad__store_label, instance, db_instance, is_delete)
 
     # try:
@@ -549,7 +549,7 @@ def update_related_work_experience_chart(data, db_data, is_delete=False):
 
     print('task self.related_work_experience', instance.related_work_experience)
 
-    update_common_chart(ChartTitle.RELATED_WORK_EXPERIENCE, account_models.StudentDetailedInfo,
+    update_common_chart(Chart.ChartTitle.RELATED_WORK_EXPERIENCE, account_models.StudentDetailedInfo,
                         account_models.StudentDetailedInfo.get_related_work__store_label, instance, db_instance,
                         is_delete)
 
@@ -564,7 +564,7 @@ def update_publication_impact_factor_chart(data, db_data, is_delete=False):
     else:
         des_db_obj = next(deserialize('json', db_data))
         db_instance = des_db_obj.object
-    update_common_chart(ChartTitle.PUBLICATIONS_IMPACT_FACTOR, account_models.Publication,
+    update_common_chart(Chart.ChartTitle.PUBLICATIONS_IMPACT_FACTOR, account_models.Publication,
                         account_models.Publication.get_impact_factor__store_label, instance, db_instance, is_delete)
 
 
@@ -579,7 +579,7 @@ def update_gpa_chart(data, db_data, is_delete=False):
         des_db_obj = next(deserialize('json', db_data))
         db_instance = des_db_obj.object
 
-    chart, created = Chart.objects.get_or_create(title=ChartTitle.GRADE_POINT_AVERAGE)
+    chart, created = Chart.objects.get_or_create(title=Chart.ChartTitle.GRADE_POINT_AVERAGE)
 
     if is_delete:
         # We check that the instance is the last education is being removed from sdi educations set
@@ -756,7 +756,7 @@ def update_ielts_chart(data, db_data, is_delete=False):
         des_db_obj = next(deserialize('json', db_data))
         db_instance = des_db_obj.object
     # instance = instance.regularlanguagcertificate
-    update_common_chart(ChartTitle.IELTS.value, account_models.RegularLanguageCertificate,
+    update_common_chart(Chart.ChartTitle.IELTS, account_models.RegularLanguageCertificate,
                         account_models.RegularLanguageCertificate.get_ielts__store_label,
                         instance, is_delete)
 
@@ -771,7 +771,7 @@ def update_toefl_chart(data, db_data, is_delete=False):
         des_db_obj = next(deserialize('json', db_data))
         db_instance = des_db_obj.object
     # instance = instance.regularlanguagcertificate
-    update_common_chart(ChartTitle.TOEFL.value, account_models.RegularLanguageCertificate,
+    update_common_chart(Chart.ChartTitle.TOEFL, account_models.RegularLanguageCertificate,
                         account_models.RegularLanguageCertificate.get_toefl__store_label,
                         instance, is_delete)
 
@@ -786,7 +786,7 @@ def update_gmat_chart(data, db_data, is_delete=False):
         des_db_obj = next(deserialize('json', db_data))
         db_instance = des_db_obj.object
     # instance = instance.gmatcertificate
-    update_common_chart(ChartTitle.GMAT.value, account_models.GMATCertificate,
+    update_common_chart(Chart.ChartTitle.GMAT, account_models.GMATCertificate,
                         account_models.GMATCertificate.get_store_label,
                         instance, is_delete)
 
@@ -801,7 +801,7 @@ def update_gre_general_writing_chart(data, db_data, is_delete=False):
         des_db_obj = next(deserialize('json', db_data))
         db_instance = des_db_obj.object
     # instance = instance.gregeneralcertificate
-    update_common_chart(ChartTitle.GRE_GENERAL_WRITING.value, account_models.GREGeneralCertificate,
+    update_common_chart(Chart.ChartTitle.GRE_GENERAL_WRITING, account_models.GREGeneralCertificate,
                         account_models.GREGeneralCertificate.get_writing_store_label, instance, db_instance, is_delete)
 
 
@@ -815,7 +815,7 @@ def update_gre_general_quantitative_and_verbal_chart(data, db_data, is_delete=Fa
         des_db_obj = next(deserialize('json', db_data))
         db_instance = des_db_obj.object
     # instance = instance.gregeneralcertificate
-    update_common_chart(ChartTitle.GRE_GENERAL_QUANTITATIVE_AND_VERBAL.value, account_models.GREGeneralCertificate,
+    update_common_chart(Chart.ChartTitle.GRE_GENERAL_QUANTITATIVE_AND_VERBAL, account_models.GREGeneralCertificate,
                         account_models.GREGeneralCertificate.get_q_and_v_store_label, instance, db_instance, is_delete)
 
 
@@ -829,7 +829,7 @@ def update_gre_subject_total_chart(data, db_data, is_delete=False):
         des_db_obj = next(deserialize('json', db_data))
         db_instance = des_db_obj.object
     # instance = instance.gresubjectcertificate
-    update_common_chart(ChartTitle.GRE_SUBJECT_TOTAL.value, account_models.GRESubjectCertificate,
+    update_common_chart(Chart.ChartTitle.GRE_SUBJECT_TOTAL, account_models.GRESubjectCertificate,
                         account_models.GRESubjectCertificate.get_total_store_label, instance, db_instance, is_delete)
 
 
@@ -843,7 +843,7 @@ def update_duolingo_chart(data, db_data, is_delete=False):
         des_db_obj = next(deserialize('json', db_data))
         db_instance = des_db_obj.object
     # instance = instance.duolingocertificate
-    update_common_chart(ChartTitle.DUOLINGO.value, account_models.DuolingoCertificate,
+    update_common_chart(Chart.ChartTitle.DUOLINGO, account_models.DuolingoCertificate,
                         account_models.DuolingoCertificate.get_store_label, instance, db_instance, is_delete)
 
 
