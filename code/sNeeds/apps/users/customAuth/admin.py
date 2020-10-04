@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import ugettext_lazy as _
 
+from sNeeds.utils.custom.admin.actions import export_as_csv_action
 from .models import CustomUser, StudentProfile
 from .forms import CustomUserChangeForm, CustomUserCreationForm
 
@@ -30,6 +31,9 @@ class CustomUserAdmin(UserAdmin):
     list_display = ('email', 'first_name', 'last_name', 'user_type', 'is_staff')
     search_fields = ('email', 'first_name', 'last_name', 'phone_number')
     ordering = ('email',)
+
+    actions = [
+        export_as_csv_action("CSV Export", fields=['first_name', 'last_name', 'email', 'phone_number', 'user_type'])]
 
 
 admin.site.register(CustomUser, CustomUserAdmin)

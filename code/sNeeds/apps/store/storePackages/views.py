@@ -28,7 +28,7 @@ class MarketplaceListAPIView(generics.ListAPIView):
         ).values_list("sold_store_package", flat=True)
 
         qs = SoldStorePackage.objects.filter(
-            consultant=None, updated__gte=timezone.now() - timezone.timedelta(days=3)
+            consultant=None, show_on_marketplace_until__gte=timezone.now()
         ).get_filled_student_detailed_infos().exclude(
             id__in=accept_requested_store_packages_id_list
         )

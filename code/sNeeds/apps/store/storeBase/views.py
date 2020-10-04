@@ -17,8 +17,23 @@ class TimeSlotSaleListAPIView(generics.ListCreateAPIView):
     filterset_class = filtersets.TimeSlotSaleFilter
     permission_classes = [IsConsultantUnsafePermission, permissions.IsAuthenticatedOrReadOnly]
 
-    def get_queryset(self):
-        return super(TimeSlotSaleListAPIView, self).get_queryset().order_by('-start_time')
+    def get_serializer_class(self):
+        serializer_class = self.serializer_class
+        if self.request.method == 'GET':
+            serializer_class = serializers.ShortTimeSlotSaleSerializer
+
+        return serializer_class
+
+
+class TimeSlotSaleExistListAPIView(generics.ListAPIView):
+    queryset = TimeSlotSale.objects.all()
+    filterset_class = filtersets.TimeSlotSaleFilter
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        if queryset.exists():
+            return Response({"exists": True, "number": len(queryset)})
+        return Response({"exists": False, "number": len(queryset)})
 
 
 class TimeSlotSaleDetailAPIView(generics.RetrieveDestroyAPIView):
@@ -55,9 +70,9 @@ class SoldTimeSlotSaleDetailAPIView(generics.RetrieveAPIView):
 
 class SoldTimeSlotSaleSafeListAPIView(generics.ListAPIView):
     queryset = SoldTimeSlotSale.objects.all()
-    serializer_class = serializers.SoldTimeSlotSaleSafeSerializer
+    serializer_class = serializers.ShortSoldTimeSlotSaleSafeSerializer
+    filterset_class = filtersets.SoldTimeSlotSaleFilter
     ordering_fields = ['start_time', ]
-    filterset_fields = ['used', 'consultant']
 
 
 class SoldTimeSlotSaleSafeDetailAPIView(generics.RetrieveAPIView):

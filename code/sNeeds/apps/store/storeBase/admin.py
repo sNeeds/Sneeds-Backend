@@ -10,7 +10,6 @@ class TimeSlotSaleAdmin(admin.ModelAdmin):
     readonly_fields = ["price", "active", ]
     list_filter = ['consultant', ]
 
-#TODO: Changed AdminAdvancedFiltersMixin, check if working fine
 class SoldTimeSlotSaleAdmin(admin.ModelAdmin):
     list_display = ["id", "consultant", "start_time", "end_time", "sold_to", "price"]
     list_filter = ('consultant',)
@@ -18,6 +17,26 @@ class SoldTimeSlotSaleAdmin(admin.ModelAdmin):
     advanced_filter_fields = [
         "created"
     ]
+
+    def get_list_display(self, request):
+        if request.user.groups.all().filter(name="adminplus"):
+            return ["consultant", "start_time", "end_time", "sold_to", "price"]
+        return self.list_display
+
+    def get_queryset(self, request):
+        qs = super(SoldTimeSlotSaleAdmin, self).get_queryset(request)
+        user = request.user
+
+        if user.groups.all().filter(name="adminplus"):
+            new_qs = qs.none()
+            for order in Order.objects.all().get_customs():
+                new_qs = new_qs | qs.filter(id__in=order.sold_products.all().values_list('id', flat=True))
+            return new_qs
+
+        elif request.user.is_superuser:
+            return qs
+
+        return qs.none()
 
 
 @admin.register(SoldTimeSlotSalePaymentInfo)
@@ -70,5 +89,14 @@ class SoldTimeSlotSalePaymentInfoAdmin(admin.ModelAdmin):
     def has_add_permission(self, request, obj=None):
         return False
 
+    def get_queryset(self, request):
+        qs = super(SoldTimeSlotSalePaymentInfoAdmin, self).get_queryset(request)
+        user = request.user
 
-admin.site.register(SoldTimeSlotSale, SoldTimeSlotSaleAdmin)
+        if user.groups.all().filter(name="adminplus"):
+            return qs.none()
+
+        elif request.user.is_superuser:
+            return qs
+
+        return qs.none()

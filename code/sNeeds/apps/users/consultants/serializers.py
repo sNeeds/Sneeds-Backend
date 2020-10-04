@@ -6,6 +6,24 @@ from sNeeds.apps.users.consultants.models import StudyInfo, ConsultantProfile
 from sNeeds.apps.data.account.models import Country
 
 
+class VeryShortConsultantProfileSerializer(serializers.ModelSerializer):
+    first_name = serializers.SerializerMethodField(read_only=True)
+    last_name = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = ConsultantProfile
+        fields = (
+            'first_name',
+            'last_name',
+        )
+
+    def get_first_name(self, obj):
+        return obj.user.first_name
+
+    def get_last_name(self, obj):
+        return obj.user.last_name
+
+
 class ShortConsultantProfileSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(
         view_name="consultant:consultant-profile-detail",
@@ -16,7 +34,7 @@ class ShortConsultantProfileSerializer(serializers.ModelSerializer):
     last_name = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
-        model = sNeeds.apps.users.consultants.models.ConsultantProfile
+        model = ConsultantProfile
         fields = (
             'id',
             'slug',
@@ -53,8 +71,11 @@ class ConsultantProfileSerializer(serializers.ModelSerializer):
 
     def get_rate(self, obj):
         rate = obj.rate
-        if rate is not None:
-            rate = round(obj.rate, 1)
+        if rate is None:
+            rate = 4.5 + (obj.id % 10) / 20
+        else:
+            rate = (1 * 5 + obj.rate) / 2
+        rate = round(rate, 1)
         return rate
 
     def get_first_name(self, obj):

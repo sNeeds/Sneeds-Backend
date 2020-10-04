@@ -90,8 +90,11 @@ def create_room_or_get(room_id, max_users):
     title = "room{}".format(room_id)
 
     sold_session = SoldTimeSlotSale.objects.get(id=room_id)
-    room_session_duration = (sold_session.end_time - sold_session.start_time + datetime.timedelta(
-        minutes=2 * BEFORE_AFTER_CLASS_TIME_MINUTES)).seconds // 60
+    # TODO: Change start and end time later
+    # room_session_duration = (sold_session.end_time - sold_session.start_time +
+    #                          datetime.timedelta(minutes=2 * BEFORE_AFTER_CLASS_TIME_MINUTES)
+    #                          ).seconds // 60
+    room_session_duration = datetime.timedelta(minutes=50).seconds
 
     params = {
         "name": name,
