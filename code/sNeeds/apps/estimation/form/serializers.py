@@ -13,6 +13,9 @@ from sNeeds.apps.data.account.models import BasicFormField
 from sNeeds.apps.data.account.serializers import CountrySerializer, UniversitySerializer, MajorSerializer
 
 
+LanguageCertificateType = sNeeds.apps.estimation.form.models.LanguageCertificate.LanguageCertificateType
+
+
 class StudentFormApplySemesterYearSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentFormApplySemesterYear
@@ -144,7 +147,6 @@ class WantToApplyRequestSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
     def validate(self, attrs):
-        request_user = None
         request = self.context.get("request")
         if request and hasattr(request, "user"):
             request_user = request.user
@@ -169,28 +171,6 @@ class PublicationSerializer(serializers.ModelSerializer):
         raise ValidationError(_("Creating object through this serializer is not allowed"))
 
 
-# class PublicationSerializerCelery(serializers.Serializer):
-#
-#     which_author = fields.EnumField(enum=models.WhichAuthor)
-#     type = fields.EnumField(enum=models.PublicationType)
-#     journal_reputation = fields.EnumField(enum=models.JournalReputation)
-#     student_detailed_info = serializers.SerializerMethodField()
-#
-#     class Meta:
-#         fields = [
-#             'id', 'student_detailed_info', 'title', 'publish_year', 'which_author', 'type', 'journal_reputation',
-#         ]
-#
-#     def get_student_detailed_info(self, obj):
-#
-#
-#     def create(self, validated_data):
-#         pass
-#
-#     def update(self, instance, validated_data):
-#         pass
-
-
 class PublicationRequestSerializer(serializers.ModelSerializer):
     student_detailed_info = serializers.PrimaryKeyRelatedField(
         queryset=sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.all(),
@@ -207,7 +187,6 @@ class PublicationRequestSerializer(serializers.ModelSerializer):
         ]
 
     def validate(self, attrs):
-        request_user = None
         request = self.context.get("request")
         if request and hasattr(request, "user"):
             request_user = request.user
@@ -266,7 +245,6 @@ class UniversityThroughRequestSerializer(serializers.ModelSerializer):
         ]
 
     def validate(self, attrs):
-        request_user = None
         request = self.context.get("request")
         if request and hasattr(request, "user"):
             request_user = request.user
@@ -294,7 +272,6 @@ class LanguageCertificateSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def validate(self, attrs):
-        request_user = None
         request = self.context.get("request")
         if request and hasattr(request, "user"):
             request_user = request.user
@@ -316,9 +293,8 @@ class RegularLanguageCertificateSerializer(LanguageCertificateSerializer):
         fields = '__all__'
 
     def validate_certificate_type(self, value):
-        certificate_types = models.LanguageCertificateType
         if value not in [LanguageCertificateType.IELTS_ACADEMIC, LanguageCertificateType.IELTS_GENERAL,
-                         certificate_types.TOEFL]:
+                         LanguageCertificateType.TOEFL]:
             raise ValidationError(_("Value is not in allowed certificate types."))
         return value
 
@@ -329,8 +305,7 @@ class GMATCertificateSerializer(LanguageCertificateSerializer):
         fields = '__all__'
 
     def validate_certificate_type(self, value):
-        certificate_types = models.LanguageCertificateType
-        if value not in [certificate_types.GMAT]:
+        if value not in [LanguageCertificateType.GMAT]:
             raise ValidationError(_("Value is not in allowed certificate types."))
         return value
 
@@ -341,8 +316,7 @@ class GREGeneralCertificateSerializer(LanguageCertificateSerializer):
         fields = '__all__'
 
     def validate_certificate_type(self, value):
-        certificate_types = models.LanguageCertificateType
-        if value not in [certificate_types.GRE_GENERAL]:
+        if value not in [LanguageCertificateType.GRE_GENERAL]:
             raise ValidationError(_("Value is not in allowed certificate types."))
         return value
 
@@ -353,9 +327,8 @@ class GRESubjectCertificateSerializer(LanguageCertificateSerializer):
         fields = '__all__'
 
     def validate_certificate_type(self, value):
-        certificate_types = models.LanguageCertificateType
-        if value not in [certificate_types.GRE_CHEMISTRY, certificate_types.GRE_LITERATURE,
-                         certificate_types.GRE_MATHEMATICS]:
+        if value not in [LanguageCertificateType.GRE_CHEMISTRY, LanguageCertificateType.GRE_LITERATURE,
+                         LanguageCertificateType.GRE_MATHEMATICS]:
             raise ValidationError(_("Value is not in allowed certificate types."))
         return value
 
@@ -366,8 +339,7 @@ class GREBiologyCertificateSerializer(LanguageCertificateSerializer):
         fields = '__all__'
 
     def validate_certificate_type(self, value):
-        certificate_types = models.LanguageCertificateType
-        if value not in [certificate_types.GRE_BIOLOGY]:
+        if value not in [LanguageCertificateType.GRE_BIOLOGY]:
             raise ValidationError(_("Value is not in allowed certificate types."))
         return value
 
@@ -378,8 +350,7 @@ class GREPhysicsCertificateSerializer(LanguageCertificateSerializer):
         fields = '__all__'
 
     def validate_certificate_type(self, value):
-        certificate_types = models.LanguageCertificateType
-        if value not in [certificate_types.GRE_PHYSICS]:
+        if value not in [LanguageCertificateType.GRE_PHYSICS]:
             raise ValidationError(_("Value is not in allowed certificate types."))
         return value
 
@@ -390,8 +361,8 @@ class GREPsychologyCertificateSerializer(LanguageCertificateSerializer):
         fields = '__all__'
 
     def validate_certificate_type(self, value):
-        certificate_types = models.LanguageCertificateType
-        if value not in [certificate_types.GRE_PSYCHOLOGY]:
+        
+        if value not in [LanguageCertificateType.GRE_PSYCHOLOGY]:
             raise ValidationError(_("Value is not in allowed certificate types."))
         return value
 
@@ -402,8 +373,7 @@ class DuolingoCertificateSerializer(LanguageCertificateSerializer):
         fields = '__all__'
 
     def validate_certificate_type(self, value):
-        certificate_types = models.LanguageCertificateType
-        if value not in [certificate_types.DUOLINGO]:
+        if value not in [LanguageCertificateType.DUOLINGO]:
             raise ValidationError(_("Value is not in allowed certificate types."))
         return value
 
@@ -433,28 +403,36 @@ class StudentDetailedInfoBaseSerializer(serializers.ModelSerializer):
         ]
 
     def get_regular_certificates(self, obj):
-        return self.certificates(obj, sNeeds.apps.estimation.form.models.RegularLanguageCertificate, RegularLanguageCertificateSerializer)
+        return self.get_certificates(obj, sNeeds.apps.estimation.form.models.RegularLanguageCertificate,
+                                     RegularLanguageCertificateSerializer)
 
     def get_gmat_certificates(self, obj):
-        return self.certificates(obj, sNeeds.apps.estimation.form.models.GMATCertificate, GMATCertificateSerializer)
+        return self.get_certificates(obj, sNeeds.apps.estimation.form.models.GMATCertificate,
+                                     GMATCertificateSerializer)
 
     def get_gre_general_certificates(self, obj):
-        return self.certificates(obj, sNeeds.apps.estimation.form.models.GREGeneralCertificate, GREGeneralCertificateSerializer)
+        return self.get_certificates(obj, sNeeds.apps.estimation.form.models.GREGeneralCertificate,
+                                     GREGeneralCertificateSerializer)
 
     def get_gre_subject_certificates(self, obj):
-        return self.certificates(obj, sNeeds.apps.estimation.form.models.GRESubjectCertificate, GRESubjectCertificateSerializer)
+        return self.get_certificates(obj, sNeeds.apps.estimation.form.models.GRESubjectCertificate,
+                                     GRESubjectCertificateSerializer)
 
     def get_gre_biology_certificates(self, obj):
-        return self.certificates(obj, sNeeds.apps.estimation.form.models.GREBiologyCertificate, GREBiologyCertificateSerializer)
+        return self.get_certificates(obj, sNeeds.apps.estimation.form.models.GREBiologyCertificate,
+                                     GREBiologyCertificateSerializer)
 
     def get_gre_physics_certificates(self, obj):
-        return self.certificates(obj, sNeeds.apps.estimation.form.models.GREPhysicsCertificate, GREPhysicsCertificateSerializer)
+        return self.get_certificates(obj, sNeeds.apps.estimation.form.models.GREPhysicsCertificate,
+                                     GREPhysicsCertificateSerializer)
 
     def get_gre_psychology_certificates(self, obj):
-        return self.certificates(obj, sNeeds.apps.estimation.form.models.GREPsychologyCertificate, GREPsychologyCertificateSerializer)
+        return self.get_certificates(obj, sNeeds.apps.estimation.form.models.GREPsychologyCertificate,
+                                     GREPsychologyCertificateSerializer)
 
     def get_duolingo_certificates(self, obj):
-        return self.certificates(obj, sNeeds.apps.estimation.form.models.DuolingoCertificate, DuolingoCertificateSerializer)
+        return self.get_certificates(obj, sNeeds.apps.estimation.form.models.DuolingoCertificate,
+                                     DuolingoCertificateSerializer)
 
     def get_universities(self, obj):
         qs = UniversityThrough.objects.filter(student_detailed_info_id=obj.id)
@@ -471,7 +449,7 @@ class StudentDetailedInfoBaseSerializer(serializers.ModelSerializer):
         raise ValidationError(_("Update object through this serializer is not allowed"))
 
     # Custom method
-    def certificates(self, obj, model_class, serializer_class):
+    def get_certificates(self, obj, model_class, serializer_class):
         qs = model_class.objects.filter(student_detailed_info_id=obj.id)
         return serializer_class(qs, many=True, context=self.context).data
 

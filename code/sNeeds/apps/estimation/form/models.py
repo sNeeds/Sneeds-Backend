@@ -700,7 +700,7 @@ class UniversityThrough(models.Model):
 
 
 class LanguageCertificate(models.Model):
-    class LanguageCertificateChoices(models.TextChoices):
+    class LanguageCertificateType(models.TextChoices):
         IELTS_GENERAL = 'IELTS General'
         IELTS_ACADEMIC = 'IELTS Academic'
         TOEFL = 'TOEFL'
@@ -719,8 +719,8 @@ class LanguageCertificate(models.Model):
         on_delete=models.CASCADE
     )
     certificate_type = models.CharField(
-        choices=LanguageCertificateChoices.choices,
-        default=LanguageCertificateChoices.TOEFL,
+        choices=LanguageCertificateType.choices,
+        default=LanguageCertificateType.TOEFL,
         max_length=64,
         help_text="Based on endpoint just some types are allowed to insert not all certificate types."
     )
@@ -757,7 +757,7 @@ class LanguageCertificate(models.Model):
         # Some of subclasses don't have overall
         if self.is_regular_language_certificate_instance():
             overall = self.regularlanguagecertificate.overall
-            if self.certificate_type == LanguageCertificate.LanguageCertificateChoices.TOEFL:
+            if self.certificate_type == LanguageCertificate.LanguageCertificateType.TOEFL:
                 if overall < values.TOEFL_D_END:
                     value = values.TOEFL_D_VALUE
                     value_str = "D"
@@ -777,7 +777,7 @@ class LanguageCertificate(models.Model):
                     value = values.TOEFL_AP_VALUE
                     value_str = "A+"
 
-            elif self.certificate_type == LanguageCertificate.LanguageCertificateChoices.IELTS_GENERAL or self.certificate_type == LanguageCertificate.LanguageCertificateChoices.IELTS_ACADEMIC:
+            elif self.certificate_type == LanguageCertificate.LanguageCertificateType.IELTS_GENERAL or self.certificate_type == LanguageCertificate.LanguageCertificateType.IELTS_ACADEMIC:
                 if overall < values.IELTS_D_END:
                     value = values.IELTS_D_VALUE
                     value_str = "D"
@@ -812,8 +812,8 @@ class RegularLanguageCertificate(LanguageCertificate):
     overall = models.DecimalField(max_digits=5, decimal_places=2)
 
     def clean(self, *args, **kwargs):
-        if self.certificate_type not in [LanguageCertificate.LanguageCertificateChoices.IELTS_ACADEMIC, LanguageCertificate.LanguageCertificateChoices.IELTS_GENERAL,
-                                         LanguageCertificate.LanguageCertificateChoices.TOEFL]:
+        if self.certificate_type not in [LanguageCertificate.LanguageCertificateType.IELTS_ACADEMIC, LanguageCertificate.LanguageCertificateType.IELTS_GENERAL,
+                                         LanguageCertificate.LanguageCertificateType.TOEFL]:
             raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})
 
     # IELTS overall 1 to 9
@@ -859,7 +859,7 @@ class RegularLanguageCertificate(LanguageCertificate):
     def get_toefl_user_store_based_positions(cls, sdi):
         positions = []
         user_toefl_certificates = cls.objects.filter(student_detailed_info=sdi,
-                                                     certificate_type=LanguageCertificate.LanguageCertificateChoices.TOEFL
+                                                     certificate_type=LanguageCertificate.LanguageCertificateType.TOEFL
                                                      )
         for obj in user_toefl_certificates:
             positions.append(obj.get_toefl__store_label())
@@ -871,7 +871,7 @@ class RegularLanguageCertificate(LanguageCertificate):
         positions = []
         user_toefl_certificates = cls.objects.filter(
             student_detailed_info=sdi,
-            certificate_type=LanguageCertificate.LanguageCertificateChoices.TOEFL
+            certificate_type=LanguageCertificate.LanguageCertificateType.TOEFL
         )
         for obj in user_toefl_certificates:
             positions.append(obj.get_toefl__view_label())
@@ -883,8 +883,8 @@ class RegularLanguageCertificate(LanguageCertificate):
         positions = []
         user_toefl_certificates = cls.objects.filter(
             Q(student_detailed_info=sdi) and
-            (Q(certificate_type=LanguageCertificate.LanguageCertificateChoices.IELTS_GENERAL) or
-             Q(certificate_type=LanguageCertificate.LanguageCertificateChoices.IELTS_ACADEMIC))
+            (Q(certificate_type=LanguageCertificate.LanguageCertificateType.IELTS_GENERAL) or
+             Q(certificate_type=LanguageCertificate.LanguageCertificateType.IELTS_ACADEMIC))
         )
 
         for obj in user_toefl_certificates:
@@ -897,8 +897,8 @@ class RegularLanguageCertificate(LanguageCertificate):
         positions = []
         user_toefl_certificates = cls.objects.filter(
             Q(student_detailed_info=sdi) and
-            (Q(certificate_type=LanguageCertificate.LanguageCertificateChoices.IELTS_GENERAL) or
-             Q(certificate_type=LanguageCertificate.LanguageCertificateChoices.IELTS_ACADEMIC))
+            (Q(certificate_type=LanguageCertificate.LanguageCertificateType.IELTS_GENERAL) or
+             Q(certificate_type=LanguageCertificate.LanguageCertificateType.IELTS_ACADEMIC))
         )
 
         for obj in user_toefl_certificates:
@@ -938,7 +938,7 @@ class GMATCertificate(LanguageCertificate):
     TOTAL_VIEW_LABEL_RANGE = 100
 
     def clean(self, *args, **kwargs):
-        if self.certificate_type not in [LanguageCertificate.LanguageCertificateChoices.GMAT]:
+        if self.certificate_type not in [LanguageCertificate.LanguageCertificateType.GMAT]:
             raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})
 
     def get_store_label(self):
@@ -995,7 +995,7 @@ class GREGeneralCertificate(LanguageCertificate):
     )
 
     def clean(self, *args, **kwargs):
-        if self.certificate_type not in [LanguageCertificate.LanguageCertificateChoices.GRE_GENERAL]:
+        if self.certificate_type not in [LanguageCertificate.LanguageCertificateType.GRE_GENERAL]:
             raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})
 
     WRITING_STORE_LABEL_RANGE = 0.5
@@ -1105,8 +1105,8 @@ class GRESubjectCertificate(LanguageCertificate):
     )
 
     def clean(self, *args, **kwargs):
-        if self.certificate_type not in [LanguageCertificate.LanguageCertificateChoices.GRE_CHEMISTRY, LanguageCertificate.LanguageCertificateChoices.GRE_LITERATURE,
-                                         LanguageCertificate.LanguageCertificateChoices.GRE_MATHEMATICS]:
+        if self.certificate_type not in [LanguageCertificate.LanguageCertificateType.GRE_CHEMISTRY, LanguageCertificate.LanguageCertificateType.GRE_LITERATURE,
+                                         LanguageCertificate.LanguageCertificateType.GRE_MATHEMATICS]:
             raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})
 
     TOTAL_STORE_LABEL_RANGE = 20
@@ -1169,7 +1169,7 @@ class GREBiologyCertificate(GRESubjectCertificate):
     )
 
     def clean(self, *args, **kwargs):
-        if self.certificate_type not in [LanguageCertificate.LanguageCertificateChoices.GRE_BIOLOGY]:
+        if self.certificate_type not in [LanguageCertificate.LanguageCertificateType.GRE_BIOLOGY]:
             raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})
 
 
@@ -1187,7 +1187,7 @@ class GREPhysicsCertificate(GRESubjectCertificate):
     )
 
     def clean(self, *args, **kwargs):
-        if self.certificate_type not in [LanguageCertificate.LanguageCertificateChoices.GRE_PHYSICS]:
+        if self.certificate_type not in [LanguageCertificate.LanguageCertificateType.GRE_PHYSICS]:
             raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})
 
 
@@ -1217,7 +1217,7 @@ class GREPsychologyCertificate(GRESubjectCertificate):
     )
 
     def clean(self, *args, **kwargs):
-        if self.certificate_type not in [LanguageCertificate.LanguageCertificateChoices.GRE_PSYCHOLOGY]:
+        if self.certificate_type not in [LanguageCertificate.LanguageCertificateType.GRE_PSYCHOLOGY]:
             raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})
 
 
@@ -1235,7 +1235,7 @@ class DuolingoCertificate(LanguageCertificate):
     production = models.PositiveSmallIntegerField()
 
     def clean(self, *args, **kwargs):
-        if self.certificate_type not in [LanguageCertificate.LanguageCertificateChoices.DUOLINGO]:
+        if self.certificate_type not in [LanguageCertificate.LanguageCertificateType.DUOLINGO]:
             raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})
 
     OVERALL_STORE_LABEL_RANGE = 15
