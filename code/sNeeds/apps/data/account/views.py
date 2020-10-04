@@ -117,14 +117,14 @@ class UniversityForFormList(generics.ListAPIView):
         return qs
 
 
-class FieldOfStudyDetail(generics.RetrieveAPIView):
+class MajorDetail(generics.RetrieveAPIView):
     queryset = models.Major.objects.all()
-    serializer_class = serializers.FieldOfStudySerializer
+    serializer_class = serializers.MajorSerializer
     lookup_field = 'id'
 
 
-class FieldOfStudyList(generics.ListAPIView):
-    serializer_class = serializers.FieldOfStudySerializer
+class MajorList(generics.ListAPIView):
+    serializer_class = serializers.MajorSerializer
 
     def get_queryset(self):
         from sNeeds.apps.users.consultants.models import StudyInfo
@@ -133,9 +133,9 @@ class FieldOfStudyList(generics.ListAPIView):
         return models.Major.objects.filter(id__in=major_list)
 
 
-class FieldOfStudyForFormList(generics.ListAPIView):
+class MajorForFormList(generics.ListAPIView):
     queryset = models.Major.objects.none()
-    serializer_class = serializers.FieldOfStudySerializer
+    serializer_class = serializers.MajorSerializer
 
     def get_queryset(self):
         request = self.request

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 import sNeeds.apps
-from sNeeds.apps.data.account.serializers import UniversitySerializer, FieldOfStudySerializer, CountrySerializer
+from sNeeds.apps.data.account.serializers import UniversitySerializer, MajorSerializer, CountrySerializer
 from sNeeds.apps.users.consultants.models import StudyInfo, ConsultantProfile
 from sNeeds.apps.data.account.models import Country
 
@@ -70,7 +70,7 @@ class ConsultantProfileSerializer(serializers.ModelSerializer):
 
 class StudyInfoSerializer(serializers.ModelSerializer):
     university = UniversitySerializer(read_only=True)
-    major = FieldOfStudySerializer(read_only=True)
+    major = MajorSerializer(read_only=True)
     country = serializers.SerializerMethodField()
 
     class Meta:

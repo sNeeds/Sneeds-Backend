@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase, APIClient
 from django.conf import settings
 
-from sNeeds.apps.data.account import Country, University, FieldOfStudy, StudentDetailedInfo
+from sNeeds.apps.data.account import Country, University, Major, StudentDetailedInfo
 from sNeeds.apps.store.carts.models import Cart
 from sNeeds.apps.users.consultants.models import ConsultantProfile, StudyInfo
 from sNeeds.apps.store.storeBase.models import TimeSlotSale, SoldTimeSlotSale
@@ -98,14 +98,14 @@ class CustomAPITestCase(APITestCase):
         )
 
         # Field of Studies -------
-        self.major1 = FieldOfStudy.objects.create(
+        self.major1 = Major.objects.create(
             name="field of study1",
             description="Test desc1",
             picture=None,
             slug="field-of-study1"
         )
 
-        self.major2 = FieldOfStudy.objects.create(
+        self.major2 = Major.objects.create(
             name="field of study2",
             description="Test desc2",
             picture=None,

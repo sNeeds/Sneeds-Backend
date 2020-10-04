@@ -5,7 +5,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 
-from sNeeds.apps.data.account import Country, University, FieldOfStudy
+from sNeeds.apps.data.account.models import Country, University, major
 from sNeeds.apps.store.carts.models import Cart
 from sNeeds.apps.users.consultants.models import ConsultantProfile
 from sNeeds.apps.store.storeBase.models import TimeSlotSale, SoldTimeSlotSale
@@ -62,14 +62,14 @@ class ChatListAPIViewTest(APITestCase):
         )
 
         # Field of Studies -------
-        self.major1 = FieldOfStudy.objects.create(
+        self.major1 = major.objects.create(
             name="field of study1",
             description="Test desc1",
             picture=None,
             slug="field-of-study1"
         )
 
-        self.major2 = FieldOfStudy.objects.create(
+        self.major2 = major.objects.create(
             name="field of study2",
             description="Test desc2",
             picture=None,

@@ -10,7 +10,7 @@ from sNeeds.apps.estimation.form.models import StudentFormApplySemesterYear, Wan
     UniversityThrough, Publication
 from sNeeds.apps.data.account import models
 from sNeeds.apps.data.account.models import BasicFormField
-from sNeeds.apps.data.account.serializers import CountrySerializer, UniversitySerializer, FieldOfStudySerializer
+from sNeeds.apps.data.account.serializers import CountrySerializer, UniversitySerializer, MajorSerializer
 
 
 class StudentFormApplySemesterYearSerializer(serializers.ModelSerializer):
@@ -64,7 +64,7 @@ class WantToApplySerializer(serializers.ModelSerializer):
     countries = CountrySerializer(many=True)
     universities = UniversitySerializer(many=True)
     grades = GradeModelSerializer(many=True)
-    majors = FieldOfStudySerializer(many=True)
+    majors = MajorSerializer(many=True)
     semester_years = StudentFormApplySemesterYearSerializer(many=True)
 
     class Meta:
@@ -201,7 +201,7 @@ class PublicationRequestSerializer(serializers.ModelSerializer):
 
 class UniversityThroughSerializer(serializers.ModelSerializer):
     university = UniversitySerializer()
-    major = FieldOfStudySerializer()
+    major = MajorSerializer()
 
     class Meta:
         model = sNeeds.apps.estimation.form.models.UniversityThrough

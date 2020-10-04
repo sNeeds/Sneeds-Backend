@@ -61,7 +61,7 @@ class CountryModelMultipleChoiceFilter(filters.ModelMultipleChoiceFilter):
         return qs.distinct()
 
 
-class FieldOfStudyModelMultipleChoiceFilter(filters.ModelMultipleChoiceFilter):
+class MajorModelMultipleChoiceFilter(filters.ModelMultipleChoiceFilter):
 
     def filter(self, qs, value):
         if not value:
@@ -98,7 +98,7 @@ class ConsultantProfileFilter(FilterSet):
         field_name='country', queryset=Country.objects.all(), label='country'
     )
 
-    major = FieldOfStudyModelMultipleChoiceFilter(
+    major = MajorModelMultipleChoiceFilter(
         field_name='major', queryset=Major.objects.all(), label='major'
     )
 
