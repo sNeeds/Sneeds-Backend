@@ -7,7 +7,7 @@ from rest_framework.exceptions import PermissionDenied
 
 from .models import StorePackagePhaseThrough, StorePackage, ConsultantSoldStorePackageAcceptRequest, \
     SoldStorePackage, SoldStoreUnpaidPackagePhase, SoldStorePaidPackagePhase, SoldStorePackagePhaseDetail
-from sNeeds.apps.users.account.models import StudentDetailedInfo
+from sNeeds.apps.estimation.form.models import StudentDetailedInfo
 from sNeeds.apps.users.consultants.models import ConsultantProfile
 from sNeeds.apps.users.consultants.serializers import ShortConsultantProfileSerializer
 from sNeeds.apps.users.customAuth.serializers import SafeUserDataSerializer

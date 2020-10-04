@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase, APIClient
 from django.conf import settings
 
-from sNeeds.apps.users.account import Country, University, FieldOfStudy, StudentDetailedInfo
+from sNeeds.apps.data.account import Country, University, FieldOfStudy, StudentDetailedInfo
 from sNeeds.apps.store.carts.models import Cart
 from sNeeds.apps.users.consultants.models import ConsultantProfile, StudyInfo
 from sNeeds.apps.store.storeBase.models import TimeSlotSale, SoldTimeSlotSale

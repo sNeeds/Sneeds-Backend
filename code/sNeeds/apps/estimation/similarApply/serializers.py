@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from sNeeds.apps.users.account.serializers import StudentDetailedInfoBaseSerializer, UniversitySerializer
+from sNeeds.apps.data.account.serializers import UniversitySerializer
+from sNeeds.apps.estimation.form.serializers import StudentDetailedInfoBaseSerializer
 from sNeeds.apps.estimation.similarApply.models import AppliedStudentDetailedInfo, AppliedTo
 
 

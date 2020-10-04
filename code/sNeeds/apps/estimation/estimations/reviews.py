@@ -1,6 +1,6 @@
 from .review_comments import *
-from sNeeds.apps.users.account.models import GradeChoices, UniversityThrough, LanguageCertificate, Publication, \
-    RegularLanguageCertificate
+from sNeeds.apps.estimation.form.models import Publication, UniversityThrough, LanguageCertificate, \
+    RegularLanguageCertificate, GradeChoices
 
 
 class StudentDetailedFormReview:

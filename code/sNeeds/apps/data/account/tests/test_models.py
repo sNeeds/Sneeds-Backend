@@ -1,4 +1,4 @@
-from sNeeds.apps.users.account import StudentDetailedInfo
+from sNeeds.apps.data.account import StudentDetailedInfo
 
 from django.contrib.auth import get_user_model
 

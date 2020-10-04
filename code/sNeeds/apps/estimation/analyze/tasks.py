@@ -3,7 +3,8 @@ from celery import shared_task
 from django.db.models import Sum
 from django.db.utils import IntegrityError
 
-from sNeeds.apps.users.account import models as account_models
+import sNeeds.apps.estimation.form.models
+from sNeeds.apps.data.account import models as account_models
 from sNeeds.apps.estimation.analyze import Chart, ChartTitle, ChartItemData
 
 
@@ -115,11 +116,11 @@ def update_publication_count_chart(instance, is_delete=False):
     else:
         # Save has been called in order to update an entry
         try:
-            db_instance = account_models.Publication.objects.get(pk=instance.pk)
+            db_instance = sNeeds.apps.estimation.form.models.Publication.objects.get(pk=instance.pk)
         except IntegrityError:
             pass
         # Save has been called in order to create an entry
-        except account_models.Publication.DoesNotExist or AttributeError:
+        except sNeeds.apps.estimation.form.models.Publication.DoesNotExist or AttributeError:
             publications_count = instance.student_detailed_info.publication_set.count()
 
             old_label = str(publications_count)
@@ -145,11 +146,11 @@ def update_publication_count_chart_sdi_creation(instance, is_delete=False):
 
     # Save has been called in order to update an entry
     try:
-        db_instance = account_models.StudentDetailedInfo.objects.get(pk=instance.pk)
+        db_instance = sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.get(pk=instance.pk)
     except IntegrityError:
         pass
     # Save has been called in order to create an entry
-    except account_models.StudentDetailedInfo.DoesNotExist or AttributeError:
+    except sNeeds.apps.estimation.form.models.StudentDetailedInfo.DoesNotExist or AttributeError:
         publications_count = instance.publication_set.count()
 
         if publications_count > 0:
@@ -182,8 +183,8 @@ def update_publication_count_chart_sdi_deletion(instance, is_delete=False):
 
 @shared_task
 def update_publication_type_count_chart(instance, is_delete=False):
-    update_common_chart(ChartTitle.PUBLICATIONS_TYPE.value, account_models.Publication,
-                        account_models.Publication.get_type__store_label, instance, is_delete)
+    update_common_chart(ChartTitle.PUBLICATIONS_TYPE.value, sNeeds.apps.estimation.form.models.Publication,
+                        sNeeds.apps.estimation.form.models.Publication.get_type__store_label, instance, is_delete)
 
     # try:
     #     chart = analyze_models.PublicationTypeCountChart.objects.all().first()
@@ -238,8 +239,9 @@ def update_publication_type_count_chart(instance, is_delete=False):
 
 @shared_task
 def update_powerful_recommendation_count_chart(instance, is_delete=False):
-    update_common_chart(ChartTitle.POWERFUL_RECOMMENDATION.value, account_models.StudentDetailedInfo,
-                        account_models.StudentDetailedInfo.get_powerful_recommendation__store_label,
+    update_common_chart(ChartTitle.POWERFUL_RECOMMENDATION.value,
+                        sNeeds.apps.estimation.form.models.StudentDetailedInfo,
+                        sNeeds.apps.estimation.form.models.StudentDetailedInfo.get_powerful_recommendation__store_label,
                         instance, is_delete)
 
     # try:
@@ -292,7 +294,7 @@ def update_powerful_recommendation_count_chart(instance, is_delete=False):
 
 @shared_task
 def update_publications_score_chart(instance, is_delete=False):
-    get_publications_score_label = account_models.Publication.get_publications_score__store_label
+    get_publications_score_label = sNeeds.apps.estimation.form.models.Publication.get_publications_score__store_label
     chart = Chart.objects.get_or_create(title=ChartTitle.PUBLICATIONS_SCORE.value)
 
     if is_delete:
@@ -319,7 +321,7 @@ def update_publications_score_chart(instance, is_delete=False):
     else:
         # Save has been called in order to update an entry
         try:
-            db_instance = account_models.Publication.objects.get(pk=instance.pk)
+            db_instance = sNeeds.apps.estimation.form.models.Publication.objects.get(pk=instance.pk)
             old_publications_values = instance.student_detailed_info.publication_set \
                 .aggregate(Sum('value')).get('value__sum')
             diff = instance.value - db_instance.value
@@ -343,7 +345,7 @@ def update_publications_score_chart(instance, is_delete=False):
         except IntegrityError:
             pass
         # Save has been called in order to create an entry
-        except account_models.Publication.DoesNotExist or AttributeError:
+        except sNeeds.apps.estimation.form.models.Publication.DoesNotExist or AttributeError:
             old_publications_values = instance.student_detailed_info.publication_set \
                 .aggregate(Sum('value')).get('value__sum')
             new_publications_values = old_publications_values + instance.value
@@ -367,8 +369,8 @@ def update_publications_score_chart(instance, is_delete=False):
 
 @shared_task
 def update_olympiad_count_chart(instance, is_delete=False):
-    update_common_chart(ChartTitle.OLYMPIAD.value, account_models.StudentDetailedInfo,
-                        account_models.StudentDetailedInfo.get_olympiad__store_label, instance, is_delete)
+    update_common_chart(ChartTitle.OLYMPIAD.value, sNeeds.apps.estimation.form.models.StudentDetailedInfo,
+                        sNeeds.apps.estimation.form.models.StudentDetailedInfo.get_olympiad__store_label, instance, is_delete)
 
     # try:
     #     chart = analyze_models.OlympiadCountChart.objects.all().first()
@@ -420,14 +422,16 @@ def update_olympiad_count_chart(instance, is_delete=False):
 
 @shared_task
 def update_related_work_experience_chart(instance, is_delete=False):
-    update_common_chart(ChartTitle.RELATED_WORK_EXPERIENCE.value, account_models.StudentDetailedInfo,
-                        account_models.StudentDetailedInfo.get_related_work__store_label, instance, is_delete)
+    update_common_chart(ChartTitle.RELATED_WORK_EXPERIENCE.value,
+                        sNeeds.apps.estimation.form.models.StudentDetailedInfo,
+                        sNeeds.apps.estimation.form.models.StudentDetailedInfo.get_related_work__store_label, instance, is_delete)
 
 
 @shared_task
 def update_publication_impact_factor_chart(instance, is_delete=False):
-    update_common_chart(ChartTitle.PUBLICATIONS_IMPACT_FACTOR.value, account_models.Publication,
-                        account_models.Publication.get_impact_factor__store_label, instance, is_delete)
+    update_common_chart(ChartTitle.PUBLICATIONS_IMPACT_FACTOR.value,
+                        sNeeds.apps.estimation.form.models.Publication,
+                        sNeeds.apps.estimation.form.models.Publication.get_impact_factor__store_label, instance, is_delete)
 
 
 @shared_task
@@ -436,11 +440,11 @@ def update_gpa_chart(instance, is_delete=False):
     # chart = analyze_models.IeltsChart.objects.get_or_create()
     if is_delete:
         # We check that the instance is the last education is being removed from sdi educations set
-        qs = account_models.UniversityThrough.objects.filter(student_detailed_info=instance.student_detailed_info). \
+        qs = sNeeds.apps.estimation.form.models.UniversityThrough.objects.filter(student_detailed_info=instance.student_detailed_info). \
             order_by('-graduate_in')
         last_grade = qs.first()
         if last_grade == instance:
-            label = account_models.UniversityThrough.get_gpa__store_label(last_grade)
+            label = sNeeds.apps.estimation.form.models.UniversityThrough.get_gpa__store_label(last_grade)
             obj, created = ChartItemData.objects.get_or_create(chart=chart, label=label,
                                                                defaults={'count': 0})
             if not created and obj.count > 0:
@@ -450,7 +454,7 @@ def update_gpa_chart(instance, is_delete=False):
             # now we look for last grade after instance
             new_last_grade = qs.exclude(pk=instance.pk).first()
             if new_last_grade is not None:
-                label = account_models.UniversityThrough.get_gpa__store_label(new_last_grade)
+                label = sNeeds.apps.estimation.form.models.UniversityThrough.get_gpa__store_label(new_last_grade)
                 obj, created = ChartItemData.objects.get_or_create(chart=chart, label=label,
                                                                    defaults={'count': 1})
                 if not created:
@@ -460,8 +464,8 @@ def update_gpa_chart(instance, is_delete=False):
     else:
         # Save has been called in order to update an entry
         try:
-            db_instance = account_models.UniversityThrough.objects.get(pk=instance.pk)
-            qs = account_models.UniversityThrough.objects.filter(
+            db_instance = sNeeds.apps.estimation.form.models.UniversityThrough.objects.get(pk=instance.pk)
+            qs = sNeeds.apps.estimation.form.models.UniversityThrough.objects.filter(
                 student_detailed_info=instance.student_detailed_info
             ).order_by('-graduate_in')
 
@@ -475,14 +479,14 @@ def update_gpa_chart(instance, is_delete=False):
                 if instance.graduate_in < last_grade.graduate_in \
                         and next_last_grade is not None and instance.graduate_in < next_last_grade.graduate_in:
 
-                    label = account_models.UniversityThrough.get_gpa__store_label(last_grade)
+                    label = sNeeds.apps.estimation.form.models.UniversityThrough.get_gpa__store_label(last_grade)
                     obj, created = ChartItemData.objects.get_or_create(chart=chart, label=label,
                                                                        defaults={'count': 0})
                     if not created and obj.count > 0:
                         obj.count -= 1
                         obj.save()
 
-                    label = account_models.UniversityThrough.get_gpa__store_label(next_last_grade)
+                    label = sNeeds.apps.estimation.form.models.UniversityThrough.get_gpa__store_label(next_last_grade)
                     obj, created = ChartItemData.objects.get_or_create(chart=chart, label=label,
                                                                        defaults={'count': 1})
                     if not created:
@@ -494,8 +498,8 @@ def update_gpa_chart(instance, is_delete=False):
                 # We check gpa changes. If we do not enter the previous if statement it means the instance still is
                 # last grade.We check that by is_chart_updated flag.
                 if instance.gpa != db_instance.gpa and not is_chart_updated:
-                    old_label = account_models.UniversityThrough.get_gpa__store_label(db_instance)
-                    new_label = account_models.UniversityThrough.get_gpa__store_label(instance)
+                    old_label = sNeeds.apps.estimation.form.models.UniversityThrough.get_gpa__store_label(db_instance)
+                    new_label = sNeeds.apps.estimation.form.models.UniversityThrough.get_gpa__store_label(instance)
                     if new_label != old_label:
                         obj, created = ChartItemData.objects.get_or_create(chart=chart, label=old_label,
                                                                            defaults={'count': 0})
@@ -511,14 +515,14 @@ def update_gpa_chart(instance, is_delete=False):
 
             # The instance was not last grade education but maybe it become last grade by increasing graduate_in value!
             elif instance.graduate_in > last_grade.graduate_in:
-                old_label = account_models.UniversityThrough.get_gpa__store_label(last_grade)
+                old_label = sNeeds.apps.estimation.form.models.UniversityThrough.get_gpa__store_label(last_grade)
                 obj, created = ChartItemData.objects.get_or_create(chart=chart, label=old_label,
                                                                    defaults={'count': 0})
                 if not created and obj.count > 0:
                     obj.count -= 1
                     obj.save()
 
-                new_label = account_models.UniversityThrough.get_gpa__store_label(instance)
+                new_label = sNeeds.apps.estimation.form.models.UniversityThrough.get_gpa__store_label(instance)
                 obj, created = ChartItemData.objects.get_or_create(chart=chart, label=new_label,
                                                                    defaults={'count': 1})
                 if not created:
@@ -528,15 +532,15 @@ def update_gpa_chart(instance, is_delete=False):
         except IntegrityError:
             pass
         # Save has been called in order to create an entry
-        except account_models.UniversityThrough.DoesNotExist or AttributeError:
-            qs = account_models.UniversityThrough.objects.filter(
+        except sNeeds.apps.estimation.form.models.UniversityThrough.DoesNotExist or AttributeError:
+            qs = sNeeds.apps.estimation.form.models.UniversityThrough.objects.filter(
                 student_detailed_info=instance.student_detailed_info
             ).order_by('-graduate_in')
 
             last_grade = qs.first()
 
             if last_grade is None:
-                label = account_models.UniversityThrough.get_gpa__store_label(instance)
+                label = sNeeds.apps.estimation.form.models.UniversityThrough.get_gpa__store_label(instance)
                 obj, created = ChartItemData.objects.get_or_create(chart=chart, label=label,
                                                                    defaults={'count': 1})
                 if not created:
@@ -544,14 +548,14 @@ def update_gpa_chart(instance, is_delete=False):
                     obj.save()
 
             elif instance.graduate_in > last_grade.graduate_in:
-                old_label = account_models.UniversityThrough.get_gpa__store_label(last_grade)
+                old_label = sNeeds.apps.estimation.form.models.UniversityThrough.get_gpa__store_label(last_grade)
                 obj, created = ChartItemData.objects.get_or_create(chart=chart, label=old_label,
                                                                    defaults={'count': 0})
                 if not created and obj.count > 0:
                     obj.count -= 1
                     obj.save()
 
-                new_label = account_models.UniversityThrough.get_gpa__store_label(instance)
+                new_label = sNeeds.apps.estimation.form.models.UniversityThrough.get_gpa__store_label(instance)
                 obj, created = ChartItemData.objects.get_or_create(chart=chart, label=new_label,
                                                                    defaults={'count': 1})
                 if not created:
@@ -601,47 +605,50 @@ def update_language_certificates_charts(instance, is_delete=False):
 
 def update_ielts_chart(instance, is_delete=False):
     # instance = instance.regularlanguagcertificate
-    update_common_chart(ChartTitle.IELTS.value, account_models.RegularLanguageCertificate,
-                        account_models.RegularLanguageCertificate.get_ielts__store_label,
+    update_common_chart(ChartTitle.IELTS.value, sNeeds.apps.estimation.form.models.RegularLanguageCertificate,
+                        sNeeds.apps.estimation.form.models.RegularLanguageCertificate.get_ielts__store_label,
                         instance, is_delete)
 
 
 def update_toefl_chart(instance, is_delete=False):
     # instance = instance.regularlanguagcertificate
-    update_common_chart(ChartTitle.TOEFL.value, account_models.RegularLanguageCertificate,
-                        account_models.RegularLanguageCertificate.get_toefl__store_label,
+    update_common_chart(ChartTitle.TOEFL.value, sNeeds.apps.estimation.form.models.RegularLanguageCertificate,
+                        sNeeds.apps.estimation.form.models.RegularLanguageCertificate.get_toefl__store_label,
                         instance, is_delete)
 
 
 def update_gmat_chart(instance, is_delete=False):
     # instance = instance.gmatcertificate
-    update_common_chart(ChartTitle.GMAT.value, account_models.GMATCertificate,
-                        account_models.GMATCertificate.get_store_label,
+    update_common_chart(ChartTitle.GMAT.value, sNeeds.apps.estimation.form.models.GMATCertificate,
+                        sNeeds.apps.estimation.form.models.GMATCertificate.get_store_label,
                         instance, is_delete)
 
 
 def update_gre_general_writing_chart(instance, is_delete=False):
     # instance = instance.gregeneralcertificate
-    update_common_chart(ChartTitle.GRE_GENERAL_WRITING.value, account_models.GREGeneralCertificate,
-                        account_models.GREGeneralCertificate.get_writing_store_label, instance, is_delete)
+    update_common_chart(ChartTitle.GRE_GENERAL_WRITING.value,
+                        sNeeds.apps.estimation.form.models.GREGeneralCertificate,
+                        sNeeds.apps.estimation.form.models.GREGeneralCertificate.get_writing_store_label, instance, is_delete)
 
 
 def update_gre_general_quantitative_and_verbal_chart(instance, is_delete=False):
     # instance = instance.gregeneralcertificate
-    update_common_chart(ChartTitle.GRE_GENERAL_QUANTITATIVE_AND_VERBAL.value, account_models.GREGeneralCertificate,
-                        account_models.GREGeneralCertificate.get_q_and_v_store_label, instance, is_delete)
+    update_common_chart(ChartTitle.GRE_GENERAL_QUANTITATIVE_AND_VERBAL.value,
+                        sNeeds.apps.estimation.form.models.GREGeneralCertificate,
+                        sNeeds.apps.estimation.form.models.GREGeneralCertificate.get_q_and_v_store_label, instance, is_delete)
 
 
 def update_gre_subject_total_chart(instance, is_delete=False):
     # instance = instance.gresubjectcertificate
-    update_common_chart(ChartTitle.GRE_SUBJECT_TOTAL.value, account_models.GRESubjectCertificate,
-                        account_models.GRESubjectCertificate.get_total_store_label, instance, is_delete)
+    update_common_chart(ChartTitle.GRE_SUBJECT_TOTAL.value,
+                        sNeeds.apps.estimation.form.models.GRESubjectCertificate,
+                        sNeeds.apps.estimation.form.models.GRESubjectCertificate.get_total_store_label, instance, is_delete)
 
 
 def update_duolingo_chart(instance, is_delete=False):
     # instance = instance.duolingocertificate
-    update_common_chart(ChartTitle.DUOLINGO.value, account_models.DuolingoCertificate,
-                        account_models.DuolingoCertificate.get_store_label, instance, is_delete)
+    update_common_chart(ChartTitle.DUOLINGO.value, sNeeds.apps.estimation.form.models.DuolingoCertificate,
+                        sNeeds.apps.estimation.form.models.DuolingoCertificate.get_store_label, instance, is_delete)
 
 
 def update_common_chart(chart_title, instance_model, label_function, instance, is_delete=False):

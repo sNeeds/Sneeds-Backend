@@ -1,59 +1,16 @@
 from collections import OrderedDict
 
-from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
-from rest_framework.validators import ValidationError
-from . import fields
+from rest_framework.exceptions import ValidationError
 
-from . import models
-from .models import StudentDetailedInfo, StudentFormApplySemesterYear, BasicFormField, WantToApply, UniversityThrough, \
-    Publication
-
-User = get_user_model()
-
-
-# TODO: Move SoldTimeSlotRate
-
-class CountrySerializer(serializers.ModelSerializer):
-    url = serializers.HyperlinkedIdentityField(
-        view_name="account:country-detail",
-        lookup_field='slug',
-        read_only=True
-    )
-
-    class Meta:
-        model = models.Country
-        fields = ('id', 'url', 'name', 'slug', 'picture')
-
-
-class UniversitySerializer(serializers.ModelSerializer):
-    url = serializers.HyperlinkedIdentityField(
-        view_name="account:university-detail",
-        lookup_field='id',
-        read_only=True
-    )
-    country = serializers.HyperlinkedRelatedField(
-        read_only=True,
-        view_name="account:country-detail",
-        lookup_field='slug',
-    )
-
-    class Meta:
-        model = models.University
-        fields = ('id', 'url', 'name', 'country', 'description', 'picture')
-
-
-class FieldOfStudySerializer(serializers.ModelSerializer):
-    url = serializers.HyperlinkedIdentityField(
-        view_name="account:field-of-study-detail",
-        lookup_field='id',
-        read_only=True
-    )
-
-    class Meta:
-        model = models.FieldOfStudy
-        fields = ('id', 'url', 'name', 'description', 'picture')
+import sNeeds.apps
+import sNeeds.apps.estimation.form.models
+from sNeeds.apps.estimation.form.models import StudentFormApplySemesterYear, WantToApply, StudentDetailedInfo, \
+    UniversityThrough, Publication
+from sNeeds.apps.data.account import models
+from sNeeds.apps.data.account.models import BasicFormField
+from sNeeds.apps.data.account.serializers import CountrySerializer, UniversitySerializer, FieldOfStudySerializer
 
 
 class StudentFormApplySemesterYearSerializer(serializers.ModelSerializer):
@@ -99,7 +56,7 @@ class BasicFormFieldSerializer(serializers.ModelSerializer):
 
 class GradeModelSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.GradeModel
+        model = sNeeds.apps.estimation.form.models.GradeModel
         fields = ['id', 'name']
 
 
@@ -111,7 +68,7 @@ class WantToApplySerializer(serializers.ModelSerializer):
     semester_years = StudentFormApplySemesterYearSerializer(many=True)
 
     class Meta:
-        model = models.WantToApply
+        model = sNeeds.apps.estimation.form.models.WantToApply
         fields = [
             'id', 'student_detailed_info', 'countries', 'universities', 'grades', 'majors', 'semester_years',
         ]
@@ -122,7 +79,7 @@ class WantToApplySerializer(serializers.ModelSerializer):
 
 class WantToApplyRequestSerializer(serializers.ModelSerializer):
     student_detailed_info = serializers.PrimaryKeyRelatedField(
-        queryset=models.StudentDetailedInfo.objects.all(),
+        queryset=sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.all(),
         pk_field=serializers.UUIDField(label='id'),
         allow_null=False,
         allow_empty=False,
@@ -146,7 +103,7 @@ class WantToApplyRequestSerializer(serializers.ModelSerializer):
     )
 
     grades = serializers.PrimaryKeyRelatedField(
-        queryset=models.GradeModel.objects.all(),
+        queryset=sNeeds.apps.estimation.form.models.GradeModel.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
         allow_null=True,
         allow_empty=True,
@@ -155,7 +112,7 @@ class WantToApplyRequestSerializer(serializers.ModelSerializer):
     )
 
     majors = serializers.PrimaryKeyRelatedField(
-        queryset=models.FieldOfStudy.objects.all(),
+        queryset=models.Major.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
         allow_null=True,
         allow_empty=True,
@@ -163,7 +120,7 @@ class WantToApplyRequestSerializer(serializers.ModelSerializer):
         many=True
     )
     semester_years = serializers.PrimaryKeyRelatedField(
-        queryset=models.StudentFormApplySemesterYear.objects.all(),
+        queryset=sNeeds.apps.estimation.form.models.StudentFormApplySemesterYear.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
         allow_null=False,
         allow_empty=False,
@@ -172,7 +129,7 @@ class WantToApplyRequestSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = models.WantToApply
+        model = sNeeds.apps.estimation.form.models.WantToApply
         fields = [
             'id', 'student_detailed_info', 'countries', 'universities',
             'grades', 'majors',
@@ -203,7 +160,7 @@ class WantToApplyRequestSerializer(serializers.ModelSerializer):
 
 class PublicationSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Publication
+        model = sNeeds.apps.estimation.form.models.Publication
         fields = [
             'id', 'student_detailed_info', 'title', 'publish_year', 'which_author', 'type', 'journal_reputation',
         ]
@@ -214,7 +171,7 @@ class PublicationSerializer(serializers.ModelSerializer):
 
 class PublicationRequestSerializer(serializers.ModelSerializer):
     student_detailed_info = serializers.PrimaryKeyRelatedField(
-        queryset=models.StudentDetailedInfo.objects.all(),
+        queryset=sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.all(),
         pk_field=serializers.UUIDField(label='id'),
         allow_null=False,
         allow_empty=False,
@@ -222,7 +179,7 @@ class PublicationRequestSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = models.Publication
+        model = sNeeds.apps.estimation.form.models.Publication
         fields = [
             'id', 'student_detailed_info', 'title', 'publish_year', 'which_author', 'type', 'journal_reputation',
         ]
@@ -247,7 +204,7 @@ class UniversityThroughSerializer(serializers.ModelSerializer):
     major = FieldOfStudySerializer()
 
     class Meta:
-        model = models.UniversityThrough
+        model = sNeeds.apps.estimation.form.models.UniversityThrough
         fields = [
             'id', 'university', 'student_detailed_info', 'grade', 'major', 'graduate_in', 'thesis_title', 'gpa',
         ]
@@ -266,14 +223,14 @@ class UniversityThroughRequestSerializer(serializers.ModelSerializer):
     )
 
     student_detailed_info = serializers.PrimaryKeyRelatedField(
-        queryset=models.StudentDetailedInfo.objects.all(),
+        queryset=sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.all(),
         pk_field=serializers.UUIDField(label='id'),
         allow_null=False,
         allow_empty=False,
         required=True,
     )
     major = serializers.PrimaryKeyRelatedField(
-        queryset=models.FieldOfStudy.objects.all(),
+        queryset=models.Major.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
         allow_null=False,
         allow_empty=False,
@@ -281,7 +238,7 @@ class UniversityThroughRequestSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = models.UniversityThrough
+        model = sNeeds.apps.estimation.form.models.UniversityThrough
         fields = [
             'id', 'university', 'student_detailed_info', 'grade', 'major', 'graduate_in', 'thesis_title', 'gpa',
         ]
@@ -303,7 +260,7 @@ class UniversityThroughRequestSerializer(serializers.ModelSerializer):
 
 class LanguageCertificateSerializer(serializers.ModelSerializer):
     student_detailed_info = serializers.PrimaryKeyRelatedField(
-        queryset=models.StudentDetailedInfo.objects.all(),
+        queryset=sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.all(),
         pk_field=serializers.UUIDField(label='id'),
         allow_null=False,
         allow_empty=False,
@@ -311,7 +268,7 @@ class LanguageCertificateSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        model = models.LanguageCertificate
+        model = sNeeds.apps.estimation.form.models.LanguageCertificate
         fields = '__all__'
 
     def validate(self, attrs):
@@ -333,7 +290,7 @@ class LanguageCertificateSerializer(serializers.ModelSerializer):
 
 class RegularLanguageCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
-        model = models.RegularLanguageCertificate
+        model = sNeeds.apps.estimation.form.models.RegularLanguageCertificate
         fields = '__all__'
 
     def validate_certificate_type(self, value):
@@ -346,7 +303,7 @@ class RegularLanguageCertificateSerializer(LanguageCertificateSerializer):
 
 class GMATCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
-        model = models.GMATCertificate
+        model = sNeeds.apps.estimation.form.models.GMATCertificate
         fields = '__all__'
 
     def validate_certificate_type(self, value):
@@ -358,7 +315,7 @@ class GMATCertificateSerializer(LanguageCertificateSerializer):
 
 class GREGeneralCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
-        model = models.GREGeneralCertificate
+        model = sNeeds.apps.estimation.form.models.GREGeneralCertificate
         fields = '__all__'
 
     def validate_certificate_type(self, value):
@@ -370,7 +327,7 @@ class GREGeneralCertificateSerializer(LanguageCertificateSerializer):
 
 class GRESubjectCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
-        model = models.GRESubjectCertificate
+        model = sNeeds.apps.estimation.form.models.GRESubjectCertificate
         fields = '__all__'
 
     def validate_certificate_type(self, value):
@@ -383,7 +340,7 @@ class GRESubjectCertificateSerializer(LanguageCertificateSerializer):
 
 class GREBiologyCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
-        model = models.GREBiologyCertificate
+        model = sNeeds.apps.estimation.form.models.GREBiologyCertificate
         fields = '__all__'
 
     def validate_certificate_type(self, value):
@@ -395,7 +352,7 @@ class GREBiologyCertificateSerializer(LanguageCertificateSerializer):
 
 class GREPhysicsCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
-        model = models.GREPhysicsCertificate
+        model = sNeeds.apps.estimation.form.models.GREPhysicsCertificate
         fields = '__all__'
 
     def validate_certificate_type(self, value):
@@ -407,7 +364,7 @@ class GREPhysicsCertificateSerializer(LanguageCertificateSerializer):
 
 class GREPsychologyCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
-        model = models.GREPsychologyCertificate
+        model = sNeeds.apps.estimation.form.models.GREPsychologyCertificate
         fields = '__all__'
 
     def validate_certificate_type(self, value):
@@ -419,7 +376,7 @@ class GREPsychologyCertificateSerializer(LanguageCertificateSerializer):
 
 class DuolingoCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
-        model = models.DuolingoCertificate
+        model = sNeeds.apps.estimation.form.models.DuolingoCertificate
         fields = '__all__'
 
     def validate_certificate_type(self, value):
@@ -454,28 +411,28 @@ class StudentDetailedInfoBaseSerializer(serializers.ModelSerializer):
         ]
 
     def get_regular_certificates(self, obj):
-        return self.certificates(obj, models.RegularLanguageCertificate, RegularLanguageCertificateSerializer)
+        return self.certificates(obj, sNeeds.apps.estimation.form.models.RegularLanguageCertificate, RegularLanguageCertificateSerializer)
 
     def get_gmat_certificates(self, obj):
-        return self.certificates(obj, models.GMATCertificate, GMATCertificateSerializer)
+        return self.certificates(obj, sNeeds.apps.estimation.form.models.GMATCertificate, GMATCertificateSerializer)
 
     def get_gre_general_certificates(self, obj):
-        return self.certificates(obj, models.GREGeneralCertificate, GREGeneralCertificateSerializer)
+        return self.certificates(obj, sNeeds.apps.estimation.form.models.GREGeneralCertificate, GREGeneralCertificateSerializer)
 
     def get_gre_subject_certificates(self, obj):
-        return self.certificates(obj, models.GRESubjectCertificate, GRESubjectCertificateSerializer)
+        return self.certificates(obj, sNeeds.apps.estimation.form.models.GRESubjectCertificate, GRESubjectCertificateSerializer)
 
     def get_gre_biology_certificates(self, obj):
-        return self.certificates(obj, models.GREBiologyCertificate, GREBiologyCertificateSerializer)
+        return self.certificates(obj, sNeeds.apps.estimation.form.models.GREBiologyCertificate, GREBiologyCertificateSerializer)
 
     def get_gre_physics_certificates(self, obj):
-        return self.certificates(obj, models.GREPhysicsCertificate, GREPhysicsCertificateSerializer)
+        return self.certificates(obj, sNeeds.apps.estimation.form.models.GREPhysicsCertificate, GREPhysicsCertificateSerializer)
 
     def get_gre_psychology_certificates(self, obj):
-        return self.certificates(obj, models.GREPsychologyCertificate, GREPsychologyCertificateSerializer)
+        return self.certificates(obj, sNeeds.apps.estimation.form.models.GREPsychologyCertificate, GREPsychologyCertificateSerializer)
 
     def get_duolingo_certificates(self, obj):
-        return self.certificates(obj, models.DuolingoCertificate, DuolingoCertificateSerializer)
+        return self.certificates(obj, sNeeds.apps.estimation.form.models.DuolingoCertificate, DuolingoCertificateSerializer)
 
     def get_universities(self, obj):
         qs = UniversityThrough.objects.filter(student_detailed_info_id=obj.id)

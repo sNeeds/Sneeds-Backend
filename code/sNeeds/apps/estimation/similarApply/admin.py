@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from . import models
 
-from sNeeds.apps.users.account.admin import StudentDetailedInfoBaseAdmin
+from sNeeds.apps.estimation.form.admin import StudentDetailedInfoBaseAdmin
 
 
 class AppliedToInline(admin.TabularInline):

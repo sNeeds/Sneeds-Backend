@@ -11,10 +11,6 @@ def student_info_year_choices():
     return [r for r in range(2000, datetime.date.today().year + 4)]
 
 
-def current_year():
-    return datetime.date.today().year
-
-
 def get_consultants_interact_with_user(user):
     from sNeeds.apps.store.storeBase.models import SoldProduct, SoldTimeSlotSale
     from sNeeds.apps.store.storePackages import SoldStorePackage

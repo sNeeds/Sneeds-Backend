@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from sNeeds.apps.users.account.models import WantToApply
+from sNeeds.apps.estimation.form.models import WantToApply
 
 
 class WantToApplyChanceSerializer(serializers.Serializer):

@@ -7,7 +7,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 
-from sNeeds.apps.users.account import Country, University, FieldOfStudy
+from sNeeds.apps.data.account import Country, University, FieldOfStudy
 from sNeeds.apps.store.carts.models import Cart
 from sNeeds.apps.users.consultants.models import ConsultantProfile
 from sNeeds.apps.store.storeBase.models import TimeSlotSale, SoldTimeSlotSale

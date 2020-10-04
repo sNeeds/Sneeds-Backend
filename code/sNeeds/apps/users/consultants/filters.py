@@ -2,7 +2,7 @@ from django.db.models import Q
 from django_filters.rest_framework import filters, FilterSet
 # import django_filters
 from .models import StudyInfo, ConsultantProfile
-from sNeeds.apps.users.account.models import University, Country, FieldOfStudy
+from sNeeds.apps.data.account.models import University, Country, Major
 
 
 class UniversityModelMultipleChoiceFilter(filters.ModelMultipleChoiceFilter):
@@ -99,7 +99,7 @@ class ConsultantProfileFilter(FilterSet):
     )
 
     field_of_study = FieldOfStudyModelMultipleChoiceFilter(
-        field_name='field_of_study', queryset=FieldOfStudy.objects.all(), label='field_of_study'
+        field_name='field_of_study', queryset=Major.objects.all(), label='field_of_study'
     )
 
     class Meta:

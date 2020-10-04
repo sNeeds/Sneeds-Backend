@@ -13,12 +13,11 @@ INSTALLED_APPS = [
     'django_extensions',
 
     'sNeeds.apps.docs',
-    'sNeeds.apps.users.userFiles',
     'sNeeds.apps.chats',
     'sNeeds.apps.customUtils',
     'sNeeds.apps.notifications',
+    'sNeeds.apps.users.userFiles',
     'sNeeds.apps.users.customAuth',
-    'sNeeds.apps.users.account',
     'sNeeds.apps.users.consultants',
     'sNeeds.apps.store.storeBase',
     'sNeeds.apps.store.carts',
@@ -32,6 +31,8 @@ INSTALLED_APPS = [
     'sNeeds.apps.estimation.estimations',
     'sNeeds.apps.estimation.similarApply',
     'sNeeds.apps.estimation.analyze',
+    'sNeeds.apps.estimation.form',
+    'sNeeds.apps.data.account',
 
     'django.contrib.auth',
     'django.contrib.admin',

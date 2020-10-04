@@ -1,7 +1,7 @@
 from django.contrib.contenttypes.models import ContentType
 from django.db import models, transaction
 
-from sNeeds.apps.users.account.models import StudentDetailedInfo
+from sNeeds.apps.estimation.form.models import StudentDetailedInfo
 
 
 class StorePackageQuerySetManager(models.QuerySet):

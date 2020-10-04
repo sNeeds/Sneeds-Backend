@@ -1,6 +1,6 @@
 from celery import shared_task
 
-from sNeeds.apps.users.account import StudentDetailedInfo
+from sNeeds.apps.data.account import StudentDetailedInfo
 
 
 @shared_task

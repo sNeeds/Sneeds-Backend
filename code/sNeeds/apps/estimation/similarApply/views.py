@@ -2,7 +2,7 @@ from django.http import Http404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from sNeeds.apps.users.account.models import StudentDetailedInfo, WantToApply
+from sNeeds.apps.estimation.form.models import WantToApply, StudentDetailedInfo
 from sNeeds.apps.estimation.similarApply.models import AppliedStudentDetailedInfo
 from sNeeds.apps.estimation.similarApply.serializers import AppliedStudentDetailedInfoSerializer
 

@@ -11,7 +11,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from sNeeds.apps.users.consultants.serializers import ShortConsultantProfileSerializer
 from sNeeds.apps.users.consultants.models import ConsultantProfile
-from .fields import EnumField
 
 User = get_user_model()
 

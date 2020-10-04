@@ -1,7 +1,7 @@
 from django.db import models
 
-from sNeeds.apps.users.account.models import StudentDetailedInfoBase, Country, University, GradeModel, FieldOfStudy, \
-    StudentFormApplySemesterYear
+from sNeeds.apps.data.account.models import Country, University, Major
+from sNeeds.apps.estimation.form.models import StudentFormApplySemesterYear, StudentDetailedInfoBase, GradeModel
 from sNeeds.apps.estimation.similarApply.managers import AppliedStudentDetailedInfoQuerySetManager
 
 
@@ -28,7 +28,7 @@ class AppliedTo(models.Model):
     )
 
     major = models.ForeignKey(
-        FieldOfStudy,
+        Major,
         on_delete=models.CASCADE
     )
 

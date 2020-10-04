@@ -1,9 +1,9 @@
 from rest_framework import serializers
 
 import sNeeds.apps
-from sNeeds.apps.users.account.serializers import UniversitySerializer, FieldOfStudySerializer, CountrySerializer
+from sNeeds.apps.data.account.serializers import UniversitySerializer, FieldOfStudySerializer, CountrySerializer
 from sNeeds.apps.users.consultants.models import StudyInfo, ConsultantProfile
-from sNeeds.apps.users.account.models import Country
+from sNeeds.apps.data.account.models import Country
 
 
 class ShortConsultantProfileSerializer(serializers.ModelSerializer):

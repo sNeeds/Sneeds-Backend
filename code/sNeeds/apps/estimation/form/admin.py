@@ -1,14 +1,12 @@
 from django.contrib import admin
 
+# Register your models here.
 from . import models
 
-admin.site.register(models.Country)
-admin.site.register(models.UniversityThrough)
-admin.site.register(models.FieldOfStudyType)
-admin.site.register(models.WantToApply)
-admin.site.register(models.GradeModel)
-admin.site.register(models.FieldOfStudy)
 admin.site.register(models.StudentFormApplySemesterYear)
+admin.site.register(models.GradeModel)
+admin.site.register(models.UniversityThrough)
+admin.site.register(models.WantToApply)
 
 
 class UniversityThroughInline(admin.TabularInline):
@@ -89,12 +87,6 @@ class StudentDetailedInfoBaseAdmin(admin.ModelAdmin):
 class StudentDetailedInfoAdmin(StudentDetailedInfoBaseAdmin):
     inlines = [WantToApplyInline] + StudentDetailedInfoBaseAdmin.inlines
     list_display = ['id', 'user', 'value', 'rank', 'created', 'updated']
-
-
-@admin.register(models.University)
-class UniversityAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'rank', 'is_college']
-    search_fields = ['name']
 
 
 @admin.register(models.Publication)

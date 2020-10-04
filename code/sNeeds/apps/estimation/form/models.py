@@ -1,28 +1,22 @@
-import datetime
-from math import floor
 import decimal
 import uuid
-
-from django.conf import settings
+from math import floor
 
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator, FileExtensionValidator
 from django.db import models
+
+# Create your models here.
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth import get_user_model
 
 from sNeeds.apps.estimation.estimations import values
-from .managers import UniversityThroughQuerySetManager, LanguageCertificateQuerysetManager, CountryManager, \
-    PublicationQuerySetManager, StudentDetailedInfoManager
-from .validators import validate_resume_file_size, ten_factor_validator
-
-MISSING_LABEL = 'missing'
-REWARDED_LABEL = 'rewarded'
-
-ZERO_LABEL = '0'
-
-User = get_user_model()
+from sNeeds.apps.estimation.form.labels import MISSING_LABEL, REWARDED_LABEL
+from sNeeds.apps.estimation.form.managers import UniversityThroughQuerySetManager, \
+    LanguageCertificateQuerysetManager, PublicationQuerySetManager, StudentDetailedInfoManager
+from sNeeds.apps.data.account.models import Country, University, Major, get_student_resume_path, \
+    User, BasicFormField
+from sNeeds.apps.data.account.validators import validate_resume_file_size, ten_factor_validator
 
 
 class GradeChoices(models.TextChoices):
@@ -32,93 +26,8 @@ class GradeChoices(models.TextChoices):
     POST_DOC = 'Post Doc'
 
 
-
-def current_year():
-    return datetime.date.today().year
-
-
-def get_image_upload_path(sub_dir):
-    return "account/images/" + sub_dir
-
-
-def get_student_resume_path(instance, filename):
-    return "account/files/form/{}/resume/{}".format(instance.id, filename)
-
-
-class BasicFormField(models.Model):
-    name = models.CharField(max_length=256)
-
-    def __str__(self):
-        return self.name
-
-
-class Country(models.Model):
-    name = models.CharField(max_length=256, unique=True)
-    search_name = models.CharField(max_length=256, unique=True)
-    picture = models.ImageField(upload_to=get_image_upload_path("country-pictures"))
-    slug = models.SlugField(unique=True, help_text="Lowercase pls")
-
-    objects = CountryManager()
-
-    class Meta:
-        ordering = ["name"]
-
-    def __str__(self):
-        return self.name
-
-
-class University(models.Model):
-    name = models.CharField(max_length=256, unique=True)
-    search_name = models.CharField(max_length=1024, unique=True)
-    country = models.ForeignKey(Country, null=True, blank=True, on_delete=models.CASCADE)
-    description = models.TextField(blank=True, null=True)
-    picture = models.ImageField(null=True, blank=True, upload_to=get_image_upload_path("university-pictures"))
-    rank = models.PositiveIntegerField(blank=True, null=True)
-    is_college = models.BooleanField(default=False)
-
-    class Meta:
-        ordering = ["name"]
-
-    @property
-    def value(self):
-        rank = min(self.rank, 2000)
-        rank = 2000 - rank
-        return rank / 2000
-
-    def __str__(self):
-        return self.name
-
-
-class FieldOfStudyType(BasicFormField):
-    pass
-
-
 class GradeModel(BasicFormField):
-    pass
-
-
-class FieldOfStudy(models.Model):
-    name = models.CharField(max_length=256, unique=True)
-    search_name = models.CharField(max_length=1024, unique=True)
-    description = models.TextField(blank=True, null=True)
-    picture = models.ImageField(
-        blank=False,
-        null=True,
-        upload_to=get_image_upload_path("field-of-study-pictures")
-    )
-    major_type = models.ForeignKey(
-        FieldOfStudyType,
-        null=True,
-        blank=False,
-        on_delete=models.PROTECT,
-    )
-
-    class Meta:
-        ordering = ["major_type"]
-
-    def __str__(self):
-        self.name = self.name
-        return self.name
+    name = models.CharField(max_length=256)
 
 
 class StudentFormApplySemesterYear(models.Model):
@@ -161,7 +70,7 @@ class WantToApply(models.Model):
     )
 
     majors = models.ManyToManyField(
-        FieldOfStudy,
+        Major,
     )
 
     semester_years = models.ManyToManyField(
@@ -341,12 +250,14 @@ class Publication(models.Model):
 
     @classmethod
     def compare_publication_impact_factor_labels(cls, label1, label2):
-        if (label1 == JournalReputation.ONE_TO_THREE) or \
-                (label1 == JournalReputation.FOUR_TO_TEN and label2 == JournalReputation.ABOVE_TEN):
+        if (label1 == cls.JournalReputationChoices.ONE_TO_THREE) or \
+                (
+                        label1 == cls.JournalReputationChoices.FOUR_TO_TEN and label2 == cls.JournalReputationChoices.ABOVE_TEN):
             return label1
 
-        elif (label1 == JournalReputation.ABOVE_TEN) or \
-                (label1 == JournalReputation.FOUR_TO_TEN and label2 == JournalReputation.ONE_TO_THREE):
+        elif (label1 == cls.JournalReputationChoices.ABOVE_TEN) or \
+                (
+                        label1 == cls.JournalReputationChoices.FOUR_TO_TEN and label2 == cls.JournalReputationChoices.ONE_TO_THREE):
             return label2
         return label1
 
@@ -606,7 +517,7 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         except WantToApply.DoesNotExist:
             pass
 
-        return FieldOfStudy.objects.filter(id__in=related_major_ids)
+        return Major.objects.filter(id__in=related_major_ids)
 
     def get_powerful_recommendation__store_label(self):
         return MISSING_LABEL if not self.powerful_recommendation or self.powerful_recommendation is None \
@@ -676,7 +587,7 @@ class UniversityThrough(models.Model):
         default=GradeChoices.BACHELOR
     )
     major = models.ForeignKey(
-        FieldOfStudy, on_delete=models.PROTECT
+        Major, on_delete=models.PROTECT
     )
     graduate_in = models.SmallIntegerField(
         validators=[MinValueValidator(1980), MaxValueValidator(2100)],

@@ -1,7 +1,8 @@
 from django.db.models import F, Sum
 from rest_framework import serializers
+
+import sNeeds.apps.estimation.form.models
 from sNeeds.apps.estimation.analyze.models import ChartItemData
-from sNeeds.apps.users.account import models as account_models
 
 
 def get_unchanged_chart_items(qs):
@@ -106,23 +107,23 @@ class GradePointAverageChartSerializer(CommonChartSerializer):
 
         self._data['title'] = chart.title.value
 
-        self._data['label_range'] = account_models.UniversityThrough.GPA_VIEW_LABEL_RANGE
+        self._data['label_range'] = sNeeds.apps.estimation.form.models.UniversityThrough.GPA_VIEW_LABEL_RANGE
 
         self._data['chart_items'] = self.get_chart_items(items_qs)
 
         self._data['user_positions'] =\
             get_store_to_view_labels(user_store_based_positions,
-                                     account_models.UniversityThrough.convert_gpa_store_to_view_label)
+                                     sNeeds.apps.estimation.form.models.UniversityThrough.convert_gpa_store_to_view_label)
 
         self._data['data_number'] = data_number
 
         self._data['user_status'] = get_user_status(user_store_based_positions,
                                                     items_qs,
-                                                    account_models.UniversityThrough.compare_gpa_labels)
+                                                    sNeeds.apps.estimation.form.models.UniversityThrough.compare_gpa_labels)
 
     def get_chart_items(self, qs):
         return get_converted_chart_items(qs,
-                                         account_models.UniversityThrough.convert_gpa_store_to_view_label
+                                         sNeeds.apps.estimation.form.models.UniversityThrough.convert_gpa_store_to_view_label
                                          )
 
     def get_user_positions(self, obj):
@@ -132,9 +133,9 @@ class GradePointAverageChartSerializer(CommonChartSerializer):
             request_user = request.user
             if request_user.is_authenticated:
                 try:
-                    sdi = account_models.StudentDetailedInfo.objects.get(user=request_user)
-                    return account_models.UniversityThrough.get_gpa_user_store_based_positions(sdi)
-                except account_models.StudentDetailedInfo.DoesNotExist:
+                    sdi = sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.get(user=request_user)
+                    return sNeeds.apps.estimation.form.models.UniversityThrough.get_gpa_user_store_based_positions(sdi)
+                except sNeeds.apps.estimation.form.models.StudentDetailedInfo.DoesNotExist:
                     return None
             else:
                 return None
@@ -161,17 +162,17 @@ class PublicationCountChartSerializer(CommonChartSerializer):
 
         self._data['user_positions'] =\
             get_store_to_view_labels(user_store_based_positions,
-                                     account_models.Publication.convert_count_chart_store_to_view_label)
+                                     sNeeds.apps.estimation.form.models.Publication.convert_count_chart_store_to_view_label)
 
         self._data['data_number'] = data_number
 
         self._data['user_status'] = get_user_status(user_store_based_positions,
                                                     items_qs,
-                                                    account_models.Publication.compare_publication_count_labels)
+                                                    sNeeds.apps.estimation.form.models.Publication.compare_publication_count_labels)
 
     def get_chart_items(self, qs):
         return get_converted_chart_items(qs,
-                                         account_models.Publication.convert_count_chart_store_to_view_label)
+                                         sNeeds.apps.estimation.form.models.Publication.convert_count_chart_store_to_view_label)
 
     def get_user_positions(self, obj):
         self.context.get('request')
@@ -180,9 +181,9 @@ class PublicationCountChartSerializer(CommonChartSerializer):
             request_user = request.user
             if request_user.is_authenticated:
                 try:
-                    sdi = account_models.StudentDetailedInfo.objects.get(user=request_user)
-                    return account_models.Publication.get_publication_count_user_store_based_positions(sdi)
-                except account_models.StudentDetailedInfo.DoesNotExist:
+                    sdi = sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.get(user=request_user)
+                    return sNeeds.apps.estimation.form.models.Publication.get_publication_count_user_store_based_positions(sdi)
+                except sNeeds.apps.estimation.form.models.StudentDetailedInfo.DoesNotExist:
                     return None
             else:
                 return None
@@ -225,9 +226,9 @@ class PublicationsTypeChartSerializer(CommonChartSerializer):
             request_user = request.user
             if request_user.is_authenticated:
                 try:
-                    sdi = account_models.StudentDetailedInfo.objects.get(user=request_user)
-                    return account_models.Publication.get_publication_type_user_store_based_positions(sdi)
-                except account_models.StudentDetailedInfo.DoesNotExist:
+                    sdi = sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.get(user=request_user)
+                    return sNeeds.apps.estimation.form.models.Publication.get_publication_type_user_store_based_positions(sdi)
+                except sNeeds.apps.estimation.form.models.StudentDetailedInfo.DoesNotExist:
                     return None
             else:
                 return None
@@ -248,23 +249,23 @@ class PublicationsScoreChartSerializer(CommonChartSerializer):
         user_store_based_positions = self.get_user_positions(chart)
         self._data['title'] = chart.title.value
 
-        self._data['label_range'] = account_models.Publication.PUBLICATIONS_SCORE__VIEW_LABEL_RANGE
+        self._data['label_range'] = sNeeds.apps.estimation.form.models.Publication.PUBLICATIONS_SCORE__VIEW_LABEL_RANGE
 
         self._data['chart_items'] = self.get_chart_items(items_qs)
 
         self._data['user_positions'] =\
             get_store_to_view_labels(user_store_based_positions,
-                                     account_models.Publication.convert_publications_score__store_to_view_label)
+                                     sNeeds.apps.estimation.form.models.Publication.convert_publications_score__store_to_view_label)
 
         self._data['data_number'] = data_number
 
         self._data['user_status'] = get_user_status(user_store_based_positions,
                                                     items_qs,
-                                                    account_models.Publication.compare_publications_score_labels)
+                                                    sNeeds.apps.estimation.form.models.Publication.compare_publications_score_labels)
 
     def get_chart_items(self, qs):
         return get_converted_chart_items(qs,
-                                         account_models.Publication.convert_publications_score__store_to_view_label)
+                                         sNeeds.apps.estimation.form.models.Publication.convert_publications_score__store_to_view_label)
 
     def get_user_positions(self, obj):
         self.context.get('request')
@@ -273,9 +274,9 @@ class PublicationsScoreChartSerializer(CommonChartSerializer):
             request_user = request.user
             if request_user.is_authenticated:
                 try:
-                    sdi = account_models.StudentDetailedInfo.objects.get(user=request_user)
-                    return account_models.Publication.get_publications_score_user_store_based_positions(sdi)
-                except account_models.StudentDetailedInfo.DoesNotExist:
+                    sdi = sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.get(user=request_user)
+                    return sNeeds.apps.estimation.form.models.Publication.get_publications_score_user_store_based_positions(sdi)
+                except sNeeds.apps.estimation.form.models.StudentDetailedInfo.DoesNotExist:
                     return None
             else:
                 return None
@@ -308,7 +309,7 @@ class PublicationsImpactFactorChartSerializer(CommonChartSerializer):
 
         self._data['user_status'] = get_user_status(user_store_based_positions,
                                                     items_qs,
-                                                    account_models.Publication.compare_publication_impact_factor_labels)
+                                                    sNeeds.apps.estimation.form.models.Publication.compare_publication_impact_factor_labels)
 
     def get_chart_items(self, qs):
         return get_unchanged_chart_items(qs)
@@ -320,9 +321,9 @@ class PublicationsImpactFactorChartSerializer(CommonChartSerializer):
             request_user = request.user
             if request_user.is_authenticated:
                 try:
-                    sdi = account_models.StudentDetailedInfo.objects.get(user=request_user)
-                    return account_models.Publication.get_publication_impact_factor_user_store_based_positions(sdi)
-                except account_models.StudentDetailedInfo.DoesNotExist:
+                    sdi = sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.get(user=request_user)
+                    return sNeeds.apps.estimation.form.models.Publication.get_publication_impact_factor_user_store_based_positions(sdi)
+                except sNeeds.apps.estimation.form.models.StudentDetailedInfo.DoesNotExist:
                     return None
             else:
                 return None
@@ -355,7 +356,7 @@ class PowerfulRecommendationChartSerializer(CommonChartSerializer):
 
         self._data['user_status'] = get_user_status(user_store_based_positions,
                                                     items_qs,
-                                                    account_models.StudentDetailedInfo.
+                                                    sNeeds.apps.estimation.form.models.StudentDetailedInfo.
                                                     compare_powerful_recommendation_labels)
 
     def get_chart_items(self, qs):
@@ -368,9 +369,9 @@ class PowerfulRecommendationChartSerializer(CommonChartSerializer):
             request_user = request.user
             if request_user.is_authenticated:
                 try:
-                    sdi = account_models.StudentDetailedInfo.objects.get(user=request_user)
+                    sdi = sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.get(user=request_user)
                     return [sdi.get_powerful_recommendation__store_label()]
-                except account_models.StudentDetailedInfo.DoesNotExist:
+                except sNeeds.apps.estimation.form.models.StudentDetailedInfo.DoesNotExist:
                     return None
             else:
                 return None
@@ -403,7 +404,7 @@ class OlympiadChartSerializer(CommonChartSerializer):
 
         self._data['user_status'] = get_user_status(user_store_based_positions,
                                                     items_qs,
-                                                    account_models.StudentDetailedInfo.compare_olympiad_labels)
+                                                    sNeeds.apps.estimation.form.models.StudentDetailedInfo.compare_olympiad_labels)
 
     def get_chart_items(self, qs):
         return get_unchanged_chart_items(qs)
@@ -415,9 +416,9 @@ class OlympiadChartSerializer(CommonChartSerializer):
             request_user = request.user
             if request_user.is_authenticated:
                 try:
-                    sdi = account_models.StudentDetailedInfo.objects.get(user=request_user)
+                    sdi = sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.get(user=request_user)
                     return [sdi.get_olympiad__store_label()]
-                except account_models.StudentDetailedInfo.DoesNotExist:
+                except sNeeds.apps.estimation.form.models.StudentDetailedInfo.DoesNotExist:
                     return None
             else:
                 return None
@@ -440,25 +441,25 @@ class RelatedWorkExperienceChartSerializer(CommonChartSerializer):
         user_store_based_positions = self.get_user_positions(chart)
         self._data['title'] = chart.title.value
 
-        self._data['label_range'] = account_models.StudentDetailedInfo.RELATED_WORK_EXPERIENCE_VIEW_LABEL_RANGE
+        self._data['label_range'] = sNeeds.apps.estimation.form.models.StudentDetailedInfo.RELATED_WORK_EXPERIENCE_VIEW_LABEL_RANGE
 
         self._data['chart_items'] = self.get_chart_items(items_qs)
 
         self._data['user_positions'] =\
             get_store_to_view_labels(user_store_based_positions,
-                                     account_models.StudentDetailedInfo.convert_related_work_store_to_view_label)
+                                     sNeeds.apps.estimation.form.models.StudentDetailedInfo.convert_related_work_store_to_view_label)
 
         self._data['data_number'] = data_number
 
         self._data['user_status'] = get_user_status(user_store_based_positions,
                                                     items_qs,
-                                                    account_models.StudentDetailedInfo.compare_related_work_labels,
-                                                    account_models.StudentDetailedInfo.convert_related_work_store_to_view_label
+                                                    sNeeds.apps.estimation.form.models.StudentDetailedInfo.compare_related_work_labels,
+                                                    sNeeds.apps.estimation.form.models.StudentDetailedInfo.convert_related_work_store_to_view_label
                                                     )
 
     def get_chart_items(self, qs):
         return get_converted_chart_items(qs,
-                                         account_models.StudentDetailedInfo.convert_related_work_store_to_view_label,
+                                         sNeeds.apps.estimation.form.models.StudentDetailedInfo.convert_related_work_store_to_view_label,
                                          )
 
     def get_user_positions(self, obj):
@@ -468,9 +469,9 @@ class RelatedWorkExperienceChartSerializer(CommonChartSerializer):
             request_user = request.user
             if request_user.is_authenticated:
                 try:
-                    sdi = account_models.StudentDetailedInfo.objects.get(user=request_user)
+                    sdi = sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.get(user=request_user)
                     return [sdi.get_related_work__store_label()]
-                except account_models.StudentDetailedInfo.DoesNotExist:
+                except sNeeds.apps.estimation.form.models.StudentDetailedInfo.DoesNotExist:
                     return None
             else:
                 return None
@@ -491,23 +492,23 @@ class ToeflChartSerializer(CommonChartSerializer):
         user_store_based_positions = self.get_user_positions(chart)
         self._data['title'] = chart.title.value
 
-        self._data['label_range'] = account_models.RegularLanguageCertificate.TOEFL__VIEW_LABEL_RANGE
+        self._data['label_range'] = sNeeds.apps.estimation.form.models.RegularLanguageCertificate.TOEFL__VIEW_LABEL_RANGE
 
         self._data['chart_items'] = self.get_chart_items(items_qs)
 
         self._data['user_positions'] =\
             get_store_to_view_labels(user_store_based_positions,
-                                     account_models.RegularLanguageCertificate.convert_toefl_store_to_view_label)
+                                     sNeeds.apps.estimation.form.models.RegularLanguageCertificate.convert_toefl_store_to_view_label)
 
         self._data['data_number'] = data_number
 
         self._data['user_status'] = get_user_status(user_store_based_positions,
                                                     items_qs,
-                                                    account_models.RegularLanguageCertificate.compare_toefl_labels)
+                                                    sNeeds.apps.estimation.form.models.RegularLanguageCertificate.compare_toefl_labels)
 
     def get_chart_items(self, qs):
         return get_converted_chart_items(qs,
-                                         account_models.RegularLanguageCertificate.convert_toefl_store_to_view_label
+                                         sNeeds.apps.estimation.form.models.RegularLanguageCertificate.convert_toefl_store_to_view_label
                                          )
 
     def get_user_positions(self, obj):
@@ -517,9 +518,9 @@ class ToeflChartSerializer(CommonChartSerializer):
             request_user = request.user
             if request_user.is_authenticated:
                 try:
-                    sdi = account_models.StudentDetailedInfo.objects.get(user=request_user)
-                    return account_models.RegularLanguageCertificate.get_toefl_user_store_based_positions(sdi)
-                except account_models.StudentDetailedInfo.DoesNotExist:
+                    sdi = sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.get(user=request_user)
+                    return sNeeds.apps.estimation.form.models.RegularLanguageCertificate.get_toefl_user_store_based_positions(sdi)
+                except sNeeds.apps.estimation.form.models.StudentDetailedInfo.DoesNotExist:
                     return None
             else:
                 return None
@@ -540,23 +541,23 @@ class IeltsChartSerializer(CommonChartSerializer):
         user_store_based_positions = self.get_user_positions(chart)
         self._data['title'] = chart.title.value
 
-        self._data['label_range'] = account_models.RegularLanguageCertificate.IELTS__VIEW_LABEL_RANGE
+        self._data['label_range'] = sNeeds.apps.estimation.form.models.RegularLanguageCertificate.IELTS__VIEW_LABEL_RANGE
 
         self._data['chart_items'] = self.get_chart_items(items_qs)
 
         self._data['user_positions'] =\
             get_store_to_view_labels(user_store_based_positions,
-                                     account_models.RegularLanguageCertificate.convert_ielts_store_to_view_label)
+                                     sNeeds.apps.estimation.form.models.RegularLanguageCertificate.convert_ielts_store_to_view_label)
 
         self._data['data_number'] = data_number
 
         self._data['user_status'] = get_user_status(user_store_based_positions,
                                                     items_qs,
-                                                    account_models.RegularLanguageCertificate.compare_ielts_labels)
+                                                    sNeeds.apps.estimation.form.models.RegularLanguageCertificate.compare_ielts_labels)
 
     def get_chart_items(self, qs):
         return get_converted_chart_items(qs,
-                                         account_models.RegularLanguageCertificate.convert_ielts_store_to_view_label,
+                                         sNeeds.apps.estimation.form.models.RegularLanguageCertificate.convert_ielts_store_to_view_label,
                                          )
 
     def get_user_positions(self, obj):
@@ -566,9 +567,9 @@ class IeltsChartSerializer(CommonChartSerializer):
             request_user = request.user
             if request_user.is_authenticated:
                 try:
-                    sdi = account_models.StudentDetailedInfo.objects.get(user=request_user)
-                    return account_models.RegularLanguageCertificate.get_ielts_user_store_based_positions(sdi)
-                except account_models.StudentDetailedInfo.DoesNotExist:
+                    sdi = sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.get(user=request_user)
+                    return sNeeds.apps.estimation.form.models.RegularLanguageCertificate.get_ielts_user_store_based_positions(sdi)
+                except sNeeds.apps.estimation.form.models.StudentDetailedInfo.DoesNotExist:
                     return None
             else:
                 return None
@@ -590,23 +591,23 @@ class GMATChartSerializer(CommonChartSerializer):
 
         self._data['title'] = chart.title.value
 
-        self._data['label_range'] = account_models.GMATCertificate.TOTAL_VIEW_LABEL_RANGE
+        self._data['label_range'] = sNeeds.apps.estimation.form.models.GMATCertificate.TOTAL_VIEW_LABEL_RANGE
 
         self._data['chart_items'] = self.get_chart_items(items_qs)
 
         self._data['user_positions'] =\
             get_store_to_view_labels(user_store_based_positions,
-                                     account_models.GMATCertificate.convert_store_to_view_label)
+                                     sNeeds.apps.estimation.form.models.GMATCertificate.convert_store_to_view_label)
 
         self._data['data_number'] = data_number
 
         self._data['user_status'] = get_user_status(user_store_based_positions,
                                                     items_qs,
-                                                    account_models.GMATCertificate.compare_labels)
+                                                    sNeeds.apps.estimation.form.models.GMATCertificate.compare_labels)
 
     def get_chart_items(self, qs):
         return get_converted_chart_items(qs,
-                                         account_models.GMATCertificate.convert_store_to_view_label
+                                         sNeeds.apps.estimation.form.models.GMATCertificate.convert_store_to_view_label
                                          )
 
     def get_user_positions(self, obj):
@@ -616,9 +617,9 @@ class GMATChartSerializer(CommonChartSerializer):
             request_user = request.user
             if request_user.is_authenticated:
                 try:
-                    sdi = account_models.StudentDetailedInfo.objects.get(user=request_user)
-                    return account_models.GMATCertificate.get_user_store_based_positions(sdi)
-                except account_models.StudentDetailedInfo.DoesNotExist:
+                    sdi = sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.get(user=request_user)
+                    return sNeeds.apps.estimation.form.models.GMATCertificate.get_user_store_based_positions(sdi)
+                except sNeeds.apps.estimation.form.models.StudentDetailedInfo.DoesNotExist:
                     return None
             else:
                 return None
@@ -640,23 +641,23 @@ class GREGeneralWritingChartSerializer(CommonChartSerializer):
 
         self._data['title'] = chart.title.value
 
-        self._data['label_range'] = account_models.GREGeneralCertificate.WRITING_VIEW_LABEL_RANGE
+        self._data['label_range'] = sNeeds.apps.estimation.form.models.GREGeneralCertificate.WRITING_VIEW_LABEL_RANGE
 
         self._data['chart_items'] = self.get_chart_items(items_qs)
 
         self._data['user_positions'] =\
             get_store_to_view_labels(user_store_based_positions,
-                                     account_models.GREGeneralCertificate.convert_writing_store_to_view_label)
+                                     sNeeds.apps.estimation.form.models.GREGeneralCertificate.convert_writing_store_to_view_label)
 
         self._data['data_number'] = data_number
 
         self._data['user_status'] = get_user_status(user_store_based_positions,
                                                     items_qs,
-                                                    account_models.GREGeneralCertificate.compare_writing_labels)
+                                                    sNeeds.apps.estimation.form.models.GREGeneralCertificate.compare_writing_labels)
 
     def get_chart_items(self, qs):
         return get_converted_chart_items(qs,
-                                         account_models.GREGeneralCertificate.convert_writing_store_to_view_label
+                                         sNeeds.apps.estimation.form.models.GREGeneralCertificate.convert_writing_store_to_view_label
                                          )
 
     def get_user_positions(self, obj):
@@ -666,9 +667,9 @@ class GREGeneralWritingChartSerializer(CommonChartSerializer):
             request_user = request.user
             if request_user.is_authenticated:
                 try:
-                    sdi = account_models.StudentDetailedInfo.objects.get(user=request_user)
-                    return account_models.GREGeneralCertificate.get_writing_user_store_based_positions(sdi)
-                except account_models.StudentDetailedInfo.DoesNotExist:
+                    sdi = sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.get(user=request_user)
+                    return sNeeds.apps.estimation.form.models.GREGeneralCertificate.get_writing_user_store_based_positions(sdi)
+                except sNeeds.apps.estimation.form.models.StudentDetailedInfo.DoesNotExist:
                     return None
             else:
                 return None
@@ -690,23 +691,23 @@ class GREGeneralQuantitativeAndVerbalChartSerializer(CommonChartSerializer):
 
         self._data['title'] = chart.title.value
 
-        self._data['label_range'] = account_models.GREGeneralCertificate.Q_AND_V_VIEW_LABEL_RANGE
+        self._data['label_range'] = sNeeds.apps.estimation.form.models.GREGeneralCertificate.Q_AND_V_VIEW_LABEL_RANGE
 
         self._data['chart_items'] = self.get_chart_items(items_qs)
 
         self._data['user_positions'] =\
             get_store_to_view_labels(user_store_based_positions,
-                                     account_models.GREGeneralCertificate.convert_q_and_v_store_to_view_label)
+                                     sNeeds.apps.estimation.form.models.GREGeneralCertificate.convert_q_and_v_store_to_view_label)
 
         self._data['data_number'] = data_number
 
         self._data['user_status'] = get_user_status(user_store_based_positions,
                                                     items_qs,
-                                                    account_models.GREGeneralCertificate.compare_q_and_v_labels)
+                                                    sNeeds.apps.estimation.form.models.GREGeneralCertificate.compare_q_and_v_labels)
 
     def get_chart_items(self, qs):
         return get_converted_chart_items(qs,
-                                         account_models.GREGeneralCertificate.convert_q_and_v_store_to_view_label
+                                         sNeeds.apps.estimation.form.models.GREGeneralCertificate.convert_q_and_v_store_to_view_label
                                          )
 
     def get_user_positions(self, obj):
@@ -716,9 +717,9 @@ class GREGeneralQuantitativeAndVerbalChartSerializer(CommonChartSerializer):
             request_user = request.user
             if request_user.is_authenticated:
                 try:
-                    sdi = account_models.StudentDetailedInfo.objects.get(user=request_user)
-                    return account_models.GREGeneralCertificate.get_q_and_v_user_store_based_positions(sdi)
-                except account_models.StudentDetailedInfo.DoesNotExist:
+                    sdi = sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.get(user=request_user)
+                    return sNeeds.apps.estimation.form.models.GREGeneralCertificate.get_q_and_v_user_store_based_positions(sdi)
+                except sNeeds.apps.estimation.form.models.StudentDetailedInfo.DoesNotExist:
                     return None
             else:
                 return None
@@ -739,23 +740,23 @@ class GRESubjectTotalChartSerializer(CommonChartSerializer):
         user_store_based_positions = self.get_user_positions(chart)
         self._data['title'] = chart.title.value
 
-        self._data['label_range'] = account_models.GRESubjectCertificate.TOTAL_VIEW_LABEL_RANGE
+        self._data['label_range'] = sNeeds.apps.estimation.form.models.GRESubjectCertificate.TOTAL_VIEW_LABEL_RANGE
 
         self._data['chart_items'] = self.get_chart_items(items_qs)
 
         self._data['user_positions'] =\
             get_store_to_view_labels(user_store_based_positions,
-                                     account_models.GRESubjectCertificate.convert_total_store_to_view_label)
+                                     sNeeds.apps.estimation.form.models.GRESubjectCertificate.convert_total_store_to_view_label)
 
         self._data['data_number'] = data_number
 
         self._data['user_status'] = get_user_status(user_store_based_positions,
                                                     items_qs,
-                                                    account_models.GRESubjectCertificate.compare_total_labels)
+                                                    sNeeds.apps.estimation.form.models.GRESubjectCertificate.compare_total_labels)
 
     def get_chart_items(self, qs):
         return get_converted_chart_items(qs,
-                                         account_models.GRESubjectCertificate.convert_total_store_to_view_label
+                                         sNeeds.apps.estimation.form.models.GRESubjectCertificate.convert_total_store_to_view_label
                                          )
 
     def get_user_positions(self, obj):
@@ -765,9 +766,9 @@ class GRESubjectTotalChartSerializer(CommonChartSerializer):
             request_user = request.user
             if request_user.is_authenticated:
                 try:
-                    sdi = account_models.StudentDetailedInfo.objects.get(user=request_user)
-                    return account_models.GRESubjectCertificate.get_total_user_store_based_positions(sdi)
-                except account_models.StudentDetailedInfo.DoesNotExist:
+                    sdi = sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.get(user=request_user)
+                    return sNeeds.apps.estimation.form.models.GRESubjectCertificate.get_total_user_store_based_positions(sdi)
+                except sNeeds.apps.estimation.form.models.StudentDetailedInfo.DoesNotExist:
                     return None
             else:
                 return None
@@ -788,23 +789,23 @@ class DuolingoChartSerializer(CommonChartSerializer):
         user_store_based_positions = self.get_user_positions(chart)
         self._data['title'] = chart.title.value
 
-        self._data['label_range'] = account_models.DuolingoCertificate.OVERALL_VIEW_LABEL_RANGE
+        self._data['label_range'] = sNeeds.apps.estimation.form.models.DuolingoCertificate.OVERALL_VIEW_LABEL_RANGE
 
         self._data['chart_items'] = self.get_chart_items(items_qs)
 
         self._data['user_positions'] =\
             get_store_to_view_labels(user_store_based_positions,
-                                     account_models.DuolingoCertificate.convert_store_to_view_label)
+                                     sNeeds.apps.estimation.form.models.DuolingoCertificate.convert_store_to_view_label)
 
         self._data['data_number'] = data_number
 
         self._data['user_status'] = get_user_status(user_store_based_positions,
                                                     items_qs,
-                                                    account_models.DuolingoCertificate.compare_labels)
+                                                    sNeeds.apps.estimation.form.models.DuolingoCertificate.compare_labels)
 
     def get_chart_items(self, qs):
         return get_converted_chart_items(qs,
-                                         account_models.DuolingoCertificate.convert_store_to_view_label,
+                                         sNeeds.apps.estimation.form.models.DuolingoCertificate.convert_store_to_view_label,
                                          )
 
     def get_user_positions(self, obj):
@@ -814,9 +815,9 @@ class DuolingoChartSerializer(CommonChartSerializer):
             request_user = request.user
             if request_user.is_authenticated:
                 try:
-                    sdi = account_models.StudentDetailedInfo.objects.get(user=request_user)
-                    return account_models.DuolingoCertificate.get__user_store_based_positions(sdi)
-                except account_models.StudentDetailedInfo.DoesNotExist:
+                    sdi = sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.get(user=request_user)
+                    return sNeeds.apps.estimation.form.models.DuolingoCertificate.get__user_store_based_positions(sdi)
+                except sNeeds.apps.estimation.form.models.StudentDetailedInfo.DoesNotExist:
                     return None
             else:
                 return None

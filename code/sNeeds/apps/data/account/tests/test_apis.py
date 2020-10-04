@@ -1,6 +1,6 @@
 from rest_framework.test import APITestCase, APIClient
 
-from sNeeds.apps.users.account import StudentDetailedInfo, FieldOfStudy, University, Country
+from sNeeds.apps.data.account import StudentDetailedInfo, FieldOfStudy, University, Country
 from sNeeds.apps.users.consultants.models import ConsultantProfile
 from sNeeds.apps.store.storeBase.models import SoldTimeSlotSale
 from sNeeds.apps.store.storePackages import SoldStorePackage

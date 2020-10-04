@@ -30,7 +30,7 @@ urlpatterns = [
 
                   path('docs/', include('sNeeds.apps.docs.urls')),
                   path('auth/', include('sNeeds.apps.users.customAuth.urls')),
-                  path('account/', include('sNeeds.apps.users.account.urls')),
+                  path('account/', include('sNeeds.apps.data.account.urls')),
                   path('consultant/', include('sNeeds.apps.users.consultants.urls')),
                   path('store/packages/', include('sNeeds.apps.store.storePackages.urls')),
                   path('store/', include('sNeeds.apps.store.storeBase.urls')),

@@ -8,15 +8,18 @@ from rest_framework import generics, permissions, status, exceptions
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+import sNeeds.apps.estimation.form.models
+import sNeeds.apps.estimation.form.serializers
 from . import models
 from . import serializers
-from .models import StudentDetailedInfo, StudentFormApplySemesterYear, BasicFormField
+from .models import BasicFormField
+from sNeeds.apps.estimation.form.models import StudentFormApplySemesterYear, StudentDetailedInfo
 from .permissions import StudentDetailedInfoOwnerOrInteractConsultantOrWithoutUserPermission, \
     IsWantToApplyOwnerOrDetailedInfoWithoutUser, IsPublicationOwnerOrDetailedInfoWithoutUser, \
     IsUniversityThroughOwnerOrDetailedInfoWithoutUser, \
     IsLanguageCertificateOwnerOrDetailedInfoWithoutUser
-from .serializers import StudentDetailedInfoSerializer, StudentFormApplySemesterYearSerializer, \
-    BasicFormFieldSerializer, StudentDetailedInfoRequestSerializer
+from sNeeds.apps.estimation.form.serializers import StudentFormApplySemesterYearSerializer, BasicFormFieldSerializer, \
+    StudentDetailedInfoSerializer, StudentDetailedInfoRequestSerializer
 from sNeeds.utils.custom.views import custom_generic_apiviews
 
 
@@ -115,7 +118,7 @@ class UniversityForFormList(generics.ListAPIView):
 
 
 class FieldOfStudyDetail(generics.RetrieveAPIView):
-    queryset = models.FieldOfStudy.objects.all()
+    queryset = models.Major.objects.all()
     serializer_class = serializers.FieldOfStudySerializer
     lookup_field = 'id'
 
@@ -127,11 +130,11 @@ class FieldOfStudyList(generics.ListAPIView):
         from sNeeds.apps.users.consultants.models import StudyInfo
         study_info_with_active_consultant_qs = StudyInfo.objects.all().with_active_consultants()
         field_of_study_list = list(study_info_with_active_consultant_qs.values_list('field_of_study__id', flat=True))
-        return models.FieldOfStudy.objects.filter(id__in=field_of_study_list)
+        return models.Major.objects.filter(id__in=field_of_study_list)
 
 
 class FieldOfStudyForFormList(generics.ListAPIView):
-    queryset = models.FieldOfStudy.objects.none()
+    queryset = models.Major.objects.none()
     serializer_class = serializers.FieldOfStudySerializer
 
     def get_queryset(self):
@@ -139,7 +142,7 @@ class FieldOfStudyForFormList(generics.ListAPIView):
         params = request.query_params.get('search', '')
         search_terms = params
 
-        other_qs = models.FieldOfStudy.objects. \
+        other_qs = models.Major.objects. \
             annotate(similarity=TrigramSimilarity('search_name', 'سایر'),
                      search_name_length=Ln(Length('search_name'))). \
             annotate(t=F('similarity') * F('search_name_length')). \
@@ -154,7 +157,7 @@ class FieldOfStudyForFormList(generics.ListAPIView):
 
         # To see execution time of queries, use this: python manage.py shell_plus --print-sql
         # To see results use endpoint /form-universities?&search=colombia
-        qs = models.FieldOfStudy.objects. \
+        qs = models.Major.objects. \
             annotate(similarity=TrigramSimilarity('search_name', search_term),
                      search_name_length=Ln(Length('search_name'))). \
             annotate(t=F('similarity') * F('search_name_length')). \
@@ -251,9 +254,9 @@ class BasicFormFieldListAPIView(custom_generic_apiviews.BaseListAPIView):
 
 
 class LanguageCertificateListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
-    model_class = models.LanguageCertificate
+    model_class = sNeeds.apps.estimation.form.models.LanguageCertificate
     queryset = model_class.objects.all()
-    serializer_class = serializers.LanguageCertificateSerializer
+    serializer_class = sNeeds.apps.estimation.form.serializers.LanguageCertificateSerializer
 
     def get_queryset(self):
         user = self.request.user
@@ -264,133 +267,133 @@ class LanguageCertificateListCreateAPIView(custom_generic_apiviews.BaseListCreat
 
 class LanguageCertificateRetrieveDestroyAPIView(custom_generic_apiviews.BaseRetrieveDestroyAPIView):
     lookup_field = 'id'
-    model_class = models.LanguageCertificate
+    model_class = sNeeds.apps.estimation.form.models.LanguageCertificate
     queryset = model_class.objects.all()
-    serializer_class = serializers.GMATCertificateSerializer
+    serializer_class = sNeeds.apps.estimation.form.serializers.GMATCertificateSerializer
     permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
 class RegularLanguageCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
-    model_class = models.RegularLanguageCertificate
+    model_class = sNeeds.apps.estimation.form.models.RegularLanguageCertificate
     queryset = model_class.objects.all()
-    serializer_class = serializers.RegularLanguageCertificateSerializer
+    serializer_class = sNeeds.apps.estimation.form.serializers.RegularLanguageCertificateSerializer
 
 
 class RegularLanguageCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestroyAPIView):
     lookup_field = 'id'
-    model_class = models.RegularLanguageCertificate
+    model_class = sNeeds.apps.estimation.form.models.RegularLanguageCertificate
     queryset = model_class.objects.all()
-    serializer_class = serializers.RegularLanguageCertificateSerializer
+    serializer_class = sNeeds.apps.estimation.form.serializers.RegularLanguageCertificateSerializer
     permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
 class GMATCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
-    model_class = models.GMATCertificate
+    model_class = sNeeds.apps.estimation.form.models.GMATCertificate
     queryset = model_class.objects.all()
-    serializer_class = serializers.GMATCertificateSerializer
+    serializer_class = sNeeds.apps.estimation.form.serializers.GMATCertificateSerializer
 
 
 class GMATCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestroyAPIView):
     lookup_field = 'id'
-    model_class = models.GMATCertificate
+    model_class = sNeeds.apps.estimation.form.models.GMATCertificate
     queryset = model_class.objects.all()
-    serializer_class = serializers.GMATCertificateSerializer
+    serializer_class = sNeeds.apps.estimation.form.serializers.GMATCertificateSerializer
     permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
 class GREGeneralCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
-    model_class = models.GREGeneralCertificate
+    model_class = sNeeds.apps.estimation.form.models.GREGeneralCertificate
     queryset = model_class.objects.all()
-    serializer_class = serializers.GREGeneralCertificateSerializer
+    serializer_class = sNeeds.apps.estimation.form.serializers.GREGeneralCertificateSerializer
 
 
 class GREGeneralCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestroyAPIView):
     lookup_field = 'id'
-    model_class = models.GREGeneralCertificate
+    model_class = sNeeds.apps.estimation.form.models.GREGeneralCertificate
     queryset = model_class.objects.all()
-    serializer_class = serializers.GREGeneralCertificateSerializer
+    serializer_class = sNeeds.apps.estimation.form.serializers.GREGeneralCertificateSerializer
     permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
 class GRESubjectCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
-    model_class = models.GRESubjectCertificate
+    model_class = sNeeds.apps.estimation.form.models.GRESubjectCertificate
     queryset = model_class.objects.all()
-    serializer_class = serializers.GRESubjectCertificateSerializer
+    serializer_class = sNeeds.apps.estimation.form.serializers.GRESubjectCertificateSerializer
 
 
 class GRESubjectCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestroyAPIView):
     lookup_field = 'id'
-    model_class = models.GRESubjectCertificate
+    model_class = sNeeds.apps.estimation.form.models.GRESubjectCertificate
     queryset = model_class.objects.all()
-    serializer_class = serializers.GRESubjectCertificateSerializer
+    serializer_class = sNeeds.apps.estimation.form.serializers.GRESubjectCertificateSerializer
     permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
 class GREBiologyCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
-    model_class = models.GREBiologyCertificate
+    model_class = sNeeds.apps.estimation.form.models.GREBiologyCertificate
     queryset = model_class.objects.all()
-    serializer_class = serializers.GREBiologyCertificateSerializer
+    serializer_class = sNeeds.apps.estimation.form.serializers.GREBiologyCertificateSerializer
 
 
 class GREBiologyCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestroyAPIView):
     lookup_field = 'id'
-    model_class = models.GREBiologyCertificate
+    model_class = sNeeds.apps.estimation.form.models.GREBiologyCertificate
     queryset = model_class.objects.all()
-    serializer_class = serializers.GREBiologyCertificateSerializer
+    serializer_class = sNeeds.apps.estimation.form.serializers.GREBiologyCertificateSerializer
     permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
 class GREPhysicsCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
-    model_class = models.GREPhysicsCertificate
+    model_class = sNeeds.apps.estimation.form.models.GREPhysicsCertificate
     queryset = model_class.objects.all()
-    serializer_class = serializers.GREPhysicsCertificateSerializer
+    serializer_class = sNeeds.apps.estimation.form.serializers.GREPhysicsCertificateSerializer
 
 
 class GREPhysicsCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestroyAPIView):
     lookup_field = 'id'
-    model_class = models.GREPhysicsCertificate
+    model_class = sNeeds.apps.estimation.form.models.GREPhysicsCertificate
     queryset = model_class.objects.all()
-    serializer_class = serializers.GREPhysicsCertificateSerializer
+    serializer_class = sNeeds.apps.estimation.form.serializers.GREPhysicsCertificateSerializer
     permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
 class GREPsychologyCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
-    model_class = models.GREPsychologyCertificate
+    model_class = sNeeds.apps.estimation.form.models.GREPsychologyCertificate
     queryset = model_class.objects.all()
-    serializer_class = serializers.GREPsychologyCertificateSerializer
+    serializer_class = sNeeds.apps.estimation.form.serializers.GREPsychologyCertificateSerializer
 
 
 class GREPsychologyCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestroyAPIView):
     lookup_field = 'id'
-    model_class = models.GREPsychologyCertificate
+    model_class = sNeeds.apps.estimation.form.models.GREPsychologyCertificate
     queryset = model_class.objects.all()
-    serializer_class = serializers.GREPsychologyCertificateSerializer
+    serializer_class = sNeeds.apps.estimation.form.serializers.GREPsychologyCertificateSerializer
     permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
 class DuolingoCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
-    model_class = models.DuolingoCertificate
+    model_class = sNeeds.apps.estimation.form.models.DuolingoCertificate
     queryset = model_class.objects.all()
-    serializer_class = serializers.DuolingoCertificateSerializer
+    serializer_class = sNeeds.apps.estimation.form.serializers.DuolingoCertificateSerializer
 
 
 class DuolingoCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestroyAPIView):
     lookup_field = 'id'
-    model_class = models.DuolingoCertificate
+    model_class = sNeeds.apps.estimation.form.models.DuolingoCertificate
     queryset = model_class.objects.all()
-    serializer_class = serializers.DuolingoCertificateSerializer
+    serializer_class = sNeeds.apps.estimation.form.serializers.DuolingoCertificateSerializer
     permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
 class WantToApplyListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
-    queryset = models.WantToApply.objects.all()
-    serializer_class = serializers.WantToApplySerializer
-    request_serializer_class = serializers.WantToApplyRequestSerializer
+    queryset = sNeeds.apps.estimation.form.models.WantToApply.objects.all()
+    serializer_class = sNeeds.apps.estimation.form.serializers.WantToApplySerializer
+    request_serializer_class = sNeeds.apps.estimation.form.serializers.WantToApplyRequestSerializer
 
     def get_queryset(self):
         user = self.request.user
         sdi_id = self.request.query_params.get('student-detailed-info', None)
-        qs = student_detailed_info_many_to_one_qs(user, sdi_id, models.WantToApply)
+        qs = student_detailed_info_many_to_one_qs(user, sdi_id, sNeeds.apps.estimation.form.models.WantToApply)
         return qs
 
     @swagger_auto_schema(
@@ -403,9 +406,9 @@ class WantToApplyListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView
 
 class WantToApplyRetrieveUpdateDestroyAPIView(custom_generic_apiviews.BaseRetrieveUpdateDestroyAPIView):
     lookup_field = 'id'
-    queryset = models.WantToApply.objects.all()
-    serializer_class = serializers.WantToApplySerializer
-    request_serializer_class = serializers.WantToApplyRequestSerializer
+    queryset = sNeeds.apps.estimation.form.models.WantToApply.objects.all()
+    serializer_class = sNeeds.apps.estimation.form.serializers.WantToApplySerializer
+    request_serializer_class = sNeeds.apps.estimation.form.serializers.WantToApplyRequestSerializer
     permission_classes = [IsWantToApplyOwnerOrDetailedInfoWithoutUser]
 
     @swagger_auto_schema(
@@ -424,14 +427,14 @@ class WantToApplyRetrieveUpdateDestroyAPIView(custom_generic_apiviews.BaseRetrie
 
 
 class PublicationListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
-    queryset = models.Publication.objects.all()
-    serializer_class = serializers.PublicationSerializer
-    request_serializer_class = serializers.PublicationRequestSerializer
+    queryset = sNeeds.apps.estimation.form.models.Publication.objects.all()
+    serializer_class = sNeeds.apps.estimation.form.serializers.PublicationSerializer
+    request_serializer_class = sNeeds.apps.estimation.form.serializers.PublicationRequestSerializer
 
     def get_queryset(self):
         user = self.request.user
         sdi_id = self.request.query_params.get('student-detailed-info', None)
-        qs = student_detailed_info_many_to_one_qs(user, sdi_id, models.Publication)
+        qs = student_detailed_info_many_to_one_qs(user, sdi_id, sNeeds.apps.estimation.form.models.Publication)
         return qs
 
     @swagger_auto_schema(
@@ -444,20 +447,21 @@ class PublicationListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView
 
 class PublicationRetrieveDestroyAPIView(custom_generic_apiviews.BaseRetrieveDestroyAPIView):
     lookup_field = 'id'
-    queryset = models.Publication.objects.all()
-    serializer_class = serializers.PublicationSerializer
+    queryset = sNeeds.apps.estimation.form.models.Publication.objects.all()
+    serializer_class = sNeeds.apps.estimation.form.serializers.PublicationSerializer
     permission_classes = [IsPublicationOwnerOrDetailedInfoWithoutUser]
 
 
 class StudentDetailedUniversityThroughListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
-    queryset = models.UniversityThrough.objects.all()
-    serializer_class = serializers.UniversityThroughSerializer
-    request_serializer_class = serializers.UniversityThroughRequestSerializer
+    queryset = sNeeds.apps.estimation.form.models.UniversityThrough.objects.all()
+    serializer_class = sNeeds.apps.estimation.form.serializers.UniversityThroughSerializer
+    request_serializer_class = sNeeds.apps.estimation.form.serializers.UniversityThroughRequestSerializer
 
     def get_queryset(self):
         user = self.request.user
         sdi_id = self.request.query_params.get('student-detailed-info', None)
-        qs = student_detailed_info_many_to_one_qs(user, sdi_id, models.UniversityThrough)
+        qs = student_detailed_info_many_to_one_qs(user, sdi_id,
+                                                  sNeeds.apps.estimation.form.models.UniversityThrough)
         return qs
 
     @swagger_auto_schema(
@@ -470,14 +474,14 @@ class StudentDetailedUniversityThroughListCreateAPIView(custom_generic_apiviews.
 
 class StudentDetailedUniversityThroughRetrieveDestroyAPIView(custom_generic_apiviews.BaseRetrieveDestroyAPIView):
     lookup_field = 'id'
-    queryset = models.UniversityThrough.objects.all()
-    serializer_class = serializers.UniversityThroughSerializer
+    queryset = sNeeds.apps.estimation.form.models.UniversityThrough.objects.all()
+    serializer_class = sNeeds.apps.estimation.form.serializers.UniversityThroughSerializer
     permission_classes = [IsUniversityThroughOwnerOrDetailedInfoWithoutUser]
 
 
 class GradeChoiceList(custom_generic_apiviews.BaseListAPIView):
-    queryset = models.GradeModel.objects.all()
-    serializer_class = serializers.GradeModelSerializer
+    queryset = sNeeds.apps.estimation.form.models.GradeModel.objects.all()
+    serializer_class = sNeeds.apps.estimation.form.serializers.GradeModelSerializer
 
 
 @api_view(['GET'])
