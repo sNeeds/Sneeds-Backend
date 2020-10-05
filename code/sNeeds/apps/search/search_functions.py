@@ -1,3 +1,5 @@
+import itertools
+
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.db.models import Value, FloatField
 
@@ -30,10 +32,11 @@ def search_consultants(qs, phrase):
             query,
             normalization=Value(2).bitor(Value(4)),
         )
-    )
+    ).filter(rank__gte=0.3)
 
     # find common objects and delete the object with lower rank from it's queryset
-    temp_queryset = queryset1 | queryset2
+    # temp_queryset = queryset1 | queryset2
+    temp_queryset = itertools.chain(queryset1, queryset2)
     for obj in temp_queryset:
         try:
             qs1_object = queryset1.get(id=obj.id)
@@ -45,8 +48,32 @@ def search_consultants(qs, phrase):
         except ConsultantProfile.DoesNotExist:
             pass
 
+    # tt_queryset = queryset2 | queryset1
     queryset = queryset1.union(queryset2)
+    # queryset = itertools.chain(queryset1, queryset2)
+    # result_queryset2 = queryset.none()
+    # for obj in queryset:
+    #     try:
+    #         qs1_object = queryset1.get(id=obj.id)
+    #         result_queryset2 |= queryset1.filter(id=obj.id)
+    #     except ConsultantProfile.DoesNotExist:
+    #         pass
+    #
+    #     try:
+    #         qs2_object = queryset2.get(id=obj.id)
+    #         result_queryset2 |= queryset2.filter(id=obj.id)
+    #     except ConsultantProfile.DoesNotExist:
+    #         pass
 
-    queryset = queryset.order_by('-rank')
+    # queryset = queryset1.union(queryset2)
+    #
+    # queryset = queryset.order_by('-rank')
+    # result_queryset = temp_queryset.none()
 
-    return queryset
+    # result_queryset = queryset.order_by('-rank')
+
+    # print(queryset.values())
+    # for obj in queryset:
+    #     print(obj.rank)
+
+    return queryset.order_by('-rank')
