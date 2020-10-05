@@ -1,13 +1,14 @@
-from celery import shared_task, task
-from django.core.serializers import deserialize
+from celery import shared_task
 
+from django.core.serializers import deserialize
 from django.db.models import Sum, F
 from django.db import transaction
-from django.db.utils import IntegrityError
 
 from sNeeds.apps.estimation.form import models as form_models
 from sNeeds.apps.estimation.analyze.models import Chart, ChartItemData
 from sNeeds.apps.estimation.form.serializers import StudentDetailedInfoSerializer
+
+LanguageCertificateType = form_models.LanguageCertificate.LanguageCertificateType
 
 
 # @shared_task
@@ -709,29 +710,29 @@ def update_language_certificates_charts(data, db_data, is_delete=False):
     if instance.is_mock:
         return
 
-    if instance.certificate_type == form_models.LanguageCertificateType.IELTS_GENERAL or \
-            instance.certificate_type == form_models.LanguageCertificateType.IELTS_ACADEMIC:
+    if instance.certificate_type == LanguageCertificateType.IELTS_GENERAL or \
+            instance.certificate_type == LanguageCertificateType.IELTS_ACADEMIC:
         update_ielts_chart(data=data, db_data=db_data, is_delete=is_delete)
 
-    elif instance.certificate_type == form_models.LanguageCertificateType.TOEFL:
+    elif instance.certificate_type == LanguageCertificateType.TOEFL:
         update_toefl_chart(data=data, db_data=db_data, is_delete=is_delete)
 
-    elif instance.certificate_type == form_models.LanguageCertificateType.GMAT:
+    elif instance.certificate_type == LanguageCertificateType.GMAT:
         update_gmat_chart(data=data, db_data=db_data, is_delete=is_delete)
 
-    elif instance.certificate_type == form_models.LanguageCertificateType.GRE_GENERAL:
+    elif instance.certificate_type == LanguageCertificateType.GRE_GENERAL:
         update_gre_general_writing_chart(data=data, db_data=db_data, is_delete=is_delete)
         update_gre_general_quantitative_and_verbal_chart(data=data, db_data=db_data, is_delete=is_delete)
 
-    elif instance.certificate_type == form_models.LanguageCertificateType.GRE_MATHEMATICS or \
-            instance.certificate_type == form_models.LanguageCertificateType.GRE_CHEMISTRY or \
-            instance.certificate_type == form_models.LanguageCertificateType.GRE_LITERATURE or \
-            instance.certificate_type == form_models.LanguageCertificateType.GRE_PHYSICS or \
-            instance.certificate_type == form_models.LanguageCertificateType.GRE_BIOLOGY or \
-            instance.certificate_type == form_models.LanguageCertificateType.GRE_PSYCHOLOGY:
+    elif instance.certificate_type == LanguageCertificateType.GRE_MATHEMATICS or \
+            instance.certificate_type == LanguageCertificateType.GRE_CHEMISTRY or \
+            instance.certificate_type == LanguageCertificateType.GRE_LITERATURE or \
+            instance.certificate_type == LanguageCertificateType.GRE_PHYSICS or \
+            instance.certificate_type == LanguageCertificateType.GRE_BIOLOGY or \
+            instance.certificate_type == LanguageCertificateType.GRE_PSYCHOLOGY:
         update_gre_subject_total_chart(data=data, db_data=db_data, is_delete=is_delete)
 
-    elif instance.certificate_type == form_models.LanguageCertificateType.DUOLINGO:
+    elif instance.certificate_type == LanguageCertificateType.DUOLINGO:
         update_duolingo_chart(data=data, db_data=db_data, is_delete=is_delete)
 
     # elif instance.certificate_type == account_models.LanguageCertificateType.GRE_PHYSICS:

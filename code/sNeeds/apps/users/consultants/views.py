@@ -9,6 +9,9 @@ from sNeeds.apps.users.consultants.models import ConsultantProfile
 from sNeeds.apps.users.consultants.serializers import ConsultantProfileSerializer
 from .paginators import StandardResultsSetPagination
 
+from sNeeds.apps.search.search_functions import search_consultants
+from sNeeds.apps.search.filter_functions import filter_consultants
+
 
 class ConsultantProfileDetail(APIView):
     def get_object(self, slug):
@@ -54,22 +57,10 @@ class ConsultantProfileList(generics.ListAPIView):
         country = self.request.query_params.getlist("country")
         major = self.request.query_params.getlist("major")
 
-        if university != [] or country != [] or major != []:
-            qs_for_university = qs.none()
-            qs_for_country = qs.none()
-            qs_for_major = qs.none()
+        search_phrase = self.request.query_params.get('search', None)
+        qs = search_consultants(qs, search_phrase)
 
-            if university is not None:
-                qs_for_university = qs.filter_consultants({"universities": university})
-
-            if country is not None:
-                qs_for_country = qs.filter_consultants({"countries": country})
-
-            if major is not None:
-                qs_for_major = qs.filter_consultants({"field_of_studies": major})
-
-            qs = qs_for_university | qs_for_country | qs_for_major
-            qs = qs.distinct()
+        qs = filter_consultants(qs, university, country, major)
 
         if self.request.query_params.get("ordering") is not None:
             if "-rate" in self.request.query_params.get("ordering"):
