@@ -32,13 +32,13 @@ def search_consultants(qs, phrase):
         )
     )
 
+    # find common objects and delete the object with lower rank from it's queryset
     temp_queryset = queryset1 | queryset2
-
     for obj in temp_queryset:
         try:
             qs1_object = queryset1.get(id=obj.id)
             qs2_object = queryset2.get(id=obj.id)
-            if qs1_object.rank > qs2_object.rank:
+            if qs2_object.rank < qs1_object.rank:
                 queryset2 = queryset2.exclude(id=obj.id)
             else:
                 queryset1 = queryset1.exclude(id=obj.id)

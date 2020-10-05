@@ -1,10 +1,7 @@
 
 def filter_consultants(qs, university, country, major):
 
-    # print("555555555")
-
     if university != [] or country != [] or major != []:
-        # print("66666666")
         qs_for_university = qs.none()
         qs_for_country = qs.none()
         qs_for_major = qs.none()
@@ -22,7 +19,5 @@ def filter_consultants(qs, university, country, major):
         result_qs = result_qs.distinct()
 
         return result_qs
-
-    # print("77777777777")
 
     return qs
