@@ -572,6 +572,24 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
             return label1
         return label2
 
+    def get_powerful_recommendation_user_store_based_positions(self):
+        return [self.get_powerful_recommendation__store_label()]
+
+    def get_powerful_recommendation_user_view_based_positions(self):
+        return [self.get_powerful_recommendation__view_label()]
+
+    def get_olympiad_user_store_based_positions(self):
+        return [self.get_olympiad__store_label()]
+
+    def get_olympiad_user_view_based_positions(self):
+        return [self.get_olympiad__view_label()]
+
+    def get_related_work_user_store_based_positions(self):
+        return [self.get_related_work__store_label()]
+
+    def get_related_work_user_view_based_positions(self):
+        return [self.get_related_work__view_label()]
+
 
 class UniversityThrough(models.Model):
     university = models.ForeignKey(

@@ -322,7 +322,8 @@ class PublicationImpactFactorChartSerializer(CommonChartSerializer):
             if request_user.is_authenticated:
                 try:
                     sdi = sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.get(user=request_user)
-                    return sNeeds.apps.estimation.form.models.Publication.get_publication_impact_factor_user_store_based_positions(sdi)
+                    return sNeeds.apps.estimation.form.models.Publication.\
+                        get_publication_impact_factor_user_store_based_positions(sdi)
                 except sNeeds.apps.estimation.form.models.StudentDetailedInfo.DoesNotExist:
                     return None
             else:

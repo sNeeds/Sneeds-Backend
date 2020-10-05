@@ -8,7 +8,6 @@ from sNeeds.apps.estimation.analyze.models import Chart
 
 
 class BaseChartAPIView(c_generics.BaseGenericAPIView):
-
     serializer_class = None
     chart_title_enum = None
 
@@ -18,7 +17,13 @@ class BaseChartAPIView(c_generics.BaseGenericAPIView):
             instance = Chart.objects.get(title=self.chart_title_enum)
         except Chart.DoesNotExist:
             raise NotFound(detail="No chart found!")
-        serializer = self.serializer_class(instance, many=False, context={'request': request})
+        serializer = self.serializer_class(
+            instance,
+            many=False,
+            context={'request': request,
+                     'student-detailed-info': self.request.query_params.get('student-detailed-info', None),
+                     }
+        )
         serializer.save()
         return Response(
             data=serializer.data,
