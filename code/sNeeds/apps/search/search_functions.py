@@ -24,7 +24,7 @@ def search_consultants(qs, phrase):
     ids = ids1 | ids2 | ids3
 
     # https://stackoverflow.com/questions/3590306/django-static-annotation
-    queryset1 = ConsultantProfile.objects.filter(id__in=ids, active=True).annotate(rank=Value(10, FloatField()))
+    queryset1 = ConsultantProfile.objects.filter(id__in=ids, active=True).annotate(rank=Value(0.7, FloatField()))
 
     queryset2 = qs.filter(active=True).annotate(
         rank=SearchRank(
