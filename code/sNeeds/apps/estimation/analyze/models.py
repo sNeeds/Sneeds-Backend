@@ -76,4 +76,4 @@ class Chart(models.Model):
     # pass
 
     def __str__(self):
-        return self.title.value
+        return self.title

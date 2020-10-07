@@ -10,7 +10,7 @@ def search_consultants(qs, phrase):
     if phrase is None:
         return qs
 
-    vector = SearchVector('user__first_name', weight='B') + SearchVector('user__last_name', weight='B') + \
+    vector = SearchVector('user__first_name', weight='A') + SearchVector('user__last_name', weight='A') + \
              SearchVector('bio', weight='A')
 
     query = SearchQuery(phrase, search_type='websearch')
@@ -24,15 +24,22 @@ def search_consultants(qs, phrase):
     ids = ids1 | ids2 | ids3
 
     # https://stackoverflow.com/questions/3590306/django-static-annotation
-    queryset1 = ConsultantProfile.objects.filter(id__in=ids, active=True).annotate(rank=Value(0.7, FloatField()))
+    queryset1 = ConsultantProfile.objects.filter(id__in=ids, active=True).annotate(rank=Value(0.5, FloatField()))
 
     queryset2 = qs.filter(active=True).annotate(
         rank=SearchRank(
             vector,
             query,
-            normalization=Value(2).bitor(Value(4)),
+            normalization=Value(1),
         )
-    ).filter(rank__gte=0.3)
+    )
+
+    # print(queryset2)
+    # for obj in queryset2:
+    #     print(obj.rank)
+
+    queryset2 = queryset2.filter(rank__gte=0.05)
+
 
     # find common objects and delete the object with lower rank from it's queryset
     # temp_queryset = queryset1 | queryset2
@@ -72,8 +79,8 @@ def search_consultants(qs, phrase):
 
     # result_queryset = queryset.order_by('-rank')
 
-    # print(queryset.values())
-    # for obj in queryset:
-    #     print(obj.rank)
+    print(queryset)
+    for obj in queryset:
+        print(obj.rank)
 
     return queryset.order_by('-rank')
