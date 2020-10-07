@@ -155,15 +155,15 @@ class StudentDetailedFormReview:
         # Supports IELTS general, academic and TOEFL
         ielts_academic_qs = RegularLanguageCertificate.objects.filter(
             student_detailed_info=form,
-            certificate_type=LanguageCertificateType.IELTS_ACADEMIC
+            certificate_type=LanguageCertificate.LanguageCertificateType.IELTS_ACADEMIC
         )
         ielts_general_qs = RegularLanguageCertificate.objects.filter(
             student_detailed_info=form,
-            certificate_type=LanguageCertificateType.IELTS_GENERAL
+            certificate_type=LanguageCertificate.LanguageCertificateType.IELTS_GENERAL
         )
         toefls_qs = RegularLanguageCertificate.objects.filter(
             student_detailed_info=form,
-            certificate_type=LanguageCertificateType.TOEFL
+            certificate_type=LanguageCertificate.LanguageCertificateType.TOEFL
         )
 
         data = {
@@ -308,7 +308,7 @@ class StudentDetailedFormReview:
 
         data = None
 
-        if self.last_grade == Grade.BACHELOR:
+        if self.last_grade == GradeChoices.BACHELOR:
             if publications_qs.count() == 0:
                 data = NO_PUBLICATION_BACHELOR
             elif publications_qs.count() == 1:
@@ -369,7 +369,7 @@ class StudentDetailedFormReview:
                     more_than_one_publications
                 )
 
-        if self.last_grade == Grade.MASTER:
+        if self.last_grade == GradeChoices.MASTER:
             if publications_qs.count() == 0:
                 data = NO_PUBLICATION_MASTER
             elif publications_qs.count() == 1:

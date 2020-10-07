@@ -1,5 +1,4 @@
-from celery import shared_task, task
-
+from celery import shared_task
 from django.utils import timezone
 
 from sNeeds.apps.notifications.models import EmailNotification, SoldTimeSlotReminderEmailNotification, \

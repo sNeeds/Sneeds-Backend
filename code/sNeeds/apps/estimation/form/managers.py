@@ -4,51 +4,51 @@ from django.db.models import Q, F
 
 class UniversityThroughQuerySetManager(models.QuerySet):
     def get_bachelor(self):
-        from sNeeds.apps.data.account import Grade
+        from sNeeds.apps.estimation.form.models import GradeChoices
         try:
-            return self.all().get(grade=Grade.BACHELOR)
+            return self.all().get(grade=GradeChoices.BACHELOR)
         except self.model.DoesNotExist:
             return None
 
     def get_master(self):
-        from sNeeds.apps.data.account import Grade
+        from sNeeds.apps.estimation.form.models import GradeChoices
         try:
-            return self.all().get(grade=Grade.MASTER)
+            return self.all().get(grade=GradeChoices.MASTER)
         except self.model.DoesNotExist:
             return None
 
     def get_phd(self):
-        from sNeeds.apps.data.account import Grade
+        from sNeeds.apps.estimation.form.models import GradeChoices
         try:
-            return self.all().get(grade=Grade.PHD)
+            return self.all().get(grade=GradeChoices.PHD)
         except self.model.DoesNotExist:
             return None
 
     def get_post_doc(self):
-        from sNeeds.apps.data.account import Grade
+        from sNeeds.apps.estimation.form.models import GradeChoices
         try:
-            return self.all().get(grade=Grade.POST_DOC)
+            return self.all().get(grade=GradeChoices.POST_DOC)
         except self.model.DoesNotExist:
             return None
 
 
 class LanguageCertificateQuerysetManager(models.QuerySet):
     def get_IELTS(self):
-        from sNeeds.apps.data.account import LanguageCertificateType
-        return self.filter(Q(certificate_type=LanguageCertificateType.IELTS_GENERAL)
-                           | Q(certificate_type=LanguageCertificateType.IELTS_ACADEMIC))
+        from sNeeds.apps.estimation.form.models import LanguageCertificate
+        return self.filter(Q(certificate_type=LanguageCertificate.LanguageCertificateType.IELTS_GENERAL)
+                           | Q(certificate_type=LanguageCertificate.LanguageCertificateType.IELTS_ACADEMIC))
 
     def get_TOEFL(self):
-        from sNeeds.apps.data.account import LanguageCertificateType
-        return self.filter(certificate_type=LanguageCertificateType.TOEFL)
+        from sNeeds.apps.estimation.form.models import LanguageCertificate
+        return self.filter(certificate_type=LanguageCertificate.LanguageCertificateType.TOEFL)
 
     def get_GRE(self):
-        from sNeeds.apps.data.account import LanguageCertificateType
-        return self.filter(certificate_type=LanguageCertificateType.GRE)
+        from sNeeds.apps.estimation.form.models import LanguageCertificate
+        return self.filter(certificate_type=LanguageCertificate.LanguageCertificateType.GRE)
 
     def get_Duolingo(self):
-        from sNeeds.apps.data.account import LanguageCertificateType
-        return self.filter(certificate_type=LanguageCertificateType.DUOLINGO)
+        from sNeeds.apps.estimation.form.models import LanguageCertificate
+        return self.filter(certificate_type=LanguageCertificate.LanguageCertificateType.DUOLINGO)
 
     def _get_highest_value_obj(self):
         return self.all().order_by(F('value').desc(nulls_last=True)).first()

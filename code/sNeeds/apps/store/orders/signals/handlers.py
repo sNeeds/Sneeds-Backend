@@ -1,8 +1,8 @@
 from django.db.models.signals import post_save, pre_save
 
-from sNeeds.apps.store.orders import Order
-from sNeeds.apps.store.orders import notify_order_created
-from sNeeds.apps.store.orders import unique_order_id_generator
+from ..models import Order
+from ..tasks import notify_order_created
+from ..utils import unique_order_id_generator
 from sNeeds.settings.config.variables import FRONTEND_URL
 
 

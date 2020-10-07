@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import TimeSlotSale, SoldTimeSlotSale, Product, SoldTimeSlotSalePaymentInfo
+from .models import TimeSlotSale,  Product, SoldTimeSlotSalePaymentInfo
+from ..orders.models import Order
 
 admin.site.register(Product)
 

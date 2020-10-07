@@ -1,7 +1,4 @@
 from django.contrib import admin
-from django.db.models import Q
-from django.utils.datetime_safe import datetime
-from django.utils.timezone import make_aware
 
 from .models import Order
 

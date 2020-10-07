@@ -12,11 +12,8 @@ class StorePackageQuerySetManager(models.QuerySet):
 
     @transaction.atomic
     def sell_and_get_sold_package(self, sold_to):
-        from sNeeds.apps.store.storePackages import SoldStorePackage
-        from sNeeds.apps.store.storePackages import StorePackagePhaseThrough
-        from sNeeds.apps.store.storePackages import SoldStorePaidPackagePhase
-        from sNeeds.apps.store.storePackages import SoldStorePackagePhaseDetail
-        from sNeeds.apps.store.storePackages import SoldStoreUnpaidPackagePhase
+        from sNeeds.apps.store.storePackages.models import SoldStorePackage, StorePackagePhaseThrough, \
+            SoldStorePaidPackagePhase, SoldStorePackagePhaseDetail, SoldStoreUnpaidPackagePhase
 
         qs = self.all()
         sold_store_package_list = []
@@ -115,8 +112,7 @@ class SoldStoreUnpaidPackagePhaseQuerySet(SoldStorePackagePhaseQuerySet):
 
     @transaction.atomic
     def sell_and_get_paid_phases(self):
-        from sNeeds.apps.store.storePackages import SoldStorePaidPackagePhase
-        from sNeeds.apps.store.storePackages import SoldStorePackagePhaseDetail
+        from sNeeds.apps.store.storePackages.models import SoldStorePaidPackagePhase ,SoldStorePackagePhaseDetail
 
         sold_store_paid_package_phases_list = []
 

@@ -44,7 +44,7 @@ class ChatSerializer(serializers.ModelSerializer):
             return None
 
     def get_other_person(self, obj):
-        from sNeeds.apps.users.customAuth import SafeUserDataSerializer
+        from sNeeds.apps.users.customAuth.serializers import SafeUserDataSerializer
 
         request = self.context.get('request')
         user = request.user

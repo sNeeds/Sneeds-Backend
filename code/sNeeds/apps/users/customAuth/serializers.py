@@ -104,6 +104,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
+            'id',
             'email',
             'first_name',
             'last_name',
@@ -111,6 +112,7 @@ class UserSerializer(serializers.ModelSerializer):
             'password',
         ]
         extra_kwargs = {
+            'id': {'read_only': True},
             'email': {'read_only': True},
             'first_name': {'required': False},
             'last_name': {'required': False},
@@ -151,17 +153,11 @@ class SafeUserDataSerializer(serializers.ModelSerializer):
         }
 
 
-class MyAccountSerializer(serializers.ModelSerializer):
+class MyAccountSerializer(UserSerializer):
     consultant = serializers.SerializerMethodField()
 
-    class Meta:
-        model = User
-
-        fields = [
-            'id',
-            'user_type',
-            'consultant',
-        ]
+    class Meta(UserSerializer.Meta):
+        fields = UserSerializer.Meta.fields + ['user_type', 'consultant', ]
 
     def get_consultant(self, obj):
         try:
