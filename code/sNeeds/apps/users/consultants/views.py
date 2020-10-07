@@ -61,12 +61,12 @@ class ConsultantProfileList(generics.ListAPIView):
 
         qs = filter_consultants(qs, university, country, major)
 
+        qs = search_consultants(qs, search_phrase)
+
         if self.request.query_params.get("ordering") is not None:
             if "-rate" in self.request.query_params.get("ordering"):
                 qs = qs.order_by(F('rate').desc(nulls_last=True))
             elif "rate" in self.request.query_params.get("ordering"):
                 qs = qs.order_by(F('rate').asc(nulls_first=True))
-
-        qs = search_consultants(qs, search_phrase)
 
         return qs
