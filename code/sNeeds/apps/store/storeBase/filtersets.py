@@ -1,4 +1,4 @@
-from django_filters import rest_framework as filters, DateTimeFromToRangeFilter, DateTimeFilter
+from django_filters import rest_framework as filters, DateTimeFilter
 
 from . import models
 

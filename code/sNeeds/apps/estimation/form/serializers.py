@@ -455,18 +455,15 @@ class StudentDetailedInfoBaseSerializer(serializers.ModelSerializer):
 
 
 class StudentDetailedInfoSerializer(StudentDetailedInfoBaseSerializer):
-    # TODO:HIGHHHH
+    from sNeeds.apps.users.customAuth.serializers import SafeUserDataSerializer
 
-    # from sNeeds.apps.users.customAuth.serializers import SafeUserDataSerializer
-    #
-    # user = SafeUserDataSerializer(read_only=True)
-
+    user = SafeUserDataSerializer(read_only=True)
     want_to_applies = serializers.SerializerMethodField()
 
     class Meta(StudentDetailedInfoBaseSerializer.Meta):
         model = StudentDetailedInfo
         fields = StudentDetailedInfoBaseSerializer.Meta.fields + [
-            'age', 'gender', 'military_service_status', 'is_married',
+            'user', 'age', 'gender', 'military_service_status', 'is_married',
             'want_to_applies', 'payment_affordability',
             'prefers_full_fund', 'prefers_half_fund', 'prefers_self_fund',
             'comment', 'powerful_recommendation', 'linkedin_url', 'homepage_url',

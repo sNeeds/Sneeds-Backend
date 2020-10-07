@@ -6,7 +6,7 @@ from django.urls import reverse
 from django_rest_passwordreset.signals import reset_password_token_created
 
 from sNeeds.apps.users.consultants.models import ConsultantProfile
-from sNeeds.apps.users.customAuth import send_reset_password_email
+from sNeeds.apps.users.customAuth.tasks import send_reset_password_email
 from sNeeds.settings.config.variables import FRONTEND_URL
 
 User = get_user_model()

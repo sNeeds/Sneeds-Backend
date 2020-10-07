@@ -8,7 +8,8 @@ from rest_framework import serializers
 
 from .models import TimeSlotSale, SoldTimeSlotSale
 from sNeeds.apps.users.consultants.models import ConsultantProfile
-from sNeeds.apps.users.consultants.serializers import ShortConsultantProfileSerializer
+from sNeeds.apps.users.consultants.serializers import ShortConsultantProfileSerializer, \
+    VeryShortConsultantProfileSerializer
 from sNeeds.apps.users.customAuth.serializers import SafeUserDataSerializer
 
 

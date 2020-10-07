@@ -1,12 +1,10 @@
-from celery import shared_task, task
+from celery import shared_task
 
 from django.utils import timezone
 
 from sNeeds.utils import sendemail
-from .models import TimeSlotSale, SoldTimeSlotSale
-from sNeeds.settings.config.variables import TIME_SLOT_SALE_DELETE_TIME, FRONTEND_URL
-from sNeeds.utils.custom.time_functions import utc_to_jalali_string
-from sNeeds.utils.sendemail import send_sold_time_slot_start_reminder_email
+from .models import TimeSlotSale
+from sNeeds.settings.config.variables import TIME_SLOT_SALE_DELETE_TIME
 
 
 @shared_task

@@ -2,7 +2,7 @@ from django.db.models.signals import pre_save, post_delete, post_save
 
 from sNeeds.apps.chats.models import Chat, TextMessage
 from sNeeds.apps.store.discounts.models import Discount
-from sNeeds.apps.store.storePackages import (
+from sNeeds.apps.store.storePackages.models import (
     StorePackage, StorePackagePhaseThrough, StorePackagePhase, SoldStorePackage,
     SoldStorePaidPackagePhase, SoldStoreUnpaidPackagePhase, ConsultantSoldStorePackageAcceptRequest
 )

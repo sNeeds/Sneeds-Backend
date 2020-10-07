@@ -1,9 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 
-from celery import task, shared_task
-from celery.utils.log import get_task_logger
-
-from django.utils import timezone
+from celery import  shared_task
 
 from sNeeds.utils import sendemail
 

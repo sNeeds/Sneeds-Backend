@@ -6,7 +6,6 @@ from sNeeds.settings.config.SkyroomConfig import ALL_SKYROOM_USERS_PASSWORD, NUM
     BEFORE_AFTER_CLASS_TIME_MINUTES
 
 from .exceptions import SkyroomConnectException
-from .models import Room
 
 s = skyroom.SkyroomAPI()
 

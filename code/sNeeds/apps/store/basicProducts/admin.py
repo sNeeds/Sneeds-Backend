@@ -1,7 +1,7 @@
 from django.contrib import admin
-from .models import BasicProduct, SoldBasicProduct, DownloadLink, ClassProduct, WebinarProduct, RoomLink, \
-    SoldClassProduct, SoldWebinarProduct, WebinarRoomLink, ClassRoomLink, ClassWebinar, HoldingDateTime, Lecturer, \
-    QuestionAnswer, SoldClassWebinar
+from .models import DownloadLink, ClassProduct, WebinarProduct, RoomLink, \
+    SoldClassProduct, SoldWebinarProduct, WebinarRoomLink, ClassRoomLink, HoldingDateTime, Lecturer, \
+    QuestionAnswer
 
 
 class DownloadLinkInline(admin.TabularInline):

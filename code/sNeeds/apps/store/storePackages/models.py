@@ -1,5 +1,4 @@
 import os
-import pytz
 from datetime import timedelta
 
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation

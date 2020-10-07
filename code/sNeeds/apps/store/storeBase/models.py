@@ -55,7 +55,7 @@ class ProductQuerySet(models.QuerySet):
         return None
 
     def get_store_packages(self):
-        from sNeeds.apps.store.storePackages import StorePackage
+        from sNeeds.apps.store.storePackages.models import StorePackage
 
         result_qs = StorePackage.objects.none()
         for i in self.all():
@@ -68,7 +68,7 @@ class ProductQuerySet(models.QuerySet):
         return result_qs
 
     def get_sold_store_unpaid_package_phases(self):
-        from sNeeds.apps.store.storePackages import SoldStoreUnpaidPackagePhase
+        from sNeeds.apps.store.storePackages.models import SoldStoreUnpaidPackagePhase
 
         result_qs = SoldStoreUnpaidPackagePhase.objects.none()
         for i in self.all():
@@ -137,7 +137,7 @@ class SoldProductQuerySet(models.QuerySet):
         return result_qs
 
     def get_sold_store_paid_package_phases(self):
-        from sNeeds.apps.store.storePackages import SoldStorePaidPackagePhase
+        from sNeeds.apps.store.storePackages.models import SoldStorePaidPackagePhase
 
         result_qs = SoldStorePaidPackagePhase.objects.none()
         for i in self.all():

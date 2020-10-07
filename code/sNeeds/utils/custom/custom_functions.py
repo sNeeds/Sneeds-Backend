@@ -13,7 +13,7 @@ def student_info_year_choices():
 
 def get_consultants_interact_with_user(user):
     from sNeeds.apps.store.storeBase.models import SoldProduct, SoldTimeSlotSale
-    from sNeeds.apps.store.storePackages import SoldStorePackage
+    from sNeeds.apps.store.storePackages.models import SoldStorePackage
     from sNeeds.apps.users.consultants.models import ConsultantProfile
     student_bought_products = SoldProduct.objects.filter(sold_to=user)
     student_bought_store_package = SoldStorePackage.objects.filter(sold_to=user)
@@ -38,7 +38,7 @@ def get_consultants_interact_with_user(user):
 # TODO merge users properly in order by newer interaction
 def get_users_interact_with_consultant(consultant):
     from sNeeds.apps.store.storeBase.models import SoldTimeSlotSale
-    from sNeeds.apps.store.storePackages import SoldStorePackage
+    from sNeeds.apps.store.storePackages.models import SoldStorePackage
     User = get_user_model()
     consultant_sold_time_slots = SoldTimeSlotSale.objects.filter(consultant=consultant).order_by('-created')
     consultant_sold_store_packages = SoldStorePackage.objects.filter(consultant=consultant).order_by('-created')

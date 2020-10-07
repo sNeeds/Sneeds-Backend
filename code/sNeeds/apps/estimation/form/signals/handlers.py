@@ -1,8 +1,8 @@
 from django.db import transaction
 from django.db.models.signals import pre_save, pre_delete, post_save
 
-from sNeeds.apps.data.account import update_student_detailed_info_ranks, add_one_to_rank_with_values_greater_than_this
-from sNeeds.apps.data.account import Publication, LanguageCertificate, StudentDetailedInfo, \
+from sNeeds.apps.estimation.form.tasks import update_student_detailed_info_ranks, add_one_to_rank_with_values_greater_than_this
+from sNeeds.apps.estimation.form.models import Publication, LanguageCertificate, StudentDetailedInfo, \
     RegularLanguageCertificate, GRESubjectCertificate, UniversityThrough
 from sNeeds.apps.estimation.estimations.compute_value import compute_publication_value
 
