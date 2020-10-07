@@ -510,3 +510,9 @@ class StudentDetailedInfoRequestSerializer(serializers.ModelSerializer):
                 raise ValidationError(_("User already has a student detailed info"))
         student_detailed_info_obj = StudentDetailedInfo.objects.create(**validated_data)
         return student_detailed_info_obj
+
+
+class StudentDetailedInfoCelerySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentDetailedInfo
+        fields = '__all__'
