@@ -9,6 +9,11 @@ from sNeeds.apps.users.consultants.models import ConsultantProfile, StudyInfo
 def search_consultants(qs, phrase):
     if phrase is None:
         return qs
+    temp_qs = qs.none()
+    for obj in qs:
+        temp_qs |= ConsultantProfile.objects.filter(id=obj.id)
+
+    qs = temp_qs
 
     vector = SearchVector('user__first_name', weight='A') + SearchVector('user__last_name', weight='A') + \
              SearchVector('bio', weight='A')
@@ -40,10 +45,12 @@ def search_consultants(qs, phrase):
 
     queryset2 = queryset2.filter(rank__gte=0.05)
 
+    queryset2 = queryset2.order_by('-rank')
 
     # find common objects and delete the object with lower rank from it's queryset
     # temp_queryset = queryset1 | queryset2
     temp_queryset = itertools.chain(queryset1, queryset2)
+
     for obj in temp_queryset:
         try:
             qs1_object = queryset1.get(id=obj.id)
@@ -55,7 +62,7 @@ def search_consultants(qs, phrase):
         except ConsultantProfile.DoesNotExist:
             pass
 
-    # tt_queryset = queryset2 | queryset1
+    # queryset = queryset2 | queryset1
     queryset = queryset1.union(queryset2)
     # queryset = itertools.chain(queryset1, queryset2)
     # result_queryset2 = queryset.none()
@@ -83,4 +90,9 @@ def search_consultants(qs, phrase):
     # for obj in queryset:
     #     print(obj.rank)
 
-    return queryset.order_by('-rank')
+    if len(queryset) == 0:
+        result_queryset = queryset.none()
+    else:
+        result_queryset = queryset.order_by('-rank')
+
+    return result_queryset
