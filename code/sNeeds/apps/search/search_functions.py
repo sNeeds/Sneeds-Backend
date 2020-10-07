@@ -9,11 +9,6 @@ from sNeeds.apps.users.consultants.models import ConsultantProfile, StudyInfo
 def search_consultants(qs, phrase):
     if phrase is None:
         return qs
-    temp_qs = qs.none()
-    for obj in qs:
-        temp_qs |= ConsultantProfile.objects.filter(id=obj.id)
-
-    qs = temp_qs
 
     vector = SearchVector('user__first_name', weight='A') + SearchVector('user__last_name', weight='A') + \
              SearchVector('bio', weight='A')
