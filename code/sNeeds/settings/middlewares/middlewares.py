@@ -32,5 +32,4 @@ class CORSMiddleware(object):
         response["Access-Control-Allow-Credentials"] = 'true'
         response["Access-Control-Allow-Methods"] = 'GET, PUT, POST, PATCH, DELETE, HEAD'
 
-        # print(request.headers)
         return response

@@ -4,7 +4,7 @@ from django.db.models.signals import pre_save, pre_delete, post_save
 
 from sNeeds.apps.estimation.analyze import tasks
 from sNeeds.apps.estimation.form.serializers import StudentDetailedInfoCelerySerializer
-from sNeeds.apps.estimation.form.tasks import update_student_detailed_info_ranks,\
+from sNeeds.apps.estimation.form.tasks import update_student_detailed_info_ranks, \
     add_one_to_rank_with_values_greater_than_this
 from sNeeds.apps.estimation.form.models import Publication, LanguageCertificate, StudentDetailedInfo, \
     RegularLanguageCertificate, GRESubjectCertificate, UniversityThrough
