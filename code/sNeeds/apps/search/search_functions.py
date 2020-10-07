@@ -78,9 +78,9 @@ def search_consultants(qs, phrase):
     # result_queryset = temp_queryset.none()
 
     # result_queryset = queryset.order_by('-rank')
-
-    print(queryset)
-    for obj in queryset:
-        print(obj.rank)
+    #
+    # print(queryset)
+    # for obj in queryset:
+    #     print(obj.rank)
 
     return queryset.order_by('-rank')
