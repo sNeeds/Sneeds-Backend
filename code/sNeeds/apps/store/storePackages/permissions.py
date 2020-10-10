@@ -7,9 +7,6 @@ class ConsultantSoldStorePackageAcceptRequestViewPermission(permissions.BasePerm
     message = "This user has not access to see ConsultantSoldStorePackageAcceptRequest."
 
     def has_object_permission(self, request, view, obj):
-        if request.method == "OPTIONS":
-            return True
-
         user = request.user
         is_consultant = ConsultantProfile.objects.filter(user=user).exists()
 
@@ -24,9 +21,6 @@ class SoldStorePackageOwnerUpdatePermission(permissions.BasePermission):
     message = "This user is not sold store package owner so can't update."
 
     def has_object_permission(self, request, view, obj):
-        if request.method == "OPTIONS":
-            return True
-
         if request.method == "PUT" or request.method == "PATCH" :
             return obj.sold_to == request.user
         return True
@@ -36,9 +30,6 @@ class SoldStorePackageGetPermission(permissions.BasePermission):
     message = "This user has no view access to SoldStorePackage."
 
     def has_object_permission(self, request, view, obj):
-        if request.method == "OPTIONS":
-            return True
-
         user = request.user
         if obj.consultant is None:
             return user == obj.sold_to
@@ -49,9 +40,6 @@ class SoldStorePackagePhaseGetPermission(permissions.BasePermission):
     message = "This user has no view access to SoldStoreUnpaidPackagePhase obj."
 
     def has_object_permission(self, request, view, obj):
-        if request.method == "OPTIONS":
-            return True
-
         user = request.user
         if obj.sold_store_package.consultant is None:
             return user == obj.sold_store_package.sold_to
@@ -62,10 +50,7 @@ class SoldStoreUnpaidPackagePhasePATCHPermission(permissions.BasePermission):
     message = "This user has no patch permission to SoldStoreUnpaidPackagePhase obj."
 
     def has_object_permission(self, request, view, obj):
-        if request.method == "OPTIONS":
-            return True
-
-        elif request.method == "PATCH":
+        if request.method == "PATCH":
             user = request.user
             if obj.sold_store_package.consultant is None:
                 return None
@@ -78,9 +63,6 @@ class SoldStorePackagePaidPhaseUpdatePermission(permissions.BasePermission):
     message = "This user has no access to SoldStorePaidPackagePhase obj."
 
     def has_object_permission(self, request, view, obj):
-        if request.method == "OPTIONS":
-            return True
-
         if request.method == "PUT":
             user = request.user
             if obj.sold_store_package.consultant is not None:
@@ -94,9 +76,6 @@ class SoldStorePackagePhaseDetailGetPermission(permissions.BasePermission):
     message = "This user has no view access to SoldStoreUnpaidPackagePhaseDetail obj."
 
     def has_object_permission(self, request, view, obj):
-        if request.method == "OPTIONS":
-            return True
-
         user = request.user
         if obj.content_object.sold_store_package.consultant is None:
             return user == obj.content_object.sold_store_package.sold_to
@@ -108,9 +87,6 @@ class SoldStorePackagePhaseDetailUpdatePermission(permissions.BasePermission):
     message = "This user has no access to update SoldStorePackagePhaseDetail obj."
 
     def has_object_permission(self, request, view, obj):
-        if request.method == "OPTIONS":
-            return True
-
         if request.method == "PUT":
             user = request.user
             if obj.content_object.sold_store_package.consultant is not None:
@@ -124,9 +100,6 @@ class IsConsultantPutPostPermission(permissions.BasePermission):
     message = "This user has no access to post/update SoldStorePackagePhaseDetail obj."
 
     def has_permission(self, request, view):
-        if request.method == "OPTIONS":
-            return True
-
         if request.method == "POST" or request.method == "PUT":
             if ConsultantProfile.objects.filter(user=request.user).exists():
                 return True
