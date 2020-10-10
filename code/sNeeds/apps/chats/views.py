@@ -3,21 +3,17 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import render
 
-from rest_framework import status, generics, mixins, permissions
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework import filters
+from rest_framework import  permissions
 from rest_framework.parsers import MultiPartParser
 
-from django_filters.rest_framework import DjangoFilterBackend
+from sNeeds.base.api import generics
 
 from .permissions import ChatOwnerPermission, MessageOwnerPermission
-
 from .models import (Chat, Message, MESSAGE_TYPES)
 from .serializers import ChatSerializer, MessagePolymorphicSerializer
 
 
-class ChatListAPIView(generics.ListAPIView):
+class ChatListAPIView(generics.CListAPIView):
     queryset = Chat.objects.all()
     serializer_class = ChatSerializer
     permission_classes = (permissions.IsAuthenticated,)
@@ -29,14 +25,14 @@ class ChatListAPIView(generics.ListAPIView):
         return qs
 
 
-class ChatDetailAPIView(generics.RetrieveAPIView):
+class ChatDetailAPIView(generics.CRetrieveAPIView):
     lookup_field = 'id'
     queryset = Chat.objects.all()
     serializer_class = ChatSerializer
     permission_classes = (permissions.IsAuthenticated, ChatOwnerPermission)
 
 
-class MessageListAPIView(generics.ListCreateAPIView):
+class MessageListAPIView(generics.CListCreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     parser_classes = [MultiPartParser, ]
     serializer_class = MessagePolymorphicSerializer
@@ -67,7 +63,7 @@ class MessageListAPIView(generics.ListCreateAPIView):
         return qs
 
 
-class MessageDetailAPIView(generics.RetrieveAPIView):
+class MessageDetailAPIView(generics.CRetrieveAPIView):
     permission_classes = (permissions.IsAuthenticated, MessageOwnerPermission)
     serializer_class = MessagePolymorphicSerializer
     lookup_field = 'id'

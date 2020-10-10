@@ -1,19 +1,18 @@
 from django.http import Http404
 from django.db.models import F
 
-from rest_framework import generics
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
+from sNeeds.base.api import generics
 from sNeeds.apps.users.consultants.models import ConsultantProfile
 from sNeeds.apps.users.consultants.serializers import ConsultantProfileSerializer
+from sNeeds.base.api.viewsets import CAPIView
 from .paginators import StandardResultsSetPagination
-
 from sNeeds.apps.search.search_functions import search_consultants
 from sNeeds.apps.search.filter_functions import filter_consultants
 
 
-class ConsultantProfileDetail(APIView):
+class ConsultantProfileDetail(CAPIView):
     def get_object(self, slug):
         try:
             return ConsultantProfile.objects.get(slug=slug)
@@ -29,7 +28,7 @@ class ConsultantProfileDetail(APIView):
         return Response(serializer.data)
 
 
-class ConsultantProfileList(generics.ListAPIView):
+class ConsultantProfileList(generics.CListAPIView):
     serializer_class = ConsultantProfileSerializer
     pagination_class = StandardResultsSetPagination
     ordering_fields = []

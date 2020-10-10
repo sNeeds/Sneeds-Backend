@@ -4,10 +4,11 @@ from django.conf import settings
 
 from rest_framework import permissions
 from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework import generics
 
+from sNeeds.base.api import generics
 from sNeeds.apps.store.orders.models import Order
+from sNeeds.base.api.generics import CListAPIView
+from sNeeds.base.api.viewsets import CAPIView
 from .serializers import ConsultantDepositInfoSerializer
 from .permissions import ConsultantDepositInfoOwner
 from .models import ConsultantDepositInfo
@@ -20,7 +21,7 @@ from sNeeds.utils.custom.custom_permissions import IsConsultantPermission
 ZARINPAL_MERCHANT = settings.ZARINPAL_MERCHANT
 
 
-class SendRequest(APIView):
+class SendRequest(CAPIView):
     """
     POST:
     {
@@ -73,7 +74,7 @@ class SendRequest(APIView):
             return Response({"detail": "Can not pay, The price is 0 but no products are included."}, 400)
 
 
-class Verify(APIView):
+class Verify(CAPIView):
     """
     POST:
     {
@@ -121,7 +122,7 @@ class Verify(APIView):
             return Response({"detail": "Transaction failed or canceled by user"}, status=400)
 
 
-class VerifyTest(APIView):
+class VerifyTest(CAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
@@ -139,7 +140,7 @@ class VerifyTest(APIView):
         return Response()
 
 
-class ConsultantDepositInfoListAPIView(generics.ListAPIView):
+class ConsultantDepositInfoListAPIView(CListAPIView):
     serializer_class = ConsultantDepositInfoSerializer
     permission_classes = [permissions.IsAuthenticated, IsConsultantPermission]
 
@@ -150,7 +151,7 @@ class ConsultantDepositInfoListAPIView(generics.ListAPIView):
         return qs
 
 
-class ConsultantDepositInfoDetailAPIView(generics.RetrieveAPIView):
+class ConsultantDepositInfoDetailAPIView(generics.CRetrieveAPIView):
     lookup_field = 'consultant_deposit_info_id'
     queryset = qs = ConsultantDepositInfo.objects.all()
     serializer_class = ConsultantDepositInfoSerializer

@@ -1,11 +1,10 @@
 from datetime import datetime
 
-from django.core.management import call_command
-from rest_framework.views import APIView
+from sNeeds.base.api.viewsets import CAPIView
 from rest_framework.response import Response
 
 
-class TimezoneTimeDetailAPIView(APIView):
+class TimezoneTimeDetailAPIView(CAPIView):
     """
     Replace - with / in timezones.
     Because / character is used in most of the timezone names and conflicts with url /.

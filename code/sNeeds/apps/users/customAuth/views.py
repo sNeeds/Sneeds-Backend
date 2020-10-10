@@ -1,9 +1,11 @@
 from django.contrib.auth import get_user_model
 
-from rest_framework import permissions, generics, mixins
-from rest_framework.views import APIView
+from rest_framework import permissions,  mixins
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
+
+from sNeeds.base.api.viewsets import CAPIView
+from sNeeds.base.api import generics
 
 from . import serializers
 from .serializers import UserRegisterSerializer
@@ -12,7 +14,7 @@ from .permissions import NotLoggedInPermission, SameUserPermission
 User = get_user_model()
 
 
-class UserListView(mixins.CreateModelMixin, generics.GenericAPIView):
+class UserListView(generics.CCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserRegisterSerializer
     permission_classes = [NotLoggedInPermission]
@@ -23,7 +25,7 @@ class UserListView(mixins.CreateModelMixin, generics.GenericAPIView):
         return self.create(request, *args, **kwargs)
 
 
-class UserDetailView(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, generics.GenericAPIView):
+class UserDetailView(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, generics.CGenericAPIView):
     queryset = User.objects.all()
     serializer_class = serializers.UserSerializer
     lookup_field = 'id'
@@ -40,7 +42,7 @@ class UserDetailView(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, generic
         return self.update(request)
 
 
-class MyAccountInfoView(APIView):
+class MyAccountInfoView(CAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):

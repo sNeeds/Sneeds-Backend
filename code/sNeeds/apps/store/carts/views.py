@@ -1,11 +1,13 @@
-from rest_framework import generics, permissions
+from rest_framework import permissions
+
+from sNeeds.base.api import generics
 
 from . import serializers
 from .models import Cart
 from .permissions import CartOwnerPermission
 
 
-class CartListView(generics.ListCreateAPIView):
+class CartListView(generics.CListCreateAPIView):
     queryset = Cart.objects.all()
     serializer_class = serializers.CartSerializer
     permission_classes = (permissions.IsAuthenticated,)
@@ -14,7 +16,7 @@ class CartListView(generics.ListCreateAPIView):
         return Cart.objects.filter(user=self.request.user)
 
 
-class CartDetailView(generics.RetrieveAPIView):
+class CartDetailView(generics.CRetrieveAPIView):
     queryset = Cart.objects.all()
     serializer_class = serializers.CartSerializer
     lookup_field = 'id'

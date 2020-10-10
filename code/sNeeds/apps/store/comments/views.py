@@ -1,25 +1,27 @@
-from rest_framework import generics, permissions
+from rest_framework import permissions
 from rest_framework.response import Response
+
+from sNeeds.base.api import generics
 
 from .models import ConsultantComment, SoldTimeSlotRate
 from .serializers import CommentSerializer, SoldTimeSlotRateSerializer
 from .filtersets import CommentFilterSet
 
 
-class CommentListView(generics.ListCreateAPIView):
+class CommentListView(generics.CListCreateAPIView):
     queryset = ConsultantComment.objects.all().order_by('-created')
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     filterset_class = CommentFilterSet
 
 
-class CommentDetailView(generics.RetrieveAPIView):
+class CommentDetailView(generics.CRetrieveAPIView):
     lookup_field = 'id'
     queryset = ConsultantComment.objects.all()
     serializer_class = CommentSerializer
 
 
-class SoldTimeSlotRateListView(generics.ListCreateAPIView):
+class SoldTimeSlotRateListView(generics.CListCreateAPIView):
     queryset = SoldTimeSlotRate.objects.all()
     serializer_class = SoldTimeSlotRateSerializer
     filterset_fields = ['sold_time_slot', ]

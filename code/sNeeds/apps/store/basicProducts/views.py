@@ -1,23 +1,24 @@
-from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+
+from sNeeds.base.api import generics
 from . import serializers
 from .models import BasicProduct, SoldBasicProduct, ClassProduct, SoldClassProduct, WebinarProduct, SoldWebinarProduct, \
     ClassRoomLink, WebinarRoomLink
 from .permissions import SoldBasicProductOwnerPermission, IsLinkOwner
 
 
-class BasicProductList(generics.ListAPIView):
+class BasicProductList(generics.CListAPIView):
     queryset = BasicProduct.objects.all()
     serializer_class = serializers.BasicProductSerializer
 
 
-class BasicProductDetail(generics.RetrieveAPIView):
+class BasicProductDetail(generics.CRetrieveAPIView):
     lookup_field = 'slug'
     serializer_class = serializers.BasicProductSerializer
     queryset = BasicProduct.objects.all()
 
 
-class ClassProductList(generics.ListAPIView):
+class ClassProductList(generics.CListAPIView):
     queryset = ClassProduct.objects.all()
     serializer_class = serializers.ClassProductSerializer
     ordering_fields = ['created']
@@ -25,13 +26,13 @@ class ClassProductList(generics.ListAPIView):
     search_fields = ['title', 'descriptions', 'headlines', 'lecturers']
 
 
-class ClassProductDetail(generics.RetrieveAPIView):
+class ClassProductDetail(generics.CRetrieveAPIView):
     lookup_field = 'slug'
     queryset = ClassProduct.objects.all()
     serializer_class = serializers.ClassProductSerializer
 
 
-class WebinarProductList(generics.ListAPIView):
+class WebinarProductList(generics.CListAPIView):
     queryset = WebinarProduct.objects.all()
     serializer_class = serializers.WebinarProductSerializer
     ordering_fields = ['created']
@@ -39,13 +40,13 @@ class WebinarProductList(generics.ListAPIView):
     search_fields = ['title', 'descriptions', 'headlines', 'lecturers']
 
 
-class WebinarProductDetail(generics.RetrieveAPIView):
+class WebinarProductDetail(generics.CRetrieveAPIView):
     lookup_field = 'slug'
     queryset = WebinarProduct.objects.all()
     serializer_class = serializers.WebinarProductSerializer
 
 
-class SoldBasicProductList(generics.ListAPIView):
+class SoldBasicProductList(generics.CListAPIView):
     queryset = SoldBasicProduct.objects.all()
     serializer_class = serializers.SoldBasicProductSerializer
     permission_classes = [IsAuthenticated]
@@ -55,14 +56,14 @@ class SoldBasicProductList(generics.ListAPIView):
         return SoldBasicProduct.objects.filter(sold_to=user)
 
 
-class SoldBasicProductDetail(generics.RetrieveAPIView):
+class SoldBasicProductDetail(generics.CRetrieveAPIView):
     lookup_field = 'id'
     serializer_class = serializers.SoldBasicProductSerializer
     queryset = SoldBasicProduct.objects.all()
     permission_classes = [IsAuthenticated, SoldBasicProductOwnerPermission]
 
 
-class SoldClassProductList(generics.ListAPIView):
+class SoldClassProductList(generics.CListAPIView):
     queryset = SoldClassProduct.objects.all()
     serializer_class = serializers.SoldClassProductSerializer
     permission_classes = [IsAuthenticated]
@@ -72,14 +73,14 @@ class SoldClassProductList(generics.ListAPIView):
         return SoldClassProduct.objects.filter(sold_to=user)
 
 
-class SoldClassProductDetail(generics.RetrieveAPIView):
+class SoldClassProductDetail(generics.CRetrieveAPIView):
     lookup_field = 'id'
     queryset = SoldClassProduct.objects.all()
     serializer_class = serializers.SoldClassProductSerializer
     permission_classes = [IsAuthenticated, SoldBasicProductOwnerPermission]
 
 
-class SoldWebinarProductList(generics.ListAPIView):
+class SoldWebinarProductList(generics.CListAPIView):
     queryset = SoldWebinarProduct.objects.all()
     serializer_class = serializers.SoldWebinarProductSerializer
     permission_classes = [IsAuthenticated]
@@ -89,14 +90,14 @@ class SoldWebinarProductList(generics.ListAPIView):
         return SoldWebinarProduct.objects.filter(sold_to=user)
 
 
-class SoldWebinarProductDetail(generics.RetrieveAPIView):
+class SoldWebinarProductDetail(generics.CRetrieveAPIView):
     lookup_field = 'id'
     queryset = SoldWebinarProduct.objects.all()
     serializer_class = serializers.SoldWebinarProductSerializer
     permission_classes = [IsAuthenticated, SoldBasicProductOwnerPermission]
 
 
-class WebinarRoomLinkList(generics.ListAPIView):
+class WebinarRoomLinkList(generics.CListAPIView):
     queryset = WebinarRoomLink.objects.all()
     serializer_class = serializers.WebinarRoomLinkSerializer
     permission_classes = [IsAuthenticated]
@@ -107,14 +108,14 @@ class WebinarRoomLinkList(generics.ListAPIView):
         return qs
 
 
-class WebinarRoomLinkDetail(generics.RetrieveAPIView):
+class WebinarRoomLinkDetail(generics.CRetrieveAPIView):
     lookup_field = 'id'
     queryset = WebinarRoomLink.objects.all()
     serializer_class = serializers.WebinarRoomLinkSerializer
     permission_classes = [IsAuthenticated, IsLinkOwner]
 
 
-class ClassRoomLinkList(generics.ListAPIView):
+class ClassRoomLinkList(generics.CListAPIView):
     queryset = ClassRoomLink.objects.all()
     serializer_class = serializers.ClassRoomLinkSerializer
     permission_classes = [IsAuthenticated]
@@ -125,7 +126,7 @@ class ClassRoomLinkList(generics.ListAPIView):
         return qs
 
 
-class ClassRoomLinkDetail(generics.RetrieveAPIView):
+class ClassRoomLinkDetail(generics.CRetrieveAPIView):
     lookup_field = 'id'
     queryset = ClassRoomLink.objects.all()
     serializer_class = serializers.ClassRoomLinkSerializer

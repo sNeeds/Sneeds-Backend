@@ -1,6 +1,8 @@
-from rest_framework import status, generics, permissions
+from rest_framework import status, permissions
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
+
+from sNeeds.base.api import generics
 
 from .models import CartDiscount, TimeSlotSaleNumberDiscount, Discount
 from .serializers import CartDiscountSerializer, TimeSlotSaleNumberDiscountSerializer, DiscountSerializer, \
@@ -11,13 +13,13 @@ from sNeeds.apps.users.consultants.models import ConsultantProfile
 User = get_user_model()
 
 
-class TimeSlotSaleNumberDiscountListView(generics.ListAPIView):
+class TimeSlotSaleNumberDiscountListView(generics.CListAPIView):
     queryset = TimeSlotSaleNumberDiscount.objects.all()
     serializer_class = TimeSlotSaleNumberDiscountSerializer
     permission_classes = []
 
 
-class CartDiscountListView(generics.ListCreateAPIView):
+class CartDiscountListView(generics.CListCreateAPIView):
     serializer_class = CartDiscountSerializer
     permission_classes = [
         permissions.IsAuthenticated,
@@ -31,7 +33,7 @@ class CartDiscountListView(generics.ListCreateAPIView):
         return qs
 
 
-class CartDiscountDetailView(generics.RetrieveDestroyAPIView):
+class CartDiscountDetailView(generics.CRetrieveDestroyAPIView):
     queryset = CartDiscount.objects.all()
     serializer_class = CartDiscountSerializer
     permission_classes = [CartDiscountPermission, permissions.IsAuthenticated]
@@ -43,7 +45,7 @@ class CartDiscountDetailView(generics.RetrieveDestroyAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class ConsultantForUserDiscountListCreateAPIView(generics.ListCreateAPIView):
+class ConsultantForUserDiscountListCreateAPIView(generics.CListCreateAPIView):
     queryset = Discount.objects.all()
     serializer_class = DiscountSerializer
     permission_classes = [permissions.IsAuthenticated, ConsultantPermission]
@@ -55,14 +57,14 @@ class ConsultantForUserDiscountListCreateAPIView(generics.ListCreateAPIView):
         return qs
 
 
-class ConsultantForUserDiscountRetrieveDestroyAPIView(generics.RetrieveDestroyAPIView):
+class ConsultantForUserDiscountRetrieveDestroyAPIView(generics.CRetrieveDestroyAPIView):
     lookup_field = 'id'
     queryset = Discount.objects.all()
     serializer_class = DiscountSerializer
     permission_classes = [permissions.IsAuthenticated, ConsultantPermission, ConsultantDiscountOwnersPermission]
 
 
-class ConsultantInteractUserListAPIView(generics.ListAPIView):
+class ConsultantInteractUserListAPIView(generics.CListAPIView):
     queryset = User.objects.all()
     serializer_class = ConsultantInteractiveUsersSerializer
     permission_classes = [permissions.IsAuthenticated, ConsultantPermission]

@@ -1,9 +1,10 @@
 from django.db.models import Q
 from django.utils import timezone
 
-from rest_framework import status, generics, permissions
+from rest_framework import status,  permissions
 from rest_framework.response import Response
 
+from sNeeds.base.api import generics
 from . import serializers
 from .filters import SoldStorePackagePhaseDetailFilter
 from .models import StorePackage, StorePackagePhaseThrough, ConsultantSoldStorePackageAcceptRequest, \
@@ -17,7 +18,7 @@ from .permissions import ConsultantSoldStorePackageAcceptRequestViewPermission, 
 from sNeeds.utils.custom.custom_permissions import IsConsultantPermission
 
 
-class MarketplaceListAPIView(generics.ListAPIView):
+class MarketplaceListAPIView(generics.CListAPIView):
     serializer_class = serializers.SoldStorePackageSerializer
     permission_classes = [permissions.IsAuthenticated, IsConsultantPermission]
 
@@ -35,7 +36,7 @@ class MarketplaceListAPIView(generics.ListAPIView):
         return qs
 
 
-class MarketplaceDetailAPIView(generics.RetrieveAPIView):
+class MarketplaceDetailAPIView(generics.CRetrieveAPIView):
     lookup_field = 'id'
     serializer_class = serializers.SoldStorePackageSerializer
     permission_classes = [permissions.IsAuthenticated, IsConsultantPermission]
@@ -45,30 +46,30 @@ class MarketplaceDetailAPIView(generics.RetrieveAPIView):
         return qs
 
 
-class StorePackagePhaseThroughListAPIView(generics.ListAPIView):
+class StorePackagePhaseThroughListAPIView(generics.CListAPIView):
     queryset = StorePackagePhaseThrough.objects.all()
     serializer_class = serializers.StorePackagePhaseThroughSerializer
     filterset_fields = ['store_package']
 
 
-class StorePackagePhaseThroughDetailAPIView(generics.RetrieveAPIView):
+class StorePackagePhaseThroughDetailAPIView(generics.CRetrieveAPIView):
     queryset = StorePackagePhaseThrough.objects.all()
     serializer_class = serializers.StorePackagePhaseThroughSerializer
     lookup_field = 'id'
 
 
-class StorePackageListAPIView(generics.ListAPIView):
+class StorePackageListAPIView(generics.CListAPIView):
     queryset = StorePackage.objects.all()
     serializer_class = serializers.StorePackageSerializer
 
 
-class StorePackageDetailAPIView(generics.RetrieveAPIView):
+class StorePackageDetailAPIView(generics.CRetrieveAPIView):
     queryset = StorePackage.objects.all()
     serializer_class = serializers.StorePackageSerializer
     lookup_field = 'slug'
 
 
-class ConsultantSoldStorePackageAcceptRequestDetailAPIView(generics.RetrieveAPIView):
+class ConsultantSoldStorePackageAcceptRequestDetailAPIView(generics.CRetrieveAPIView):
     lookup_field = 'id'
     filterset_fields = ['sold_store_package']
     serializer_class = serializers.ConsultantSoldStorePackageAcceptRequestSerializer
@@ -76,7 +77,7 @@ class ConsultantSoldStorePackageAcceptRequestDetailAPIView(generics.RetrieveAPIV
     permission_classes = [permissions.IsAuthenticated, ConsultantSoldStorePackageAcceptRequestViewPermission]
 
 
-class ConsultantSoldStorePackageAcceptRequestListAPIView(generics.ListCreateAPIView):
+class ConsultantSoldStorePackageAcceptRequestListAPIView(generics.CListCreateAPIView):
     """
     Consultant in browsable API is ignored.
     """
@@ -124,7 +125,7 @@ class ConsultantSoldStorePackageAcceptRequestListAPIView(generics.ListCreateAPIV
             return Response({"detail": "User is not consultant."}, status=403)
 
 
-class SoldStorePackageDetailAPIView(generics.RetrieveUpdateAPIView):
+class SoldStorePackageDetailAPIView(generics.CRetrieveUpdateAPIView):
     """
     Update format:
     {
@@ -141,7 +142,7 @@ class SoldStorePackageDetailAPIView(generics.RetrieveUpdateAPIView):
     ]
 
 
-class SoldStorePackageListAPIView(generics.ListAPIView):
+class SoldStorePackageListAPIView(generics.CListAPIView):
     lookup_field = 'id'
     serializer_class = serializers.SoldStorePackageSerializer
     permission_classes = [permissions.IsAuthenticated, SoldStorePackageGetPermission]
@@ -160,7 +161,7 @@ class SoldStorePackageListAPIView(generics.ListAPIView):
         return qs
 
 
-class SoldStoreUnpaidPackagePhaseDetailAPIView(generics.RetrieveUpdateAPIView):
+class SoldStoreUnpaidPackagePhaseDetailAPIView(generics.CRetrieveUpdateAPIView):
     http_method_names = ["options", "get", "patch"]
     lookup_field = 'id'
     queryset = SoldStoreUnpaidPackagePhase.objects.all()
@@ -178,7 +179,7 @@ class SoldStoreUnpaidPackagePhaseDetailAPIView(generics.RetrieveUpdateAPIView):
         return serializer_class
 
 
-class SoldStoreUnpaidPackagePhaseListAPIView(generics.ListAPIView):
+class SoldStoreUnpaidPackagePhaseListAPIView(generics.CListAPIView):
     lookup_field = 'id'
     serializer_class = serializers.SoldStoreUnpaidPackagePhaseSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -199,7 +200,7 @@ class SoldStoreUnpaidPackagePhaseListAPIView(generics.ListAPIView):
         return qs
 
 
-class SoldStorePaidPackagePhaseDetailAPIView(generics.RetrieveUpdateAPIView):
+class SoldStorePaidPackagePhaseDetailAPIView(generics.CRetrieveUpdateAPIView):
     lookup_field = 'id'
     queryset = SoldStorePaidPackagePhase.objects.all()
     serializer_class = serializers.SoldStorePaidPackagePhaseSerializer
@@ -209,7 +210,7 @@ class SoldStorePaidPackagePhaseDetailAPIView(generics.RetrieveUpdateAPIView):
     ]
 
 
-class SoldStorePaidPackagePhaseListAPIView(generics.ListAPIView):
+class SoldStorePaidPackagePhaseListAPIView(generics.CListAPIView):
     lookup_field = 'id'
     serializer_class = serializers.SoldStorePaidPackagePhaseSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -230,7 +231,7 @@ class SoldStorePaidPackagePhaseListAPIView(generics.ListAPIView):
         return qs
 
 
-class SoldStorePackagePhaseDetailDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+class SoldStorePackagePhaseDetailDetailAPIView(generics.CRetrieveUpdateDestroyAPIView):
     lookup_field = 'id'
     queryset = SoldStorePackagePhaseDetail.objects.all()
     serializer_class = serializers.SoldStorePackagePhaseDetailSerializer
@@ -247,7 +248,7 @@ class SoldStorePackagePhaseDetailDetailAPIView(generics.RetrieveUpdateDestroyAPI
         return serializer_class
 
 
-class SoldStorePackagePhaseDetailListAPIView(generics.ListCreateAPIView):
+class SoldStorePackagePhaseDetailListAPIView(generics.CListCreateAPIView):
     lookup_field = 'id'
     serializer_class = serializers.SoldStorePackagePhaseDetailSerializer
     filter_class = SoldStorePackagePhaseDetailFilter

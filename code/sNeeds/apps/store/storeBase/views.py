@@ -1,5 +1,9 @@
-from rest_framework import generics, permissions
+from rest_framework import  permissions
 from rest_framework.response import Response
+
+from sNeeds.base.api import generics
+from sNeeds.utils.custom.custom_permissions import IsConsultantUnsafePermission
+from sNeeds.apps.users.consultants.models import ConsultantProfile
 
 from . import serializers
 from . import filtersets
@@ -8,11 +12,9 @@ from .permissions import (
     TimeSlotSaleOwnerPermission,
     SoldTimeSlotSaleOwnerPermission,
 )
-from sNeeds.utils.custom.custom_permissions import IsConsultantUnsafePermission
-from sNeeds.apps.users.consultants.models import ConsultantProfile
 
 
-class TimeSlotSaleListAPIView(generics.ListCreateAPIView):
+class TimeSlotSaleListAPIView(generics.CListCreateAPIView):
     queryset = TimeSlotSale.objects.all()
     serializer_class = serializers.TimeSlotSaleSerializer
     filterset_class = filtersets.TimeSlotSaleFilter
@@ -26,7 +28,7 @@ class TimeSlotSaleListAPIView(generics.ListCreateAPIView):
         return serializer_class
 
 
-class TimeSlotSaleExistListAPIView(generics.ListAPIView):
+class TimeSlotSaleExistListAPIView(generics.CListAPIView):
     queryset = TimeSlotSale.objects.all()
     filterset_class = filtersets.TimeSlotSaleFilter
 
@@ -37,14 +39,14 @@ class TimeSlotSaleExistListAPIView(generics.ListAPIView):
         return Response({"exists": False, "number": len(queryset)})
 
 
-class TimeSlotSaleDetailAPIView(generics.RetrieveDestroyAPIView):
+class TimeSlotSaleDetailAPIView(generics.CRetrieveDestroyAPIView):
     lookup_field = "id"
     queryset = TimeSlotSale.objects.all()
     serializer_class = serializers.TimeSlotSaleSerializer
     permission_classes = [TimeSlotSaleOwnerPermission, permissions.IsAuthenticatedOrReadOnly]
 
 
-class SoldTimeSlotSaleListAPIView(generics.ListAPIView):
+class SoldTimeSlotSaleListAPIView(generics.CListAPIView):
     queryset = SoldTimeSlotSale.objects.all()
     serializer_class = serializers.SoldTimeSlotSaleSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -62,21 +64,21 @@ class SoldTimeSlotSaleListAPIView(generics.ListAPIView):
             return SoldTimeSlotSale.objects.filter(sold_to=user).order_by('start_time')
 
 
-class SoldTimeSlotSaleDetailAPIView(generics.RetrieveAPIView):
+class SoldTimeSlotSaleDetailAPIView(generics.CRetrieveAPIView):
     lookup_field = "id"
     queryset = SoldTimeSlotSale.objects.all()
     serializer_class = serializers.SoldTimeSlotSaleSerializer
     permission_classes = [SoldTimeSlotSaleOwnerPermission, permissions.IsAuthenticated]
 
 
-class SoldTimeSlotSaleSafeListAPIView(generics.ListAPIView):
+class SoldTimeSlotSaleSafeListAPIView(generics.CListAPIView):
     queryset = SoldTimeSlotSale.objects.all()
     serializer_class = serializers.ShortSoldTimeSlotSaleSafeSerializer
     filterset_class = filtersets.SoldTimeSlotSaleFilter
     ordering_fields = ['start_time', ]
 
 
-class SoldTimeSlotSaleSafeDetailAPIView(generics.RetrieveAPIView):
+class SoldTimeSlotSaleSafeDetailAPIView(generics.CRetrieveAPIView):
     lookup_field = 'id'
     queryset = SoldTimeSlotSale.objects.all()
     serializer_class = serializers.SoldTimeSlotSaleSafeSerializer
