@@ -215,6 +215,23 @@ VALUES_WITH_ATTRS = {
             "comment": review_comments.TOEFL_VERY_BAD
         },
     ],
+    "work_experience_comments": [
+        {
+            "start": None,
+            "end": 24,
+            "comment": review_comments.LONG_WORK_EXPERIENCE
+        },
+        {
+            "start": 24,
+            "end": 12,
+            "comment": review_comments.AVERAGE_WORK_EXPERIENCE
+        },
+        {
+            "start": 12,
+            "end": None,
+            "comment": review_comments.SHORT_WORK_EXPERIENCE
+        },
+    ],
 }
 
 # TOEFL

@@ -220,8 +220,6 @@ class ReviewPublicationMixin:
 
         more_than_one_publications = bool(publications_qs.count())
 
-        data = None
-
         if self.last_grade == GradeChoices.BACHELOR:
             if publications_qs.count() == 0:
                 data = NO_PUBLICATION_BACHELOR
@@ -347,4 +345,32 @@ class ReviewPublicationMixin:
                 )
         data["total_value"]: publications_qs.qs_total_value_label()
         data["total_value_str"]: publications_qs.qs_total_value_label()
+        return data
+
+
+class ReviewOthersMixin:
+    def _review_recommendation(self):
+        if not self.student_detailed_form.powerful_recommendation:
+            return NO_POWERFUL_RECOMMENDATION
+
+        return ""
+
+    def _review_work_experience(self):
+        form = self.student_detailed_form
+        comment = ""
+        if form.related_work_experience:
+            print("****" , form.related_work_experience)
+            value_range = ValueRange(VALUES_WITH_ATTRS["work_experience_comments"])
+            comment = value_range.find_value_attrs(form.related_work_experience, 'comment')
+        return comment
+
+    def review_others(self):
+        data = ""
+
+        data += self._review_recommendation()
+        data += self._review_work_experience()
+
+        if data == "":
+            data = "Since you have powerful recommendation and you don't have work experience we have no comments in this section."
+
         return data

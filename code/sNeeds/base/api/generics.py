@@ -1,3 +1,4 @@
+from django.db.models import QuerySet
 from rest_framework import views, mixins
 from rest_framework.settings import api_settings
 

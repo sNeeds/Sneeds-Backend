@@ -23,11 +23,12 @@ class ValueRange:
 
     def find_value_attrs(self, value, attr: str):
         for r in self.ranges:
+            print(value , r.start, r.end)
             if r.start is None and r.end <= value:
                 return getattr(r, attr)
             elif r.end is None and value < r.start:
                 return getattr(r, attr)
-            elif r.start <= value < r.end:
+            elif r.start and r.end and r.start <= value < r.end:
                 return getattr(r, attr)
 
         raise Exception("No label for value={} found".format(value))
