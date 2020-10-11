@@ -5,6 +5,7 @@ class Node:
     def __init__(self, content, parent=None):
         self.parent = parent
         self.content = content
+        nodes_list.append(self)
 
     def __str__(self):
         name = self.content
@@ -32,7 +33,6 @@ def check_and_add_h2_header(e):
         global current_h4_node
 
         node = Node(e.span.get_text())
-        nodes_list.append(node)
         current_h2_node = node
 
         current_h3_node = None
@@ -43,10 +43,9 @@ def check_and_add_h3_header(e):
     if e.name == 'h3':
         global current_h3_node
         global current_h4_node
-        
+
         text = e.select("span.mw-headline")[0].get_text()
         node = Node(text, parent=current_h2_node)
-        nodes_list.append(node)
         current_h3_node = node
 
         current_h4_node = None
@@ -57,15 +56,31 @@ def check_and_add_h4_header(e):
         global current_h4_node
         text = e.select("span.mw-headline")[0].get_text()
         node = Node(text, parent=current_h3_node)
-        nodes_list.append(node)
-        current_h4_node = node
 
 
 def check_and_add_table_list(e):
     if e.name == 'div':
-        text = e.select("span.mw-headline")[0].get_text()
-        node = Node(text, parent=current_h3_node)
-        nodes_list.append(node)
+        if e.table:
+            tr = e.tbody.tr
+            for td in tr.find_all("td", recursive=False):
+                lists = td.ul.find_all("li", recursive=False)
+                if current_h4_node:
+                    parent = current_h4_node
+                else:
+                    parent = current_h3_node
+                import_lists(lists, parent)
+
+
+def import_lists(lists, parent=None):
+    for l in lists:
+        if l.ul is None:
+            Node(l.a.get_text(), parent=parent)
+        else:
+            node = Node(l.a.get_text(), parent=parent)
+
+            lists = l.ul.find_all("li", recursive=False)
+            import_lists(lists, node)
+            # print(lists)
 
 
 soup = BeautifulSoup(content, 'lxml')
