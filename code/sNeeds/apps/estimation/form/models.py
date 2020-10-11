@@ -12,7 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from sNeeds.apps.estimation.estimations import values
 from sNeeds.apps.estimation.estimations.classes import ValueRange
-from sNeeds.apps.estimation.estimations.values import VALUES_WITH_LABELS
+from sNeeds.apps.estimation.estimations.values import VALUES_WITH_ATTRS
 from sNeeds.apps.estimation.form.labels import MISSING_LABEL, REWARDED_LABEL
 from sNeeds.apps.estimation.form.managers import UniversityThroughQuerySetManager, \
     LanguageCertificateQuerysetManager, PublicationQuerySetManager, StudentDetailedInfoManager
@@ -663,7 +663,7 @@ class UniversityThrough(models.Model):
         return value
 
     def get_value_label(self):
-        value_range = ValueRange(VALUES_WITH_LABELS["university_through"])
+        value_range = ValueRange(VALUES_WITH_ATTRS["university_through"])
         label = value_range.find_value_attrs(self.value, 'label')
 
         return label
@@ -771,7 +771,7 @@ class LanguageCertificate(models.Model):
             overall = self.regularlanguagecertificate.overall
             if self.certificate_type == LanguageCertificate.LanguageCertificateType.TOEFL:
                 value = max(0, overall - 80) / 40
-                value_range = ValueRange(VALUES_WITH_LABELS["toefl"])
+                value_range = ValueRange(VALUES_WITH_ATTRS["toefl"])
                 label = value_range.find_value_attrs(self.value, 'label')
 
             elif self.certificate_type in {
@@ -780,7 +780,7 @@ class LanguageCertificate(models.Model):
             }:
                 overall = max(overall, 8)
                 value = max(0, overall - 5) / 3
-                value_range = ValueRange(VALUES_WITH_LABELS["ielts_academic_and_general"])
+                value_range = ValueRange(VALUES_WITH_ATTRS["ielts_academic_and_general"])
                 label = value_range.find_value_attrs(self.value, 'label')
 
         return value, label

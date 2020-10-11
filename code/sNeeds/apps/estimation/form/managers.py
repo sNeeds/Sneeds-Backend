@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models import Q, F
 
 from ..estimations.classes import ValueRange
-from ..estimations.values import VALUES_WITH_LABELS
+from ..estimations.values import VALUES_WITH_ATTRS
 
 
 class UniversityThroughQuerySetManager(models.QuerySet):
@@ -36,22 +36,12 @@ class UniversityThroughQuerySetManager(models.QuerySet):
 
 
 class LanguageCertificateQuerysetManager(models.QuerySet):
-    def get_IELTS(self):
+    def get_from_this_type_or_none(self, certificate_type):
         from sNeeds.apps.estimation.form.models import LanguageCertificate
-        return self.filter(Q(certificate_type=LanguageCertificate.LanguageCertificateType.IELTS_GENERAL)
-                           | Q(certificate_type=LanguageCertificate.LanguageCertificateType.IELTS_ACADEMIC))
-
-    def get_TOEFL(self):
-        from sNeeds.apps.estimation.form.models import LanguageCertificate
-        return self.filter(certificate_type=LanguageCertificate.LanguageCertificateType.TOEFL)
-
-    def get_GRE(self):
-        from sNeeds.apps.estimation.form.models import LanguageCertificate
-        return self.filter(certificate_type=LanguageCertificate.LanguageCertificateType.GRE)
-
-    def get_Duolingo(self):
-        from sNeeds.apps.estimation.form.models import LanguageCertificate
-        return self.filter(certificate_type=LanguageCertificate.LanguageCertificateType.DUOLINGO)
+        try:
+            return self.get(certificate_type=certificate_type)
+        except LanguageCertificate.DoesNotExist:
+            return None
 
     def _get_highest_value_obj(self):
         return self.all().order_by(F('value').desc(nulls_last=True)).first()
@@ -82,8 +72,8 @@ class PublicationQuerySetManager(models.QuerySet):
         total_val = max(total_val, 1)
         return total_val
 
-    def qs_total_value_str(self):
-        value_range = ValueRange(VALUES_WITH_LABELS["publication_qs"])
+    def qs_total_value_label(self):
+        value_range = ValueRange(VALUES_WITH_ATTRS["publication_qs"])
         label = value_range.find_value_attrs(self.qs_total_value(), 'label')
 
         return label

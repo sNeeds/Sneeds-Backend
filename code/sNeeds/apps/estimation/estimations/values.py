@@ -1,4 +1,6 @@
-VALUES_WITH_LABELS = {
+from sNeeds.apps.estimation.estimations import review_comments
+
+VALUES_WITH_ATTRS = {
     "publication_qs": [
         {
             "start": None,
@@ -131,9 +133,89 @@ VALUES_WITH_LABELS = {
             "end": None,
             "label": "D"
         },
-    ]
+    ],
+    "ielts_academic_comments": [
+        {
+            "start": None,
+            "end": 7.5,
+            "comment": review_comments.IELTS_ACADEMIC_GREAT
+        },
+        {
+            "start": 7.5,
+            "end": 7,
+            "comment": review_comments.IELTS_ACADEMIC_GOOD
+        },
+        {
+            "start": 7,
+            "end": 6.5,
+            "comment": review_comments.IELTS_ACADEMIC_AVERAGE
+        },
+        {
+            "start": 6.5,
+            "end": 6,
+            "comment": review_comments.IELTS_ACADEMIC_BAD
+        },
+        {
+            "start": 6,
+            "end": None,
+            "comment": review_comments.IELTS_ACADEMIC_VERY_BAD
+        },
+    ],
+    "ielts_general_comments": [  # Customize later
+        {
+            "start": None,
+            "end": 7.5,
+            "comment": review_comments.IELTS_ACADEMIC_GREAT
+        },
+        {
+            "start": 7.5,
+            "end": 7,
+            "comment": review_comments.IELTS_ACADEMIC_GOOD
+        },
+        {
+            "start": 7,
+            "end": 6.5,
+            "comment": review_comments.IELTS_ACADEMIC_AVERAGE
+        },
+        {
+            "start": 6.5,
+            "end": 6,
+            "comment": review_comments.IELTS_ACADEMIC_BAD
+        },
+        {
+            "start": 6,
+            "end": None,
+            "comment": review_comments.IELTS_ACADEMIC_VERY_BAD
+        },
+    ],
+    "toefl_comments": [
+        {
+            "start": None,
+            "end": 110,
+            "comment": review_comments.TOEFL_GREAT
+        },
+        {
+            "start": 110,
+            "end": 100,
+            "comment": review_comments.TOEFL_GOOD
+        },
+        {
+            "start": 100,
+            "end": 92,
+            "comment": review_comments.TOEFL_AVERAGE
+        },
+        {
+            "start": 92,
+            "end": 79,
+            "comment": review_comments.TOEFL_BAD
+        },
+        {
+            "start": 79,
+            "end": None,
+            "comment": review_comments.TOEFL_VERY_BAD
+        },
+    ],
 }
-
 
 # TOEFL
 TOEFL_AP_VALUE = 1
