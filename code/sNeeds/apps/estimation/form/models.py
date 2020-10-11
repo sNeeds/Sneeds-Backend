@@ -664,7 +664,7 @@ class UniversityThrough(models.Model):
 
     def get_value_label(self):
         value_range = ValueRange(VALUES_WITH_LABELS["university_through"])
-        label = value_range.find_value_label(self.value)
+        label = value_range.find_value_attrs(self.value, 'label')
 
         return label
 
@@ -764,52 +764,26 @@ class LanguageCertificate(models.Model):
         """
         # TODO: Value is only attribute of RegularLanguageCertificate, Add this to others
         value = None
-        value_str = None
+        label = None
 
         # Some of subclasses don't have overall
         if self.is_regular_language_certificate_instance():
             overall = self.regularlanguagecertificate.overall
             if self.certificate_type == LanguageCertificate.LanguageCertificateType.TOEFL:
-                if overall < values.TOEFL_D_END:
-                    value = values.TOEFL_D_VALUE
-                    value_str = "D"
-                elif values.TOEFL_C_START <= overall < values.TOEFL_C_END:
-                    value = values.TOEFL_C_VALUE
-                    value_str = "C"
-                elif values.TOEFL_B_START <= overall < values.TOEFL_B_END:
-                    value = values.TOEFL_B_VALUE
-                    value_str = "B"
-                elif values.TOEFL_BP_START <= overall < values.TOEFL_BP_END:
-                    value = values.TOEFL_BP_VALUE
-                    value_str = "B+"
-                elif values.TOEFL_A_START <= overall < values.TOEFL_A_END:
-                    value = values.TOEFL_A_VALUE
-                    value_str = "A"
-                elif values.TOEFL_AP_START <= overall:
-                    value = values.TOEFL_AP_VALUE
-                    value_str = "A+"
+                value = max(0, overall - 80) / 40
+                value_range = ValueRange(VALUES_WITH_LABELS["toefl"])
+                label = value_range.find_value_attrs(self.value, 'label')
 
-            elif self.certificate_type == LanguageCertificate.LanguageCertificateType.IELTS_GENERAL or self.certificate_type == LanguageCertificate.LanguageCertificateType.IELTS_ACADEMIC:
-                if overall < values.IELTS_D_END:
-                    value = values.IELTS_D_VALUE
-                    value_str = "D"
-                elif values.IELTS_C_START <= overall < values.IELTS_C_END:
-                    value = values.IELTS_C_VALUE
-                    value_str = "C"
-                elif values.IELTS_B_START <= overall < values.IELTS_B_END:
-                    value = values.IELTS_B_VALUE
-                    value_str = "B"
-                elif values.IELTS_BP_START <= overall < values.IELTS_BP_END:
-                    value = values.IELTS_BP_VALUE
-                    value_str = "B+"
-                elif values.IELTS_A_START <= overall < values.IELTS_A_END:
-                    value = values.IELTS_A_VALUE
-                    value_str = "A"
-                elif values.IELTS_AP_START <= overall:
-                    value = values.IELTS_AP_VALUE
-                    value_str = "A+"
+            elif self.certificate_type in {
+                self.LanguageCertificateType.IELTS_GENERAL,
+                self.LanguageCertificateType.IELTS_ACADEMIC
+            }:
+                overall = max(overall, 8)
+                value = max(0, overall - 5) / 3
+                value_range = ValueRange(VALUES_WITH_LABELS["ielts_academic_and_general"])
+                label = value_range.find_value_attrs(self.value, 'label')
 
-        return value, value_str
+        return value, label
 
     def save(self, *args, **kwargs):
         self.full_clean()

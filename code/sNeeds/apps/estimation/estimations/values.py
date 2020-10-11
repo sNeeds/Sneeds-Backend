@@ -67,23 +67,75 @@ VALUES_WITH_LABELS = {
             "end": None,
             "label": "D"
         },
+    ],
+    "toefl": [
+        {
+            "start": None,
+            "end": 110,
+            "label": "A+"
+        },
+        {
+            "start": 110,
+            "end": 105,
+            "label": "A"
+        },
+        {
+            "start": 105,
+            "end": 100,
+            "label": "B+"
+        },
+        {
+            "start": 100,
+            "end": 92,
+            "label": "B"
+        },
+        {
+            "start": 92,
+            "end": 78,
+            "label": "C"
+        },
+        {
+            "start": 78,
+            "end": None,
+            "label": "D"
+        },
+    ],
+    "ielts_academic_and_general": [
+        {
+            "start": None,
+            "end": 8,
+            "label": "A+"
+        },
+        {
+            "start": 8,
+            "end": 7.5,
+            "label": "A"
+        },
+        {
+            "start": 7.5,
+            "end": 7,
+            "label": "B+"
+        },
+        {
+            "start": 7,
+            "end": 6.5,
+            "label": "B"
+        },
+        {
+            "start": 6.5,
+            "end": 6,
+            "label": "C"
+        },
+        {
+            "start": 6,
+            "end": None,
+            "label": "D"
+        },
     ]
 }
 
 
 # TOEFL
-
-TOEFL_AP_START = 110
-TOEFL_A_START = 105
-TOEFL_A_END = 110
-TOEFL_BP_START = 100
-TOEFL_BP_END = 105
-TOEFL_B_START = 92
-TOEFL_B_END = 100
-TOEFL_C_START = 78
-TOEFL_C_END = 92
-TOEFL_D_END = 78
-
 TOEFL_AP_VALUE = 1
 TOEFL_A_VALUE = 0.9
 TOEFL_BP_VALUE = 0.8
@@ -93,16 +145,6 @@ TOEFL_D_VALUE = 0
 
 # IELTS
 
-IELTS_AP_START = 8
-IELTS_A_START = 7.5
-IELTS_A_END = 8
-IELTS_BP_START = 7
-IELTS_BP_END = 7.5
-IELTS_B_START = 6.5
-IELTS_B_END = 7
-IELTS_C_START = 6
-IELTS_C_END = 6.5
-IELTS_D_END = 6
 
 IELTS_AP_VALUE = 1
 IELTS_A_VALUE = 0.9

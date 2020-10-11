@@ -1,39 +1,33 @@
-class ValueRange:
-    available_labels = ["A+", "A", "B+", "B", "C+", "C", "D"]
+import copy
 
+
+class ValueRange:
     class Range:
-        def __init__(self, start: float, end: float, label, available_labels):
-            self._check_valid_label(label, available_labels)
+        def __init__(self, start: float, end: float, **kwargs):
             self.start = start
             self.end = end
-            self.label = label
-
-        def _check_valid_label(self, label, available_labels):
-            if label not in available_labels:
-                raise Exception("Wrong label")
+            for k, w in kwargs.items():
+                setattr(self, k, w)
 
     def __init__(self, ranges_creator):
+        ranges_creator = copy.deepcopy(ranges_creator)  # Dict is mutable
         self.ranges = []
 
         for r in ranges_creator:
             new_range = self.Range(
-                start=r.get("start"),
-                end=r.get("end"),
-                label=r.get("label"),
-                available_labels=self.available_labels
+                start=r.pop("start"),
+                end=r.pop("end"),
+                **r
             )
             self.ranges.append(new_range)
 
-    def find_value_label(self, value):
+    def find_value_attrs(self, value, attr: str):
         for r in self.ranges:
-            if r.start is None:
-                if r.end <= value:
-                    return r.label
-            elif r.end is None:
-                if value < r.start:
-                    return r.label
-            else:
-                if r.start <= value < r.end:
-                    return r.label
+            if r.start is None and r.end <= value:
+                return getattr(r, attr)
+            elif r.end is None and value < r.start:
+                return getattr(r, attr)
+            elif r.start <= value < r.end:
+                return getattr(r, attr)
 
         raise Exception("No label for value={} found".format(value))
