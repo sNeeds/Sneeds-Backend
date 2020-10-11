@@ -1,8 +1,8 @@
 from django.db.models import QuerySet
 from rest_framework import views, mixins
+from rest_framework.generics import get_object_or_404
 from rest_framework.settings import api_settings
 
-from .viewmixins import CAPIViewPatch200Mixin
 from .viewsets import CAPIView
 
 
