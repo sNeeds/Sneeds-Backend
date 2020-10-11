@@ -5,4 +5,4 @@ class BasicProductConfig(AppConfig):
     name = 'sNeeds.apps.store.basicProducts'
 
     def ready(self):
-        pass
+        import sNeeds.apps.store.basicProducts.signals.handlers

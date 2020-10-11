@@ -5,4 +5,4 @@ class ConsultantsConfig(AppConfig):
     name = 'sNeeds.apps.users.consultants'
 
     def ready(self):
-        pass
+        import sNeeds.apps.users.consultants.signals.handlers
