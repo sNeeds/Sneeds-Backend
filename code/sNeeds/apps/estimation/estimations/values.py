@@ -1,9 +1,9 @@
 VALUES_WITH_LABELS = {
-    "publication_qs": {
+    "publication_qs": [
         {
             "start": None,
             "end": 0.95,
-            "label": " A+"
+            "label": "A+"
         },
         {
             "start": 0.95,
@@ -35,7 +35,7 @@ VALUES_WITH_LABELS = {
             "end": None,
             "label": "D"
         }
-    }
+    ]
 }
 
 # TOEFL

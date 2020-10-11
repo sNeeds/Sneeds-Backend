@@ -83,12 +83,9 @@ class PublicationQuerySetManager(models.QuerySet):
         return total_val
 
     def qs_total_value_str(self):
-        value_range = ValueRange(
-            VALUES_WITH_LABELS["publication_qs"]
-        )
-        label = value_range.find_value_label(
-            self.qs_total_value()
-        )
+        value_range = ValueRange(VALUES_WITH_LABELS["publication_qs"])
+        print(self.qs_total_value())
+        label = value_range.find_value_label(self.qs_total_value())
 
         return label
 

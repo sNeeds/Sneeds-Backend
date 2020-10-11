@@ -26,11 +26,11 @@ class ValueRange:
 
     def find_value_label(self, value):
         for r in self.ranges:
-            if r.end is None:
-                if r.start <= value:
+            if r.start is None:
+                if r.end <= value:
                     return r.label
-            elif r.start is None:
-                if value < r.end:
+            elif r.end is None:
+                if value < r.start:
                     return r.label
             else:
                 if r.start <= value < r.end:
