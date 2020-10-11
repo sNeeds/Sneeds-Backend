@@ -1,5 +1,5 @@
 class ValueRange:
-    available_labels = ["A+", "A", "A-", "B+", "B", "B-", "C+", "C", "D"]
+    available_labels = ["A+", "A", "B+", "B", "C+", "C", "D"]
 
     class Range:
         def __init__(self, start: float, end: float, label, available_labels):

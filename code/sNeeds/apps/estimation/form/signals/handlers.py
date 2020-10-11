@@ -155,7 +155,7 @@ def post_save_language_certificate(sender, instance, *args, **kwargs):
 
 
 def pre_save_university_through(sender, instance, *args, **kwargs):
-    instance.value = instance.compute_value()[0]
+    instance.value = instance.compute_value()
 
     if instance._state.adding is True and instance._state.db is None:
         db_instance = None

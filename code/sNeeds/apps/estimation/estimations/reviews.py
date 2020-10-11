@@ -469,7 +469,7 @@ class StudentDetailedFormReview:
                 "data": self.review_universities(),
                 "value": None if self.last_university_through is None else self.last_university_through.value,
                 "value_str": None if self.last_university_through is None else
-                self.last_university_through.compute_value()[1],
+                self.last_university_through.get_value_label(),
                 "university_value": None if self.last_university_through is None else self.last_university_through.university.value,
                 "gpa_value": None if self.last_university_through is None else self.last_university_through.gpa_value
             },

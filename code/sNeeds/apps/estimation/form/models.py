@@ -11,6 +11,8 @@ from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
 from sNeeds.apps.estimation.estimations import values
+from sNeeds.apps.estimation.estimations.classes import ValueRange
+from sNeeds.apps.estimation.estimations.values import VALUES_WITH_LABELS
 from sNeeds.apps.estimation.form.labels import MISSING_LABEL, REWARDED_LABEL
 from sNeeds.apps.estimation.form.managers import UniversityThroughQuerySetManager, \
     LanguageCertificateQuerysetManager, PublicationQuerySetManager, StudentDetailedInfoManager
@@ -644,7 +646,6 @@ class UniversityThrough(models.Model):
     def compute_value(self):
         university_rank = self.university.rank
         value = 1
-        value_str = None
 
         if university_rank < values.GREAT_UNIVERSITY_RANK:
             value *= 1
@@ -659,20 +660,13 @@ class UniversityThrough(models.Model):
 
         value = (decimal.Decimal(value) * decimal.Decimal(self.gpa / 10)) / 2
 
-        if values.UNIVERSITY_AP_VALUE <= value:
-            value_str = "A+"
-        elif values.UNIVERSITY_A_VALUE <= value < values.UNIVERSITY_AP_VALUE:
-            value_str = "A"
-        elif values.UNIVERSITY_BP_VALUE <= value < values.UNIVERSITY_A_VALUE:
-            value_str = "B+"
-        elif values.UNIVERSITY_B_VALUE <= value < values.UNIVERSITY_BP_VALUE:
-            value_str = "B"
-        elif values.UNIVERSITY_C_VALUE <= value < values.UNIVERSITY_B_VALUE:
-            value_str = "C"
-        elif value < values.UNIVERSITY_C_VALUE:
-            value_str = "D"
+        return value
 
-        return value, value_str
+    def get_value_label(self):
+        value_range = ValueRange(VALUES_WITH_LABELS["university_through"])
+        label = value_range.find_value_label(self.value)
+
+        return label
 
     def get_gpa__store_label(self):
         item_range = self.GPA_STORE_LABEL_RANGE
@@ -830,7 +824,8 @@ class RegularLanguageCertificate(LanguageCertificate):
     overall = models.DecimalField(max_digits=5, decimal_places=2)
 
     def clean(self, *args, **kwargs):
-        if self.certificate_type not in [LanguageCertificate.LanguageCertificateType.IELTS_ACADEMIC, LanguageCertificate.LanguageCertificateType.IELTS_GENERAL,
+        if self.certificate_type not in [LanguageCertificate.LanguageCertificateType.IELTS_ACADEMIC,
+                                         LanguageCertificate.LanguageCertificateType.IELTS_GENERAL,
                                          LanguageCertificate.LanguageCertificateType.TOEFL]:
             raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})
 
@@ -1123,7 +1118,8 @@ class GRESubjectCertificate(LanguageCertificate):
     )
 
     def clean(self, *args, **kwargs):
-        if self.certificate_type not in [LanguageCertificate.LanguageCertificateType.GRE_CHEMISTRY, LanguageCertificate.LanguageCertificateType.GRE_LITERATURE,
+        if self.certificate_type not in [LanguageCertificate.LanguageCertificateType.GRE_CHEMISTRY,
+                                         LanguageCertificate.LanguageCertificateType.GRE_LITERATURE,
                                          LanguageCertificate.LanguageCertificateType.GRE_MATHEMATICS]:
             raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})
 

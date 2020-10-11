@@ -35,8 +35,41 @@ VALUES_WITH_LABELS = {
             "end": None,
             "label": "D"
         }
+    ],
+    "university_through": [
+        {
+            "start": None,
+            "end": 0.83,
+            "label": "A+"
+        },
+        {
+            "start": 0.83,
+            "end": 0.77,
+            "label": "A"
+        },
+        {
+            "start": 0.77,
+            "end": 0.73,
+            "label": "B+"
+        },
+        {
+            "start": 0.73,
+            "end": 0.67,
+            "label": "B"
+        },
+        {
+            "start": 0.67,
+            "end": 0.55,
+            "label": "C"
+        },
+        {
+            "start": 0.55,
+            "end": None,
+            "label": "D"
+        },
     ]
 }
+
 
 # TOEFL
 
@@ -84,9 +117,3 @@ GREAT_UNIVERSITY_RANK = 100
 GOOD_UNIVERSITY_RANK = 400
 AVERAGE_UNIVERSITY_RANK = 800
 BAD_UNIVERSITY_RANK = 1200
-
-UNIVERSITY_AP_VALUE = 0.83
-UNIVERSITY_A_VALUE = 0.77
-UNIVERSITY_BP_VALUE = 0.73
-UNIVERSITY_B_VALUE = 0.67
-UNIVERSITY_C_VALUE = 0.55
