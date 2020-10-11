@@ -1,6 +1,9 @@
 from django.db import models
 from django.db.models import Q, F
 
+from ..estimations.classes import ValueRange
+from ..estimations.values import VALUES_WITH_LABELS
+
 
 class UniversityThroughQuerySetManager(models.QuerySet):
     def get_bachelor(self):
@@ -80,25 +83,14 @@ class PublicationQuerySetManager(models.QuerySet):
         return total_val
 
     def qs_total_value_str(self):
-        total_value = self.qs_total_value()
-        total_value_str = None
+        value_range = ValueRange(
+            VALUES_WITH_LABELS["publication_qs"]
+        )
+        label = value_range.find_value_label(
+            self.qs_total_value()
+        )
 
-        if 0.95 <= total_value:
-            total_value_str = "A+"
-        elif 0.75 <= total_value < 0.95:
-            total_value_str = "A"
-        elif 0.6 <= total_value < 0.75:
-            total_value_str = "B+"
-        elif 0.5 <= total_value < 0.6:
-            total_value_str = "B"
-        elif 0.4 <= total_value < 0.5:
-            total_value_str = "C+"
-        elif 0.3 <= total_value < 0.4:
-            total_value_str = "C"
-        elif total_value < 0.3:
-            total_value_str = "D"
-
-        return total_value_str
+        return label
 
 
 class StudentDetailedInfoManager(models.QuerySet):
