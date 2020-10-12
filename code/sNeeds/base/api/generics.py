@@ -164,7 +164,7 @@ class CGenericAPIView(CAPIView):
 
 
 class CCreateAPIView(mixins.CreateModelMixin,
-                    CGenericAPIView):
+                     CGenericAPIView):
     """
     Concrete view for creating a model instance.
     """
@@ -174,7 +174,7 @@ class CCreateAPIView(mixins.CreateModelMixin,
 
 
 class CListAPIView(mixins.ListModelMixin,
-                  CGenericAPIView):
+                   CGenericAPIView):
     """
     Concrete view for listing a queryset.
     """
@@ -184,7 +184,7 @@ class CListAPIView(mixins.ListModelMixin,
 
 
 class CRetrieveAPIView(mixins.RetrieveModelMixin,
-                      CGenericAPIView):
+                       CGenericAPIView):
     """
     Concrete view for retrieving a model instance.
     """
@@ -194,7 +194,7 @@ class CRetrieveAPIView(mixins.RetrieveModelMixin,
 
 
 class CDestroyAPIView(mixins.DestroyModelMixin,
-                     CGenericAPIView):
+                      CGenericAPIView):
     """
     Concrete view for deleting a model instance.
     """
@@ -204,7 +204,7 @@ class CDestroyAPIView(mixins.DestroyModelMixin,
 
 
 class CUpdateAPIView(mixins.UpdateModelMixin,
-                    CGenericAPIView):
+                     CGenericAPIView):
     """
     Concrete view for updating a model instance.
     """
@@ -217,8 +217,8 @@ class CUpdateAPIView(mixins.UpdateModelMixin,
 
 
 class CListCreateAPIView(mixins.ListModelMixin,
-                        mixins.CreateModelMixin,
-                        CGenericAPIView):
+                         mixins.CreateModelMixin,
+                         CGenericAPIView):
     """
     Concrete view for listing a queryset or creating a model instance.
     """
@@ -231,8 +231,8 @@ class CListCreateAPIView(mixins.ListModelMixin,
 
 
 class CRetrieveUpdateAPIView(mixins.RetrieveModelMixin,
-                            mixins.UpdateModelMixin,
-                            CGenericAPIView):
+                             mixins.UpdateModelMixin,
+                             CGenericAPIView):
     """
     Concrete view for retrieving, updating a model instance.
     """
@@ -248,8 +248,8 @@ class CRetrieveUpdateAPIView(mixins.RetrieveModelMixin,
 
 
 class CRetrieveDestroyAPIView(mixins.RetrieveModelMixin,
-                             mixins.DestroyModelMixin,
-                             CGenericAPIView):
+                              mixins.DestroyModelMixin,
+                              CGenericAPIView):
     """
     Concrete view for retrieving or deleting a model instance.
     """
@@ -262,9 +262,9 @@ class CRetrieveDestroyAPIView(mixins.RetrieveModelMixin,
 
 
 class CRetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
-                                   mixins.UpdateModelMixin,
-                                   mixins.DestroyModelMixin,
-                                   CGenericAPIView):
+                                    mixins.UpdateModelMixin,
+                                    mixins.DestroyModelMixin,
+                                    CGenericAPIView):
     """
     Concrete view for retrieving, updating or deleting a model instance.
     """
