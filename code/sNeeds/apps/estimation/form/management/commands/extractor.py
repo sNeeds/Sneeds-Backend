@@ -1,4 +1,8 @@
+import os
+
 from bs4 import BeautifulSoup
+
+from sNeeds.settings.settings import BASE_DIR
 
 
 class Node:
@@ -22,7 +26,8 @@ current_h2_node = None
 current_h3_node = None
 current_h4_h5_node = None
 
-with open('majors.html', 'r') as f:
+html_dir = os.path.join(BASE_DIR, "apps/estimation/form/management/commands/majors.html")
+with open(html_dir, 'r') as f:
     content = f.read()
 
 
@@ -58,14 +63,15 @@ def check_and_add_h4_h5_header(e):
         node = Node(text, parent=current_h3_node)
         current_h4_h5_node = node
 
+
 def check_and_add_table_list(e):
     if e.name == 'div':
         if e.table:
             tr = e.tbody.tr
             for td in tr.find_all("td", recursive=False):
                 if len(td.p.find_all("b")) != 0:
-                    ps = td.find_all("p", recursive = False)
-                    lists = td.find_all("ul" , recursive = False)
+                    ps = td.find_all("p", recursive=False)
+                    lists = td.find_all("ul", recursive=False)
                     for i, p in enumerate(ps, start=0):
                         if p.b is None:
                             continue
@@ -93,16 +99,18 @@ def import_lists(lists, parent=None):
             import_lists(lists, node)
 
 
-soup = BeautifulSoup(content, 'lxml')
+def get_nodes():
+    soup = BeautifulSoup(content, 'lxml')
 
-main_body = soup.select('body div#content div#bodyContent div#mw-content-text div.mw-parser-output')[0]
+    main_body = soup.select('body div#content div#bodyContent div#mw-content-text div.mw-parser-output')[0]
 
-for e in main_body.children:
+    for e in main_body.children:
+        if e.name == 'h2' and e.span.get_text() == "See also":
+            break
         check_and_add_h2_header(e)
         check_and_add_h3_header(e)
         check_and_add_h4_h5_header(e)
         check_and_add_table_list(e)
         check_and_add_direct_ul_list(e)
 
-for n in nodes_list:
-    print(n)
+    return nodes_list
