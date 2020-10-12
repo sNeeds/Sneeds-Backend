@@ -7,6 +7,14 @@ admin.site.register(models.StudentFormApplySemesterYear)
 admin.site.register(models.GradeModel)
 admin.site.register(models.UniversityThrough)
 admin.site.register(models.WantToApply)
+admin.site.register(models.RegularLanguageCertificate)
+admin.site.register(models.GMATCertificate)
+admin.site.register(models.DuolingoCertificate)
+admin.site.register(models.GREGeneralCertificate)
+admin.site.register(models.GRESubjectCertificate)
+admin.site.register(models.GREPsychologyCertificate)
+admin.site.register(models.GREPhysicsCertificate)
+admin.site.register(models.GREBiologyCertificate)
 
 
 class UniversityThroughInline(admin.TabularInline):
@@ -97,13 +105,3 @@ class PublicationAdmin(admin.ModelAdmin):
     def delete_queryset(self, request, queryset):
         for obj in queryset:
             obj.delete()
-
-
-@admin.register(models.RegularLanguageCertificate)
-class RegularLanguageCertificateAdmin(admin.ModelAdmin):
-    pass
-
-
-@admin.register(models.GREBiologyCertificate)
-class GREBiologyCertificateAdmin(admin.ModelAdmin):
-    pass

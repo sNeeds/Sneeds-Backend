@@ -1023,7 +1023,7 @@ class GREGeneralCertificate(LanguageCertificate):
 
     def get_writing_store_label(self):
         item_range = self.WRITING_STORE_LABEL_RANGE
-        return str(floor(self.analytical_writing / item_range) * item_range)
+        return str(floor(float(self.analytical_writing) / item_range) * item_range)
 
     def get_q_and_v_store_label(self):
         item_range = self.Q_AND_V_STORE_LABEL_RANGE
