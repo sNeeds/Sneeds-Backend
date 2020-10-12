@@ -16,23 +16,36 @@ class Command(BaseCommand):
         existed_count = 0
         entries_count = 0
         added_countries = []
-        with open(options['csv_path']) as f:
+        with open(options['csv_path'][0]) as f:
             reader = csv.reader(f, delimiter=',')
             for row in reader:
                 entries_count += 1
+
+                if entries_count % 250 == 0:
+                    self.stdout.write(
+                        self.style.WARNING(' %s universities are processed until now.' % str(entries_count))
+                    )
                 name = row[0]
-                country, created = Country.objects.get_or_create(name=row[1], defaults={'search_name': row[1]})
+                country, created = Country.objects.get_or_create(name=row[1],
+                                                                 defaults={'search_name': row[1],
+                                                                           'slug': row[1].lower().replace(' ', '_')})
 
                 if created:
                     added_countries.append(row[1])
 
+                if row[2] == 'Un':
+                    row[2] = 13000
                 rank = int(row[2])
                 if entries_count > 1010 and rank < 1000:
                     rank = 1050
 
-                university, created = University.objects.get_or_create(name=name, defaults={'search_name': name,
-                                                                                            'rank': rank,
-                                                                                            'country': country})
+                university, created = University.objects.get_or_create(
+                    name=name,
+                    defaults={'search_name': name,
+                              'rank': rank,
+                              'country': country,
+                              }
+                )
                 if created:
                     added_count += 1
                 else:
@@ -40,7 +53,7 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS('"%s" universities imported from file. "%s" university added and '
                                              '"%s" universities was existed or were repeated.\n'
-                                             'Also "%s" countries added.' % (str(entries_count),
+                                             'Also "%s" countries added:' % (str(entries_count),
                                                                              str(added_count),
                                                                              str(existed_count),
                                                                              str(len(added_countries))

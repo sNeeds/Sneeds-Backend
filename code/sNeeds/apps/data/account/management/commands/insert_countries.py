@@ -16,12 +16,14 @@ class Command(BaseCommand):
         existed_count = 0
         entries_count = 0
         added_countries = []
-        with open(options['csv_path']) as f:
+        with open(options['csv_path'][0]) as f:
             reader = csv.reader(f, delimiter=',')
             for row in reader:
                 entries_count += 1
                 name = row[0]
-                country, created = Country.objects.get_or_create(name=name, search_name=name)
+                country, created = Country.objects.get_or_create(
+                    name=name, defaults={'search_name': name,
+                                         'slug': name.lower().replace(' ', '_')})
                 if created:
                     added_count += 1
                     added_countries.append(name)
@@ -29,10 +31,10 @@ class Command(BaseCommand):
                     existed_count += 1
 
         self.stdout.write(self.style.SUCCESS('"%s" countries imported from file. "%s" country added and "%s" country'
-                                             ' was existed.Added countries are "%s"' % (str(entries_count),
-                                                                                        str(added_count),
-                                                                                        str(existed_count),
-                                                                                        str(added_countries),
-                                                                                        )
+                                             ' was existed.\nAdded countries are "%s"' % (str(entries_count),
+                                                                                          str(added_count),
+                                                                                          str(existed_count),
+                                                                                          str(added_countries),
+                                                                                          )
                                              )
                           )
