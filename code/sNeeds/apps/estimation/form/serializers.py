@@ -299,6 +299,18 @@ class RegularLanguageCertificateSerializer(LanguageCertificateSerializer):
         return value
 
 
+class RegularLanguageCertificateCelerySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = sNeeds.apps.estimation.form.models.RegularLanguageCertificate
+        validators = []
+        exclude = ['student_detailed_info']
+
+    default_validators = []
+
+    def validate(self, attrs):
+        return attrs
+
+
 class GMATCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = sNeeds.apps.estimation.form.models.GMATCertificate
@@ -308,6 +320,18 @@ class GMATCertificateSerializer(LanguageCertificateSerializer):
         if value not in [LanguageCertificateType.GMAT]:
             raise ValidationError(_("Value is not in allowed certificate types."))
         return value
+
+
+class GMATCertificateCelerySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = sNeeds.apps.estimation.form.models.GMATCertificate
+        validators = []
+        exclude = ['student_detailed_info']
+
+    default_validators = []
+
+    def validate(self, attrs):
+        return attrs
 
 
 class GREGeneralCertificateSerializer(LanguageCertificateSerializer):
@@ -321,6 +345,18 @@ class GREGeneralCertificateSerializer(LanguageCertificateSerializer):
         return value
 
 
+class GREGeneralCertificateCelerySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = sNeeds.apps.estimation.form.models.GREGeneralCertificate
+        validators = []
+        exclude = ['student_detailed_info']
+
+    default_validators = []
+
+    def validate(self, attrs):
+        return attrs
+
+
 class GRESubjectCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = sNeeds.apps.estimation.form.models.GRESubjectCertificate
@@ -331,6 +367,18 @@ class GRESubjectCertificateSerializer(LanguageCertificateSerializer):
                          LanguageCertificateType.GRE_MATHEMATICS]:
             raise ValidationError(_("Value is not in allowed certificate types."))
         return value
+
+
+class GRESubjectCertificateCelerySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = sNeeds.apps.estimation.form.models.GRESubjectCertificate
+        validators = []
+        exclude = ['student_detailed_info']
+
+    default_validators = []
+
+    def validate(self, attrs):
+        return attrs
 
 
 class GREBiologyCertificateSerializer(LanguageCertificateSerializer):
@@ -361,7 +409,6 @@ class GREPsychologyCertificateSerializer(LanguageCertificateSerializer):
         fields = '__all__'
 
     def validate_certificate_type(self, value):
-        
         if value not in [LanguageCertificateType.GRE_PSYCHOLOGY]:
             raise ValidationError(_("Value is not in allowed certificate types."))
         return value
@@ -376,6 +423,18 @@ class DuolingoCertificateSerializer(LanguageCertificateSerializer):
         if value not in [LanguageCertificateType.DUOLINGO]:
             raise ValidationError(_("Value is not in allowed certificate types."))
         return value
+
+
+class DuolingoCertificateCelerySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = sNeeds.apps.estimation.form.models.DuolingoCertificate
+        validators = []
+        exclude = ['student_detailed_info']
+
+    default_validators = []
+
+    def validate(self, attrs):
+        return attrs
 
 
 class StudentDetailedInfoBaseSerializer(serializers.ModelSerializer):
@@ -516,3 +575,6 @@ class StudentDetailedInfoCelerySerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentDetailedInfo
         fields = '__all__'
+
+    def create(self, validated_data):
+        return StudentDetailedInfo(**validated_data)
