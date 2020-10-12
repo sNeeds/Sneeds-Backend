@@ -58,8 +58,8 @@ class University(models.Model):
 
 
 class Major(models.Model):
-    name = models.CharField(max_length=256, unique=True)
-    search_name = models.CharField(max_length=1024, unique=True)
+    name = models.CharField(max_length=256)
+    search_name = models.CharField(max_length=1024)
     description = models.TextField(blank=True, null=True)
     picture = models.ImageField(
         blank=False,
