@@ -5,4 +5,4 @@ class OrdersConfig(AppConfig):
     name = 'sNeeds.apps.store.orders'
 
     def ready(self):
-        pass
+        import sNeeds.apps.store.orders.signals.handlers

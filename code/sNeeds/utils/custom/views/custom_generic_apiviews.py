@@ -1,10 +1,9 @@
-from rest_framework import generics
-
+from sNeeds.base.api import generics
 from sNeeds.utils.custom.views.custom_mixins import BaseListModelMixin, BaseCreateModelMixin,\
     BaseRetrieveModelMixin, BaseUpdateModelMixin, BaseDestroyModelMixin
 
 
-class BaseGenericAPIView(generics.GenericAPIView):
+class BaseGenericAPIView(generics.CGenericAPIView):
 
     # the serializer instance that should be used for validating and
     # deserializing requests

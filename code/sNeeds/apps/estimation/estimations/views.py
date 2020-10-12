@@ -1,13 +1,14 @@
 from django.http import Http404
 from rest_framework.response import Response
-from rest_framework.views import APIView
+
+from sNeeds.base.api.viewsets import CAPIView
 
 from sNeeds.apps.estimation.form.models import WantToApply, StudentDetailedInfo
 from sNeeds.apps.estimation.estimations.reviews import StudentDetailedFormReview
 from sNeeds.apps.estimation.estimations.serializers import WantToApplyChanceSerializer
 
 
-class FormComments(APIView):
+class FormComments(CAPIView):
     def get_form_obj(self, form_id):
         try:
             return StudentDetailedInfo.objects.get(id=form_id)
@@ -20,7 +21,7 @@ class FormComments(APIView):
         return Response(review.review_all())
 
 
-class AdmissionRankingChance(APIView):
+class AdmissionRankingChance(CAPIView):
     def get(self, request, form_id, format=None):
         return Response(
             {
@@ -48,7 +49,7 @@ class AdmissionRankingChance(APIView):
         )
 
 
-class WantToApplyChance(APIView):
+class WantToApplyChance(CAPIView):
     def get_form_obj(self, form_id):
         try:
             return StudentDetailedInfo.objects.get(id=form_id)

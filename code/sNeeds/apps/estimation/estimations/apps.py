@@ -5,4 +5,6 @@ class EstimationsConfig(AppConfig):
     name = 'sNeeds.apps.estimation.estimations'
 
     def ready(self):
-        pass
+        import sNeeds.apps.estimation.estimations.signals.handlers
+
+

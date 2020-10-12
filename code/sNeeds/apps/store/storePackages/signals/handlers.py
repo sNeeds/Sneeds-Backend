@@ -1,4 +1,4 @@
-from django.db.models.signals import pre_save, post_delete, post_save
+from django.db.models.signals import pre_save, post_delete, post_save, m2m_changed
 
 from sNeeds.apps.chats.models import Chat, TextMessage
 from sNeeds.apps.store.discounts.models import Discount
@@ -108,8 +108,6 @@ def post_save_consultant_sold_store_package_accept_request(sender, instance, cre
             user=instance.sold_store_package.sold_to,
             use_limit=1
         )
-
-
 
 
 def post_delete_sold_store_paid_package_phase(sender, instance, *args, **kwargs):

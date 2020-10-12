@@ -6,4 +6,4 @@ class CommentsConfig(AppConfig):
     verbose_name = 'Comment'
 
     def ready(self):
-        pass
+        import sNeeds.apps.store.comments.signals.handlers

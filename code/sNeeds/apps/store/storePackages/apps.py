@@ -5,4 +5,4 @@ class StorePackagesConfig(AppConfig):
     name = 'sNeeds.apps.store.storePackages'
 
     def ready(self):
-        pass
+        import sNeeds.apps.store.storePackages.signals.handlers

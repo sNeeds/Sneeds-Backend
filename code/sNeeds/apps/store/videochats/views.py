@@ -1,6 +1,7 @@
-from rest_framework import generics, permissions
+from rest_framework import  permissions
 from rest_framework.response import Response
 
+from sNeeds.base.api import generics
 from sNeeds.apps.users.consultants.models import ConsultantProfile
 
 from .models import Room
@@ -8,7 +9,7 @@ from .serializers import RoomSerializer
 from .permissions import RoomOwnerPermission
 
 
-class RoomListView(generics.ListAPIView):
+class RoomListView(generics.CListAPIView):
     serializer_class = RoomSerializer
     filterset_fields = ('sold_time_slot',)
     permission_classes = [permissions.IsAuthenticated]
@@ -42,7 +43,7 @@ class RoomListView(generics.ListAPIView):
         return Response(serializer.data)
 
 
-class RoomDetailAPIView(generics.RetrieveAPIView):
+class RoomDetailAPIView(generics.CRetrieveAPIView):
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
     lookup_field = 'id'

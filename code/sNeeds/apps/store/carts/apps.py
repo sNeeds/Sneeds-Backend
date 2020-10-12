@@ -5,4 +5,4 @@ class CartsConfig(AppConfig):
     name = 'sNeeds.apps.store.carts'
 
     def ready(self):
-        pass
+        import sNeeds.apps.store.carts.signals.handlers

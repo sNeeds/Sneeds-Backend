@@ -5,4 +5,4 @@ class VideoChatsConfig(AppConfig):
     name = 'sNeeds.apps.store.videochats'
 
     def ready(self):
-        pass
+        import sNeeds.apps.store.videochats.signals.handlers

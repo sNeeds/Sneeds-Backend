@@ -1,13 +1,14 @@
-from rest_framework import generics, permissions
+from rest_framework import  permissions
 
 from . import models
 from . import serializers
 
+from sNeeds.base.api import generics
 from sNeeds.apps.users.consultants.models import ConsultantProfile
 from .permissions import UserFileOwnerPermission
 
 
-class UserFileListView(generics.ListCreateAPIView):
+class UserFileListView(generics.CListCreateAPIView):
     queryset = models.UserFile.objects.all()
     serializer_class = serializers.UserFileSerializer
     permission_classes = [permissions.IsAuthenticated, ]
@@ -22,7 +23,7 @@ class UserFileListView(generics.ListCreateAPIView):
             return models.UserFile.objects.filter(user=user)
 
 
-class UserFileDetailView(generics.RetrieveUpdateDestroyAPIView):
+class UserFileDetailView(generics.CRetrieveUpdateDestroyAPIView):
     lookup_field = 'id'
     queryset = models.UserFile.objects.all()
     serializer_class = serializers.UserFileSerializer

@@ -11,6 +11,8 @@ from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
 from sNeeds.apps.estimation.estimations import values
+from sNeeds.apps.estimation.estimations.classes import ValueRange
+from sNeeds.apps.estimation.estimations.values import VALUES_WITH_ATTRS
 from sNeeds.apps.estimation.form.labels import MISSING_LABEL, REWARDED_LABEL
 from sNeeds.apps.estimation.form.managers import UniversityThroughQuerySetManager, \
     LanguageCertificateQuerysetManager, PublicationQuerySetManager, StudentDetailedInfoManager
@@ -644,7 +646,6 @@ class UniversityThrough(models.Model):
     def compute_value(self):
         university_rank = self.university.rank
         value = 1
-        value_str = None
 
         if university_rank < values.GREAT_UNIVERSITY_RANK:
             value *= 1
@@ -659,20 +660,13 @@ class UniversityThrough(models.Model):
 
         value = (decimal.Decimal(value) * decimal.Decimal(self.gpa / 10)) / 2
 
-        if values.UNIVERSITY_AP_VALUE <= value:
-            value_str = "A+"
-        elif values.UNIVERSITY_A_VALUE <= value < values.UNIVERSITY_AP_VALUE:
-            value_str = "A"
-        elif values.UNIVERSITY_BP_VALUE <= value < values.UNIVERSITY_A_VALUE:
-            value_str = "B+"
-        elif values.UNIVERSITY_B_VALUE <= value < values.UNIVERSITY_BP_VALUE:
-            value_str = "B"
-        elif values.UNIVERSITY_C_VALUE <= value < values.UNIVERSITY_B_VALUE:
-            value_str = "C"
-        elif value < values.UNIVERSITY_C_VALUE:
-            value_str = "D"
+        return value
 
-        return value, value_str
+    def get_value_label(self):
+        value_range = ValueRange(VALUES_WITH_ATTRS["university_through"])
+        label = value_range.find_value_attrs(self.value, 'label')
+
+        return label
 
     def get_gpa__store_label(self):
         item_range = self.GPA_STORE_LABEL_RANGE
@@ -770,52 +764,26 @@ class LanguageCertificate(models.Model):
         """
         # TODO: Value is only attribute of RegularLanguageCertificate, Add this to others
         value = None
-        value_str = None
+        label = None
 
         # Some of subclasses don't have overall
         if self.is_regular_language_certificate_instance():
             overall = self.regularlanguagecertificate.overall
             if self.certificate_type == LanguageCertificate.LanguageCertificateType.TOEFL:
-                if overall < values.TOEFL_D_END:
-                    value = values.TOEFL_D_VALUE
-                    value_str = "D"
-                elif values.TOEFL_C_START <= overall < values.TOEFL_C_END:
-                    value = values.TOEFL_C_VALUE
-                    value_str = "C"
-                elif values.TOEFL_B_START <= overall < values.TOEFL_B_END:
-                    value = values.TOEFL_B_VALUE
-                    value_str = "B"
-                elif values.TOEFL_BP_START <= overall < values.TOEFL_BP_END:
-                    value = values.TOEFL_BP_VALUE
-                    value_str = "B+"
-                elif values.TOEFL_A_START <= overall < values.TOEFL_A_END:
-                    value = values.TOEFL_A_VALUE
-                    value_str = "A"
-                elif values.TOEFL_AP_START <= overall:
-                    value = values.TOEFL_AP_VALUE
-                    value_str = "A+"
+                value = max(0, overall - 80) / 40
+                value_range = ValueRange(VALUES_WITH_ATTRS["toefl"])
+                label = value_range.find_value_attrs(self.value, 'label')
 
-            elif self.certificate_type == LanguageCertificate.LanguageCertificateType.IELTS_GENERAL or self.certificate_type == LanguageCertificate.LanguageCertificateType.IELTS_ACADEMIC:
-                if overall < values.IELTS_D_END:
-                    value = values.IELTS_D_VALUE
-                    value_str = "D"
-                elif values.IELTS_C_START <= overall < values.IELTS_C_END:
-                    value = values.IELTS_C_VALUE
-                    value_str = "C"
-                elif values.IELTS_B_START <= overall < values.IELTS_B_END:
-                    value = values.IELTS_B_VALUE
-                    value_str = "B"
-                elif values.IELTS_BP_START <= overall < values.IELTS_BP_END:
-                    value = values.IELTS_BP_VALUE
-                    value_str = "B+"
-                elif values.IELTS_A_START <= overall < values.IELTS_A_END:
-                    value = values.IELTS_A_VALUE
-                    value_str = "A"
-                elif values.IELTS_AP_START <= overall:
-                    value = values.IELTS_AP_VALUE
-                    value_str = "A+"
+            elif self.certificate_type in {
+                self.LanguageCertificateType.IELTS_GENERAL,
+                self.LanguageCertificateType.IELTS_ACADEMIC
+            }:
+                overall = max(overall, 8)
+                value = max(0, overall - 5) / 3
+                value_range = ValueRange(VALUES_WITH_ATTRS["ielts_academic_and_general"])
+                label = value_range.find_value_attrs(self.value, 'label')
 
-        return value, value_str
+        return value, label
 
     def save(self, *args, **kwargs):
         self.full_clean()
@@ -830,7 +798,8 @@ class RegularLanguageCertificate(LanguageCertificate):
     overall = models.DecimalField(max_digits=5, decimal_places=2)
 
     def clean(self, *args, **kwargs):
-        if self.certificate_type not in [LanguageCertificate.LanguageCertificateType.IELTS_ACADEMIC, LanguageCertificate.LanguageCertificateType.IELTS_GENERAL,
+        if self.certificate_type not in [LanguageCertificate.LanguageCertificateType.IELTS_ACADEMIC,
+                                         LanguageCertificate.LanguageCertificateType.IELTS_GENERAL,
                                          LanguageCertificate.LanguageCertificateType.TOEFL]:
             raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})
 
@@ -1123,7 +1092,8 @@ class GRESubjectCertificate(LanguageCertificate):
     )
 
     def clean(self, *args, **kwargs):
-        if self.certificate_type not in [LanguageCertificate.LanguageCertificateType.GRE_CHEMISTRY, LanguageCertificate.LanguageCertificateType.GRE_LITERATURE,
+        if self.certificate_type not in [LanguageCertificate.LanguageCertificateType.GRE_CHEMISTRY,
+                                         LanguageCertificate.LanguageCertificateType.GRE_LITERATURE,
                                          LanguageCertificate.LanguageCertificateType.GRE_MATHEMATICS]:
             raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})
 

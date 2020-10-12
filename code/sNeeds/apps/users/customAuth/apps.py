@@ -6,4 +6,4 @@ class CustomAuthConfig(AppConfig):
     verbose_name = 'Auth'
 
     def ready(self):
-        pass
+        import sNeeds.apps.users.customAuth.signals.handlers

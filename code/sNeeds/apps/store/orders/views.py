@@ -1,11 +1,12 @@
-from rest_framework import generics, permissions
+from rest_framework import  permissions
 
+from sNeeds.base.api import generics
 from . import serializers
 from .models import Order
 from .permissions import OrderOwnerPermission
 
 
-class OrderListView(generics.ListAPIView):
+class OrderListView(generics.CListAPIView):
     queryset = Order.objects.all()
     serializer_class = serializers.OrderSerializer
     permission_classes = (permissions.IsAuthenticated,)
@@ -17,7 +18,7 @@ class OrderListView(generics.ListAPIView):
         return qs
 
 
-class OrderDetailView(generics.RetrieveAPIView):
+class OrderDetailView(generics.CRetrieveAPIView):
     queryset = Order.objects.all()
     serializer_class = serializers.OrderSerializer
     lookup_field = 'id'

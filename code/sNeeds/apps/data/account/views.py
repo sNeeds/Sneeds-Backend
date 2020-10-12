@@ -4,10 +4,11 @@ from django.core.exceptions import ValidationError
 from django.db.models import F
 from django.db.models.functions import Length, Ln
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import generics, permissions, status, exceptions
+from rest_framework import permissions, status, exceptions
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from sNeeds.base.api import generics
 import sNeeds.apps.estimation.form.models
 import sNeeds.apps.estimation.form.serializers
 from . import models
@@ -23,13 +24,13 @@ from sNeeds.apps.estimation.form.serializers import StudentFormApplySemesterYear
 from sNeeds.utils.custom.views import custom_generic_apiviews
 
 
-class CountryDetail(generics.RetrieveAPIView):
+class CountryDetail(generics.CRetrieveAPIView):
     queryset = models.Country.objects.all()
     serializer_class = serializers.CountrySerializer
     lookup_field = 'slug'
 
 
-class CountryList(generics.ListAPIView):
+class CountryList(generics.CListAPIView):
     serializer_class = serializers.CountrySerializer
 
     def get_queryset(self):
@@ -65,13 +66,13 @@ class CountryList(generics.ListAPIView):
         return qs
 
 
-class UniversityDetail(generics.RetrieveAPIView):
+class UniversityDetail(generics.CRetrieveAPIView):
     queryset = models.University.objects.all()
     serializer_class = serializers.UniversitySerializer
     lookup_field = 'id'
 
 
-class UniversityList(generics.ListAPIView):
+class UniversityList(generics.CListAPIView):
     serializer_class = serializers.UniversitySerializer
 
     def get_queryset(self):
@@ -81,7 +82,7 @@ class UniversityList(generics.ListAPIView):
         return models.University.objects.filter(id__in=university_list)
 
 
-class UniversityForFormList(generics.ListAPIView):
+class UniversityForFormList(generics.CListAPIView):
     queryset = models.University.objects.none()
     serializer_class = serializers.UniversitySerializer
 
@@ -117,13 +118,13 @@ class UniversityForFormList(generics.ListAPIView):
         return qs
 
 
-class MajorDetail(generics.RetrieveAPIView):
+class MajorDetail(generics.CRetrieveAPIView):
     queryset = models.Major.objects.all()
     serializer_class = serializers.MajorSerializer
     lookup_field = 'id'
 
 
-class MajorList(generics.ListAPIView):
+class MajorList(generics.CListAPIView):
     serializer_class = serializers.MajorSerializer
 
     def get_queryset(self):
@@ -133,7 +134,7 @@ class MajorList(generics.ListAPIView):
         return models.Major.objects.filter(id__in=major_list)
 
 
-class MajorForFormList(generics.ListAPIView):
+class MajorForFormList(generics.CListAPIView):
     queryset = models.Major.objects.none()
     serializer_class = serializers.MajorSerializer
 

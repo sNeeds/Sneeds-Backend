@@ -7,9 +7,6 @@ class IsStudentPermission(permissions.BasePermission):
     message = "Only student users can create StudentDetailedInfo"
 
     def has_permission(self, request, view):
-        if request.method == "OPTIONS":
-            return True
-
         user = request.user
         if not user.is_authenticated:
             return False
@@ -21,9 +18,6 @@ class StudentDetailedInfoOwnerOrInteractConsultantOrWithoutUserPermission(permis
     message = "Only owner can update and only owner and consultants that service the owner can see info"
 
     def has_object_permission(self, request, view, obj):
-        if request.method == "OPTIONS":
-            return True
-
         user = request.user
 
         if obj.user is None:
@@ -48,9 +42,6 @@ class SDIThirdModelsPermission(permissions.BasePermission):
     message = "Only owner can view or edit object."
 
     def has_object_permission(self, request, view, obj):
-        if request.method == "OPTIONS":
-            return True
-
         user = request.user
 
         if user and user.is_authenticated:
