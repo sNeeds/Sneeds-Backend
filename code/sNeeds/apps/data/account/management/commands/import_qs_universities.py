@@ -73,7 +73,7 @@ class Command(BaseCommand):
                     obj = qs2.first()
                     doubt_objects.append((name, obj.name, obj.similarity))
                     query = SearchQuery(name)
-                    queryset = qs2.annotate(
+                    queryset = qs2.filter(pk=obj.pk).annotate(
                         rankk=SearchRank(
                             vector,
                             query,
@@ -82,7 +82,7 @@ class Command(BaseCommand):
                     ).filter(rankk__gte=0.05).order_by('-rankk')
                     if queryset.exists():
                         obj = queryset.first()
-                        doubt_objects.append(('search:::::', name, obj.name, obj.similarity))
+                        doubt_objects.append(('search:::::', name, obj.name, obj.rankk))
 
                 # university, created = University.objects.get_or_create(
                 #     name=name,
@@ -107,7 +107,10 @@ class Command(BaseCommand):
                   '------------------------------------------------------------\n')
             print('doubts are:')
             # pprint(doubt_objects)
+            count = 0
             for doubt in doubt_objects:
+                if doubt[0] != 'search:::::':
+                    print()
                 print(doubt)
         self.stdout.write(self.style.SUCCESS('"%s" universities imported from file. "%s" university added and '
                                              '"%s" universities was existed or were repeated.\n'

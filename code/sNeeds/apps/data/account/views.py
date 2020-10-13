@@ -489,8 +489,9 @@ class GradeChoiceList(custom_generic_apiviews.BaseListAPIView):
 def payment_affordability_choices(request, format=None):
     choices = []
 
-    for choice in models.PaymentAffordability:
-        choices.append({"value": choice.name, "label": choice.value})
+    # for choice in StudentDetailedInfo.PaymentAffordabilityChoices:
+    #     choices.append({"value": choice.name, "label": choice.value})
+    choices = StudentDetailedInfo.PaymentAffordabilityChoices.choices
 
     return Response(
         data={"choices": choices},
