@@ -94,7 +94,7 @@ urlpatterns = [
          views.StudentDetailedUniversityThroughRetrieveDestroyAPIView.as_view(),
          name="student-detailed-university-through-detail"),
 
-    # path('grades/', views.GradesList.as_view()),
+    path('grades/', views.GradesList.as_view()),
 
     path('payment-affordability-choices/',
          views.payment_affordability_choices,

@@ -11,10 +11,11 @@ from rest_framework.response import Response
 from sNeeds.base.api import generics
 import sNeeds.apps.estimation.form.models
 import sNeeds.apps.estimation.form.serializers
+from sNeeds.base.api.enum_views import EnumViewList
 from . import models
 from . import serializers
 from .models import BasicFormField
-from sNeeds.apps.estimation.form.models import StudentFormApplySemesterYear, StudentDetailedInfo
+from sNeeds.apps.estimation.form.models import StudentFormApplySemesterYear, StudentDetailedInfo, GradeChoices
 from .permissions import StudentDetailedInfoOwnerOrInteractConsultantOrWithoutUserPermission, \
     IsWantToApplyOwnerOrDetailedInfoWithoutUser, IsPublicationOwnerOrDetailedInfoWithoutUser, \
     IsUniversityThroughOwnerOrDetailedInfoWithoutUser, \
@@ -530,4 +531,5 @@ def student_detailed_info_many_to_one_qs(user, sdi_id, model_class):
         return qs
 
 
-# class GradesList():
+class GradesList(EnumViewList):
+    enum_class = GradeChoices
