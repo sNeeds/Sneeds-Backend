@@ -583,10 +583,10 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
     def get_related_work_user_view_based_positions(self):
         return [self.get_related_work__view_label()]
 
-    def save(self):
+    def save(self, *args, **kwargs):
         self.value = self._compute_value()
         self.rank = self._compute_rank()
-        super().save()
+        super().save(*args, **kwargs)
 
 
 class UniversityThrough(models.Model):

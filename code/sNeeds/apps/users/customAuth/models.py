@@ -96,20 +96,20 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
         super().clean()
 
-        if self.user_type == CustomUser.UserTypeChoices.ADMIN_CONSULTANT:
+        if self.user_type == self.UserTypeChoices.ADMIN_CONSULTANT:
             if CustomUser.objects.filter(user_type=CustomUser.UserTypeChoices.ADMIN_CONSULTANT).exclude(
                     id=self.id).exists():
                 raise ValidationError("User with admin_consultant type exists.")
             if not ConsultantProfile.objects.filter(user__id=self.id).exists():
                 raise ValidationError("No consultant profile for user with admin_consultant exists.")
 
-    def save(self):
+    def save(self, *args, **kwargs):
         self.user_type = self.compute_user_type()
 
         self.email = self.__class__.objects.normalize_email(self.email)
         self.email = self.email.lower()
 
-        super().save()
+        super().save(*args, **kwargs)
 
     def compute_user_type(self):
         from sNeeds.apps.users.consultants.models import ConsultantProfile
