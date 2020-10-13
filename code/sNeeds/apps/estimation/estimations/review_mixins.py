@@ -60,7 +60,7 @@ class ReviewLanguageMixin:
                 data["itels_general"]["comment"] = CHANGE_GENERAL_WITH_ACADEMIC + data["itels_general"]["comment"]
 
         data["total_value"] = language_certificates.get_total_value()
-        data["total_value_label"] = language_certificates.get_total_value_str()
+        data["total_value_label"] = language_certificates.get_total_value_label()
 
         return data
 
@@ -208,7 +208,7 @@ class ReviewPublicationMixin:
         data = {
             "comment": None,
             "total_value": None,
-            "total_value_str": None
+            "total_value_label": None
         }
         publications_qs = Publication.objects.filter(student_detailed_info=self.student_detailed_form)
 
@@ -344,7 +344,7 @@ class ReviewPublicationMixin:
                     more_than_one_publications
                 )
         data["total_value"]: publications_qs.qs_total_value_label()
-        data["total_value_str"]: publications_qs.qs_total_value_label()
+        data["total_value_label"]: publications_qs.qs_total_value_label()
         return data
 
 
