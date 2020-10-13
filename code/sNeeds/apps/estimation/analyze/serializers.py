@@ -37,7 +37,7 @@ def get_store_to_view_labels(store_labels, label_convert_function=None):
 
 
 def get_user_status(user_positions, items_qs, compare_func, store_to_view_convert_func=None):
-    if len(user_positions) == 0:
+    if user_positions is None or len(user_positions) == 0:
         return None
 
     data = dict()
