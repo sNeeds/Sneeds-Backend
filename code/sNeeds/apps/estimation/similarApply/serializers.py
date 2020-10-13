@@ -7,7 +7,6 @@ from sNeeds.apps.estimation.similarApply.models import AppliedStudentDetailedInf
 
 class AppliedToSerializer(serializers.ModelSerializer):
     university = serializers.SerializerMethodField()
-    grade = serializers.SerializerMethodField()
 
     class Meta:
         model = AppliedTo
@@ -15,9 +14,6 @@ class AppliedToSerializer(serializers.ModelSerializer):
             'university', 'grade', 'fund',
             'accepted', 'comment'
         ]
-
-    def get_grade(self, obj):
-        return obj.grade.name
 
     def get_university(self, obj):
         university = obj.university

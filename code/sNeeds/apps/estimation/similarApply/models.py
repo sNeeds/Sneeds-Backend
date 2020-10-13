@@ -1,7 +1,7 @@
 from django.db import models
 
 from sNeeds.apps.data.account.models import Country, University, Major
-from sNeeds.apps.estimation.form.models import StudentFormApplySemesterYear, StudentDetailedInfoBase, GradeModel
+from sNeeds.apps.estimation.form.models import StudentFormApplySemesterYear, StudentDetailedInfoBase, GradeChoices
 from sNeeds.apps.estimation.similarApply.managers import AppliedStudentDetailedInfoQuerySetManager
 
 
@@ -22,9 +22,10 @@ class AppliedTo(models.Model):
         on_delete=models.CASCADE
     )
 
-    grade = models.ForeignKey(
-        GradeModel,
-        on_delete=models.CASCADE,
+    grade = models.CharField(
+        max_length=128,
+        choices=GradeChoices.choices,
+        default=GradeChoices.BACHELOR
     )
 
     major = models.ForeignKey(

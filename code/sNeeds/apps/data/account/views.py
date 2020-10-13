@@ -11,10 +11,11 @@ from rest_framework.response import Response
 from sNeeds.base.api import generics
 import sNeeds.apps.estimation.form.models
 import sNeeds.apps.estimation.form.serializers
+from sNeeds.base.api.enum_views import EnumViewList
 from . import models
 from . import serializers
 from .models import BasicFormField
-from sNeeds.apps.estimation.form.models import StudentFormApplySemesterYear, StudentDetailedInfo
+from sNeeds.apps.estimation.form.models import StudentFormApplySemesterYear, StudentDetailedInfo, GradeChoices
 from .permissions import StudentDetailedInfoOwnerOrInteractConsultantOrWithoutUserPermission, \
     IsWantToApplyOwnerOrDetailedInfoWithoutUser, IsPublicationOwnerOrDetailedInfoWithoutUser, \
     IsUniversityThroughOwnerOrDetailedInfoWithoutUser, \
@@ -480,10 +481,6 @@ class StudentDetailedUniversityThroughRetrieveDestroyAPIView(custom_generic_apiv
     permission_classes = [IsUniversityThroughOwnerOrDetailedInfoWithoutUser]
 
 
-class GradeChoiceList(custom_generic_apiviews.BaseListAPIView):
-    queryset = sNeeds.apps.estimation.form.models.GradeModel.objects.all()
-    serializer_class = sNeeds.apps.estimation.form.serializers.GradeModelSerializer
-
 
 @api_view(['GET'])
 def payment_affordability_choices(request, format=None):
@@ -532,3 +529,7 @@ def student_detailed_info_many_to_one_qs(user, sdi_id, model_class):
         user_sdi_ids = StudentDetailedInfo.objects.filter(user=user).values_list('id', flat=True)
         qs = model_class.objects.filter(student_detailed_info__in=user_sdi_ids)
         return qs
+
+
+class GradesList(EnumViewList):
+    enum_class = GradeChoices

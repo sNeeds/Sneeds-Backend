@@ -5,7 +5,6 @@ from . import views
 
 app_name = "account"
 
-
 urlpatterns = [
     path('countries/', views.CountryList.as_view(), name="country-list"),
     path('countries/<str:slug>/', views.CountryDetail.as_view(), name="country-detail"),
@@ -95,11 +94,10 @@ urlpatterns = [
          views.StudentDetailedUniversityThroughRetrieveDestroyAPIView.as_view(),
          name="student-detailed-university-through-detail"),
 
+    path('grades/', views.GradesList.as_view()),
+
     path('payment-affordability-choices/',
          views.payment_affordability_choices,
          name="payment-affordability-choice-list"),
 
-    path('grades/', views.GradeChoiceList.as_view(), name="grade-list"),
 ]
-
-
