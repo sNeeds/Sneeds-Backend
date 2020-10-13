@@ -22,10 +22,10 @@ from sNeeds.apps.data.account.validators import validate_resume_file_size, ten_f
 
 
 class GradeChoices(models.TextChoices):
-    BACHELOR = 'Bachelor'
-    MASTER = 'Master'
-    PHD = 'PH.D'
-    POST_DOC = 'Post Doc'
+    BACHELOR = 'Bachelor', 'Bachelor'
+    MASTER = 'Master', 'Master'
+    PHD = 'PH.D', 'PH.D'
+    POST_DOC = 'Post Doc', 'Post Doc'
 
 
 class GradeModel(BasicFormField):
@@ -82,19 +82,19 @@ class WantToApply(models.Model):
 
 class Publication(models.Model):
     class WhichAuthorChoices(models.TextChoices):
-        FIRST = 'First'
-        SECOND = 'Second'
-        THIRD = 'Third'
-        FOURTH_OR_MORE = 'Fourth or more'
+        FIRST = 'First', 'First'
+        SECOND = 'Second', 'Second'
+        THIRD = 'Third', 'Third'
+        FOURTH_OR_MORE = 'Fourth or more', 'Fourth or more'
 
     class PublicationChoices(models.TextChoices):
         JOURNAL = 'Journal'
         CONFERENCE = 'Conference'
 
     class JournalReputationChoices(models.TextChoices):
-        ONE_TO_THREE = 'One to three'
-        FOUR_TO_TEN = 'Four to ten'
-        ABOVE_TEN = 'Above ten'
+        ONE_TO_THREE = 'One to three', 'One to three'
+        FOUR_TO_TEN = 'Four to ten', 'Four to ten'
+        ABOVE_TEN = 'Above ten', 'Above ten'
 
     PUBLICATIONS_SCORE__STORE_LABEL_RANGE = 0.5
     PUBLICATIONS_SCORE__VIEW_LABEL_RANGE = 1
@@ -342,17 +342,17 @@ class StudentDetailedInfoBase(models.Model):
 
 class StudentDetailedInfo(StudentDetailedInfoBase):
     class PaymentAffordabilityChoices(models.TextChoices):
-        LOW = 'Low'
-        AVERAGE = 'Average'
-        HIGH = 'High'
+        LOW = 'Low', 'Low'
+        AVERAGE = 'Average', 'Average'
+        HIGH = 'High', 'High'
 
     class GenderChoices(models.TextChoices):
-        MALE = 'Male'
-        FEMALE = 'Female'
+        MALE = 'Male', 'Male'
+        FEMALE = 'Female', 'Female'
 
     class MilitaryServiceChoices(models.TextChoices):
-        PASSED = 'Passed'
-        UNDID = 'Undid'
+        PASSED = 'Passed', 'Passed'
+        UNDID = 'Undid', 'Undid'
 
     user = models.OneToOneField(
         User,
