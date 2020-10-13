@@ -92,8 +92,8 @@ class Publication(models.Model):
         FOUR_TO_TEN = 'Four to ten', 'Four to ten'
         ABOVE_TEN = 'Above ten', 'Above ten'
 
-    PUBLICATIONS_SCORE__STORE_LABEL_RANGE = 0.5
-    PUBLICATIONS_SCORE__VIEW_LABEL_RANGE = 1
+    PUBLICATIONS_SCORE__STORE_LABEL_RANGE = 0.1
+    PUBLICATIONS_SCORE__VIEW_LABEL_RANGE = 0.2
 
     student_detailed_info = models.ForeignKey(
         'StudentDetailedInfoBase',
@@ -151,8 +151,6 @@ class Publication(models.Model):
 
     @classmethod
     def get_publications_score__view_label(cls, input_value):
-        if input_value >= 4:
-            return '4+'
         item_range = cls.PUBLICATIONS_SCORE__VIEW_LABEL_RANGE
         value = floor(input_value / item_range) * item_range
         return str(value) + ' - ' + str(value + item_range)
