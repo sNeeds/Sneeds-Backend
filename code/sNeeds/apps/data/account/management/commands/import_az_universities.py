@@ -14,6 +14,7 @@ class Command(BaseCommand):
     #     parser.add_argument('csv_path', nargs='+', type=str)
 
     def handle(self, *args, **options):
+        University.objects.all().delete()
         added_count = 0
         existed_count = 0
         entries_count = 0
