@@ -12,7 +12,6 @@ from sNeeds.apps.data.account import models
 from sNeeds.apps.data.account.models import BasicFormField
 from sNeeds.apps.data.account.serializers import CountrySerializer, UniversitySerializer, MajorSerializer
 
-
 LanguageCertificateType = sNeeds.apps.estimation.form.models.LanguageCertificate.LanguageCertificateType
 
 
@@ -57,16 +56,9 @@ class BasicFormFieldSerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 
-class GradeModelSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = sNeeds.apps.estimation.form.models.GradeModel
-        fields = ['id', 'name']
-
-
 class WantToApplySerializer(serializers.ModelSerializer):
     countries = CountrySerializer(many=True)
     universities = UniversitySerializer(many=True)
-    grades = GradeModelSerializer(many=True)
     majors = MajorSerializer(many=True)
     semester_years = StudentFormApplySemesterYearSerializer(many=True)
 
@@ -105,15 +97,6 @@ class WantToApplyRequestSerializer(serializers.ModelSerializer):
         many=True,
     )
 
-    grades = serializers.PrimaryKeyRelatedField(
-        queryset=sNeeds.apps.estimation.form.models.GradeModel.objects.all(),
-        pk_field=serializers.IntegerField(label='id'),
-        allow_null=True,
-        allow_empty=True,
-        required=False,
-        many=True
-    )
-
     majors = serializers.PrimaryKeyRelatedField(
         queryset=models.Major.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
@@ -135,8 +118,7 @@ class WantToApplyRequestSerializer(serializers.ModelSerializer):
         model = sNeeds.apps.estimation.form.models.WantToApply
         fields = [
             'id', 'student_detailed_info', 'countries', 'universities',
-            'grades', 'majors',
-            'semester_years',
+            'grades', 'majors', 'semester_years',
         ]
 
     def create(self, validated_data):

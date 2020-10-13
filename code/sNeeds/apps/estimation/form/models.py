@@ -26,10 +26,6 @@ class GradeChoices(models.TextChoices):
     POST_DOC = 'Post Doc'
 
 
-class GradeModel(BasicFormField):
-    name = models.CharField(max_length=256)
-
-
 class StudentFormApplySemesterYear(models.Model):
     class SemesterChoices(models.TextChoices):
         SPRING = "Spring"
@@ -65,8 +61,10 @@ class WantToApply(models.Model):
 
     universities = models.ManyToManyField(University)
 
-    grades = models.ManyToManyField(
-        GradeModel
+    grade = models.CharField(
+        max_length=128,
+        choices=GradeChoices.choices,
+        default=GradeChoices.BACHELOR
     )
 
     majors = models.ManyToManyField(

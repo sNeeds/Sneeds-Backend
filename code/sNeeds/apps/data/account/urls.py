@@ -99,7 +99,6 @@ urlpatterns = [
          views.payment_affordability_choices,
          name="payment-affordability-choice-list"),
 
-    path('grades/', views.GradeChoiceList.as_view(), name="grade-list"),
 ]
 
 

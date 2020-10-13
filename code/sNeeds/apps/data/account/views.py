@@ -480,10 +480,6 @@ class StudentDetailedUniversityThroughRetrieveDestroyAPIView(custom_generic_apiv
     permission_classes = [IsUniversityThroughOwnerOrDetailedInfoWithoutUser]
 
 
-class GradeChoiceList(custom_generic_apiviews.BaseListAPIView):
-    queryset = sNeeds.apps.estimation.form.models.GradeModel.objects.all()
-    serializer_class = sNeeds.apps.estimation.form.serializers.GradeModelSerializer
-
 
 @api_view(['GET'])
 def payment_affordability_choices(request, format=None):

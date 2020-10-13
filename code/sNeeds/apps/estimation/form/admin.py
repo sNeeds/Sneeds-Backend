@@ -3,7 +3,6 @@ from django.contrib import admin
 from . import models
 
 admin.site.register(models.StudentFormApplySemesterYear)
-admin.site.register(models.GradeModel)
 admin.site.register(models.UniversityThrough)
 admin.site.register(models.WantToApply)
 admin.site.register(models.RegularLanguageCertificate)
