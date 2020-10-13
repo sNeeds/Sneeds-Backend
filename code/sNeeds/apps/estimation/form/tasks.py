@@ -5,10 +5,10 @@ from .models import StudentDetailedInfo
 
 @shared_task
 def update_student_detailed_info_ranks():
-    student_detailed_info_qs = StudentDetailedInfo.objects.all().order_by("value")
+    student_detailed_info_qs = StudentDetailedInfo.objects.all().order_by("-value")
 
-    for i, obj in enumerate(student_detailed_info_qs):
-        obj.update(rank=i)
+    for r, obj in enumerate(student_detailed_info_qs):
+        StudentDetailedInfo.objects.filter(id=obj.id).update(rank=r + 1)
 
 
 @shared_task
