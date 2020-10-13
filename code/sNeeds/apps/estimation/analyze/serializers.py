@@ -105,7 +105,7 @@ class GradePointAverageChartSerializer(CommonChartSerializer):
         items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
 
-        self._data['title'] = chart.title.value
+        self._data['title'] = chart.title
 
         self._data['label_range'] = sNeeds.apps.estimation.form.models.UniversityThrough.GPA_VIEW_LABEL_RANGE
 
@@ -127,8 +127,15 @@ class GradePointAverageChartSerializer(CommonChartSerializer):
                                          )
 
     def get_user_positions(self, obj):
-        self.context.get('request')
         request = self.context.get("request")
+        sdi_id = request.query_params.get('student-detailed-info', None)
+        # if sdi_id is not None:
+        #     try:
+        #         sdi = sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.get(id=sdi_id)
+        #         return sNeeds.apps.estimation.form.models.UniversityThrough.get_gpa_user_store_based_positions(sdi)
+        #     except sNeeds.apps.estimation.form.models.StudentDetailedInfo.DoesNotExist:
+        #         return None
+
         if request and hasattr(request, "user"):
             request_user = request.user
             if request_user.is_authenticated:
@@ -154,7 +161,7 @@ class PublicationsCountChartSerializer(CommonChartSerializer):
             data_number = 1.0
         items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
-        self._data['title'] = chart.title.value
+        self._data['title'] = chart.title
 
         self._data['label_range'] = None
 
@@ -202,7 +209,7 @@ class PublicationTypeChartSerializer(CommonChartSerializer):
             data_number = 1.0
         items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
-        self._data['title'] = chart.title.value
+        self._data['title'] = chart.title
 
         self._data['label_range'] = None
 
@@ -220,8 +227,14 @@ class PublicationTypeChartSerializer(CommonChartSerializer):
         return get_unchanged_chart_items(qs)
 
     def get_user_positions(self, obj):
-        self.context.get('request')
         request = self.context.get("request")
+        sdi_id = request.query_params.get('student-detailed-info', None)
+        # if sdi_id is not None:
+        #     try:
+        #         sdi = sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.get(id=sdi_id)
+        #         return sNeeds.apps.estimation.form.models.UniversityThrough.get_gpa_user_store_based_positions(sdi)
+        #     except sNeeds.apps.estimation.form.models.StudentDetailedInfo.DoesNotExist:
+        #         return None
         if request and hasattr(request, "user"):
             request_user = request.user
             if request_user.is_authenticated:
@@ -247,7 +260,7 @@ class PublicationsScoreChartSerializer(CommonChartSerializer):
             data_number = 1.0
         items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
-        self._data['title'] = chart.title.value
+        self._data['title'] = chart.title
 
         self._data['label_range'] = sNeeds.apps.estimation.form.models.Publication.PUBLICATIONS_SCORE__VIEW_LABEL_RANGE
 
@@ -268,8 +281,14 @@ class PublicationsScoreChartSerializer(CommonChartSerializer):
                                          sNeeds.apps.estimation.form.models.Publication.convert_publications_score__store_to_view_label)
 
     def get_user_positions(self, obj):
-        self.context.get('request')
         request = self.context.get("request")
+        sdi_id = request.query_params.get('student-detailed-info', None)
+        # if sdi_id is not None:
+        #     try:
+        #         sdi = sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.get(id=sdi_id)
+        #         return sNeeds.apps.estimation.form.models.UniversityThrough.get_gpa_user_store_based_positions(sdi)
+        #     except sNeeds.apps.estimation.form.models.StudentDetailedInfo.DoesNotExist:
+        #         return None
         if request and hasattr(request, "user"):
             request_user = request.user
             if request_user.is_authenticated:
@@ -295,7 +314,7 @@ class PublicationImpactFactorChartSerializer(CommonChartSerializer):
             data_number = 1.0
         items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
-        self._data['title'] = chart.title.value
+        self._data['title'] = chart.title
 
         self._data['label_range'] = None
 
@@ -317,6 +336,13 @@ class PublicationImpactFactorChartSerializer(CommonChartSerializer):
     def get_user_positions(self, obj):
         self.context.get('request')
         request = self.context.get("request")
+        sdi_id = request.query_params.get('student-detailed-info', None)
+        # if sdi_id is not None:
+        #     try:
+        #         sdi = sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.get(id=sdi_id)
+        #         return sNeeds.apps.estimation.form.models.UniversityThrough.get_gpa_user_store_based_positions(sdi)
+        #     except sNeeds.apps.estimation.form.models.StudentDetailedInfo.DoesNotExist:
+        #         return None
         if request and hasattr(request, "user"):
             request_user = request.user
             if request_user.is_authenticated:
@@ -343,7 +369,7 @@ class PowerfulRecommendationChartSerializer(CommonChartSerializer):
             data_number = 1.0
         items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
-        self._data['title'] = chart.title.value
+        self._data['title'] = chart.title
 
         self._data['label_range'] = None
 
@@ -364,8 +390,14 @@ class PowerfulRecommendationChartSerializer(CommonChartSerializer):
         return get_unchanged_chart_items(qs)
 
     def get_user_positions(self, obj):
-        self.context.get('request')
         request = self.context.get("request")
+        sdi_id = request.query_params.get('student-detailed-info', None)
+        # if sdi_id is not None:
+        #     try:
+        #         sdi = sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.get(id=sdi_id)
+        #         return sNeeds.apps.estimation.form.models.UniversityThrough.get_gpa_user_store_based_positions(sdi)
+        #     except sNeeds.apps.estimation.form.models.StudentDetailedInfo.DoesNotExist:
+        #         return None
         if request and hasattr(request, "user"):
             request_user = request.user
             if request_user.is_authenticated:
@@ -391,7 +423,7 @@ class OlympiadChartSerializer(CommonChartSerializer):
             data_number = 1.0
         items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
-        self._data['title'] = chart.title.value
+        self._data['title'] = chart.title
 
         self._data['label_range'] = None
 
@@ -411,8 +443,14 @@ class OlympiadChartSerializer(CommonChartSerializer):
         return get_unchanged_chart_items(qs)
 
     def get_user_positions(self, obj):
-        self.context.get('request')
         request = self.context.get("request")
+        sdi_id = request.query_params.get('student-detailed-info', None)
+        # if sdi_id is not None:
+        #     try:
+        #         sdi = sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.get(id=sdi_id)
+        #         return sNeeds.apps.estimation.form.models.UniversityThrough.get_gpa_user_store_based_positions(sdi)
+        #     except sNeeds.apps.estimation.form.models.StudentDetailedInfo.DoesNotExist:
+        #         return None
         if request and hasattr(request, "user"):
             request_user = request.user
             if request_user.is_authenticated:
@@ -440,7 +478,7 @@ class RelatedWorkExperienceChartSerializer(CommonChartSerializer):
         # for obj in items_qs:
         #     print(obj.percent)
         user_store_based_positions = self.get_user_positions(chart)
-        self._data['title'] = chart.title.value
+        self._data['title'] = chart.title
 
         self._data['label_range'] = sNeeds.apps.estimation.form.models.StudentDetailedInfo.RELATED_WORK_EXPERIENCE_VIEW_LABEL_RANGE
 
@@ -464,8 +502,14 @@ class RelatedWorkExperienceChartSerializer(CommonChartSerializer):
                                          )
 
     def get_user_positions(self, obj):
-        self.context.get('request')
         request = self.context.get("request")
+        sdi_id = request.query_params.get('student-detailed-info', None)
+        # if sdi_id is not None:
+        #     try:
+        #         sdi = sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.get(id=sdi_id)
+        #         return sNeeds.apps.estimation.form.models.UniversityThrough.get_gpa_user_store_based_positions(sdi)
+        #     except sNeeds.apps.estimation.form.models.StudentDetailedInfo.DoesNotExist:
+        #         return None
         if request and hasattr(request, "user"):
             request_user = request.user
             if request_user.is_authenticated:
@@ -491,7 +535,7 @@ class ToeflChartSerializer(CommonChartSerializer):
             data_number = 1.0
         items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
-        self._data['title'] = chart.title.value
+        self._data['title'] = chart.title
 
         self._data['label_range'] = sNeeds.apps.estimation.form.models.RegularLanguageCertificate.TOEFL__VIEW_LABEL_RANGE
 
@@ -513,8 +557,14 @@ class ToeflChartSerializer(CommonChartSerializer):
                                          )
 
     def get_user_positions(self, obj):
-        self.context.get('request')
         request = self.context.get("request")
+        sdi_id = request.query_params.get('student-detailed-info', None)
+        # if sdi_id is not None:
+        #     try:
+        #         sdi = sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.get(id=sdi_id)
+        #         return sNeeds.apps.estimation.form.models.UniversityThrough.get_gpa_user_store_based_positions(sdi)
+        #     except sNeeds.apps.estimation.form.models.StudentDetailedInfo.DoesNotExist:
+        #         return None
         if request and hasattr(request, "user"):
             request_user = request.user
             if request_user.is_authenticated:
@@ -540,7 +590,7 @@ class IeltsChartSerializer(CommonChartSerializer):
             data_number = 1.0
         items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
-        self._data['title'] = chart.title.value
+        self._data['title'] = chart.title
 
         self._data['label_range'] = sNeeds.apps.estimation.form.models.RegularLanguageCertificate.IELTS__VIEW_LABEL_RANGE
 
@@ -562,8 +612,14 @@ class IeltsChartSerializer(CommonChartSerializer):
                                          )
 
     def get_user_positions(self, obj):
-        self.context.get('request')
         request = self.context.get("request")
+        sdi_id = request.query_params.get('student-detailed-info', None)
+        # if sdi_id is not None:
+        #     try:
+        #         sdi = sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.get(id=sdi_id)
+        #         return sNeeds.apps.estimation.form.models.UniversityThrough.get_gpa_user_store_based_positions(sdi)
+        #     except sNeeds.apps.estimation.form.models.StudentDetailedInfo.DoesNotExist:
+        #         return None
         if request and hasattr(request, "user"):
             request_user = request.user
             if request_user.is_authenticated:
@@ -590,7 +646,7 @@ class GMATChartSerializer(CommonChartSerializer):
         items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
 
-        self._data['title'] = chart.title.value
+        self._data['title'] = chart.title
 
         self._data['label_range'] = sNeeds.apps.estimation.form.models.GMATCertificate.TOTAL_VIEW_LABEL_RANGE
 
@@ -612,8 +668,14 @@ class GMATChartSerializer(CommonChartSerializer):
                                          )
 
     def get_user_positions(self, obj):
-        self.context.get('request')
         request = self.context.get("request")
+        sdi_id = request.query_params.get('student-detailed-info', None)
+        # if sdi_id is not None:
+        #     try:
+        #         sdi = sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.get(id=sdi_id)
+        #         return sNeeds.apps.estimation.form.models.UniversityThrough.get_gpa_user_store_based_positions(sdi)
+        #     except sNeeds.apps.estimation.form.models.StudentDetailedInfo.DoesNotExist:
+        #         return None
         if request and hasattr(request, "user"):
             request_user = request.user
             if request_user.is_authenticated:
@@ -640,7 +702,7 @@ class GREGeneralWritingChartSerializer(CommonChartSerializer):
         items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
 
-        self._data['title'] = chart.title.value
+        self._data['title'] = chart.title
 
         self._data['label_range'] = sNeeds.apps.estimation.form.models.GREGeneralCertificate.WRITING_VIEW_LABEL_RANGE
 
@@ -662,8 +724,14 @@ class GREGeneralWritingChartSerializer(CommonChartSerializer):
                                          )
 
     def get_user_positions(self, obj):
-        self.context.get('request')
         request = self.context.get("request")
+        sdi_id = request.query_params.get('student-detailed-info', None)
+        # if sdi_id is not None:
+        #     try:
+        #         sdi = sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.get(id=sdi_id)
+        #         return sNeeds.apps.estimation.form.models.UniversityThrough.get_gpa_user_store_based_positions(sdi)
+        #     except sNeeds.apps.estimation.form.models.StudentDetailedInfo.DoesNotExist:
+        #         return None
         if request and hasattr(request, "user"):
             request_user = request.user
             if request_user.is_authenticated:
@@ -690,7 +758,7 @@ class GREGeneralQuantitativeAndVerbalChartSerializer(CommonChartSerializer):
         items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
 
-        self._data['title'] = chart.title.value
+        self._data['title'] = chart.title
 
         self._data['label_range'] = sNeeds.apps.estimation.form.models.GREGeneralCertificate.Q_AND_V_VIEW_LABEL_RANGE
 
@@ -712,8 +780,14 @@ class GREGeneralQuantitativeAndVerbalChartSerializer(CommonChartSerializer):
                                          )
 
     def get_user_positions(self, obj):
-        self.context.get('request')
         request = self.context.get("request")
+        sdi_id = request.query_params.get('student-detailed-info', None)
+        # if sdi_id is not None:
+        #     try:
+        #         sdi = sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.get(id=sdi_id)
+        #         return sNeeds.apps.estimation.form.models.UniversityThrough.get_gpa_user_store_based_positions(sdi)
+        #     except sNeeds.apps.estimation.form.models.StudentDetailedInfo.DoesNotExist:
+        #         return None
         if request and hasattr(request, "user"):
             request_user = request.user
             if request_user.is_authenticated:
@@ -739,7 +813,7 @@ class GRESubjectTotalChartSerializer(CommonChartSerializer):
             data_number = 1.0
         items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
-        self._data['title'] = chart.title.value
+        self._data['title'] = chart.title
 
         self._data['label_range'] = sNeeds.apps.estimation.form.models.GRESubjectCertificate.TOTAL_VIEW_LABEL_RANGE
 
@@ -761,8 +835,14 @@ class GRESubjectTotalChartSerializer(CommonChartSerializer):
                                          )
 
     def get_user_positions(self, obj):
-        self.context.get('request')
         request = self.context.get("request")
+        sdi_id = request.query_params.get('student-detailed-info', None)
+        # if sdi_id is not None:
+        #     try:
+        #         sdi = sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.get(id=sdi_id)
+        #         return sNeeds.apps.estimation.form.models.UniversityThrough.get_gpa_user_store_based_positions(sdi)
+        #     except sNeeds.apps.estimation.form.models.StudentDetailedInfo.DoesNotExist:
+        #         return None
         if request and hasattr(request, "user"):
             request_user = request.user
             if request_user.is_authenticated:
@@ -788,7 +868,7 @@ class DuolingoChartSerializer(CommonChartSerializer):
             data_number = 1.0
         items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
         user_store_based_positions = self.get_user_positions(chart)
-        self._data['title'] = chart.title.value
+        self._data['title'] = chart.title
 
         self._data['label_range'] = sNeeds.apps.estimation.form.models.DuolingoCertificate.OVERALL_VIEW_LABEL_RANGE
 
@@ -810,8 +890,14 @@ class DuolingoChartSerializer(CommonChartSerializer):
                                          )
 
     def get_user_positions(self, obj):
-        self.context.get('request')
         request = self.context.get("request")
+        sdi_id = request.query_params.get('student-detailed-info', None)
+        # if sdi_id is not None:
+        #     try:
+        #         sdi = sNeeds.apps.estimation.form.models.StudentDetailedInfo.objects.get(id=sdi_id)
+        #         return sNeeds.apps.estimation.form.models.UniversityThrough.get_gpa_user_store_based_positions(sdi)
+        #     except sNeeds.apps.estimation.form.models.StudentDetailedInfo.DoesNotExist:
+        #         return None
         if request and hasattr(request, "user"):
             request_user = request.user
             if request_user.is_authenticated:

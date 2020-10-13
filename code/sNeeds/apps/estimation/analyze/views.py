@@ -21,7 +21,7 @@ class BaseChartAPIView(c_generics.BaseGenericAPIView):
             instance,
             many=False,
             context={'request': request,
-                     'student-detailed-info': self.request.query_params.get('student-detailed-info', None),
+                     'student_detailed_info_id': self.request.query_params.get('student-detailed-info', None),
                      }
         )
         serializer.save()
