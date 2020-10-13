@@ -7,7 +7,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('similarApply', '0002_auto_20201013_1734'),
-        ('form', '0002_auto_20201013_1129'),
+        ('form', '0003_auto_20201013_1557'),
     ]
 
     operations = [
