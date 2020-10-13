@@ -1,22 +1,24 @@
 import csv
+import os
 
 from django.core.management.base import BaseCommand, CommandError
-
+from django.conf import settings
 from sNeeds.apps.data.account.models import Country
 
 
 class Command(BaseCommand):
     help = "For insert Countries from csv file"
 
-    def add_arguments(self, parser):
-        parser.add_argument('csv_path', nargs='+', type=str)
+    # def add_arguments(self, parser):
+    #     parser.add_argument('csv_path', nargs='+', type=str)
 
     def handle(self, *args, **options):
         added_count = 0
         existed_count = 0
         entries_count = 0
         added_countries = []
-        with open(options['csv_path'][0]) as f:
+        csv_path = os.path.join(settings.BASE_DIR, "apps/data/account/management/commands/countries/countries.csv")
+        with open(csv_path) as f:
             reader = csv.reader(f, delimiter=',')
             for row in reader:
                 entries_count += 1
