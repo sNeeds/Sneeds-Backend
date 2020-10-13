@@ -70,8 +70,15 @@ class Major(models.Model):
         'self',
         null=True,
         blank=True,
-        on_delete=models.PROTECT
+        on_delete=models.CASCADE
     )
+
+    def hierarchy_str(self):
+        name = self.name
+        if self.parent_major:
+            name += " -> " + self.parent_major.hierarchy_str()
+        return name
+
 
     def __str__(self):
         self.name = self.name

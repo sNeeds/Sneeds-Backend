@@ -11,22 +11,14 @@ from sNeeds.apps.estimation.form.models import Publication, LanguageCertificate,
 from sNeeds.apps.estimation.estimations.compute_value import compute_publication_value
 from sNeeds.apps.estimation.form import serializers as form_serializers
 
+
 @transaction.atomic
 def pre_save_student_detailed_info(sender, instance, *args, **kwargs):
     # TODO: Temporary removed delay from celery tasks
-    instance.value = instance.compute_value()
     try:
-        previous = StudentDetailedInfo.objects.get(id=instance.id)
-        if previous.value != instance.value:  # value is updated
-            update_student_detailed_info_ranks(exclude_id=instance.id)
-            add_one_to_rank_with_values_greater_than_this(value=instance.value, exclude_id=instance.id)
-            instance.rank = instance.update_rank()
+        StudentDetailedInfo.objects.get(id=instance.id)
 
     except StudentDetailedInfo.DoesNotExist:  # new object will be created
-        update_student_detailed_info_ranks(exclude_id=instance.id)
-        add_one_to_rank_with_values_greater_than_this(value=instance.value, exclude_id=instance.id)
-        instance.rank = instance.update_rank()
-
         # https://docs.djangoproject.com/en/3.0/ref/models/instances/#django.db.models.Model._state
         if instance._state.adding is True and instance._state.db is None:
             db_instance = None
@@ -107,6 +99,10 @@ def post_delete_publication(sender, instance, *args, **kwargs):
     update_charts.update_publication_type_chart.delay(data=data, db_data=db_data, is_delete=True)
     update_charts.update_publication_impact_factor_chart.delay(data=data, db_data=db_data, is_delete=True)
     # update_charts.update_publications_score_chart.delay(data=data, db_data=db_data, is_delete=True)
+
+
+def post_save_student_detailed_info(sender, instance, *args, **kwargs):
+    update_student_detailed_info_ranks()
 
 
 def post_save_publication(sender, instance, *args, **kwargs):
@@ -200,6 +196,7 @@ pre_save.connect(pre_save_publication, sender=Publication)
 pre_save.connect(pre_save_language_certificate, sender=LanguageCertificate)
 pre_save.connect(pre_save_university_through, sender=UniversityThrough)
 
+post_save.connect(post_save_student_detailed_info, sender=StudentDetailedInfo)
 post_save.connect(post_save_language_certificate, sender=LanguageCertificate)
 post_save.connect(post_save_publication, sender=Publication)
 post_save.connect(post_save_university_through, sender=UniversityThrough)

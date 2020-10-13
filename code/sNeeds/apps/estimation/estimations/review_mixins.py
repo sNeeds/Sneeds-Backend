@@ -43,6 +43,7 @@ class ReviewLanguageMixin:
         )
 
         for t in types:
+            data[t.lower()] = None
             language_type = language_certificates.get_from_this_type_or_none(
                 getattr(LanguageCertificate.LanguageCertificateType, t)
             )
@@ -60,7 +61,7 @@ class ReviewLanguageMixin:
                 data["itels_general"]["comment"] = CHANGE_GENERAL_WITH_ACADEMIC + data["itels_general"]["comment"]
 
         data["total_value"] = language_certificates.get_total_value()
-        data["total_value_label"] = language_certificates.get_total_value_str()
+        data["total_value_label"] = language_certificates.get_total_value_label()
 
         return data
 
@@ -208,7 +209,7 @@ class ReviewPublicationMixin:
         data = {
             "comment": None,
             "total_value": None,
-            "total_value_str": None
+            "total_value_label": None
         }
         publications_qs = Publication.objects.filter(student_detailed_info=self.student_detailed_form)
 
@@ -344,7 +345,7 @@ class ReviewPublicationMixin:
                     more_than_one_publications
                 )
         data["total_value"]: publications_qs.qs_total_value_label()
-        data["total_value_str"]: publications_qs.qs_total_value_label()
+        data["total_value_label"]: publications_qs.qs_total_value_label()
         return data
 
 
@@ -359,7 +360,7 @@ class ReviewOthersMixin:
         form = self.student_detailed_form
         comment = ""
         if form.related_work_experience:
-            print("****" , form.related_work_experience)
+            print("****", form.related_work_experience)
             value_range = ValueRange(VALUES_WITH_ATTRS["work_experience_comments"])
             comment = value_range.find_value_attrs(form.related_work_experience, 'comment')
         return comment
