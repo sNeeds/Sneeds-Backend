@@ -61,7 +61,7 @@ class WantToApply(models.Model):
 
     universities = models.ManyToManyField(University)
 
-    grade = models.CharField(
+    grades = models.CharField(
         max_length=128,
         choices=GradeChoices.choices,
         default=GradeChoices.BACHELOR

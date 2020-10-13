@@ -527,3 +527,6 @@ def student_detailed_info_many_to_one_qs(user, sdi_id, model_class):
         user_sdi_ids = StudentDetailedInfo.objects.filter(user=user).values_list('id', flat=True)
         qs = model_class.objects.filter(student_detailed_info__in=user_sdi_ids)
         return qs
+
+
+# class GradesList():

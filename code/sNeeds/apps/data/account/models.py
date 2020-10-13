@@ -72,7 +72,7 @@ class Major(models.Model):
         blank=True,
         on_delete=models.CASCADE
     )
-    objects =
+    # objects =
     def hierarchy_str(self):
         name = self.name
         if self.parent_major:
