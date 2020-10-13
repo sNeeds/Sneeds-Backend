@@ -36,8 +36,8 @@ class Command(BaseCommand):
                 if row[2] == 'Un':
                     row[2] = 13000
                 rank = int(row[2])
-                if entries_count > 1010 and rank < 1000:
-                    rank = 1050
+                # if entries_count > 1010 and rank < 1000:
+                #     rank = 1050
 
                 university, created = University.objects.get_or_create(
                     name=name,
