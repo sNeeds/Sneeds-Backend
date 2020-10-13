@@ -16,7 +16,7 @@ class AppliedStudentDetailedInfoQuerySetManager(models.QuerySet):
 
         return qs
 
-    def same_previous_major(self, major_qs):
+    def same_nth_parent_previous_major(self, major_qs, nth):
         qs = self.none()
 
         for obj in self._chain():

@@ -14,3 +14,11 @@ class CountryManager(models.Manager):
         return qs
 
 
+class MajorManager(models.QuerySet):
+    def top_nth_parents(self, nth):
+        parent_majors = self.none()
+        for obj in self._chain():
+            parent_majors |= self.filter(id=obj.top_nth_parent(nth).id)
+
+        parent_majors.distinct()
+        return parent_majors

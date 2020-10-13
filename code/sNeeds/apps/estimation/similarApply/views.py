@@ -31,7 +31,7 @@ class SimilarUniversitiesListView(CAPIView):
         except WantToApply.DoesNotExist:
             pass
 
-        related_forms |= AppliedStudentDetailedInfo.objects.same_previous_major(form_majors)
+        related_forms |= AppliedStudentDetailedInfo.objects.same_nth_parent_previous_major(form_majors, 2)
         related_forms |= AppliedStudentDetailedInfo.objects.same_applied_to_major(form_majors)
 
         related_forms = related_forms.distinct()

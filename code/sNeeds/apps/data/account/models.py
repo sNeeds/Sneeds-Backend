@@ -72,13 +72,25 @@ class Major(models.Model):
         blank=True,
         on_delete=models.CASCADE
     )
-
+    objects =
     def hierarchy_str(self):
         name = self.name
         if self.parent_major:
             name += " -> " + self.parent_major.hierarchy_str()
         return name
 
+    def top_nth_parent(self, nth):
+        parents_list = []
+        parent = self.parent_major
+
+        while parent:
+            parents_list.insert(0, parent)
+            parent = parent.parent
+
+        try:
+            return parents_list[nth - 1]
+        except IndexError:
+            return None
 
     def __str__(self):
         self.name = self.name
