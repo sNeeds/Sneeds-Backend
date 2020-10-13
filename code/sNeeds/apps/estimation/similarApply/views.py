@@ -1,13 +1,19 @@
 from django.http import Http404
 from rest_framework.response import Response
 
-from sNeeds.base.api.viewsets import CAPIView
+from sNeeds.base.api.generics import CGenericAPIView
 from sNeeds.apps.estimation.form.models import WantToApply, StudentDetailedInfo
 from sNeeds.apps.estimation.similarApply.models import AppliedStudentDetailedInfo
 from sNeeds.apps.estimation.similarApply.serializers import AppliedStudentDetailedInfoSerializer
 
 
-class SimilarUniversitiesListView(CAPIView):
+class SimilarUniversitiesListView(CGenericAPIView):
+    serializer_class = AppliedStudentDetailedInfoSerializer
+
+    def get_queryset(self):
+
+        AppliedStudentDetailedInfoSerializer
+
     def get_form_obj(self, form_id):
         try:
             return StudentDetailedInfo.objects.get(id=form_id)
@@ -16,6 +22,7 @@ class SimilarUniversitiesListView(CAPIView):
 
     def get(self, request, form_id, format=None):
         form = self.get_form_obj(form_id)
+
         related_forms = AppliedStudentDetailedInfo.objects.none()
         form_majors = form.get_related_majors()
 

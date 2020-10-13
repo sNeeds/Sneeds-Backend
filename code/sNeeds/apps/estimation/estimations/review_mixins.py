@@ -43,6 +43,7 @@ class ReviewLanguageMixin:
         )
 
         for t in types:
+            data[t.lower()] = None
             language_type = language_certificates.get_from_this_type_or_none(
                 getattr(LanguageCertificate.LanguageCertificateType, t)
             )
@@ -359,7 +360,7 @@ class ReviewOthersMixin:
         form = self.student_detailed_form
         comment = ""
         if form.related_work_experience:
-            print("****" , form.related_work_experience)
+            print("****", form.related_work_experience)
             value_range = ValueRange(VALUES_WITH_ATTRS["work_experience_comments"])
             comment = value_range.find_value_attrs(form.related_work_experience, 'comment')
         return comment

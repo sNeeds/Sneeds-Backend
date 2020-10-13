@@ -758,7 +758,6 @@ class LanguageCertificate(models.Model):
         """
         Returned format: (value number, value string) E.g: (0.9, A)
         """
-        # TODO: Value is only attribute of RegularLanguageCertificate, Add this to others
         value = None
         label = None
 
@@ -768,7 +767,7 @@ class LanguageCertificate(models.Model):
             if self.certificate_type == LanguageCertificate.LanguageCertificateType.TOEFL:
                 value = max(0, overall - 80) / 40
                 value_range = ValueRange(VALUES_WITH_ATTRS["toefl"])
-                label = value_range.find_value_attrs(self.value, 'label')
+                label = value_range.find_value_attrs(value, 'label')
 
             elif self.certificate_type in {
                 self.LanguageCertificateType.IELTS_GENERAL,
@@ -777,7 +776,7 @@ class LanguageCertificate(models.Model):
                 overall = max(overall, 8)
                 value = max(0, overall - 5) / 3
                 value_range = ValueRange(VALUES_WITH_ATTRS["ielts_academic_and_general"])
-                label = value_range.find_value_attrs(self.value, 'label')
+                label = value_range.find_value_attrs(value, 'label')
 
         return value, label
 
