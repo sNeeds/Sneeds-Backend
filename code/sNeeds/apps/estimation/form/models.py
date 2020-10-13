@@ -5,8 +5,6 @@ from math import floor
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator, FileExtensionValidator
 from django.db import models
-
-# Create your models here.
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
@@ -448,18 +446,11 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
     RELATED_WORK_EXPERIENCE_STORE_LABEL_RANGE = 2
     RELATED_WORK_EXPERIENCE_VIEW_LABEL_RANGE = 6
 
-    # @property
-    # def get_rank_among_all(self):
-    #     higher_than = self.objects.filter(
-    #         total_value
-    #     )
-    #
-
-    def update_rank(self):
+    def _compute_rank(self):
         better_rank_qs = self.__class__.objects.filter(value__gt=self.value)
-        return better_rank_qs.count() + 1
+        return better_rank_qs.count()
 
-    def compute_value(self):
+    def _compute_value(self):
         publications = Publication.objects.filter(
             student_detailed_info__id=self.id
         )
@@ -591,6 +582,11 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
 
     def get_related_work_user_view_based_positions(self):
         return [self.get_related_work__view_label()]
+
+    def save(self):
+        self.value = self._compute_value()
+        self.rank = self._compute_rank()
+        super().save()
 
 
 class UniversityThrough(models.Model):

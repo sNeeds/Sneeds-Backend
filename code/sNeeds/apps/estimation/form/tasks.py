@@ -4,16 +4,11 @@ from .models import StudentDetailedInfo
 
 
 @shared_task
-def update_student_detailed_info_ranks(exclude_id):
-    student_detailed_info_qs = StudentDetailedInfo.objects.all().exclude(id=exclude_id)
-    student_detailed_info_tuples_list = student_detailed_info_qs.get_with_value_rank_list()
-    for t in student_detailed_info_tuples_list:
+def update_student_detailed_info_ranks():
+    student_detailed_info_qs = StudentDetailedInfo.objects.all().order_by("value")
 
-        obj = t[0]
-        rank = t[1]
-
-        obj.rank = rank
-        obj.save()
+    for i, obj in enumerate(student_detailed_info_qs):
+        obj.update(rank=i)
 
 
 @shared_task
