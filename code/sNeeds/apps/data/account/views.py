@@ -485,8 +485,9 @@ class StudentDetailedUniversityThroughRetrieveDestroyAPIView(custom_generic_apiv
 def payment_affordability_choices(request, format=None):
     choices = []
 
-    for choice in models.PaymentAffordability:
-        choices.append({"value": choice.name, "label": choice.value})
+    for choice in StudentDetailedInfo.PaymentAffordabilityChoices:
+        choices.append({"value": choice.value, "label": choice.label})
+    # choices = StudentDetailedInfo.PaymentAffordabilityChoices.choices
 
     return Response(
         data={"choices": choices},
