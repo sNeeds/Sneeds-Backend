@@ -2,9 +2,6 @@ from django.contrib import admin
 
 from . import models
 
-admin.site.register(models.Country)
-admin.site.register(models.Major)
-
 
 @admin.register(models.University)
 class UniversityAdmin(admin.ModelAdmin):
@@ -12,3 +9,13 @@ class UniversityAdmin(admin.ModelAdmin):
     search_fields = ['name']
 
 
+@admin.register(models.Country)
+class CountryAdmin(admin.ModelAdmin):
+    list_display = ['id', 'name', 'slug', ]
+    search_fields = ['name']
+
+
+@admin.register(models.Major)
+class MajorAdmin(admin.ModelAdmin):
+    list_display = ['id', 'name', 'parent_major', 'hierarchy_str']
+    search_fields = ['name']
