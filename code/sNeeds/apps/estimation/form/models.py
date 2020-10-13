@@ -511,8 +511,7 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         return Major.objects.filter(id__in=related_major_ids)
 
     def get_powerful_recommendation__store_label(self):
-        return MISSING_LABEL if not self.powerful_recommendation or self.powerful_recommendation is None \
-            else REWARDED_LABEL
+        return MISSING_LABEL if not self.powerful_recommendation or self.powerful_recommendation is None else REWARDED_LABEL
 
     def get_olympiad__store_label(self):
         return MISSING_LABEL if self.olympiad is None or len(self.olympiad) == 0 else REWARDED_LABEL
