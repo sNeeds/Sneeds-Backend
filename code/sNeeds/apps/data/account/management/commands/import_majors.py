@@ -20,7 +20,7 @@ class Command(BaseCommand):
                 parent = self.find_django_parent(node.parent)
             major = Major.objects.create(
                 name=node.content,
-                search_name=node.content + " major field study of",
+                search_name=node.content + " major field of study",
                 parent_major=parent
             )
             self.imported_nodes.append((major, node))
