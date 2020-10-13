@@ -97,25 +97,28 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         super().clean()
 
         if self.user_type == CustomUser.UserTypeChoices.ADMIN_CONSULTANT:
-            if CustomUser.objects.filter(user_type=CustomUser.UserTypeChoices.ADMIN_CONSULTANT).exclude(id=self.id).exists():
+            if CustomUser.objects.filter(user_type=CustomUser.UserTypeChoices.ADMIN_CONSULTANT).exclude(
+                    id=self.id).exists():
                 raise ValidationError("User with admin_consultant type exists.")
             if not ConsultantProfile.objects.filter(user__id=self.id).exists():
                 raise ValidationError("No consultant profile for user with admin_consultant exists.")
 
-        self.update_user_type()
+    def save(self):
+        self.user_type = self.compute_user_type()
 
         self.email = self.__class__.objects.normalize_email(self.email)
         self.email = self.email.lower()
 
-    def update_user_type(self):
+        super().save()
+
+    def compute_user_type(self):
         from sNeeds.apps.users.consultants.models import ConsultantProfile
         if self.user_type == self.UserTypeChoices.ADMIN_CONSULTANT:
             return
-
-        if ConsultantProfile.objects.filter(user__id=self.id).exists():
-            self.user_type = self.UserTypeChoices.CONSULTANT
+        elif ConsultantProfile.objects.filter(user__id=self.id).exists():
+            return self.UserTypeChoices.CONSULTANT
         else:
-            self.user_type = self.UserTypeChoices.STUDENT
+            return self.UserTypeChoices.STUDENT
 
     def is_consultant(self):
         if self.user_type == self.UserTypeChoices.CONSULTANT:
@@ -131,18 +134,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         if self.user_type == self.UserTypeChoices.ADMIN_CONSULTANT:
             return True
         return False
-
-    def set_user_type_consultant(self):
-        self.user_type = self.UserTypeChoices.CONSULTANT
-        self.save()
-
-    def set_user_type_student(self):
-        self.user_type = self.UserTypeChoices.STUDENT
-        self.save()
-
-    def set_user_admin_consultant(self):
-        self.user_type = self.UserTypeChoices.ADMIN_CONSULTANT
-        self.save()
 
     def get_full_name(self):
         """

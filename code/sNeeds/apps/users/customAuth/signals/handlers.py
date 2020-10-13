@@ -16,7 +16,6 @@ def post_save_consultant_profile(sender, instance, created, *args, **kwargs):
     users_qs = User.objects.all()
 
     for user in users_qs:
-        user.update_user_type()
         user.save()
 
 
