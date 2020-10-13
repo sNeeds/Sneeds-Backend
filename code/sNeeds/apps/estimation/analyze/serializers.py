@@ -30,8 +30,9 @@ def get_store_to_view_labels(store_labels, label_convert_function=None):
         return store_labels
 
     view_labels = []
-    for label in store_labels:
-        view_labels.append(label_convert_function(label))
+    if store_labels is not None:
+        for label in store_labels:
+            view_labels.append(label_convert_function(label))
     return view_labels
 
 
