@@ -709,18 +709,18 @@ class UniversityThrough(models.Model):
 
 class LanguageCertificate(models.Model):
     class LanguageCertificateType(models.TextChoices):
-        IELTS_GENERAL = 'IELTS General'
-        IELTS_ACADEMIC = 'IELTS Academic'
-        TOEFL = 'TOEFL'
-        GMAT = 'GMAT'
-        GRE_GENERAL = 'GRE General'
-        GRE_CHEMISTRY = 'GRE Chemistry'
-        GRE_MATHEMATICS = 'GRE Mathematics'
-        GRE_LITERATURE = 'GRE Literature'
-        GRE_BIOLOGY = 'GRE Biology'
-        GRE_PHYSICS = 'GRE Physics'
-        GRE_PSYCHOLOGY = 'GRE Psychology'
-        DUOLINGO = 'Duolingo'
+        IELTS_GENERAL = 'IELTS General', 'IELTS General'
+        IELTS_ACADEMIC = 'IELTS Academic', 'IELTS Academic'
+        TOEFL = 'TOEFL', 'TOEFL'
+        GMAT = 'GMAT', 'GMAT'
+        GRE_GENERAL = 'GRE General', 'GRE General'
+        GRE_CHEMISTRY = 'GRE Chemistry', 'GRE Chemistry'
+        GRE_MATHEMATICS = 'GRE Mathematics', 'GRE Mathematics'
+        GRE_LITERATURE = 'GRE Literature', 'GRE Literature'
+        GRE_BIOLOGY = 'GRE Biology', 'GRE Biology'
+        GRE_PHYSICS = 'GRE Physics', 'GRE Physics'
+        GRE_PSYCHOLOGY = 'GRE Psychology', 'GRE Psychology'
+        DUOLINGO = 'Duolingo', 'Duolingo'
 
     student_detailed_info = models.ForeignKey(
         StudentDetailedInfoBase,
