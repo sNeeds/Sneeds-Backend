@@ -224,133 +224,133 @@ class ReviewPublicationMixin:
 
         more_than_one_publications = bool(publications_qs.count())
 
-        if self.last_grade == GradeChoices.BACHELOR:
-            if publications_qs.count() == 0:
-                data = NO_PUBLICATION_BACHELOR
-            elif publications_qs.count() == 1:
-                data = ONE_PUBLICATION_BACHELOR
-            elif publications_qs.count() == 2:
-                data = TWO_PUBLICATION_BACHELOR
-            elif publications_qs.count() >= 3:
-                data = THREE_OR_MORE_PUBLICATION_BACHELOR
-
-            if excellent_publications.exists():
-                data += _add_review(
-                    excellent_publications,
-                    BACHELOR_HAS_EXCELLENT_PUBLICATION_SINGULAR,
-                    HAS_EXCELLENT_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
-                    HAS_EXCELLENT_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
-                    BACHELOR_HAS_EXCELLENT_PUBLICATION_PLURAL,
-                    HAS_EXCELLENT_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
-                    more_than_one_publications
-                )
-            if great_publications.exists():
-                data += _add_review(
-                    great_publications,
-                    BACHELOR_HAS_GREAT_PUBLICATION_SINGULAR,
-                    HAS_GREAT_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
-                    HAS_GREAT_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
-                    BACHELOR_HAS_GREAT_PUBLICATION_PLURAL,
-                    HAS_GREAT_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
-                    more_than_one_publications
-                )
-            if good_publications.exists():
-                data += _add_review(
-                    good_publications,
-                    BACHELOR_HAS_GOOD_PUBLICATION_SINGULAR,
-                    HAS_GOOD_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
-                    HAS_GOOD_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
-                    BACHELOR_HAS_GOOD_PUBLICATION_PLURAL,
-                    HAS_GOOD_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
-                    more_than_one_publications
-                )
-            if average_publications.exists():
-                data += _add_review(
-                    average_publications,
-                    BACHELOR_HAS_AVERAGE_PUBLICATION_SINGULAR,
-                    HAS_AVERAGE_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
-                    HAS_AVERAGE_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
-                    BACHELOR_HAS_AVERAGE_PUBLICATION_PLURAL,
-                    HAS_AVERAGE_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
-                    more_than_one_publications
-                )
-            if bad_publications.exists():
-                data += _add_review(
-                    bad_publications,
-                    BACHELOR_HAS_BAD_PUBLICATION_SINGULAR,
-                    HAS_BAD_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
-                    HAS_BAD_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
-                    BACHELOR_HAS_BAD_PUBLICATION_PLURAL,
-                    HAS_BAD_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
-                    more_than_one_publications
-                )
-
-        if self.last_grade == GradeChoices.MASTER:
-            if publications_qs.count() == 0:
-                data = NO_PUBLICATION_MASTER
-            elif publications_qs.count() == 1:
-                data = ONE_PUBLICATION_MASTER
-            elif publications_qs.count() == 2:
-                data = TWO_PUBLICATION_MASTER
-            elif publications_qs.count() == 3:
-                data = THREE_PUBLICATION_MASTER
-            elif publications_qs.count() >= 4:
-                data = FOUR_OR_MORE_PUBLICATION_MASTER
-
-            if excellent_publications.exists():
-                data += _add_review(
-                    excellent_publications,
-                    MASTER_HAS_EXCELLENT_PUBLICATION_SINGULAR,
-                    HAS_EXCELLENT_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
-                    HAS_EXCELLENT_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
-                    MASTER_HAS_EXCELLENT_PUBLICATION_PLURAL,
-                    HAS_EXCELLENT_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
-                    more_than_one_publications
-                )
-            if great_publications.exists():
-                data += _add_review(
-                    great_publications,
-                    MASTER_HAS_GREAT_PUBLICATION_SINGULAR,
-                    HAS_GREAT_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
-                    HAS_GREAT_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
-                    MASTER_HAS_GREAT_PUBLICATION_PLURAL,
-                    HAS_GREAT_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
-                    more_than_one_publications
-                )
-            if good_publications.exists():
-                data += _add_review(
-                    good_publications,
-                    MASTER_HAS_GOOD_PUBLICATION_SINGULAR,
-                    HAS_GOOD_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
-                    HAS_GOOD_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
-                    MASTER_HAS_GOOD_PUBLICATION_PLURAL,
-                    HAS_GOOD_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
-                    more_than_one_publications
-                )
-            if average_publications.exists():
-                data += _add_review(
-                    average_publications,
-                    MASTER_HAS_AVERAGE_PUBLICATION_SINGULAR,
-                    HAS_AVERAGE_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
-                    HAS_AVERAGE_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
-                    MASTER_HAS_AVERAGE_PUBLICATION_PLURAL,
-                    HAS_AVERAGE_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
-                    more_than_one_publications
-                )
-            if bad_publications.exists():
-                data += _add_review(
-                    bad_publications,
-                    MASTER_HAS_BAD_PUBLICATION_SINGULAR,
-                    HAS_BAD_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
-                    HAS_BAD_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
-                    MASTER_HAS_BAD_PUBLICATION_PLURAL,
-                    HAS_BAD_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
-                    more_than_one_publications
-                )
-        data["total_value"] :publications_qs.qs_total_value_label()
-        data["total_value_label"] : publications_qs.qs_total_value_label()
-        data["comment"] : "Coming soon"
-        return data
+        # if self.last_grade == GradeChoices.BACHELOR:
+        #     if publications_qs.count() == 0:
+        #         data = NO_PUBLICATION_BACHELOR
+        #     elif publications_qs.count() == 1:
+        #         data = ONE_PUBLICATION_BACHELOR
+        #     elif publications_qs.count() == 2:
+        #         data = TWO_PUBLICATION_BACHELOR
+        #     elif publications_qs.count() >= 3:
+        #         data = THREE_OR_MORE_PUBLICATION_BACHELOR
+        #
+        #     if excellent_publications.exists():
+        #         data += _add_review(
+        #             excellent_publications,
+        #             BACHELOR_HAS_EXCELLENT_PUBLICATION_SINGULAR,
+        #             HAS_EXCELLENT_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
+        #             HAS_EXCELLENT_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
+        #             BACHELOR_HAS_EXCELLENT_PUBLICATION_PLURAL,
+        #             HAS_EXCELLENT_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
+        #             more_than_one_publications
+        #         )
+        #     if great_publications.exists():
+        #         data += _add_review(
+        #             great_publications,
+        #             BACHELOR_HAS_GREAT_PUBLICATION_SINGULAR,
+        #             HAS_GREAT_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
+        #             HAS_GREAT_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
+        #             BACHELOR_HAS_GREAT_PUBLICATION_PLURAL,
+        #             HAS_GREAT_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
+        #             more_than_one_publications
+        #         )
+        #     if good_publications.exists():
+        #         data += _add_review(
+        #             good_publications,
+        #             BACHELOR_HAS_GOOD_PUBLICATION_SINGULAR,
+        #             HAS_GOOD_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
+        #             HAS_GOOD_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
+        #             BACHELOR_HAS_GOOD_PUBLICATION_PLURAL,
+        #             HAS_GOOD_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
+        #             more_than_one_publications
+        #         )
+        #     if average_publications.exists():
+        #         data += _add_review(
+        #             average_publications,
+        #             BACHELOR_HAS_AVERAGE_PUBLICATION_SINGULAR,
+        #             HAS_AVERAGE_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
+        #             HAS_AVERAGE_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
+        #             BACHELOR_HAS_AVERAGE_PUBLICATION_PLURAL,
+        #             HAS_AVERAGE_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
+        #             more_than_one_publications
+        #         )
+        #     if bad_publications.exists():
+        #         data += _add_review(
+        #             bad_publications,
+        #             BACHELOR_HAS_BAD_PUBLICATION_SINGULAR,
+        #             HAS_BAD_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
+        #             HAS_BAD_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
+        #             BACHELOR_HAS_BAD_PUBLICATION_PLURAL,
+        #             HAS_BAD_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
+        #             more_than_one_publications
+        #         )
+        #
+        # if self.last_grade == GradeChoices.MASTER:
+        #     if publications_qs.count() == 0:
+        #         data = NO_PUBLICATION_MASTER
+        #     elif publications_qs.count() == 1:
+        #         data = ONE_PUBLICATION_MASTER
+        #     elif publications_qs.count() == 2:
+        #         data = TWO_PUBLICATION_MASTER
+        #     elif publications_qs.count() == 3:
+        #         data = THREE_PUBLICATION_MASTER
+        #     elif publications_qs.count() >= 4:
+        #         data = FOUR_OR_MORE_PUBLICATION_MASTER
+        #
+        #     if excellent_publications.exists():
+        #         data += _add_review(
+        #             excellent_publications,
+        #             MASTER_HAS_EXCELLENT_PUBLICATION_SINGULAR,
+        #             HAS_EXCELLENT_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
+        #             HAS_EXCELLENT_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
+        #             MASTER_HAS_EXCELLENT_PUBLICATION_PLURAL,
+        #             HAS_EXCELLENT_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
+        #             more_than_one_publications
+        #         )
+        #     if great_publications.exists():
+        #         data += _add_review(
+        #             great_publications,
+        #             MASTER_HAS_GREAT_PUBLICATION_SINGULAR,
+        #             HAS_GREAT_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
+        #             HAS_GREAT_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
+        #             MASTER_HAS_GREAT_PUBLICATION_PLURAL,
+        #             HAS_GREAT_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
+        #             more_than_one_publications
+        #         )
+        #     if good_publications.exists():
+        #         data += _add_review(
+        #             good_publications,
+        #             MASTER_HAS_GOOD_PUBLICATION_SINGULAR,
+        #             HAS_GOOD_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
+        #             HAS_GOOD_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
+        #             MASTER_HAS_GOOD_PUBLICATION_PLURAL,
+        #             HAS_GOOD_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
+        #             more_than_one_publications
+        #         )
+        #     if average_publications.exists():
+        #         data += _add_review(
+        #             average_publications,
+        #             MASTER_HAS_AVERAGE_PUBLICATION_SINGULAR,
+        #             HAS_AVERAGE_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
+        #             HAS_AVERAGE_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
+        #             MASTER_HAS_AVERAGE_PUBLICATION_PLURAL,
+        #             HAS_AVERAGE_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
+        #             more_than_one_publications
+        #         )
+        #     if bad_publications.exists():
+        #         data += _add_review(
+        #             bad_publications,
+        #             MASTER_HAS_BAD_PUBLICATION_SINGULAR,
+        #             HAS_BAD_PUBLICATION_SINGULAR_NOT_BETWEEN_OTHERS,
+        #             HAS_BAD_PUBLICATION_SINGULAR_BETWEEN_OTHERS,
+        #             MASTER_HAS_BAD_PUBLICATION_PLURAL,
+        #             HAS_BAD_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
+        #             more_than_one_publications
+        #         )
+        data["total_value"] =publications_qs.qs_total_value_label()
+        data["total_value_label"] = publications_qs.qs_total_value_label()
+        data["comment"] = "Coming soon"
+        return "Coming soon"
 
 
 class ReviewOthersMixin:
