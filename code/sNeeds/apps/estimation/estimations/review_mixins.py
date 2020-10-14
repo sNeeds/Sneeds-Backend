@@ -347,8 +347,8 @@ class ReviewPublicationMixin:
                     HAS_BAD_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
                     more_than_one_publications
                 )
-        data["total_value"] = publications_qs.qs_total_value_label()
-        data["total_value_label"] = publications_qs.qs_total_value_label()
+        data["total_value"] :publications_qs.qs_total_value_label()
+        data["total_value_label"] : publications_qs.qs_total_value_label()
         data["comment"] = "Comming soon"
         return data
 
