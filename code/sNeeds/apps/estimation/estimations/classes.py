@@ -28,7 +28,7 @@ class ValueRange:
                 return getattr(r, attr)
             elif r.end is None and value < r.start:
                 return getattr(r, attr)
-            elif r.start and r.end and r.start <= value < r.end:
+            elif r.start and r.end and r.end <= value < r.start:
                 return getattr(r, attr)
 
         raise Exception("No label for value={} found".format(value))
