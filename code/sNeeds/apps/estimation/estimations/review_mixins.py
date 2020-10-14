@@ -49,7 +49,7 @@ class ReviewLanguageMixin:
             )
             if language_type:
                 try:
-                    obj = RegularLanguageCertificate.objects.get(id = language_type.id)
+                    obj = RegularLanguageCertificate.objects.get(id=language_type.id)
                     value_range = ValueRange(VALUES_WITH_ATTRS[t.lower() + "_comments"])
                     comment = value_range.find_value_attrs(obj.overall, 'comment')
                     data[t] = {
@@ -347,8 +347,9 @@ class ReviewPublicationMixin:
                     HAS_BAD_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
                     more_than_one_publications
                 )
-        data["total_value"]: publications_qs.qs_total_value_label()
-        data["total_value_label"]: publications_qs.qs_total_value_label()
+        data["total_value"] = publications_qs.qs_total_value_label()
+        data["total_value_label"] = publications_qs.qs_total_value_label()
+        data["comment"] = "Comming soon"
         return data
 
 
@@ -364,7 +365,7 @@ class ReviewOthersMixin:
         comment = ""
         if form.related_work_experience:
             print("****", form.related_work_experience)
-            #TODO:Change
+            # TODO:Change
             value_range = ValueRange(VALUES_WITH_ATTRS["work_experience_comments"])
             comment = value_range.find_value_attrs(form.related_work_experience, 'comment')
         return comment
