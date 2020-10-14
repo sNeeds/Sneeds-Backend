@@ -48,15 +48,18 @@ class ReviewLanguageMixin:
                 getattr(LanguageCertificate.LanguageCertificateType, t)
             )
             if language_type:
-                value_range = ValueRange(VALUES_WITH_ATTRS[t.lower() + "_comments"])
-                comment = value_range.find_value_attrs(language_type.overall, 'comment')
-                data[t] = {
-                    "comment": comment,
-                    "is_mock": language_type.is_mock,
-                    "value": language_type.compute_value()[0],
-                    "value_label": language_type.compute_value()[1]
-                }
-
+                try:
+                    obj = RegularLanguageCertificate.objects.get(id = language_type.id)
+                    value_range = ValueRange(VALUES_WITH_ATTRS[t.lower() + "_comments"])
+                    comment = value_range.find_value_attrs(obj.overall, 'comment')
+                    data[t] = {
+                        "comment": comment,
+                        "is_mock": obj.is_mock,
+                        "value": obj.compute_value()[0],
+                        "value_label": obj.compute_value()[1]
+                    }
+                except:
+                    pass
             if data.get("ielts_general"):
                 data["itels_general"]["comment"] = CHANGE_GENERAL_WITH_ACADEMIC + data["itels_general"]["comment"]
 
