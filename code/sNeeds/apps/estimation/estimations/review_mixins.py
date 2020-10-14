@@ -349,7 +349,7 @@ class ReviewPublicationMixin:
                 )
         data["total_value"] :publications_qs.qs_total_value_label()
         data["total_value_label"] : publications_qs.qs_total_value_label()
-        data["comment"] = "Comming soon"
+        data["comment"] : "Coming soon"
         return data
 
 
