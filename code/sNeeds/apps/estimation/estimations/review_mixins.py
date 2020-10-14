@@ -48,7 +48,7 @@ class ReviewLanguageMixin:
                 getattr(LanguageCertificate.LanguageCertificateType, t)
             )
             if language_type:
-                value_range = ValueRange(VALUES_WITH_ATTRS[t.lower() + "_comment"])
+                value_range = ValueRange(VALUES_WITH_ATTRS[t.lower() + "_comments"])
                 comment = value_range.find_value_attrs(language_type.overall, 'comment')
                 data[t] = {
                     "comment": comment,
