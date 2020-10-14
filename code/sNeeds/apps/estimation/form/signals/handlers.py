@@ -19,24 +19,27 @@ def pre_save_student_detailed_info(sender, instance, *args, **kwargs):
         StudentDetailedInfo.objects.get(id=instance.id)
 
     except StudentDetailedInfo.DoesNotExist:  # new object will be created
-        # https://docs.djangoproject.com/en/3.0/ref/models/instances/#django.db.models.Model._state
-        if instance._state.adding is True and instance._state.db is None:
+        pass
+
+
+    # https://docs.djangoproject.com/en/3.0/ref/models/instances/#django.db.models.Model._state
+    if instance._state.adding is True and instance._state.db is None:
+        db_instance = None
+    else:
+        try:
+            db_instance = StudentDetailedInfo.objects.get(pk=instance.pk)
+        except StudentDetailedInfo.DoesNotExist:
             db_instance = None
-        else:
-            try:
-                db_instance = StudentDetailedInfo.objects.get(pk=instance.pk)
-            except StudentDetailedInfo.DoesNotExist:
-                db_instance = None
 
-        data = form_serializers.StudentDetailedInfoCelerySerializer(instance).data
-        db_data = None if db_instance is None else form_serializers.StudentDetailedInfoCelerySerializer(
-            db_instance).data
+    data = form_serializers.StudentDetailedInfoCelerySerializer(instance).data
+    db_data = None if db_instance is None else form_serializers.StudentDetailedInfoCelerySerializer(
+        db_instance).data
 
-        update_charts.update_powerful_recommendation_chart.delay(data=data, db_data=db_data, is_delete=False)
-        update_charts.update_olympiad_chart.delay(data=data, db_data=db_data, is_delete=False)
-        update_charts.update_related_work_experience_chart.delay(data=data, db_data=db_data, is_delete=False)
+    update_charts.update_powerful_recommendation_chart.delay(data=data, db_data=db_data, is_delete=False)
+    update_charts.update_olympiad_chart.delay(data=data, db_data=db_data, is_delete=False)
+    update_charts.update_related_work_experience_chart.delay(data=data, db_data=db_data, is_delete=False)
 
-        update_charts.update_publication_count_chart_sdi_creation.delay(data=data, db_data=db_data, is_delete=False)
+    update_charts.update_publication_count_chart_sdi_creation.delay(data=data, db_data=db_data, is_delete=False)
 
 
 def pre_delete_student_detailed_info(sender, instance, *args, **kwargs):
