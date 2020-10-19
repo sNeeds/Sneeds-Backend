@@ -180,6 +180,11 @@ class OtherChartsRetrieveAPIView(BaseChartsAPIView):
 
         'related_work_experience': {'serializer_class': serializers.RelatedWorkExperienceChartSerializer,
                                     'chart_title_enum': Chart.ChartTitle.RELATED_WORK_EXPERIENCE},
+
+        'grade_point_average': {
+            'serializer_class': serializers.GradePointAverageChartSerializer,
+            'chart_title_enum': Chart.ChartTitle.GRADE_POINT_AVERAGE,
+        },
     }
 
 

@@ -143,6 +143,55 @@ def update_publication_impact_factor_chart(data, db_data, is_delete=False):
                         form_models.Publication.get_impact_factor__store_label, instance, db_instance, is_delete)
 
 
+def prepare_publications_score_chart_data(instance, db_instance, is_delete=False):
+
+    if is_delete:
+        old_publications_score = instance.student_detailed_info.studentdetailedinfo.publication_set.qs_total_value()
+        new_publications_score = instance.student_detailed_info.studentdetailedinfo.publication_set.exclude(pk=instance.pk).qs_total_value()
+
+        old_label = form_models.Publication.get_publications_score__store_label(old_publications_score)
+        new_label = form_models.Publication.get_publications_score__store_label(new_publications_score)
+
+    else:
+        # Save has been called in order to update an entry
+        if db_instance is not None:
+
+            old_label = get_publications_score_label(old_publications_values)
+            new_label = get_publications_score_label(new_publications_values)
+
+            if old_label != new_label:
+                with transaction.atomic():
+                    obj, created = ChartItemData.objects.get_or_create(chart=chart, label=old_label,
+                                                                       defaults={'count': 0})
+                    if not created:
+                        ChartItemData.objects.filter(pk=obj.pk).update(count=F('count') - 1)
+
+                with transaction.atomic():
+                    obj, created = ChartItemData.objects.get_or_create(chart=chart, label=new_label,
+                                                                       defaults={'count': 1})
+                    if not created:
+                        ChartItemData.objects.filter(pk=obj.pk).update(count=F('count') + 1)
+        # Save has been called in order to create an entry
+        else:
+            old_publications_values = instance.student_detailed_info.studentdetailedinfo.publication_set \
+                .aggregate(Sum('value')).get('value__sum')
+            new_publications_values = old_publications_values + instance.value
+
+            old_label = get_publications_score_label(old_publications_values)
+            new_label = get_publications_score_label(new_publications_values)
+
+            if old_label != new_label:
+                with transaction.atomic():
+                    obj, created = ChartItemData.objects.get_or_create(chart=chart, label=old_label,
+                                                                       defaults={'count': 0})
+                    if not created:
+                        ChartItemData.objects.filter(pk=obj.pk).update(count=F('count') - 1)
+
+                with transaction.atomic():
+                    obj, created = ChartItemData.objects.get_or_create(chart=chart, label=new_label,
+                                                                       defaults={'count': 1})
+                    if not created:
+                        ChartItemData.objects.filter(pk=obj.pk).update(count=F('count') + 1)
 @shared_task
 def update_publications_score_chart(data, db_data, is_delete=False):
     des_obj = next(deserialize('json', data))
