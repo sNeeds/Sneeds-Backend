@@ -24,12 +24,14 @@ class EstimationBaseTest(APITestCase):
 
         self.country1 = Country.objects.create(
             name="country1",
+            search_name="country1",
             slug="country1",
             picture=None
         )
 
         self.country2 = Country.objects.create(
             name="country2",
+            search_name="country2",
             slug="country2",
             picture=None
         )
@@ -38,34 +40,36 @@ class EstimationBaseTest(APITestCase):
 
         self.university1 = University.objects.create(
             name="university1",
+            search_name="university1",
             country=self.country1,
             description="Test desc1",
             picture=None,
-            slug="university1"
+            rank=80
         )
 
         self.university2 = University.objects.create(
             name="university2",
+            search_name="university2",
             country=self.country2,
             description="Test desc2",
             picture=None,
-            slug="university2"
+            rank=800
         )
 
         # ------- Majors -------
 
         self.major1 = Major.objects.create(
             name="field of study1",
+            search_name="field of study1",
             description="Test desc1",
             picture=None,
-            slug="field-of-study1"
         )
 
         self.major2 = Major.objects.create(
             name="field of study2",
+            search_name="field of study2",
             description="Test desc2",
             picture=None,
-            slug="field-of-study2"
         )
 
         # ----- Setup ------
