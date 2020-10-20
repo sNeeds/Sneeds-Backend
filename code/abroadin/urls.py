@@ -25,7 +25,7 @@ urlpatterns = [
                   path('chat/', include('abroadin.apps.chats.urls')),
                   path('utils/', include('abroadin.apps.customUtils.urls')),
                   path('users/auth/', include('abroadin.apps.users.customAuth.urls')),
-                  path('users/consultant/', include('abroadin.apps.users.consultants.urls')),
+                  path('users/consultants/', include('abroadin.apps.users.consultants.urls')),
                   path('users/files/', include('abroadin.apps.users.userFiles.urls')),
                   path('data/account/', include('abroadin.apps.data.account.urls')),
                   path('store/packages/', include('abroadin.apps.store.storePackages.urls')),
