@@ -10,9 +10,4 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='appliedto',
-            name='grade',
-            field=models.CharField(choices=[('Bachelor', 'Bachelor'), ('Master', 'Master'), ('PH.D', 'Phd'), ('Post Doc', 'Post Doc')], default='Bachelor', max_length=128),
-        ),
     ]
