@@ -9,13 +9,13 @@ services:
 
     entrypoint: /scripts/web_entrypoint.sh
 
-    command: gunicorn -w 4 sNeeds.wsgi -b 0.0.0.0:8000
+    command: gunicorn -w 4 abroadin.wsgi -b 0.0.0.0:8000
 
     environment:
       SECRET_KEY: ${SECRET_KEY}
       DJANGO_DEPLOYMENT: 1
       #TODO: Make this implemented
-      DJANGO_SETTINGS_MODULE: sNeeds.settings.deployment # Used by gunicorn
+      DJANGO_SETTINGS_MODULE: abroadin.settings.deployment # Used by gunicorn
 
       #DB config
       DB_NAME: ${DB_NAME}
@@ -44,7 +44,7 @@ services:
 
   celery:
     <<: *django
-    command: bash -c "celery -A sNeeds worker --loglevel=info && celery -A sNeeds beat --loglevel=info"
+    command: bash -c "celery -A abroadin worker --loglevel=info && celery -A abroadin beat --loglevel=info"
     ports: []
     entrypoint: []
     depends_on:

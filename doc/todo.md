@@ -4,4 +4,4 @@ python -c 'import random; result = "".join([random.choice("abcdefghijklmnopqrstu
 ```
 
 ## Restarting celery
-sudo supervisorctl restart sneeds_celery_beat && sudo supervisorctl restart sneeds_celery_worker
+sudo supervisorctl restart abroadin_celery_beat && sudo supervisorctl restart abroadin_celery_worker

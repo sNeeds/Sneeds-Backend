@@ -7,7 +7,7 @@ media/
 files/
 venv/
 env/
-sneeds/local.py
+abroadin/local.py
 APIs.py
 passwords.py
 

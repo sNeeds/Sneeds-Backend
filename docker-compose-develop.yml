@@ -40,7 +40,7 @@ services:
 
   celery:
     <<: *django
-    command: bash -c "celery -A sNeeds worker --loglevel=info && celery -A sNeeds beat --loglevel=info"
+    command: bash -c "celery -A abroadin worker --loglevel=info && celery -A abroadin beat --loglevel=info"
     ports: []
     entrypoint: []
     depends_on:
