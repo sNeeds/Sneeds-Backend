@@ -1,23 +1,21 @@
 from rest_framework import permissions
 
-from abroadin.apps.store.storePackages.models import SoldStorePackage
 
-
-class IsStudentPermission(permissions.BasePermission):
-    message = "Only student users can create StudentDetailedInfo"
+class OnlyOneFormPermission(permissions.BasePermission):
+    message = "Student can only have one form."
 
     def has_permission(self, request, view):
-        user = request.user
-        if not user.is_authenticated:
-            return False
-        else:
-            return user.is_student()
+        from abroadin.apps.estimation.form.models import StudentDetailedInfo
+
+        return not StudentDetailedInfo.objects.filter(user=request.user).exists()
 
 
 class StudentDetailedInfoOwnerOrInteractConsultantOrWithoutUserPermission(permissions.BasePermission):
     message = "Only owner can update and only owner and consultants that service the owner can see info"
 
     def has_object_permission(self, request, view, obj):
+        from abroadin.apps.store.storePackages.models import SoldStorePackage
+
         user = request.user
 
         if obj.user is None:

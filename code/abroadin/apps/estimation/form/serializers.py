@@ -528,29 +528,6 @@ class StudentDetailedInfoRequestSerializer(serializers.ModelSerializer):
             'created', 'updated',
         ]
 
-    def validate(self, attrs):
-        request = self.context.get('request')
-        request_user = request.user
-        data_user = attrs.get("user")
-        if data_user is not None:
-            if data_user != request_user:
-                raise ValidationError(_("User can't set another user as the user of object."))
-            if data_user.is_consultant():
-                raise ValidationError(_("Consultants can not have Student Detailed Info"))
-            if data_user.is_authenticated:
-                user_student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=data_user)
-                if user_student_detailed_info_qs.exists():
-                    raise ValidationError(_("User already has a student detailed info"))
-        return attrs
-
-    def create(self, validated_data):
-        data_user = validated_data.get("user")
-        if data_user is not None:
-            user_student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=data_user)
-            if user_student_detailed_info_qs.exists():
-                raise ValidationError(_("User already has a student detailed info"))
-        student_detailed_info_obj = StudentDetailedInfo.objects.create(**validated_data)
-        return student_detailed_info_obj
 
 
 class StudentDetailedInfoCelerySerializer(serializers.ModelSerializer):

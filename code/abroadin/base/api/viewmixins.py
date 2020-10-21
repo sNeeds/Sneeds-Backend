@@ -15,7 +15,9 @@ class CAPIViewPatch200Mixin:
 
         # Ensure that the incoming request is permitted
         self.perform_authentication(request)
+
         if request.method.lower() != 'options':
             self.check_permissions(request)
+
         self.check_throttles(request)
 

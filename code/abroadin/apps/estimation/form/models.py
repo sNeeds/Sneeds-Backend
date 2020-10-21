@@ -25,7 +25,6 @@ class GradeChoices(models.TextChoices):
     PHD = 'PH.D', 'PH.D'
     POST_DOC = 'Post Doc', 'Post Doc'
 
-
 class StudentFormApplySemesterYear(models.Model):
     class SemesterChoices(models.TextChoices):
         SPRING = "Spring"
