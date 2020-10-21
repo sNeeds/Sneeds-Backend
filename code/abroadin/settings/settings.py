@@ -13,10 +13,10 @@ INSTALLED_APPS = [
     'django_extensions',
 
     'abroadin.apps.docs',
+    'abroadin.apps.chats',
     'abroadin.apps.customUtils',
     'abroadin.apps.notifications',
     'abroadin.apps.users.userFiles',
-    'apps.chats',
     'abroadin.apps.users.customAuth',
     'abroadin.apps.users.consultants',
     'abroadin.apps.store.storeBase',

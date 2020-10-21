@@ -1,3 +1,5 @@
+from collections.abc import Callable
+
 from rest_framework import permissions
 
 

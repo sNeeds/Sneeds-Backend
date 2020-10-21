@@ -8,6 +8,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from abroadin.base.api.enum_views import EnumViewList
+from abroadin.base.api.permissions import permission_class_factory
 from abroadin.utils.custom.views import custom_generic_apiviews
 
 from .models import (
@@ -62,7 +63,9 @@ class StudentDetailedInfoListCreateAPIView(custom_generic_apiviews.BaseListCreat
     queryset = StudentDetailedInfo.objects.all()
     serializer_class = StudentDetailedInfoSerializer
     request_serializer_class = StudentDetailedInfoRequestSerializer
-    permission_classes = [OnlyOneFormPermission]
+    permission_classes = [
+        permission_class_factory(OnlyOneFormPermission, ["POSTS"])
+    ]
 
     def get_queryset(self):
         user = self.request.user
@@ -75,7 +78,6 @@ class StudentDetailedInfoListCreateAPIView(custom_generic_apiviews.BaseListCreat
         request_body=request_serializer_class,
         responses={200: serializer_class},
     )
-
     #     request = self.context.get('request')
     #     request_user = request.user
     #     data_user = attrs.get("user")
