@@ -9,7 +9,10 @@ class OnlyOneFormPermission(permissions.BasePermission):
     def has_permission(self, request, view):
         from abroadin.apps.estimation.form.models import StudentDetailedInfo
 
-        return not StudentDetailedInfo.objects.filter(user=request.user).exists()
+        user = request.user
+        if user.is_authenticated:
+            return not StudentDetailedInfo.objects.filter(user=request.user).exists()
+        return True
 
 
 class StudentDetailedInfoOwnerOrInteractConsultantOrWithoutUserPermission(permissions.BasePermission):

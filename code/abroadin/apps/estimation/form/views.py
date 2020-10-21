@@ -103,7 +103,7 @@ class StudentDetailedInfoListCreateAPIView(custom_generic_apiviews.BaseListCreat
     #
     def perform_create(self, serializer):
         user = self.request.user
-        if user:
+        if user.is_authenticated:
             serializer.save(user=user)
         else:
             super().perform_create(serializer)
