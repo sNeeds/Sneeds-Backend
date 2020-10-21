@@ -528,6 +528,8 @@ class StudentDetailedInfoRequestSerializer(serializers.ModelSerializer):
             'created', 'updated',
         ]
 
+    def validate(self, attrs):
+        return attrs
 
 
 class StudentDetailedInfoCelerySerializer(serializers.ModelSerializer):

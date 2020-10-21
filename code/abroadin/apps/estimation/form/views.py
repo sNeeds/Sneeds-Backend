@@ -64,7 +64,7 @@ class StudentDetailedInfoListCreateAPIView(custom_generic_apiviews.BaseListCreat
     serializer_class = StudentDetailedInfoSerializer
     request_serializer_class = StudentDetailedInfoRequestSerializer
     permission_classes = [
-        permission_class_factory(OnlyOneFormPermission, ["POSTS"])
+        permission_class_factory(OnlyOneFormPermission, ["POST"])
     ]
 
     def get_queryset(self):

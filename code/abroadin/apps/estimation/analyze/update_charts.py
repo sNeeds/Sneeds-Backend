@@ -573,7 +573,6 @@ def update_gre_general_writing_chart(data, db_data, is_delete=False):
 
 
 def update_gre_general_quantitative_and_verbal_chart(data, db_data, is_delete=False):
-    print("update_gre_general_quantitative_and_verbal_chart")
     instance = deserialize_language_certificate(data=data)
 
     if db_data is None:
