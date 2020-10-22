@@ -343,10 +343,6 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         MALE = 'Male', 'Male'
         FEMALE = 'Female', 'Female'
 
-    class MilitaryServiceChoices(models.TextChoices):
-        PASSED = 'Passed', 'Passed'
-        UNDID = 'Undid', 'Undid'
-
     user = models.OneToOneField(
         User,
         null=True,
@@ -365,16 +361,8 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         blank=True,
         max_length=128,
         choices=GenderChoices.choices,
-        default=GenderChoices.MALE,
     )
 
-    military_service_status = models.CharField(
-        null=True,
-        blank=True,
-        max_length=128,
-        choices=MilitaryServiceChoices.choices,
-        default=MilitaryServiceChoices.UNDID,
-    )
 
     is_married = models.BooleanField(
         default=None,

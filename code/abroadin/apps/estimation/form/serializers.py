@@ -504,7 +504,7 @@ class StudentDetailedInfoSerializer(StudentDetailedInfoBaseSerializer):
     class Meta(StudentDetailedInfoBaseSerializer.Meta):
         model = StudentDetailedInfo
         fields = StudentDetailedInfoBaseSerializer.Meta.fields + [
-            'user', 'age', 'gender', 'military_service_status', 'is_married',
+            'user', 'age', 'gender',  'is_married',
             'want_to_applies', 'payment_affordability',
             'prefers_full_fund', 'prefers_half_fund', 'prefers_self_fund',
             'comment', 'powerful_recommendation', 'linkedin_url', 'homepage_url',
@@ -521,7 +521,7 @@ class StudentDetailedInfoRequestSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'user',
             'age', 'is_married',
-            'payment_affordability', 'gender', 'military_service_status',
+            'payment_affordability', 'gender',
             'prefers_full_fund', 'prefers_half_fund', 'prefers_self_fund',
             'comment', 'resume', 'related_work_experience', 'academic_break', 'olympiad', 'powerful_recommendation',
             'linkedin_url', 'homepage_url',
