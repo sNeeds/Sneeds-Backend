@@ -90,3 +90,19 @@ def send_sold_time_slot_changed_email(send_to, name, sold_time_slot_url, start_t
     json_data = json.dumps(payload)
     response = requests.request("POST", url, data=json_data, headers=headers)
     return response.text
+
+
+def send_verification_code_email(send_to, full_name, code):
+    payload = {
+        "sender": {"name": "abroadin", "email": 'noreply.abroadin@gmail.com'},
+        "to": [{"email": send_to}],
+        "replyTo": {'email': 'noreply.abroadin@gmail.com'},
+        "params": {
+            "full_name": full_name,
+            "verification_code": code,
+        },
+        "templateId": 10,
+    }
+    json_data = json.dumps(payload)
+    response = requests.request("POST", url, data=json_data, headers=headers)
+    return response.text

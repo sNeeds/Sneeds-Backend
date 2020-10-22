@@ -207,3 +207,19 @@ SWAGGER_SETTINGS = {
 from django.conf.global_settings import DATETIME_INPUT_FORMATS
 
 DATETIME_INPUT_FORMATS += ('%Y-%m-%dT%H:%M:%S',)
+
+
+default_config = {
+    'VERIFICATIONS': [
+        {'type': 'email', 'user_model_field': 'is_email_verified'},
+    ],
+    'CODE_LENGTH': 6,
+    'CONTAINS_NUMERIC': True,
+    'CONTAINS_UPPER_ALPHABETIC': False,
+    'CONTAINS_LOWER_ALPHABETIC': False,
+    'LIFE_TIME_SECOND': 0,
+    'LIFE_TIME_MINUTE': 3,
+    'LIFE_TIME_HOUR': 0,
+    'LIFE_TIME_DAY': 0,
+    'LIFE_TIME_PENALTY_SECOND': 60,
+}
