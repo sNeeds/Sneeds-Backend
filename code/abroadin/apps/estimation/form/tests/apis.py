@@ -58,12 +58,17 @@ class StudentDetailedInfoTests(EstimationBaseTest):
         self._test_form_list("post", self.user2, status.HTTP_201_CREATED)
         self._test_form_list("post", self.user1, status.HTTP_403_FORBIDDEN)
 
+    def test_form_detail_get_200(self):
+        data = self._test_form_list("post", None, status.HTTP_201_CREATED)
+        self._test_form_detail("get", self.user1, status.HTTP_200_OK, reverse_args=data['id'])
+        self._test_form_detail("get", None, status.HTTP_200_OK, reverse_args=data['id'])
+
     def test_form_detail_put_patch_200(self):
         def _update_all_fields(update_method, update_fields):
             data = self._test_form_list("post", self.user1, status.HTTP_201_CREATED)
             for k, v in update_fields.items():
-                self._test_form_detail(update_method, self.user1, status.HTTP_200_OK, reverse_args=data['id'],
-                                       data={k: v}, )
+                data = self._test_form_detail(update_method, self.user1, status.HTTP_200_OK, reverse_args=data['id'],
+                                              data={k: v}, )
 
             obj = StudentDetailedInfo.objects.get(id=data['id'])
             for k in update_fields.keys():
@@ -91,21 +96,29 @@ class StudentDetailedInfoTests(EstimationBaseTest):
         _update_all_fields("patch", all_update_fields)
 
         obj = StudentDetailedInfo.objects.create()
-        data = self._test_form_detail("put", self.user2, status.HTTP_200_OK, reverse_args=obj.id)
-        obj.refresh_from_db()
-        self.assertEqual(data["user"]["id"], self.user2.id)
-        self.assertEqual(data["user"]["id"], obj.user.id)
+        self._test_form_detail("put", self.user2, status.HTTP_200_OK, reverse_args=obj.id)
         obj.delete()
 
         obj = StudentDetailedInfo.objects.create()
-        data = self._test_form_detail("patch", self.user3, status.HTTP_200_OK, reverse_args=obj.id)
-        obj.refresh_from_db()
-        self.assertEqual(data["user"]["id"], self.user3.id)
-        self.assertEqual(data["user"]["id"], obj.user.id)
+        self._test_form_detail("patch", self.user2, status.HTTP_200_OK, reverse_args=obj.id)
         obj.delete()
+
+        obj = StudentDetailedInfo.objects.create()
+        self._test_form_detail("put", None, status.HTTP_200_OK, reverse_args=obj.id)
+        self._test_form_detail("patch", None, status.HTTP_200_OK, reverse_args=obj.id)
+        obj.delete()
+
+    def test_form_detail_get_403(self):
+        data = self._test_form_list("post", self.user1, status.HTTP_201_CREATED)
+        self._test_form_detail("get", self.user1, status.HTTP_200_OK, reverse_args=data['id'])
+        self._test_form_detail("get", None, status.HTTP_401_UNAUTHORIZED, reverse_args=data['id'])
+        self._test_form_detail("get", self.user2, status.HTTP_403_FORBIDDEN, reverse_args=data['id'])
 
     def test_form_detail_put_patch_403(self):
         data = self._test_form_list("post", self.user1, status.HTTP_201_CREATED)
+        self._test_form_detail("put", self.user1, status.HTTP_200_OK, reverse_args=data['id'])
         self._test_form_detail("patch", self.user1, status.HTTP_200_OK, reverse_args=data['id'])
-        self._test_form_detail("patch", self.user2, status.HTTP_403_FORBIDDEN, reverse_args=data['id'])
+        self._test_form_detail("put", None, status.HTTP_401_UNAUTHORIZED, reverse_args=data['id'])
+        self._test_form_detail("patch", None, status.HTTP_401_UNAUTHORIZED, reverse_args=data['id'])
         self._test_form_detail("put", self.user2, status.HTTP_403_FORBIDDEN, reverse_args=data['id'])
+        self._test_form_detail("patch", self.user2, status.HTTP_403_FORBIDDEN, reverse_args=data['id'])
