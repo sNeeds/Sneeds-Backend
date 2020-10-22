@@ -7,6 +7,7 @@ from rest_framework import permissions, status, exceptions
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from abroadin.base.api.generics import CListAPIView
 from abroadin.base.api.enum_views import EnumViewList
 from abroadin.base.api.permissions import permission_class_factory
 from abroadin.utils.custom.views import custom_generic_apiviews
@@ -27,7 +28,7 @@ from .models import (
     DuolingoCertificate,
     WantToApply,
     Publication,
-    UniversityThrough
+    UniversityThrough, Grade
 )
 from .serializers import (
     StudentFormApplySemesterYearSerializer,
@@ -48,7 +49,7 @@ from .serializers import (
     PublicationSerializer,
     PublicationRequestSerializer,
     UniversityThroughSerializer,
-    UniversityThroughRequestSerializer
+    UniversityThroughRequestSerializer, GradeSerializer
 )
 from .permissions import (
     IsLanguageCertificateOwnerOrDetailedInfoWithoutUser,
@@ -473,5 +474,6 @@ def student_detailed_info_many_to_one_qs(user, sdi_id, model_class):
         return qs
 
 
-class GradesList(EnumViewList):
-    enum_class = GradeChoices
+class GradesList(CListAPIView):
+    queryset = Grade.objects.all()
+    serializer_class = GradeSerializer

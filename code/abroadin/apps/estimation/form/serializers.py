@@ -7,7 +7,7 @@ from rest_framework.exceptions import ValidationError
 import abroadin.apps
 import abroadin.apps.estimation.form.models
 from abroadin.apps.estimation.form.models import StudentFormApplySemesterYear, WantToApply, StudentDetailedInfo, \
-    UniversityThrough, Publication
+    UniversityThrough, Publication, Grade
 from abroadin.apps.data.account import models
 from abroadin.apps.data.account.models import BasicFormField
 from abroadin.apps.data.account.serializers import CountrySerializer, UniversitySerializer, MajorSerializer
@@ -108,9 +108,9 @@ class WantToApplyRequestSerializer(serializers.ModelSerializer):
     semester_years = serializers.PrimaryKeyRelatedField(
         queryset=abroadin.apps.estimation.form.models.StudentFormApplySemesterYear.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
-        allow_null=False,
-        allow_empty=False,
-        required=True,
+        allow_null=True,
+        allow_empty=True,
+        required=False,
         many=True
     )
 
@@ -504,7 +504,7 @@ class StudentDetailedInfoSerializer(StudentDetailedInfoBaseSerializer):
     class Meta(StudentDetailedInfoBaseSerializer.Meta):
         model = StudentDetailedInfo
         fields = StudentDetailedInfoBaseSerializer.Meta.fields + [
-            'user', 'age', 'gender',  'is_married',
+            'user', 'age', 'gender', 'is_married',
             'want_to_applies', 'payment_affordability',
             'prefers_full_fund', 'prefers_half_fund', 'prefers_self_fund',
             'comment', 'powerful_recommendation', 'linkedin_url', 'homepage_url',
@@ -539,3 +539,9 @@ class StudentDetailedInfoCelerySerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return StudentDetailedInfo(**validated_data)
+
+
+class GradeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Grade
+        fields = ["id", "name"]

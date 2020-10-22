@@ -4,7 +4,7 @@ from django.urls import reverse
 from rest_framework import status
 
 from abroadin.apps.estimation.tests.apis import EstimationBaseTest
-from abroadin.apps.estimation.form.models import StudentDetailedInfo
+from abroadin.apps.estimation.form.models import StudentDetailedInfo, Grade
 
 User = get_user_model()
 
@@ -37,6 +37,8 @@ class StudentDetailedInfoTests(EstimationBaseTest):
             client.logout()
 
         response = getattr(client, method)(url, *args, **kwargs)
+        if response.status_code != expected_status:
+            print("AssertionError occurred, Response data: ", response.data)
         self.assertEqual(response.status_code, expected_status)
 
         return response.data
@@ -123,11 +125,15 @@ class StudentDetailedInfoTests(EstimationBaseTest):
         self._test_form_detail("put", self.user2, status.HTTP_403_FORBIDDEN, reverse_args=data['id'])
         self._test_form_detail("patch", self.user2, status.HTTP_403_FORBIDDEN, reverse_args=data['id'])
 
-    def test_want_to_apply(self):
-        data = self._test_form_list("post", self.user1, status.HTTP_201_CREATED)
-        self._test_form_detail("put", self.user1, status.HTTP_200_OK, reverse_args=data['id'])
-        self._test_form_detail("patch", self.user1, status.HTTP_200_OK, reverse_args=data['id'])
-        self._test_form_detail("put", None, status.HTTP_401_UNAUTHORIZED, reverse_args=data['id'])
-        self._test_form_detail("patch", None, status.HTTP_401_UNAUTHORIZED, reverse_args=data['id'])
-        self._test_form_detail("put", self.user2, status.HTTP_403_FORBIDDEN, reverse_args=data['id'])
-        self._test_form_detail("patch", self.user2, status.HTTP_403_FORBIDDEN, reverse_args=data['id'])
+    def _want_to_apply(self, *args, **kwargs):
+        return self._test_form('estimation.form:want-to-apply-list', *args, **kwargs)
+
+    def test_want_to_apply_post_201(self):
+        grades = Grade.objects.all()
+        form, _ = StudentDetailedInfo.objects.get_or_create(user=self.user1)
+        payload = {
+            "student_detailed_info": form.id,
+            "countries": [self.country1.id, self.country2.id],
+            "grades": [grades[0].id, grades[1].id]
+        }
+        data = self._want_to_apply("post", self.user1, status.HTTP_201_CREATED, data=payload)
