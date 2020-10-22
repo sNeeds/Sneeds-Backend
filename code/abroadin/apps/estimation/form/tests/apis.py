@@ -59,12 +59,11 @@ class StudentDetailedInfoTests(EstimationBaseTest):
         self._test_form_list("post", self.user1, status.HTTP_403_FORBIDDEN)
 
     def test_form_detail_put_patch_200(self):
-        def _test_update_all_fields(update_method):
+        def _update_all_fields(update_method, update_fields):
             data = self._test_form_list("post", self.user1, status.HTTP_201_CREATED)
             for k, v in update_fields.items():
-                data = self._test_form_detail(
-                    update_method, self.user1, status.HTTP_200_OK, reverse_args=data['id'], data={k: v},
-                )
+                self._test_form_detail(update_method, self.user1, status.HTTP_200_OK, reverse_args=data['id'],
+                                       data={k: v}, )
 
             obj = StudentDetailedInfo.objects.get(id=data['id'])
             for k in update_fields.keys():
@@ -72,7 +71,7 @@ class StudentDetailedInfoTests(EstimationBaseTest):
                 self.assertEqual(getattr(obj, k), update_fields[k])
             obj.delete()
 
-        update_fields = {
+        all_update_fields = {
             "age": 20,
             "related_work_experience": 5,
             "academic_break": 5,
@@ -88,8 +87,8 @@ class StudentDetailedInfoTests(EstimationBaseTest):
             "homepage_url": "https://www.foo.com/",
         }
 
-        _test_update_all_fields("put")
-        _test_update_all_fields("patch")
+        _update_all_fields("put", all_update_fields)
+        _update_all_fields("patch", all_update_fields)
 
         obj = StudentDetailedInfo.objects.create()
         data = self._test_form_detail("put", self.user2, status.HTTP_200_OK, reverse_args=obj.id)
@@ -104,3 +103,9 @@ class StudentDetailedInfoTests(EstimationBaseTest):
         self.assertEqual(data["user"]["id"], self.user3.id)
         self.assertEqual(data["user"]["id"], obj.user.id)
         obj.delete()
+
+    def test_form_detail_put_patch_403(self):
+        data = self._test_form_list("post", self.user1, status.HTTP_201_CREATED)
+        self._test_form_detail("patch", self.user1, status.HTTP_200_OK, reverse_args=data['id'])
+        self._test_form_detail("patch", self.user2, status.HTTP_403_FORBIDDEN, reverse_args=data['id'])
+        self._test_form_detail("put", self.user2, status.HTTP_403_FORBIDDEN, reverse_args=data['id'])
