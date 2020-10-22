@@ -53,13 +53,12 @@ class StudentDetailedInfoTests(EstimationBaseTest):
         self._test_form_list("post", self.user2, status.HTTP_201_CREATED, data={"age": 20}, )
         self._test_form_list("post", None, status.HTTP_201_CREATED)
 
-
     def test_form_list_post_403(self):
         self._test_form_list("post", self.user1, status.HTTP_201_CREATED)
         self._test_form_list("post", self.user2, status.HTTP_201_CREATED)
         self._test_form_list("post", self.user1, status.HTTP_403_FORBIDDEN)
 
-    def test_form_detail_put_200(self):
+    def test_form_detail_put_patch_200(self):
         update_fields = {
             "age": 20,
             "related_work_experience": 5,
@@ -86,5 +85,16 @@ class StudentDetailedInfoTests(EstimationBaseTest):
             self.assertEqual(getattr(obj, k), update_fields[k])
 
         data = self._test_form_list("post", None, status.HTTP_201_CREATED)
+        self.assertEqual(data["user"], None)
+
         self._test_form_detail("put", self.user2, status.HTTP_200_OK, reverse_args=data['id'],
-                               data={"homepage_url": "https://www.aryakhaligh.ir/"}, )
+                               data={"homepage_url": "https://www.kati.com/"}, )
+        self.assertEqual(data["user"]["id"], self.user2.id)
+        self.assertEqual(data["homepage_url"], "https://www.kati.com/")
+
+        self._test_form_detail("patch", self.user2, status.HTTP_200_OK, reverse_args=data['id'],
+                               data={"homepage_url": "https://www.foo.com/"}, )
+        self.assertEqual(data["homepage_url"], "https://www.foo.com/")
+
+        obj = StudentDetailedInfo.objects.get(id=data['id'])
+        self.assertEqual(obj.homepage_url, "https://www.foo.com/")
