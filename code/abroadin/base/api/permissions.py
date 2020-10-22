@@ -1,5 +1,5 @@
 def permission_class_factory(cls: object, apply_on: list):
-    _ALL_METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH"]
+    _ALL_METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
 
     def decorator(original_func, method_in: list):
         def wrapper(self, request, *args, **kwargs):

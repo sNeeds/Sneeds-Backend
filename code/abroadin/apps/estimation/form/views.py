@@ -51,11 +51,11 @@ from .serializers import (
     UniversityThroughRequestSerializer
 )
 from .permissions import (
-    StudentDetailedInfoOwnerOrInteractConsultantOrWithoutUserPermission,
     IsLanguageCertificateOwnerOrDetailedInfoWithoutUser,
     IsWantToApplyOwnerOrDetailedInfoWithoutUser,
     IsPublicationOwnerOrDetailedInfoWithoutUser,
-    IsUniversityThroughOwnerOrDetailedInfoWithoutUser, OnlyOneFormPermission
+    IsUniversityThroughOwnerOrDetailedInfoWithoutUser, OnlyOneFormPermission,
+    SameUserOrNone, UserAlreadyHasForm
 )
 
 
@@ -108,6 +108,10 @@ class StudentDetailedInfoListCreateAPIView(custom_generic_apiviews.BaseListCreat
         else:
             super().perform_create(serializer)
 
+    @swagger_auto_schema(
+        request_body=request_serializer_class,
+        responses={200: serializer_class},
+    )
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
 
@@ -118,7 +122,10 @@ class StudentDetailedInfoRetrieveUpdateAPIView(custom_generic_apiviews.BaseRetri
     serializer_class = StudentDetailedInfoSerializer
     request_serializer_class = StudentDetailedInfoRequestSerializer
 
-    # permission_classes = (StudentDetailedInfoOwnerOrInteractConsultantOrWithoutUserPermission,)
+    permission_classes = [
+        permission_class_factory(SameUserOrNone, ["GET", "PUT", "PATCH"]),
+        permission_class_factory(UserAlreadyHasForm, ["PUT", "PATCH"])
+    ]
 
     @swagger_auto_schema(
         request_body=request_serializer_class,
@@ -134,13 +141,25 @@ class StudentDetailedInfoRetrieveUpdateAPIView(custom_generic_apiviews.BaseRetri
     def patch(self, request, *args, **kwargs):
         return super().patch(request, *args, **kwargs)
 
+    def perform_update(self, serializer):
+        user = self.request.user
+        if user.is_authenticated:
+            serializer.save(user=user)
+        else:
+            super().perform_update(serializer)
+
+    def partial_update(self, request, *args, **kwargs):
+        user = self.request.user
+        if user.is_authenticated:
+            request.data.update({"user": user.id})
+        return super().partial_update(request, *args, **kwargs)
+
 
 class UserStudentDetailedInfoRetrieveAPIView(custom_generic_apiviews.BaseRetrieveAPIView):
     queryset = StudentDetailedInfo.objects.all()
     serializer_class = StudentDetailedInfoSerializer
     permission_classes = (
         permissions.IsAuthenticated,
-        StudentDetailedInfoOwnerOrInteractConsultantOrWithoutUserPermission
     )
     lookup_url_kwarg = 'user_id'
     lookup_field = 'user__id'
