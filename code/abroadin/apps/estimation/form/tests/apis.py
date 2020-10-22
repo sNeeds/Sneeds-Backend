@@ -59,6 +59,19 @@ class StudentDetailedInfoTests(EstimationBaseTest):
         self._test_form_list("post", self.user1, status.HTTP_403_FORBIDDEN)
 
     def test_form_detail_put_patch_200(self):
+        def _test_update_all_fields(update_method):
+            data = self._test_form_list("post", self.user1, status.HTTP_201_CREATED)
+            for k, v in update_fields.items():
+                data = self._test_form_detail(
+                    update_method, self.user1, status.HTTP_200_OK, reverse_args=data['id'], data={k: v},
+                )
+
+            obj = StudentDetailedInfo.objects.get(id=data['id'])
+            for k in update_fields.keys():
+                self.assertEqual(getattr(obj, k), data[k])
+                self.assertEqual(getattr(obj, k), update_fields[k])
+            obj.delete()
+
         update_fields = {
             "age": 20,
             "related_work_experience": 5,
@@ -75,26 +88,19 @@ class StudentDetailedInfoTests(EstimationBaseTest):
             "homepage_url": "https://www.foo.com/",
         }
 
-        data = self._test_form_list("post", self.user1, status.HTTP_201_CREATED)
-        for k, v in update_fields.items():
-            data = self._test_form_detail("put", self.user1, status.HTTP_200_OK, reverse_args=data['id'], data={k: v}, )
+        _test_update_all_fields("put")
+        _test_update_all_fields("patch")
 
-        obj = StudentDetailedInfo.objects.get(id=data['id'])
-        for k in update_fields.keys():
-            self.assertEqual(getattr(obj, k), data[k])
-            self.assertEqual(getattr(obj, k), update_fields[k])
-
-        data = self._test_form_list("post", None, status.HTTP_201_CREATED)
-        self.assertEqual(data["user"], None)
-
-        self._test_form_detail("put", self.user2, status.HTTP_200_OK, reverse_args=data['id'],
-                               data={"homepage_url": "https://www.kati.com/"}, )
+        obj = StudentDetailedInfo.objects.create()
+        data = self._test_form_detail("put", self.user2, status.HTTP_200_OK, reverse_args=obj.id)
+        obj.refresh_from_db()
         self.assertEqual(data["user"]["id"], self.user2.id)
-        self.assertEqual(data["homepage_url"], "https://www.kati.com/")
+        self.assertEqual(data["user"]["id"], obj.user.id)
+        obj.delete()
 
-        self._test_form_detail("patch", self.user2, status.HTTP_200_OK, reverse_args=data['id'],
-                               data={"homepage_url": "https://www.foo.com/"}, )
-        self.assertEqual(data["homepage_url"], "https://www.foo.com/")
-
-        obj = StudentDetailedInfo.objects.get(id=data['id'])
-        self.assertEqual(obj.homepage_url, "https://www.foo.com/")
+        obj = StudentDetailedInfo.objects.create()
+        data = self._test_form_detail("patch", self.user3, status.HTTP_200_OK, reverse_args=obj.id)
+        obj.refresh_from_db()
+        self.assertEqual(data["user"]["id"], self.user3.id)
+        self.assertEqual(data["user"]["id"], obj.user.id)
+        obj.delete()
