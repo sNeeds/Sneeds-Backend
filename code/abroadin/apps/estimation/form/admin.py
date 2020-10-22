@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from . import models
 
+admin.site.register(models.Grade)
 admin.site.register(models.StudentFormApplySemesterYear)
 admin.site.register(models.UniversityThrough)
 admin.site.register(models.WantToApply)
@@ -103,3 +104,4 @@ class PublicationAdmin(admin.ModelAdmin):
     def delete_queryset(self, request, queryset):
         for obj in queryset:
             obj.delete()
+

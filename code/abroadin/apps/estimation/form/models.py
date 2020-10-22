@@ -25,6 +25,7 @@ class GradeChoices(models.TextChoices):
     PHD = 'PH.D', 'PH.D'
     POST_DOC = 'Post Doc', 'Post Doc'
 
+
 class StudentFormApplySemesterYear(models.Model):
     class SemesterChoices(models.TextChoices):
         SPRING = "Spring"
@@ -48,27 +49,31 @@ class StudentFormApplySemesterYear(models.Model):
         return str(self.year) + " " + self.semester
 
 
+class Grade(models.Model):
+    name = models.CharField(
+        max_length=128,
+        choices=GradeChoices.choices,
+        default=GradeChoices.BACHELOR,
+        unique=True
+    )
+
+    def __str__(self):
+        return self.name.__str__()
+
+
 class WantToApply(models.Model):
     student_detailed_info = models.OneToOneField(
         'StudentDetailedInfo',
         on_delete=models.CASCADE,
         related_name="want_to_apply"
     )
-    countries = models.ManyToManyField(
-        Country,
-    )
+    countries = models.ManyToManyField(Country)
 
     universities = models.ManyToManyField(University)
 
-    grades = models.CharField(
-        max_length=128,
-        choices=GradeChoices.choices,
-        default=GradeChoices.BACHELOR
-    )
+    grades = models.ManyToManyField(Grade)
 
-    majors = models.ManyToManyField(
-        Major,
-    )
+    majors = models.ManyToManyField(Major)
 
     semester_years = models.ManyToManyField(
         StudentFormApplySemesterYear,
@@ -363,7 +368,6 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         choices=GenderChoices.choices,
     )
 
-
     is_married = models.BooleanField(
         default=None,
         null=True,
@@ -375,7 +379,6 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         blank=True,
         max_length=30,
         choices=PaymentAffordabilityChoices.choices,
-        default=PaymentAffordabilityChoices.AVERAGE,
     )
 
     prefers_full_fund = models.BooleanField(
@@ -395,9 +398,12 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
     )
 
     # Extra info
-    comment = models.TextField(max_length=1024, null=True, blank=True)
+    comment = models.TextField(
+        max_length=1024,
+        null=True,
+        blank=True
+    )
     powerful_recommendation = models.BooleanField(
-        default=False,
         null=True,
         blank=True,
     )

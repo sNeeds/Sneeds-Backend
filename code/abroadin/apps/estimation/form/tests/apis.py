@@ -122,3 +122,12 @@ class StudentDetailedInfoTests(EstimationBaseTest):
         self._test_form_detail("patch", None, status.HTTP_401_UNAUTHORIZED, reverse_args=data['id'])
         self._test_form_detail("put", self.user2, status.HTTP_403_FORBIDDEN, reverse_args=data['id'])
         self._test_form_detail("patch", self.user2, status.HTTP_403_FORBIDDEN, reverse_args=data['id'])
+
+    def test_want_to_apply(self):
+        data = self._test_form_list("post", self.user1, status.HTTP_201_CREATED)
+        self._test_form_detail("put", self.user1, status.HTTP_200_OK, reverse_args=data['id'])
+        self._test_form_detail("patch", self.user1, status.HTTP_200_OK, reverse_args=data['id'])
+        self._test_form_detail("put", None, status.HTTP_401_UNAUTHORIZED, reverse_args=data['id'])
+        self._test_form_detail("patch", None, status.HTTP_401_UNAUTHORIZED, reverse_args=data['id'])
+        self._test_form_detail("put", self.user2, status.HTTP_403_FORBIDDEN, reverse_args=data['id'])
+        self._test_form_detail("patch", self.user2, status.HTTP_403_FORBIDDEN, reverse_args=data['id'])
