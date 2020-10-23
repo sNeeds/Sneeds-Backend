@@ -60,9 +60,9 @@ urlpatterns = [
     path('publications/<int:id>/', views.PublicationRetrieveDestroyAPIView.as_view(),
          name="publication-detail"),
 
-    path('want-to-applies/', views.WantToApplyListCreateAPIView.as_view(),
+    path('want-to-applies/', views.WantToApplyListAPIView.as_view(),
          name="want-to-apply-list"),
-    path('want-to-applies/<int:id>/', views.WantToApplyRetrieveUpdateDestroyAPIView.as_view(),
+    path('want-to-applies/<int:id>/', views.WantToApplyDetailAPIView.as_view(),
          name="want-to-apply-detail"),
 
     path('apply-semester-years/', views.SemesterYearListAPIView.as_view(),

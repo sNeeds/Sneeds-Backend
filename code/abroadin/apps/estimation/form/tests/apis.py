@@ -10,7 +10,7 @@ from abroadin.apps.data.account.models import Country, University, Major
 User = get_user_model()
 
 
-class StudentDetailedInfoTests(EstimationBaseTest):
+class FormAPITests(EstimationBaseTest):
 
     def setUp(self):
         super().setUp()
@@ -126,67 +126,3 @@ class StudentDetailedInfoTests(EstimationBaseTest):
         self._test_form_detail("put", self.user2, status.HTTP_403_FORBIDDEN, reverse_args=data['id'])
         self._test_form_detail("patch", self.user2, status.HTTP_403_FORBIDDEN, reverse_args=data['id'])
 
-    def _want_to_apply(self, *args, **kwargs):
-        return self._test_form('estimation.form:want-to-apply-list', *args, **kwargs)
-
-    def test_want_to_apply_post_201(self):
-        form, _ = StudentDetailedInfo.objects.get_or_create(user=self.user1)
-        payload = {
-            "student_detailed_info": form.id,
-            "countries": [country.id for country in Country.objects.all()][:-1],
-            "grades": [grade.id for grade in Grade.objects.all()][:-1],
-        }
-
-        # 1
-        data = self._want_to_apply("post", self.user1, status.HTTP_201_CREATED, data=payload)
-        WantToApply.objects.get(id=data['id']).delete()
-
-        payload["universities"] = [university.id for university in University.objects.all()][:-1]
-        payload["majors"] = [major.id for major in Major.objects.all()][:-1]
-        payload["semester_years"] = [semester.id for semester in SemesterYear.objects.all()][:-1]
-
-        # 2
-        data = self._want_to_apply("post", self.user1, status.HTTP_201_CREATED, data=payload)
-        want_to_apply = WantToApply.objects.get(id=data['id'])
-
-        self.assertEqual(want_to_apply.student_detailed_info.id, data["student_detailed_info"])
-        self.assertEqual([c.id for c in want_to_apply.countries.all()], payload['countries'])
-        self.assertEqual([u.id for u in want_to_apply.universities.all()], payload['universities'])
-        self.assertEqual([g.id for g in want_to_apply.grades.all()], payload['grades'])
-        self.assertEqual([m.id for m in want_to_apply.majors.all()], payload['majors'])
-        self.assertEqual([s.id for s in want_to_apply.semester_years.all()], payload['semester_years'])
-        WantToApply.objects.get(id=data['id']).delete()
-
-        # 3
-        form.user = None
-        form.save()
-        data = self._want_to_apply("post", None, status.HTTP_201_CREATED, data=payload)
-        WantToApply.objects.get(id=data['id']).delete()
-
-    def test_want_to_apply_post_400(self):
-        form, _ = StudentDetailedInfo.objects.get_or_create(user=self.user1)
-        payload = {
-            "student_detailed_info": form.id,
-            "countries": [country.id for country in Country.objects.all()][:-1],
-            "grades": [grade.id for grade in Grade.objects.all()][:-1],
-        }
-        data = self._want_to_apply("post", self.user1, status.HTTP_201_CREATED, data=payload)
-        WantToApply.objects.get(id=data['id']).delete()
-
-        self._want_to_apply(
-            "post", self.user1, status.HTTP_400_BAD_REQUEST, data={k: v for k, v in payload.items() if k != "countries"}
-        )
-        self._want_to_apply(
-            "post", self.user1, status.HTTP_400_BAD_REQUEST, data={k: v for k, v in payload.items() if k != "grades"}
-        )
-
-    def test_want_to_apply_post_403(self):
-        form, _ = StudentDetailedInfo.objects.get_or_create(user=self.user1)
-        payload = {
-            "student_detailed_info": form.id,
-            "countries": [country.id for country in Country.objects.all()][:-1],
-            "grades": [grade.id for grade in Grade.objects.all()][:-1],
-        }
-
-        data = self._want_to_apply("post", self.user1, status.HTTP_201_CREATED, data=payload)
-        data = self._want_to_apply("post", self.user2, status.HTTP_403_FORBIDDEN, data=payload)

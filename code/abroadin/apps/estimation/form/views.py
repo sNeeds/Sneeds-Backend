@@ -311,7 +311,7 @@ class DuolingoCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestr
     permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
-class WantToApplyListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
+class WantToApplyListAPIView(custom_generic_apiviews.BaseListCreateAPIView):
     serializer_class = WantToApplySerializer
     request_serializer_class = WantToApplyRequestSerializer
 
@@ -328,7 +328,7 @@ class WantToApplyListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView
         return super().post(request, *args, **kwargs)
 
 
-class WantToApplyRetrieveUpdateDestroyAPIView(custom_generic_apiviews.BaseRetrieveUpdateDestroyAPIView):
+class WantToApplyDetailAPIView(custom_generic_apiviews.BaseRetrieveUpdateDestroyAPIView):
     lookup_field = 'id'
     queryset = WantToApply.objects.all()
     serializer_class = WantToApplySerializer
