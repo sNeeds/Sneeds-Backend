@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
                 ('comment', models.CharField(blank=True, max_length=1024, null=True)),
                 ('applied_student_detailed_info', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='applied_to', to='similarApply.appliedstudentdetailedinfo')),
                 ('country', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='account.country')),
-                ('grade', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='form.grademodel')),
+                ('grade', models.CharField(choices=[('Bachelor', 'Bachelor'), ('Master', 'Master'), ('PH.D', 'Phd'), ('Post Doc', 'Post Doc')], default='Bachelor', max_length=128)),
                 ('major', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='account.major')),
                 ('semester_year', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='form.studentformapplysemesteryear')),
                 ('university', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='account.university')),

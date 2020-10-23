@@ -29,10 +29,10 @@ INSTALLED_APPS = [
     'abroadin.apps.store.videochats',
     'abroadin.apps.store.storePackages',
     'abroadin.apps.store.basicProducts',
+    'abroadin.apps.estimation.form',
     'abroadin.apps.estimation.estimations',
     'abroadin.apps.estimation.similarApply',
     'abroadin.apps.estimation.analyze',
-    'abroadin.apps.estimation.form',
     'abroadin.apps.data.account',
 
     'django.contrib.auth',

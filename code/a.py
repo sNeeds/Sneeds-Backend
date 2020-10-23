@@ -1,4 +1,14 @@
-d = {"p1" : 1, "p2":2}
-def f2(a,p1,p2):
-    print (p1, p2)
-f2("a", **d)
+class T:
+    def foo(cls):
+        print("OOPPPPP")
+
+    pass
+
+
+def foo(cls):
+    print(cls)
+    return cls.__mro__
+
+
+T.foo = foo
+print(T.foo(T))

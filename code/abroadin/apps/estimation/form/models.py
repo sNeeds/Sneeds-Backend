@@ -26,7 +26,7 @@ class GradeChoices(models.TextChoices):
     POST_DOC = 'Post Doc', 'Post Doc'
 
 
-class StudentFormApplySemesterYear(models.Model):
+class SemesterYear(models.Model):
     class SemesterChoices(models.TextChoices):
         SPRING = "Spring"
         SUMMER = "Summer"
@@ -49,30 +49,34 @@ class StudentFormApplySemesterYear(models.Model):
         return str(self.year) + " " + self.semester
 
 
+class Grade(models.Model):
+    name = models.CharField(
+        max_length=128,
+        choices=GradeChoices.choices,
+        default=GradeChoices.BACHELOR,
+        unique=True
+    )
+
+    def __str__(self):
+        return self.name.__str__()
+
+
 class WantToApply(models.Model):
     student_detailed_info = models.OneToOneField(
         'StudentDetailedInfo',
         on_delete=models.CASCADE,
         related_name="want_to_apply"
     )
-    countries = models.ManyToManyField(
-        Country,
-    )
+    countries = models.ManyToManyField(Country)
 
     universities = models.ManyToManyField(University)
 
-    grades = models.CharField(
-        max_length=128,
-        choices=GradeChoices.choices,
-        default=GradeChoices.BACHELOR
-    )
+    grades = models.ManyToManyField(Grade)
 
-    majors = models.ManyToManyField(
-        Major,
-    )
+    majors = models.ManyToManyField(Major)
 
     semester_years = models.ManyToManyField(
-        StudentFormApplySemesterYear,
+        SemesterYear,
     )
 
 
@@ -344,10 +348,6 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         MALE = 'Male', 'Male'
         FEMALE = 'Female', 'Female'
 
-    class MilitaryServiceChoices(models.TextChoices):
-        PASSED = 'Passed', 'Passed'
-        UNDID = 'Undid', 'Undid'
-
     user = models.OneToOneField(
         User,
         null=True,
@@ -366,15 +366,6 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         blank=True,
         max_length=128,
         choices=GenderChoices.choices,
-        default=GenderChoices.MALE,
-    )
-
-    military_service_status = models.CharField(
-        null=True,
-        blank=True,
-        max_length=128,
-        choices=MilitaryServiceChoices.choices,
-        default=MilitaryServiceChoices.UNDID,
     )
 
     is_married = models.BooleanField(
@@ -388,7 +379,6 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         blank=True,
         max_length=30,
         choices=PaymentAffordabilityChoices.choices,
-        default=PaymentAffordabilityChoices.AVERAGE,
     )
 
     prefers_full_fund = models.BooleanField(
@@ -408,9 +398,12 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
     )
 
     # Extra info
-    comment = models.TextField(max_length=1024, null=True, blank=True)
+    comment = models.TextField(
+        max_length=1024,
+        null=True,
+        blank=True
+    )
     powerful_recommendation = models.BooleanField(
-        default=False,
         null=True,
         blank=True,
     )
