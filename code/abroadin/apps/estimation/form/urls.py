@@ -96,7 +96,6 @@ urlpatterns = [
     path('choices/payment-affordability-choices/', views.PaymentAffordabilityChoicesListAPIView.as_view(),
          name="payment-affordability-choices-list"),
 
-
     path('choices/language-certificate-choices/', views.LanguageCertificateTypeListAPIView.as_view(),
          name="language-certificate-choices-list"),
 
