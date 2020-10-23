@@ -111,8 +111,7 @@ class UniversityThroughAPITest(FormAPITests):
         self._university_through_detail(
             "delete", None, status.HTTP_204_NO_CONTENT, reverse_args=self.local_university_through.id
         )
-        self.local_university_through.refresh_from_db()
-        self.assertIsNone(self.local_university_through)
+        self.assertEqual(UniversityThrough.objects.filter(id=self.local_university_through.id).count(), 0)
 
     def test_university_through_detail_delete_200_2(self):
         self.local_university_through.student_detailed_info.user = self.user1
@@ -120,5 +119,4 @@ class UniversityThroughAPITest(FormAPITests):
         self._university_through_detail(
             "delete", self.user1, status.HTTP_204_NO_CONTENT, reverse_args=self.local_university_through.id
         )
-        self.local_university_through.refresh_from_db()
-        self.assertIsNone(self.local_university_through)
+        self.assertEqual(UniversityThrough.objects.filter(id=self.local_university_through.id).count(), 0)

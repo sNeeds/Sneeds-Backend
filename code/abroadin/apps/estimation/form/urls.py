@@ -75,10 +75,29 @@ urlpatterns = [
     path('university-throughs/<int:id>/', views.UniversityThroughDetailAPIView.as_view(),
          name="university-through-detail"),
 
-    path('grades/', views.GradesList.as_view()),
+    path('grades/', views.GradesListAPIView.as_view()),
 
-    path('payment-affordability-choices/',
-         views.payment_affordability_choices,
-         name="payment-affordability-choice-list"),
+    path('choices/gender-choices/', views.GenderChoicesListAPIView.as_view(), name="gender-choices-list"),
+
+    path('choices/grade-choices/', views.GradeChoicesListAPIView.as_view(), name="grade-choices-list"),
+
+    path('choices/semester-year-choices/', views.SemesterYearChoicesListAPIView.as_view(),
+         name="semester-year-choices-list"),
+
+    path('choices/which-author-choices/', views.WhichAuthorChoicesListAPIView.as_view(),
+         name="which-author-choices-list"),
+
+    path('choices/publication-choices/', views.PublicationChoicesListAPIView.as_view(),
+         name="publication-choices-list"),
+
+    path('choices/journal-reputation-choices/', views.JournalReputationChoicesListAPIView.as_view(),
+         name="journal-reputation-choices-list"),
+
+    path('choices/payment-affordability-choices/', views.PaymentAffordabilityChoicesListAPIView.as_view(),
+         name="payment-affordability-choices-list"),
+
+
+    path('choices/language-certificate-choices/', views.LanguageCertificateTypeListAPIView.as_view(),
+         name="language-certificate-choices-list"),
 
 ]

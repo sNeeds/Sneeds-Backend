@@ -401,20 +401,6 @@ class UniversityThroughDetailAPIView(custom_generic_apiviews.BaseRetrieveDestroy
     permission_classes = [IsUniversityThroughOwnerOrDetailedInfoWithoutUser]
 
 
-@api_view(['GET'])
-def payment_affordability_choices(request, format=None):
-    choices = []
-
-    for choice in StudentDetailedInfo.PaymentAffordabilityChoices:
-        choices.append({"value": choice.value, "label": choice.label})
-    # choices = StudentDetailedInfo.PaymentAffordabilityChoices.choices
-
-    return Response(
-        data={"choices": choices},
-        status=status.HTTP_200_OK,
-    )
-
-
 def student_detailed_info_many_to_one_qs(user, form, model_class):
     # if user.is_authenticated:
     #     qs = model_class.objects.filter(student_detailed_info=form)
@@ -458,6 +444,38 @@ def student_detailed_info_many_to_one_qs(user, form, model_class):
     pass
 
 
-class GradesList(CListAPIView):
+class GradesListAPIView(CListAPIView):
     queryset = Grade.objects.all()
     serializer_class = GradeSerializer
+
+
+class GradeChoicesListAPIView(EnumViewList):
+    enum_class = GradeChoices
+
+
+class SemesterYearChoicesListAPIView(EnumViewList):
+    enum_class = SemesterYear.SemesterChoices
+
+
+class WhichAuthorChoicesListAPIView(EnumViewList):
+    enum_class = Publication.WhichAuthorChoices
+
+
+class PublicationChoicesListAPIView(EnumViewList):
+    enum_class = Publication.PublicationChoices
+
+
+class JournalReputationChoicesListAPIView(EnumViewList):
+    enum_class = Publication.JournalReputationChoices
+
+
+class PaymentAffordabilityChoicesListAPIView(EnumViewList):
+    enum_class = StudentDetailedInfo.PaymentAffordabilityChoices
+
+
+class GenderChoicesListAPIView(EnumViewList):
+    enum_class = StudentDetailedInfo.GenderChoices
+
+
+class LanguageCertificateTypeListAPIView(EnumViewList):
+    enum_class = LanguageCertificate.LanguageCertificateType
