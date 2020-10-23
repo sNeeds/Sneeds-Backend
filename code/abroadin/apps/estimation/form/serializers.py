@@ -6,7 +6,7 @@ from rest_framework.exceptions import ValidationError
 
 import abroadin.apps
 import abroadin.apps.estimation.form.models
-from abroadin.apps.estimation.form.models import StudentFormApplySemesterYear, WantToApply, StudentDetailedInfo, \
+from abroadin.apps.estimation.form.models import SemesterYear, WantToApply, StudentDetailedInfo, \
     UniversityThrough, Publication, Grade
 from abroadin.apps.data.account import models
 from abroadin.apps.data.account.models import BasicFormField
@@ -15,13 +15,19 @@ from abroadin.apps.data.account.serializers import CountrySerializer, University
 LanguageCertificateType = abroadin.apps.estimation.form.models.LanguageCertificate.LanguageCertificateType
 
 
-class StudentFormApplySemesterYearSerializer(serializers.ModelSerializer):
+class GradeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = StudentFormApplySemesterYear
+        model = Grade
+        fields = ["id", "name"]
+
+
+class SemesterYearSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SemesterYear
         fields = ['id', 'year', 'semester']
 
 
-class StudentFormApplySemesterYearCustomPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
+class SemesterYearCustomPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
     def get_choices(self, cutoff=None):
         """
         This method is overridden.
@@ -46,8 +52,8 @@ class StudentFormApplySemesterYearCustomPrimaryKeyRelatedField(serializers.Prima
         ])
 
     def to_representation(self, value):
-        obj = StudentFormApplySemesterYear.objects.get(pk=value.pk)
-        return StudentFormApplySemesterYearSerializer(obj).data
+        obj = SemesterYear.objects.get(pk=value.pk)
+        return SemesterYearSerializer(obj).data
 
 
 class BasicFormFieldSerializer(serializers.ModelSerializer):
@@ -60,7 +66,8 @@ class WantToApplySerializer(serializers.ModelSerializer):
     countries = CountrySerializer(many=True)
     universities = UniversitySerializer(many=True)
     majors = MajorSerializer(many=True)
-    semester_years = StudentFormApplySemesterYearSerializer(many=True)
+    semester_years = SemesterYearSerializer(many=True)
+    grades = GradeSerializer(many=True)
 
     class Meta:
         model = abroadin.apps.estimation.form.models.WantToApply
@@ -106,7 +113,7 @@ class WantToApplyRequestSerializer(serializers.ModelSerializer):
         many=True
     )
     semester_years = serializers.PrimaryKeyRelatedField(
-        queryset=abroadin.apps.estimation.form.models.StudentFormApplySemesterYear.objects.all(),
+        queryset=abroadin.apps.estimation.form.models.SemesterYear.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
         allow_null=True,
         allow_empty=True,
@@ -541,7 +548,3 @@ class StudentDetailedInfoCelerySerializer(serializers.ModelSerializer):
         return StudentDetailedInfo(**validated_data)
 
 
-class GradeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Grade
-        fields = ["id", "name"]

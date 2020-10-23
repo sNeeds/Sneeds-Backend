@@ -4,7 +4,8 @@ from django.urls import reverse
 from rest_framework import status
 
 from abroadin.apps.estimation.tests.apis import EstimationBaseTest
-from abroadin.apps.estimation.form.models import StudentDetailedInfo, Grade
+from abroadin.apps.estimation.form.models import StudentDetailedInfo, Grade, WantToApply, SemesterYear
+from abroadin.apps.data.account.models import Country, University, Major
 
 User = get_user_model()
 
@@ -129,11 +130,18 @@ class StudentDetailedInfoTests(EstimationBaseTest):
         return self._test_form('estimation.form:want-to-apply-list', *args, **kwargs)
 
     def test_want_to_apply_post_201(self):
-        grades = Grade.objects.all()
         form, _ = StudentDetailedInfo.objects.get_or_create(user=self.user1)
         payload = {
             "student_detailed_info": form.id,
-            "countries": [self.country1.id, self.country2.id],
-            "grades": [grades[0].id, grades[1].id]
+            "countries": [country.id for country in Country.objects.all()][:-1],
+            "grades": [grade.id for grade in Grade.objects.all()][:-1],
+            "universities": [university.id for university in University.objects.all()][:-1],
+            "majors": [major.id for major in Major.objects.all()][:-1],
+            "semester_years": [semester for semester in SemesterYear.objects.all()][:-1]
         }
         data = self._want_to_apply("post", self.user1, status.HTTP_201_CREATED, data=payload)
+        want_to_apply = WantToApply.objects.get(data['id'])
+
+        self.assertEqual(want_to_apply.student_detailed_info.id, data["student_detailed_info"])
+        self.assertEqual(countries, form)
+        self.assertEqual(want_to_apply.student_detailed_info, form)

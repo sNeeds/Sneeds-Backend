@@ -72,6 +72,10 @@ class EstimationBaseTest(APITestCase):
             picture=None,
         )
 
+        # ------- Semester Years -------
+
+        self.se =
+
         # ----- Setup ------
 
         self.client = APIClient()

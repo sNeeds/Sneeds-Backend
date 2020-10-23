@@ -13,7 +13,7 @@ from abroadin.base.api.permissions import permission_class_factory
 from abroadin.utils.custom.views import custom_generic_apiviews
 
 from .models import (
-    StudentFormApplySemesterYear,
+    SemesterYear,
     StudentDetailedInfo,
     GradeChoices,
     BasicFormField,
@@ -28,10 +28,11 @@ from .models import (
     DuolingoCertificate,
     WantToApply,
     Publication,
-    UniversityThrough, Grade
+    UniversityThrough,
+    Grade
 )
 from .serializers import (
-    StudentFormApplySemesterYearSerializer,
+    SemesterYearSerializer,
     BasicFormFieldSerializer,
     StudentDetailedInfoSerializer,
     StudentDetailedInfoRequestSerializer,
@@ -49,7 +50,8 @@ from .serializers import (
     PublicationSerializer,
     PublicationRequestSerializer,
     UniversityThroughSerializer,
-    UniversityThroughRequestSerializer, GradeSerializer
+    UniversityThroughRequestSerializer,
+    GradeSerializer
 )
 from .permissions import (
     IsLanguageCertificateOwnerOrDetailedInfoWithoutUser,
@@ -166,15 +168,15 @@ class UserStudentDetailedInfoRetrieveAPIView(custom_generic_apiviews.BaseRetriev
     lookup_field = 'user__id'
 
 
-class StudentFormApplySemesterYearListAPIView(custom_generic_apiviews.BaseListAPIView):
-    queryset = StudentFormApplySemesterYear.objects.all()
-    serializer_class = StudentFormApplySemesterYearSerializer
+class SemesterYearListAPIView(custom_generic_apiviews.BaseListAPIView):
+    queryset = SemesterYear.objects.all()
+    serializer_class = SemesterYearSerializer
 
 
-class StudentFormApplySemesterYearRetrieveAPIView(custom_generic_apiviews.BaseRetrieveAPIView):
+class SemesterYearRetrieveAPIView(custom_generic_apiviews.BaseRetrieveAPIView):
     lookup_field = 'id'
-    queryset = StudentFormApplySemesterYear.objects.all()
-    serializer_class = StudentFormApplySemesterYearSerializer
+    queryset = SemesterYear.objects.all()
+    serializer_class = SemesterYearSerializer
 
 
 class BasicFormFieldListAPIView(custom_generic_apiviews.BaseListAPIView):

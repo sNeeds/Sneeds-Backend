@@ -1,7 +1,7 @@
 from django.db import models
 
 from abroadin.apps.data.account.models import Country, University, Major
-from abroadin.apps.estimation.form.models import StudentFormApplySemesterYear, StudentDetailedInfoBase, GradeChoices
+from abroadin.apps.estimation.form.models import SemesterYear, StudentDetailedInfoBase, GradeChoices
 from abroadin.apps.estimation.similarApply.managers import AppliedStudentDetailedInfoQuerySetManager
 
 
@@ -34,7 +34,7 @@ class AppliedTo(models.Model):
     )
 
     semester_year = models.ForeignKey(
-        StudentFormApplySemesterYear,
+        SemesterYear,
         on_delete=models.PROTECT
     )
 

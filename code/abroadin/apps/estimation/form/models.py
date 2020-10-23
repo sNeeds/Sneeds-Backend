@@ -26,7 +26,7 @@ class GradeChoices(models.TextChoices):
     POST_DOC = 'Post Doc', 'Post Doc'
 
 
-class StudentFormApplySemesterYear(models.Model):
+class SemesterYear(models.Model):
     class SemesterChoices(models.TextChoices):
         SPRING = "Spring"
         SUMMER = "Summer"
@@ -76,7 +76,7 @@ class WantToApply(models.Model):
     majors = models.ManyToManyField(Major)
 
     semester_years = models.ManyToManyField(
-        StudentFormApplySemesterYear,
+        SemesterYear,
     )
 
 
