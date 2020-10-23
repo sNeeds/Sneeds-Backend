@@ -110,6 +110,7 @@ class UserSerializer(serializers.ModelSerializer):
             'last_name',
             'phone_number',
             'password',
+            'is_email_verified',
         ]
         extra_kwargs = {
             'id': {'read_only': True},
@@ -118,6 +119,7 @@ class UserSerializer(serializers.ModelSerializer):
             'last_name': {'required': False},
             'phone_number': {'required': False},
             'password': {'write_only': True, 'required': False},
+            'is_email_verified': {'read_only': True, 'required': False},
         }
 
     def update(self, instance, validated_data):
