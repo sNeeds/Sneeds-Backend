@@ -376,16 +376,14 @@ class PublicationRetrieveDestroyAPIView(custom_generic_apiviews.BaseRetrieveDest
     permission_classes = [IsPublicationOwnerOrDetailedInfoWithoutUser]
 
 
-class StudentDetailedUniversityThroughListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
+class UniversityThroughListAPIView(custom_generic_apiviews.BaseListCreateAPIView):
     queryset = UniversityThrough.objects.all()
     serializer_class = UniversityThroughSerializer
     request_serializer_class = UniversityThroughRequestSerializer
 
     def get_queryset(self):
-        user = self.request.user
         sdi_id = self.request.query_params.get('student-detailed-info', None)
-        qs = student_detailed_info_many_to_one_qs(user, sdi_id,
-                                                  UniversityThrough)
+        qs = UniversityThrough.objects.filter(student_detailed_info__id=sdi_id)
         return qs
 
     @swagger_auto_schema(
@@ -396,7 +394,7 @@ class StudentDetailedUniversityThroughListCreateAPIView(custom_generic_apiviews.
         return super().post(request, *args, **kwargs)
 
 
-class StudentDetailedUniversityThroughRetrieveDestroyAPIView(custom_generic_apiviews.BaseRetrieveDestroyAPIView):
+class UniversityThroughDetailAPIView(custom_generic_apiviews.BaseRetrieveDestroyAPIView):
     lookup_field = 'id'
     queryset = UniversityThrough.objects.all()
     serializer_class = UniversityThroughSerializer

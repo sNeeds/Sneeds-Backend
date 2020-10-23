@@ -70,12 +70,10 @@ urlpatterns = [
     path('apply-semester-years/<int:id>/', views.SemesterYearRetrieveAPIView.as_view(),
          name="apply-semester-year-detail"),
 
-    path('student-detailed-university-throughs/',
-         views.StudentDetailedUniversityThroughListCreateAPIView.as_view(),
-         name="student-detailed-university-through-list"),
-    path('student-detailed-university-throughs/<int:id>/',
-         views.StudentDetailedUniversityThroughRetrieveDestroyAPIView.as_view(),
-         name="student-detailed-university-through-detail"),
+    path('university-throughs/', views.UniversityThroughListAPIView.as_view(),
+         name="university-through-list"),
+    path('university-throughs/<int:id>/', views.UniversityThroughDetailAPIView.as_view(),
+         name="university-through-detail"),
 
     path('grades/', views.GradesList.as_view()),
 

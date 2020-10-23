@@ -66,7 +66,7 @@ class WantToApplyAPITest(FormAPITests):
         )
         self.assertEqual(len(data), 0)
 
-    def test_want_to_apply_list_get_200(self):
+    def test_want_to_apply_list_get_200_4(self):
         student_detailed_info = StudentDetailedInfo.objects.create()
         data = self._want_to_apply_list(
             "get", None, status.HTTP_200_OK,
