@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase, APIClient
 
 from abroadin.apps.data.account.models import University, Major, Country
+from abroadin.apps.estimation.form.models import SemesterYear
 
 User = get_user_model()
 
@@ -74,7 +75,18 @@ class EstimationBaseTest(APITestCase):
 
         # ------- Semester Years -------
 
-        self.se =
+        self.semester_year1 = SemesterYear.objects.create(
+            year=2022,
+            semester=SemesterYear.SemesterChoices.SPRING
+        )
+        self.semester_year2 = SemesterYear.objects.create(
+            year=2022,
+            semester=SemesterYear.SemesterChoices.WINTER
+        )
+        self.semester_year3 = SemesterYear.objects.create(
+            year=2023,
+            semester=SemesterYear.SemesterChoices.FALL
+        )
 
         # ----- Setup ------
 
