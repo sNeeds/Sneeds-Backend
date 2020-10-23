@@ -12,7 +12,7 @@ from abroadin.base.api import generics
 from . import serializers
 from .serializers import UserRegisterSerializer
 from .permissions import NotLoggedInPermission, SameUserPermission
-from .utils import send_email_verification
+from .utils import send_verification_code
 
 User = get_user_model()
 
@@ -63,7 +63,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
 
 class GenerateVerificationAPIView(BaseGenerateVerificationAPIView):
-    send_code_function = send_email_verification
+    send_code_function = send_verification_code
 
 
 class VerifyVerificationAPIView(BaseVerifyVerificationAPIView):

@@ -9,13 +9,17 @@ from abroadin.utils.sendemail import send_verification_code_email
 User = get_user_model()
 
 
-def send_email_verification(*args, **kwargs):
-    user_id = kwargs.get('user')
-    user = User.objcet.get(id=user_id)
+def send_verification_code(view, request, verification):
+    user = verification.user
     email = user.email
-    code = kwargs.get(VERIFICATION_CODE_FIELD)
+    code = getattr(verification, VERIFICATION_CODE_FIELD)
     full_name = user.get_full_name()
-    send_email_verification_task.delay(email_address=email, full_name=full_name, code=code)
+    verification_type = verification.verification_type
+
+    if verification_type == 'email':
+        # print(user)
+        # print(code)
+        send_email_verification_task.delay(email_address=email, full_name=full_name, code=code)
 
 
 @shared_task()
