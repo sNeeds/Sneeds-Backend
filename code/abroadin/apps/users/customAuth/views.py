@@ -4,12 +4,15 @@ from rest_framework import permissions,  mixins
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 
+from verification.views import BaseGenerateVerificationAPIView, BaseVerifyVerificationAPIView
+
 from abroadin.base.api.viewsets import CAPIView
 from abroadin.base.api import generics
 
 from . import serializers
 from .serializers import UserRegisterSerializer
 from .permissions import NotLoggedInPermission, SameUserPermission
+from .utils import send_email_verification
 
 User = get_user_model()
 
@@ -57,3 +60,11 @@ class MyAccountInfoView(CAPIView):
 class CustomTokenObtainPairView(TokenObtainPairView):
 
     serializer_class = serializers.CustomTokenObtainPairSerializer
+
+
+class GenerateVerificationAPIView(BaseGenerateVerificationAPIView):
+    send_code_function = send_email_verification
+
+
+class VerifyVerificationAPIView(BaseVerifyVerificationAPIView):
+    pass

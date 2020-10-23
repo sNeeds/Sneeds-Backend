@@ -18,4 +18,7 @@ urlpatterns = [
     path('accounts/<int:id>/', views.UserDetailView.as_view()),
 
     path('my-account/', views.MyAccountInfoView.as_view()),
+
+    path('generate-verification/', views.GenerateVerificationAPIView.as_view(), name='generate-verification'),
+    path('verify-verification/', views.VerifyVerificationAPIView.as_view(), name='verify-verification'),
 ]
