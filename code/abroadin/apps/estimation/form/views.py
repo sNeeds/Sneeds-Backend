@@ -317,7 +317,7 @@ class WantToApplyListAPIView(custom_generic_apiviews.BaseListCreateAPIView):
 
     def get_queryset(self):
         sdi_id = self.request.query_params.get('student-detailed-info', None)
-        qs = WantToApply.objects.filter(student_detailed_info=sdi_id)
+        qs = WantToApply.objects.filter(student_detailed_info_id=sdi_id)
         return qs
 
     @swagger_auto_schema(
