@@ -10,7 +10,7 @@ from abroadin.apps.data.account.models import Country, University, Major
 User = get_user_model()
 
 
-class StudentDetailedInfoTests(EstimationBaseTest):
+class FormAPITests(EstimationBaseTest):
 
     def setUp(self):
         super().setUp()
@@ -126,22 +126,3 @@ class StudentDetailedInfoTests(EstimationBaseTest):
         self._test_form_detail("put", self.user2, status.HTTP_403_FORBIDDEN, reverse_args=data['id'])
         self._test_form_detail("patch", self.user2, status.HTTP_403_FORBIDDEN, reverse_args=data['id'])
 
-    def _want_to_apply(self, *args, **kwargs):
-        return self._test_form('estimation.form:want-to-apply-list', *args, **kwargs)
-
-    def test_want_to_apply_post_201(self):
-        form, _ = StudentDetailedInfo.objects.get_or_create(user=self.user1)
-        payload = {
-            "student_detailed_info": form.id,
-            "countries": [country.id for country in Country.objects.all()][:-1],
-            "grades": [grade.id for grade in Grade.objects.all()][:-1],
-            "universities": [university.id for university in University.objects.all()][:-1],
-            "majors": [major.id for major in Major.objects.all()][:-1],
-            "semester_years": [semester for semester in SemesterYear.objects.all()][:-1]
-        }
-        data = self._want_to_apply("post", self.user1, status.HTTP_201_CREATED, data=payload)
-        want_to_apply = WantToApply.objects.get(data['id'])
-
-        self.assertEqual(want_to_apply.student_detailed_info.id, data["student_detailed_info"])
-        self.assertEqual(countries, form)
-        self.assertEqual(want_to_apply.student_detailed_info, form)

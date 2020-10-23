@@ -57,8 +57,9 @@ from .permissions import (
     IsLanguageCertificateOwnerOrDetailedInfoWithoutUser,
     IsWantToApplyOwnerOrDetailedInfoWithoutUser,
     IsPublicationOwnerOrDetailedInfoWithoutUser,
-    IsUniversityThroughOwnerOrDetailedInfoWithoutUser, OnlyOneFormPermission,
-    SameUserOrNone, UserAlreadyHasForm
+    IsUniversityThroughOwnerOrDetailedInfoWithoutUser,
+    OnlyOneFormPermission,
+    SameUserOrNone, UserAlreadyHasForm,
 )
 
 
@@ -81,29 +82,6 @@ class StudentDetailedInfoListCreateAPIView(custom_generic_apiviews.BaseListCreat
         request_body=request_serializer_class,
         responses={200: serializer_class},
     )
-    #     request = self.context.get('request')
-    #     request_user = request.user
-    #     data_user = attrs.get("user")
-    #     if data_user is not None:
-    #         if data_user != request_user:
-    #             raise ValidationError(_("User can't set another user as the user of object."))
-    #         if data_user.is_consultant():
-    #             raise ValidationError(_("Consultants can not have Student Detailed Info"))
-    #         if data_user.is_authenticated:
-    #             user_student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=data_user)
-    #             if user_student_detailed_info_qs.exists():
-    #                 raise ValidationError(_("User already has a student detailed info"))
-    #     return attrs
-    #
-    # def create(self, validated_data):
-    #     data_user = validated_data.get("user")
-    #     if data_user is not None:
-    #         user_student_detailed_info_qs = StudentDetailedInfo.objects.filter(user=data_user)
-    #         if user_student_detailed_info_qs.exists():
-    #             raise ValidationError(_("User already has a student detailed info"))
-    #     student_detailed_info_obj = StudentDetailedInfo.objects.create(**validated_data)
-    #     return student_detailed_info_obj
-    #
     def perform_create(self, serializer):
         user = self.request.user
         if user.is_authenticated:
@@ -333,15 +311,13 @@ class DuolingoCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestr
     permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
-class WantToApplyListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
-    queryset = WantToApply.objects.all()
+class WantToApplyListAPIView(custom_generic_apiviews.BaseListCreateAPIView):
     serializer_class = WantToApplySerializer
     request_serializer_class = WantToApplyRequestSerializer
 
     def get_queryset(self):
-        user = self.request.user
         sdi_id = self.request.query_params.get('student-detailed-info', None)
-        qs = student_detailed_info_many_to_one_qs(user, sdi_id, WantToApply)
+        qs = WantToApply.objects.filter(student_detailed_info_id=sdi_id)
         return qs
 
     @swagger_auto_schema(
@@ -352,7 +328,7 @@ class WantToApplyListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView
         return super().post(request, *args, **kwargs)
 
 
-class WantToApplyRetrieveUpdateDestroyAPIView(custom_generic_apiviews.BaseRetrieveUpdateDestroyAPIView):
+class WantToApplyDetailAPIView(custom_generic_apiviews.BaseRetrieveUpdateDestroyAPIView):
     lookup_field = 'id'
     queryset = WantToApply.objects.all()
     serializer_class = WantToApplySerializer
@@ -400,16 +376,14 @@ class PublicationRetrieveDestroyAPIView(custom_generic_apiviews.BaseRetrieveDest
     permission_classes = [IsPublicationOwnerOrDetailedInfoWithoutUser]
 
 
-class StudentDetailedUniversityThroughListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
+class UniversityThroughListAPIView(custom_generic_apiviews.BaseListCreateAPIView):
     queryset = UniversityThrough.objects.all()
     serializer_class = UniversityThroughSerializer
     request_serializer_class = UniversityThroughRequestSerializer
 
     def get_queryset(self):
-        user = self.request.user
         sdi_id = self.request.query_params.get('student-detailed-info', None)
-        qs = student_detailed_info_many_to_one_qs(user, sdi_id,
-                                                  UniversityThrough)
+        qs = UniversityThrough.objects.filter(student_detailed_info__id=sdi_id)
         return qs
 
     @swagger_auto_schema(
@@ -420,62 +394,88 @@ class StudentDetailedUniversityThroughListCreateAPIView(custom_generic_apiviews.
         return super().post(request, *args, **kwargs)
 
 
-class StudentDetailedUniversityThroughRetrieveDestroyAPIView(custom_generic_apiviews.BaseRetrieveDestroyAPIView):
+class UniversityThroughDetailAPIView(custom_generic_apiviews.BaseRetrieveDestroyAPIView):
     lookup_field = 'id'
     queryset = UniversityThrough.objects.all()
     serializer_class = UniversityThroughSerializer
     permission_classes = [IsUniversityThroughOwnerOrDetailedInfoWithoutUser]
 
 
-@api_view(['GET'])
-def payment_affordability_choices(request, format=None):
-    choices = []
-
-    for choice in StudentDetailedInfo.PaymentAffordabilityChoices:
-        choices.append({"value": choice.value, "label": choice.label})
-    # choices = StudentDetailedInfo.PaymentAffordabilityChoices.choices
-
-    return Response(
-        data={"choices": choices},
-        status=status.HTTP_200_OK,
-    )
-
-
-def student_detailed_info_many_to_one_qs(user, sdi_id, model_class):
-    if not user.is_authenticated:
-        if sdi_id is not None:
-            sdi_qs = StudentDetailedInfo.objects.filter(id=sdi_id)
-            if sdi_qs.exists():
-                sdi = StudentDetailedInfo.objects.get(id=sdi_id)
-                if sdi.user is None:
-                    qs = model_class.objects.filter(student_detailed_info_id=sdi)
-                    return qs
-                else:
-                    raise exceptions.NotAuthenticated()
-            else:
-                raise exceptions.NotFound()
-        else:
-            raise exceptions.NotFound()
-
-    else:
-        if sdi_id is not None:
-            try:
-                sdi_user = StudentDetailedInfo.objects.get(id=sdi_id).user
-                if user == sdi_user:
-                    qs = model_class.objects.filter(student_detailed_info_id=sdi_id)
-                    return qs
-                else:
-                    raise exceptions.PermissionDenied()
-            except StudentDetailedInfo.DoesNotExist:
-                raise exceptions.NotFound()
-            except ValidationError:
-                raise exceptions.ValidationError(detail={"detail": "'{}' is not a valid UUID".format(sdi_id)})
-
-        user_sdi_ids = StudentDetailedInfo.objects.filter(user=user).values_list('id', flat=True)
-        qs = model_class.objects.filter(student_detailed_info__in=user_sdi_ids)
-        return qs
+def student_detailed_info_many_to_one_qs(user, form, model_class):
+    # if user.is_authenticated:
+    #     qs = model_class.objects.filter(student_detailed_info=form)
+    #     return qs
+    # else:
+    #
+    #
+    #     if sdi_id is not None:
+    #         try:
+    #             sdi_user = StudentDetailedInfo.objects.get(id=sdi_id).user
+    #             if user == sdi_user:
+    #
+    #             else:
+    #                 raise exceptions.PermissionDenied()
+    #         except StudentDetailedInfo.DoesNotExist:
+    #             raise exceptions.NotFound()
+    #         except ValidationError:
+    #             raise exceptions.ValidationError(detail={"detail": "'{}' is not a valid UUID".format(sdi_id)})
+    #
+    #     user_sdi_ids = StudentDetailedInfo.objects.filter(user=user).values_list('id', flat=True)
+    #     qs = model_class.objects.filter(student_detailed_info__in=user_sdi_ids)
+    #     return qs
+    #
+    #
+    # if not user.is_authenticated:
+    #     if sdi_id is not None:
+    #         sdi_qs = StudentDetailedInfo.objects.filter(id=sdi_id)
+    #         if sdi_qs.exists():
+    #             sdi = StudentDetailedInfo.objects.get(id=sdi_id)
+    #             if sdi.user is None:
+    #                 qs = model_class.objects.filter(student_detailed_info_id=sdi)
+    #                 return qs
+    #             else:
+    #                 raise exceptions.NotAuthenticated()
+    #         else:
+    #             raise exceptions.NotFound()
+    #     else:
+    #         raise exceptions.NotFound()
+    #
+    # else:
+    pass
 
 
-class GradesList(CListAPIView):
+class GradesListAPIView(CListAPIView):
     queryset = Grade.objects.all()
     serializer_class = GradeSerializer
+
+
+class GradeChoicesListAPIView(EnumViewList):
+    enum_class = GradeChoices
+
+
+class SemesterYearChoicesListAPIView(EnumViewList):
+    enum_class = SemesterYear.SemesterChoices
+
+
+class WhichAuthorChoicesListAPIView(EnumViewList):
+    enum_class = Publication.WhichAuthorChoices
+
+
+class PublicationChoicesListAPIView(EnumViewList):
+    enum_class = Publication.PublicationChoices
+
+
+class JournalReputationChoicesListAPIView(EnumViewList):
+    enum_class = Publication.JournalReputationChoices
+
+
+class PaymentAffordabilityChoicesListAPIView(EnumViewList):
+    enum_class = StudentDetailedInfo.PaymentAffordabilityChoices
+
+
+class GenderChoicesListAPIView(EnumViewList):
+    enum_class = StudentDetailedInfo.GenderChoices
+
+
+class LanguageCertificateTypeListAPIView(EnumViewList):
+    enum_class = LanguageCertificate.LanguageCertificateType

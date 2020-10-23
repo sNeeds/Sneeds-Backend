@@ -578,12 +578,12 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
 
 
 class UniversityThrough(models.Model):
-    university = models.ForeignKey(
-        University, on_delete=models.PROTECT
-    )
     student_detailed_info = models.ForeignKey(
         StudentDetailedInfoBase,
         on_delete=models.CASCADE
+    )
+    university = models.ForeignKey(
+        University, on_delete=models.PROTECT
     )
     grade = models.CharField(
         max_length=128,
