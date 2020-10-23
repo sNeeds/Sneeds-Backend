@@ -9,7 +9,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 
 class CustomUserManager(BaseUserManager):
     def _create_user(self, email, password,
-                     is_staff, is_superuser, **extra_fields):
+                     is_staff, is_superuser, is_email_verified, **extra_fields):
         """
         Creates and saves a User with the given email and password.
         """
@@ -19,7 +19,9 @@ class CustomUserManager(BaseUserManager):
         email = self.normalize_email(email)
         user = self.model(email=email,
                           is_staff=is_staff, is_active=True,
-                          is_superuser=is_superuser, last_login=now,
+                          is_superuser=is_superuser,
+                          is_email_verified=is_email_verified,
+                          last_login=now,
                           date_joined=now, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
@@ -27,12 +29,12 @@ class CustomUserManager(BaseUserManager):
 
     def create_user(self, email, password=None, **extra_fields):
         return self._create_user(
-            email, password, False, False, **extra_fields
+            email, password, False, False, False, **extra_fields
         )
 
     def create_superuser(self, email, password, **extra_fields):
         return self._create_user(
-            email, password, True, True, **extra_fields
+            email, password, True, True, True, **extra_fields
         )
 
     def get_admin_consultant_or_none(self):
@@ -79,6 +81,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             'Unselect this instead of deleting accounts.'
         ),
     )
+
+    is_email_verified = models.BooleanField(
+        _('email verification status'),
+        default=False,
+        help_text=_('Designates whether the user email is verified.'),
+    )
+
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
 
     objects = CustomUserManager()
