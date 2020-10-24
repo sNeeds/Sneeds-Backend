@@ -1,8 +1,10 @@
 import itertools
 
-from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
-from django.db.models import Value, FloatField
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector, TrigramSimilarity
+from django.db.models import Value, FloatField, F
+from django.db.models.functions import Ln, Length
 
+from abroadin.apps.data.account.models import Country
 from abroadin.apps.users.consultants.models import ConsultantProfile, StudyInfo
 
 
@@ -10,10 +12,10 @@ def search_consultants(qs, phrase):
     if phrase is None:
         return qs
 
-    vector = SearchVector('user__first_name', weight='B') + SearchVector('user__last_name', weight='B') + \
-             SearchVector('bio', weight='B')\
-             + SearchVector('studyinfo__university__country__search_name', weight='A')\
-             + SearchVector('studyinfo__university__search_name', weight='A')\
+    vector = SearchVector('user__first_name', weight='B') + SearchVector('user__last_name', weight='B') \
+             + SearchVector('bio', weight='B') \
+             + SearchVector('studyinfo__university__country__search_name', weight='A') \
+             + SearchVector('studyinfo__university__search_name', weight='A') \
              + SearchVector('studyinfo__major__search_name', weight='A')
 
     query = SearchQuery(phrase, search_type='websearch')
@@ -102,5 +104,16 @@ def search_consultants(qs, phrase):
             normalization=Value(1),
         )
     ).filter(rank__gte=0.05).order_by('-rank')
+
+    return queryset
+
+
+def search_country(qs, phrase):
+    # To see execution time of queries, use this: python manage.py shell_plus --print-sql
+    # To see results use endpoint /form-universities?&search=colombia
+    queryset = qs.annotate(similarity=TrigramSimilarity('search_name', phrase),
+                           search_name_length=Ln(Length('search_name'))). \
+        annotate(t=F('similarity') * F('search_name_length')). \
+        filter(t__gt=0.4).order_by('-t')
 
     return queryset
