@@ -9,8 +9,8 @@ beautifulsoup4==4.9.1
 billiard==3.6.3.0
 bitcoin==1.1.42
 cached-property==1.5.1
-celery==5.0.0
-certifi==2019.6.16
+celery==5.0.1
+certifi==2020.6.20
 chardet==3.0.4
 click==7.1.2
 click-didyoumean==0.0.3
@@ -34,7 +34,6 @@ django-js-asset==1.2.2
 django-polymorphic==3.0.0
 django-rest-passwordreset==1.1.0
 django-rest-polymorphic==0.1.8
-django-rest-verification==0.21
 django-storages==1.9.1
 django-tinymce==2.8.0
 djangorestframework==3.12.1
@@ -57,11 +56,10 @@ kiwisolver==1.1.0
 kombu==5.0.2
 lxml==4.5.0
 MarkupSafe==1.1.1
-matplotlib==3.3.2
-numpy==1.19.2
+matplotlib==3.0.3
+numpy==1.17.4
 packaging==20.4
-Pillow==7.2.0
-pkginfo==1.6.0
+Pillow==7.1.1
 prompt-toolkit==2.0.9
 psycopg2==2.8.3
 psycopg2-binary==2.8.4
@@ -69,7 +67,7 @@ pycodestyle==2.5.0
 pycoin==0.90.20190630
 pygraphviz==1.6
 PyJWT==1.7.1
-pyparsing==2.4.7
+pyparsing==2.4.5
 python-bidi==0.4.2
 python-dateutil==2.8.0
 python-gnupg==0.4.5
