@@ -88,7 +88,6 @@ class EstimationBaseTest(APITestCase):
             semester=SemesterYear.SemesterChoices.FALL
         )
 
-
         # ----- Setup ------
 
         self.client = APIClient()
