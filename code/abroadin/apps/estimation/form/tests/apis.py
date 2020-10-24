@@ -119,8 +119,6 @@ class FormAPITests(EstimationBaseTest):
 
     def test_form_detail_put_patch_403(self):
         data = self._test_form_list("post", self.user1, status.HTTP_201_CREATED)
-        self._test_form_detail("put", self.user1, status.HTTP_200_OK, reverse_args=data['id'])
-        self._test_form_detail("patch", self.user1, status.HTTP_200_OK, reverse_args=data['id'])
         self._test_form_detail("put", None, status.HTTP_401_UNAUTHORIZED, reverse_args=data['id'])
         self._test_form_detail("patch", None, status.HTTP_401_UNAUTHORIZED, reverse_args=data['id'])
         self._test_form_detail("put", self.user2, status.HTTP_403_FORBIDDEN, reverse_args=data['id'])

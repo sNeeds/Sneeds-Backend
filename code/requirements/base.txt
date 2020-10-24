@@ -1,4 +1,4 @@
-amqp==2.5.2
+amqp==5.0.1
 anyjson==0.3.3
 appdirs==1.4.3
 asgiref==3.2.10
@@ -6,12 +6,15 @@ attrs==19.1.0
 autopep8==1.4.4
 Babel==2.7.0
 beautifulsoup4==4.9.1
-billiard==3.6.2.0
+billiard==3.6.3.0
 bitcoin==1.1.42
 cached-property==1.5.1
 celery==5.0.1
 certifi==2019.6.16
 chardet==3.0.4
+click==7.1.2
+click-didyoumean==0.0.3
+click-repl==0.1.6
 coreapi==2.3.3
 coreschema==0.0.4
 cycler==0.10.0
@@ -50,7 +53,7 @@ jet-bridge-base==0.7.6
 Jinja2==2.10.1
 jsonfield==3.1.0
 kiwisolver==1.1.0
-kombu==4.6.7
+kombu==5.0.2
 lxml==4.5.0
 MarkupSafe==1.1.1
 matplotlib==3.0.3
@@ -88,7 +91,7 @@ tzlocal==2.1
 unicodecsv==0.14.1
 uritemplate==3.0.0
 urllib3==1.25.3
-vine==1.3.0
+vine==5.0.0
 wcwidth==0.1.9
 zeep==3.4.0
 zipp==3.0.0
