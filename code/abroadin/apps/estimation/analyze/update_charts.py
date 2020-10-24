@@ -192,6 +192,8 @@ def prepare_publications_score_chart_data(instance, db_instance, is_delete=False
                                                                        defaults={'count': 1})
                     if not created:
                         ChartItemData.objects.filter(pk=obj.pk).update(count=F('count') + 1)
+
+
 @shared_task
 def update_publications_score_chart(data, db_data, is_delete=False):
     des_obj = next(deserialize('json', data))

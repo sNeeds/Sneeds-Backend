@@ -6,6 +6,7 @@ from abroadin.base.api import generics
 
 from . import models
 from . import serializers
+from ...search.search_functions import search_country
 
 
 class CountryDetail(generics.CRetrieveAPIView):
@@ -22,32 +23,29 @@ class CountryList(generics.CListAPIView):
         with_time_slot_consultants = request.query_params.get('with-time-slot-consultants', None)
         search_terms = request.query_params.get('search', None)
 
-        qs = models.Country.objects.all()
+        if with_time_slot_consultants == 'true':
+            qs = models.Country.objects.with_active_time_slot_consultants().exclude(slug="iran")
+        else:
+            qs = models.Country.objects.all()
+
         other_qs = models.Country.objects. \
-            annotate(similarity=TrigramSimilarity('search_name', 'سایر'),
+            annotate(similarity=TrigramSimilarity('search_name', 'other'),
                      search_name_length=Ln(Length('search_name'))). \
             annotate(t=F('similarity') * F('search_name_length')). \
             filter(t__gt=0.4).order_by('-t')
 
-        if with_time_slot_consultants == 'true':
-            qs = models.Country.objects.with_active_time_slot_consultants().exclude(slug="iran")
-
         if search_terms is not None:
             search_term = search_terms[:16]
             if len(search_term) == 0:
-                return other_qs
+                queryset = qs
+            else:
+                queryset = search_country(qs, search_term)
+            queryset |= other_qs
+            queryset = queryset.distinct()
+        else:
+            queryset = qs
 
-            # To see execution time of queries, use this: python manage.py shell_plus --print-sql
-            # To see results use endpoint /form-universities?&search=colombia
-            qs = qs.annotate(similarity=TrigramSimilarity('search_name', search_term),
-                             search_name_length=Ln(Length('search_name'))). \
-                annotate(t=F('similarity') * F('search_name_length')). \
-                filter(t__gt=0.4).order_by('-t')
-
-            qs |= other_qs
-
-        qs = qs.distinct()
-        return qs
+        return queryset
 
 
 class UniversityDetail(generics.CRetrieveAPIView):
@@ -76,7 +74,7 @@ class UniversityForFormList(generics.CListAPIView):
         search_terms = params
 
         other_qs = models.University.objects. \
-            annotate(similarity=TrigramSimilarity('search_name', 'سایر'),
+            annotate(similarity=TrigramSimilarity('search_name', 'other'),
                      search_name_length=Ln(Length('search_name'))). \
             annotate(t=F('similarity') * F('search_name_length')). \
             filter(t__gt=0.4).order_by('-t')
@@ -128,7 +126,7 @@ class MajorForFormList(generics.CListAPIView):
         search_terms = params
 
         other_qs = models.Major.objects. \
-            annotate(similarity=TrigramSimilarity('search_name', 'سایر'),
+            annotate(similarity=TrigramSimilarity('search_name', 'other'),
                      search_name_length=Ln(Length('search_name'))). \
             annotate(t=F('similarity') * F('search_name_length')). \
             filter(t__gt=0.4).order_by('-t')
