@@ -358,7 +358,8 @@ class PublicationListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView
     def get_queryset(self):
         user = self.request.user
         sdi_id = self.request.query_params.get('student-detailed-info', None)
-        qs = student_detailed_info_many_to_one_qs(user, sdi_id, Publication)
+        # qs = student_detailed_info_many_to_one_qs(user, sdi_id, Publication)
+        qs = Publication.objects.filter(student_detailed_info_id=sdi_id)
         return qs
 
     @swagger_auto_schema(
