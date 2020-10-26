@@ -11,11 +11,6 @@ class AppliedTo(models.Model):
         on_delete=models.CASCADE,
         related_name="applied_to"
     )
-    country = models.ForeignKey(
-        Country,
-        on_delete=models.CASCADE
-    )
-
     university = models.ForeignKey(
         University,
         on_delete=models.CASCADE
@@ -50,6 +45,10 @@ class AppliedTo(models.Model):
         null=True,
         blank=True
     )
+
+    @property
+    def country(self):
+        return self.university.country
 
 
 class AppliedStudentDetailedInfo(StudentDetailedInfoBase):
