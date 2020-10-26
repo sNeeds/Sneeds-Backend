@@ -26,8 +26,5 @@ class FormCommentsAPITests(EstimationsAppAPITests):
     def setUp(self):
         super().setUp()
 
-    def _test_form_comments_detail(self, *args, **kwargs):
-        return self._test_form('estimation.estimations:form-comments-detail', *args, **kwargs)
-
     def test_form_comments_detail_get_200(self):
         self._test_form_comments_detail("get", None, status.HTTP_200_OK, reverse_args=self.app_form_1.id)
