@@ -244,11 +244,12 @@ class GREGeneralCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDes
 
 class GRESubjectCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
     model_class = GRESubjectCertificate
-    queryset = model_class.objects.exclude(certificate_type__in=[
+    separate_sub_certificates = [
         LanguageCertificate.LanguageCertificateType.GRE_PSYCHOLOGY,
         LanguageCertificate.LanguageCertificateType.GRE_BIOLOGY,
         LanguageCertificate.LanguageCertificateType.GRE_PHYSICS,
-    ])
+    ]
+    queryset = model_class.objects.all().exclude(certificate_type__in=separate_sub_certificates)
     serializer_class = GRESubjectCertificateSerializer
 
 

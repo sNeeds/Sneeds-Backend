@@ -44,14 +44,14 @@ class PublicationAPITest(FormAPITests):
     def _publication_detail(self, *args, **kwargs):
         return self._test_form('estimation.form:publication-detail', *args, **kwargs)
 
-    def test_university_through_list_get_200_1(self):
+    def test_publication_list_get_200_1(self):
         data = self._publication_list(
             "get", None, status.HTTP_200_OK,
             data={"student-detailed-info": self.local_student_detailed_info.id}
         )
         self.assertEqual(len(data), 1)
 
-    def test_university_through_list_get_200_2(self):
+    def test_publication_list_get_200_2(self):
         self.local_publication.student_detailed_info.user = self.local_user
         self.local_publication.student_detailed_info.save()
         data = self._publication_list(
@@ -60,7 +60,7 @@ class PublicationAPITest(FormAPITests):
         )
         self.assertEqual(len(data), 1)
 
-    def test_university_through_list_get_200_3(self):
+    def test_publication_list_get_200_3(self):
         sdi = StudentDetailedInfo.objects.create(user=self.local_user)
         data = self._publication_list(
             "get", self.local_user, status.HTTP_200_OK,
@@ -68,7 +68,7 @@ class PublicationAPITest(FormAPITests):
         )
         self.assertEqual(len(data), 0)
 
-    def test_university_through_list_get_200_4(self):
+    def test_publication_list_get_200_4(self):
         self.local_publication.student_detailed_info.user = self.local_user
         self.local_publication.student_detailed_info.save()
         data = self._publication_list(
@@ -77,7 +77,7 @@ class PublicationAPITest(FormAPITests):
         )
         self.assertEqual(len(data), 1)
 
-    def test_university_through_list_post_201_1(self):
+    def test_publication_list_post_201_1(self):
         data = self._publication_list(
             "post", None, status.HTTP_201_CREATED,
             data=self.publication_payload
@@ -87,3 +87,37 @@ class PublicationAPITest(FormAPITests):
             data={"student-detailed-info": self.publication_payload.get('student_detailed_info')}
         )
         self.assertEqual(len(data), 1)
+
+    def test_publication_list_post_201_2(self):
+        self.student_detailed_info.user = self.local_user
+        self.student_detailed_info.save()
+        data = self._publication_list(
+            "post", self.local_user, status.HTTP_201_CREATED,
+            data=self.publication_payload
+        )
+        data = self._publication_list(
+            "get", self.local_user, status.HTTP_200_OK,
+            data={"student-detailed-info": self.publication_payload.get('student_detailed_info')}
+        )
+        self.assertEqual(len(data), 1)
+
+    def test_publication_list_post_400_1(self):
+        self.student_detailed_info.user = self.user1
+        self.student_detailed_info.save()
+        data = self._publication_list(
+            "post", self.local_user, status.HTTP_400_BAD_REQUEST,
+            data=self.publication_payload
+        )
+        data = self._publication_list(
+            "get", self.local_user, status.HTTP_200_OK,
+            data={"student-detailed-info": self.publication_payload.get('student_detailed_info')}
+        )
+        self.assertEqual(len(data), 0)
+
+    def test_publication_list_post_400_2(self):
+        data = self._publication_list(
+            "post", self.local_user, status.HTTP_400_BAD_REQUEST,
+            data=self.publication_payload
+        )
+
+
