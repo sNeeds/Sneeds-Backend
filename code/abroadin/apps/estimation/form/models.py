@@ -451,7 +451,7 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         if self.get_last_university_through():
             total_value += 2 * self.get_last_university_through().value
         total_value += publications.qs_total_value()
-        total_value += languages.get_total_value()
+        total_value += 0 if languages.get_total_value() is None else languages.get_total_value()
         total_value += self.others_value
 
         total_value = total_value / 5

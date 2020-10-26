@@ -151,12 +151,6 @@ class SemesterYearListAPIView(custom_generic_apiviews.BaseListAPIView):
     serializer_class = SemesterYearSerializer
 
 
-class SemesterYearRetrieveAPIView(custom_generic_apiviews.BaseRetrieveAPIView):
-    lookup_field = 'id'
-    queryset = SemesterYear.objects.all()
-    serializer_class = SemesterYearSerializer
-
-
 class BasicFormFieldListAPIView(custom_generic_apiviews.BaseListAPIView):
     queryset = BasicFormField.objects.all()
     serializer_class = BasicFormFieldSerializer
@@ -454,14 +448,6 @@ def student_detailed_info_many_to_one_qs(user, form, model_class):
 class GradesListAPIView(CListAPIView):
     queryset = Grade.objects.all()
     serializer_class = GradeSerializer
-
-
-class GradeChoicesListAPIView(EnumViewList):
-    enum_class = GradeChoices
-
-
-class SemesterYearChoicesListAPIView(EnumViewList):
-    enum_class = SemesterYear.SemesterChoices
 
 
 class WhichAuthorChoicesListAPIView(EnumViewList):
