@@ -45,9 +45,21 @@ class UniversityThroughModelTests(EstimationsAppAPITests):
                     major=self.major1,
                     graduate_in=2018,
                     thesis_title="Foo title",
-                    gpa=gpa / 2
+                    gpa=gpa
                 )
 
                 print("rank:", rank, "gpa:", gpa, "value:", university_through.value)
-
+                response = self._test_form_comments_detail("get", None, status.HTTP_200_OK,
+                                                           reverse_args=self.local_form1.id)
+                # print(
+                #     response["university_and_gpa"]["data"]["bachelor"],
+                #     "| Label:", response["university_and_gpa"]["value_label"],
+                #     "| University Value:", response["university_and_gpa"]["university_value"],
+                #     "| GPA Value:", response["university_and_gpa"]["gpa_value"]
+                # )
+                print(
+                    "| Label:", response["university_and_gpa"]["value_label"],
+                    "| University Value:", response["university_and_gpa"]["university_value"],
+                    "| GPA Value:", response["university_and_gpa"]["gpa_value"]
+                )
                 university_through.delete()
