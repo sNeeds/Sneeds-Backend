@@ -8,7 +8,7 @@ from abroadin.apps.estimation.form.admin import StudentDetailedInfoBaseAdmin
 class AppliedToInline(admin.TabularInline):
     model = models.AppliedTo
     extra = 1
-    autocomplete_fields = ['country', 'university', 'major', ]
+    autocomplete_fields = ['university', 'major', ]
 
 
 @admin.register(models.AppliedStudentDetailedInfo)
