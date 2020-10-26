@@ -5,7 +5,7 @@ from . import models
 
 @admin.register(models.University)
 class UniversityAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'rank', 'is_college']
+    list_display = ['id', 'name', 'rank', 'country', 'is_college']
     search_fields = ['name']
 
 
