@@ -11,7 +11,11 @@ class AppliedTo(models.Model):
         on_delete=models.CASCADE,
         related_name="applied_to"
     )
-
+    student_name = models.CharField(
+        max_length=256,
+        null=True,
+        blank=True
+    )
     country = models.ForeignKey(
         Country,
         on_delete=models.CASCADE
