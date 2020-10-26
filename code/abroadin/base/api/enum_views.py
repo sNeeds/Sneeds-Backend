@@ -8,8 +8,5 @@ class EnumViewList(CAPIView):
 
     def get(self, request, *args, **kwargs):
         choices = self.enum_class.choices
-        data = {
-            "choices": [l for _, l in choices]
-        }
-
+        data = [l for _, l in choices]
         return Response(data)

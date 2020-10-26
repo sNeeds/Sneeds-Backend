@@ -402,48 +402,6 @@ class UniversityThroughDetailAPIView(custom_generic_apiviews.BaseRetrieveDestroy
     permission_classes = [IsUniversityThroughOwnerOrDetailedInfoWithoutUser]
 
 
-def student_detailed_info_many_to_one_qs(user, form, model_class):
-    # if user.is_authenticated:
-    #     qs = model_class.objects.filter(student_detailed_info=form)
-    #     return qs
-    # else:
-    #
-    #
-    #     if sdi_id is not None:
-    #         try:
-    #             sdi_user = StudentDetailedInfo.objects.get(id=sdi_id).user
-    #             if user == sdi_user:
-    #
-    #             else:
-    #                 raise exceptions.PermissionDenied()
-    #         except StudentDetailedInfo.DoesNotExist:
-    #             raise exceptions.NotFound()
-    #         except ValidationError:
-    #             raise exceptions.ValidationError(detail={"detail": "'{}' is not a valid UUID".format(sdi_id)})
-    #
-    #     user_sdi_ids = StudentDetailedInfo.objects.filter(user=user).values_list('id', flat=True)
-    #     qs = model_class.objects.filter(student_detailed_info__in=user_sdi_ids)
-    #     return qs
-    #
-    #
-    # if not user.is_authenticated:
-    #     if sdi_id is not None:
-    #         sdi_qs = StudentDetailedInfo.objects.filter(id=sdi_id)
-    #         if sdi_qs.exists():
-    #             sdi = StudentDetailedInfo.objects.get(id=sdi_id)
-    #             if sdi.user is None:
-    #                 qs = model_class.objects.filter(student_detailed_info_id=sdi)
-    #                 return qs
-    #             else:
-    #                 raise exceptions.NotAuthenticated()
-    #         else:
-    #             raise exceptions.NotFound()
-    #     else:
-    #         raise exceptions.NotFound()
-    #
-    # else:
-    pass
-
 
 class GradesListAPIView(CListAPIView):
     queryset = Grade.objects.all()
