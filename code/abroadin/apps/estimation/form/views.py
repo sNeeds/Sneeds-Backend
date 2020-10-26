@@ -181,7 +181,7 @@ class LanguageCertificateListCreateAPIView(custom_generic_apiviews.BaseListCreat
     def get_queryset(self):
         user = self.request.user
         sdi_id = self.request.query_params.get('student-detailed-info', None)
-        qs = self.model_class.objects.filter(student_detailed_info=sdi_id)
+        qs = self.queryset.filter(student_detailed_info=sdi_id)
         # qs = student_detailed_info_many_to_one_qs(user, sdi_id, self.model_class)
         return qs
 
@@ -238,11 +238,12 @@ class GREGeneralCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDes
 
 class GRESubjectCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
     model_class = GRESubjectCertificate
-    queryset = model_class.objects.exclude(certificate_type__in=[
+    separate_sub_certificates = [
         LanguageCertificate.LanguageCertificateType.GRE_PSYCHOLOGY,
         LanguageCertificate.LanguageCertificateType.GRE_BIOLOGY,
         LanguageCertificate.LanguageCertificateType.GRE_PHYSICS,
-    ])
+    ]
+    queryset = model_class.objects.all().exclude(certificate_type__in=separate_sub_certificates)
     serializer_class = GRESubjectCertificateSerializer
 
 
