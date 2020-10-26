@@ -606,7 +606,6 @@ class UniversityThrough(models.Model):
         validators=[MinValueValidator(0), MaxValueValidator(20)],
         max_digits=4,
         decimal_places=2
-
     )
     value = models.FloatField(
         validators=[MinValueValidator(0), MaxValueValidator(1)],

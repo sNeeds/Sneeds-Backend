@@ -66,13 +66,8 @@ class Major(models.Model):
         null=True,
         upload_to=get_image_upload_path("field-of-study-pictures")
     )
-    parent_major = models.ForeignKey(
-        'self',
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE
-    )
-    # objects =
+    parent_major = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
+
     def hierarchy_str(self):
         name = self.name
         if self.parent_major:
