@@ -14,3 +14,4 @@ class AppliedToInline(admin.TabularInline):
 @admin.register(models.AppliedStudentDetailedInfo)
 class AppliedStudentDetailedInfoAdmin(StudentDetailedInfoBaseAdmin):
     inlines = [AppliedToInline] + StudentDetailedInfoBaseAdmin.inlines
+    list_display = ['id', 'student_name']

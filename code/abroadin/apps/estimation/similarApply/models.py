@@ -11,11 +11,6 @@ class AppliedTo(models.Model):
         on_delete=models.CASCADE,
         related_name="applied_to"
     )
-    student_name = models.CharField(
-        max_length=256,
-        null=True,
-        blank=True
-    )
     country = models.ForeignKey(
         Country,
         on_delete=models.CASCADE
@@ -59,6 +54,12 @@ class AppliedTo(models.Model):
 
 class AppliedStudentDetailedInfo(StudentDetailedInfoBase):
     objects = AppliedStudentDetailedInfoQuerySetManager.as_manager()
+
+    student_name = models.CharField(
+        max_length=256,
+        null=True,
+        blank=True
+    )
 
     def _applied_to_has_this_major(self, major):
         return AppliedTo.objects.filter(
