@@ -30,6 +30,4 @@ class EstimationsAppAPITests(EstimationsAppBaseTests):
         return self._test_form('estimation.estimations:form-comments-detail', *args, **kwargs)
 
     def test_form_comments_detail_get_200(self):
-        print(type(self.app_form_1.id))
-        self._test_form_comments_detail("get", None, status.HTTP_200_OK, reverse_args=str(self.app_form_1.id))
-
+        self._test_form_comments_detail("get", None, status.HTTP_200_OK, reverse_args=self.app_form_1.id)

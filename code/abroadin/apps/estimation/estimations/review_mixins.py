@@ -364,7 +364,6 @@ class ReviewOthersMixin:
         form = self.student_detailed_form
         comment = ""
         if form.related_work_experience:
-            print("****", form.related_work_experience)
             # TODO:Change
             value_range = ValueRange(VALUES_WITH_ATTRS["work_experience_comments"])
             comment = value_range.find_value_attrs(form.related_work_experience, 'comment')
