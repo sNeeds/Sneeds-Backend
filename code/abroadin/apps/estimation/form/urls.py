@@ -65,7 +65,6 @@ urlpatterns = [
     path('want-to-applies/<int:id>/', views.WantToApplyDetailAPIView.as_view(),
          name="want-to-apply-detail"),
 
-
     path('university-throughs/', views.UniversityThroughListAPIView.as_view(),
          name="university-through-list"),
     path('university-throughs/<int:id>/', views.UniversityThroughDetailAPIView.as_view(),
@@ -75,7 +74,6 @@ urlpatterns = [
 
     path('choices/apply-semester-years/', views.SemesterYearListAPIView.as_view(),
          name="apply-semester-year-list"),
-
 
     path('choices/gender-choices/', views.GenderChoicesListAPIView.as_view(), name="gender-choices-list"),
 
