@@ -60,7 +60,7 @@ class EstimationsAppBaseTests(EstimationBaseTest):
             University.objects.filter(id__in=[self.university1.id, self.university2.id]),
         )
         self.app_form_1_want_to_apply_1.grades.set(
-            Grade.objects.filter(id__in=[Grade.objects.get(name=GradeChoices.PHD)]),
+            Grade.objects.filter(id__in=[Grade.objects.get(name=GradeChoices.PHD).id]),
         )
         self.app_form_1_want_to_apply_1.majors.set(
             Major.objects.filter(id__in=[self.major1.id, self.major2.id])
