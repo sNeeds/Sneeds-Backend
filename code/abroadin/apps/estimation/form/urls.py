@@ -65,24 +65,19 @@ urlpatterns = [
     path('want-to-applies/<int:id>/', views.WantToApplyDetailAPIView.as_view(),
          name="want-to-apply-detail"),
 
-    path('apply-semester-years/', views.SemesterYearListAPIView.as_view(),
-         name="apply-semester-year-list"),
-    path('apply-semester-years/<int:id>/', views.SemesterYearRetrieveAPIView.as_view(),
-         name="apply-semester-year-detail"),
 
     path('university-throughs/', views.UniversityThroughListAPIView.as_view(),
          name="university-through-list"),
     path('university-throughs/<int:id>/', views.UniversityThroughDetailAPIView.as_view(),
          name="university-through-detail"),
 
-    path('grades/', views.GradesListAPIView.as_view()),
+    path('choices/grades/', views.GradesListAPIView.as_view()),
+
+    path('choices/apply-semester-years/', views.SemesterYearListAPIView.as_view(),
+         name="apply-semester-year-list"),
+
 
     path('choices/gender-choices/', views.GenderChoicesListAPIView.as_view(), name="gender-choices-list"),
-
-    path('choices/grade-choices/', views.GradeChoicesListAPIView.as_view(), name="grade-choices-list"),
-
-    path('choices/semester-year-choices/', views.SemesterYearChoicesListAPIView.as_view(),
-         name="semester-year-choices-list"),
 
     path('choices/which-author-choices/', views.WhichAuthorChoicesListAPIView.as_view(),
          name="which-author-choices-list"),

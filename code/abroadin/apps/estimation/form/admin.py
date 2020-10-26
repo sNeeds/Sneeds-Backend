@@ -18,6 +18,7 @@ admin.site.register(models.GREBiologyCertificate)
 
 class UniversityThroughInline(admin.TabularInline):
     model = models.UniversityThrough
+    autocomplete_fields = ('university', 'major')
     extra = 1
 
 
@@ -65,6 +66,7 @@ class WantToApplyInline(admin.TabularInline):
     model = models.WantToApply
     extra = 1
     filter_horizontal = ['universities']
+    autocomplete_fields = ['countries', 'universities', 'majors']
 
 
 class PublicationInline(admin.TabularInline):
@@ -104,4 +106,3 @@ class PublicationAdmin(admin.ModelAdmin):
     def delete_queryset(self, request, queryset):
         for obj in queryset:
             obj.delete()
-
