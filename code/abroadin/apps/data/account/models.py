@@ -38,7 +38,7 @@ class Country(models.Model):
 class University(models.Model):
     name = models.CharField(max_length=256, unique=True)
     search_name = models.CharField(blank=False, max_length=1024, unique=True)
-    country = models.ForeignKey(Country, null=True, blank=True, on_delete=models.CASCADE)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE)
     description = models.TextField(blank=True, null=True)
     picture = models.ImageField(null=True, blank=True, upload_to=get_image_upload_path("university-pictures"))
     rank = models.PositiveIntegerField()
