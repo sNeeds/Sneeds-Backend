@@ -25,3 +25,6 @@ class EstimationsAppAPITests(EstimationsAppBaseTests):
 
     def setUp(self):
         super().setUp()
+
+    def _test_form_comments_detail(self, *args, **kwargs):
+        return self._test_form('estimation.estimations:form-comments-detail', *args, **kwargs)

@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 
 from .managers import CountryManager
+from ...estimation.estimations import values
 
 User = get_user_model()
 
@@ -49,9 +50,20 @@ class University(models.Model):
 
     @property
     def value(self):
-        rank = min(self.rank, 2000)
-        rank = 2000 - rank
-        return rank / 2000
+        rank = self.rank
+        value = None
+        if rank < values.GREAT_UNIVERSITY_RANK:
+            value = 1
+        elif values.GREAT_UNIVERSITY_RANK <= rank < values.GOOD_UNIVERSITY_RANK:
+            value = 0.96
+        elif values.GOOD_UNIVERSITY_RANK <= rank < values.AVERAGE_UNIVERSITY_RANK:
+            value = 0.91
+        elif values.AVERAGE_UNIVERSITY_RANK <= rank < values.BAD_UNIVERSITY_RANK:
+            value = 0.75
+        elif values.BAD_UNIVERSITY_RANK <= rank:
+            value = 0.6
+
+        return value
 
     def __str__(self):
         return self.name
@@ -66,13 +78,8 @@ class Major(models.Model):
         null=True,
         upload_to=get_image_upload_path("field-of-study-pictures")
     )
-    parent_major = models.ForeignKey(
-        'self',
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE
-    )
-    # objects =
+    parent_major = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
+
     def hierarchy_str(self):
         name = self.name
         if self.parent_major:

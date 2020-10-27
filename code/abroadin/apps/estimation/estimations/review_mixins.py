@@ -45,23 +45,23 @@ class ReviewLanguageMixin:
         for t in types:
             data[t.lower()] = None
             language_type = language_certificates.get_from_this_type_or_none(
-                getattr(LanguageCertificate.LanguageCertificateType, t)
+                getattr(LanguageCertificate.LanguageCertificateType, t.upper())
             )
             if language_type:
                 try:
                     obj = RegularLanguageCertificate.objects.get(id=language_type.id)
                     value_range = ValueRange(VALUES_WITH_ATTRS[t.lower() + "_comments"])
                     comment = value_range.find_value_attrs(obj.overall, 'comment')
-                    data[t] = {
+                    data[t.lower()] = {
                         "comment": comment,
                         "is_mock": obj.is_mock,
                         "value": obj.compute_value()[0],
                         "value_label": obj.compute_value()[1]
                     }
-                except:
+                except RegularLanguageCertificate.DoesNotExist:
                     pass
             if data.get("ielts_general"):
-                data["itels_general"]["comment"] = CHANGE_GENERAL_WITH_ACADEMIC + data["itels_general"]["comment"]
+                data["ielts_general"]["comment"] = CHANGE_GENERAL_WITH_ACADEMIC + data["ielts_general"]["comment"]
 
         data["total_value"] = language_certificates.get_total_value()
         data["total_value_label"] = language_certificates.get_total_value_label()
@@ -347,10 +347,10 @@ class ReviewPublicationMixin:
         #             HAS_BAD_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
         #             more_than_one_publications
         #         )
-        data["total_value"] =publications_qs.qs_total_value_label()
-        data["total_value_label"] = publications_qs.qs_total_value_label()
+        data["total_value"] = publications_qs.total_value()
+        data["total_value_label"] = publications_qs.total_value_label()
         data["comment"] = "Coming soon"
-        return "Coming soon"
+        return data
 
 
 class ReviewOthersMixin:

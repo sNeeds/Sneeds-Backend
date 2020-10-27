@@ -450,7 +450,7 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         total_value = 0
         if self.get_last_university_through():
             total_value += 2 * self.get_last_university_through().value
-        total_value += publications.qs_total_value()
+        total_value += publications.total_value()
         total_value += 0 if languages.get_total_value() is None else languages.get_total_value()
         total_value += self.others_value
 
@@ -606,7 +606,6 @@ class UniversityThrough(models.Model):
         validators=[MinValueValidator(0), MaxValueValidator(20)],
         max_digits=4,
         decimal_places=2
-
     )
     value = models.FloatField(
         validators=[MinValueValidator(0), MaxValueValidator(1)],
@@ -624,27 +623,19 @@ class UniversityThrough(models.Model):
 
     @property
     def gpa_value(self):
-        gpa = max(self.gpa, 14) - 14
-        return gpa / 6
+        val = None
+        if self.gpa < 13:
+            val = 0
+        elif 13 <= self.gpa < 16:
+            val = self.gpa / 28
+        elif 16 <= self.gpa < 18:
+            val = self.gpa / 23
+        else:
+            val = self.gpa / 20
+        return val
 
     def compute_value(self):
-        university_rank = self.university.rank
-        value = 1
-
-        if university_rank < values.GREAT_UNIVERSITY_RANK:
-            value *= 1
-        elif values.GREAT_UNIVERSITY_RANK <= university_rank < values.GOOD_UNIVERSITY_RANK:
-            value *= 0.96
-        elif values.GOOD_UNIVERSITY_RANK <= university_rank < values.AVERAGE_UNIVERSITY_RANK:
-            value *= 0.91
-        elif values.AVERAGE_UNIVERSITY_RANK <= university_rank < values.BAD_UNIVERSITY_RANK:
-            value *= 0.85
-        elif values.BAD_UNIVERSITY_RANK <= university_rank:
-            value *= 0.65
-
-        value = (decimal.Decimal(value) * decimal.Decimal(self.gpa / 10)) / 2
-
-        return value
+        return round(self.university.value * self.gpa_value, 2)
 
     def get_value_label(self):
         value_range = ValueRange(VALUES_WITH_ATTRS["university_through"])

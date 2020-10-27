@@ -27,4 +27,3 @@ class StudentDetailedInfoModelTests(EstimationsAppModelTests):
     def setUp(self):
         super().setUp()
 
-    # def test_university_through_value(self):

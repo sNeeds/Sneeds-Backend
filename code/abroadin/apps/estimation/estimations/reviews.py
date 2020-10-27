@@ -1,6 +1,4 @@
-from .classes import ValueRange
-from .review_comments import *
-from . import  review_mixins
+from . import review_mixins
 
 
 class StudentDetailedFormReview(
@@ -19,6 +17,15 @@ class StudentDetailedFormReview(
         self.last_grade = self.student_detailed_form.get_last_university_grade()
         self.last_university_through = self.student_detailed_form.get_last_university_through()
 
+    def _rank(self):
+        return self.student_detailed_form.rank
+
+    def _rank_among(self):
+        return self.student_detailed_form.__class__.objects.all().count()
+
+    def _better_than_percent(self):
+        return int((1 - self._rank() / self._rank_among()) * 100)
+
     def review_all(self):
         self._set_grade()
         data = {
@@ -31,9 +38,7 @@ class StudentDetailedFormReview(
                 "university_value": None if self.last_university_through is None else self.last_university_through.university.value,
                 "gpa_value": None if self.last_university_through is None else self.last_university_through.gpa_value
             },
-            "publication": {
-                "data": self.review_publications(),
-            },
+            "publication":  self.review_publications(),
             'language': self.review_language_certificates({"IELTS_ACADEMIC", "IELTS_GENERAL", "TOEFL"}),
             "age_and_gap": {
                 "data": self.review_age(),
@@ -43,8 +48,9 @@ class StudentDetailedFormReview(
                 "value": self.student_detailed_form.others_value
             },
             "total_value": self.student_detailed_form.value,
-            "rank": self.student_detailed_form.rank,
-            "rank_among": self.student_detailed_form.__class__.objects.all().count()
+            "rank": self._rank(),
+            "better_than_percent": self._better_than_percent(),
+            "rank_among": self._rank_among()
         }
 
         return data

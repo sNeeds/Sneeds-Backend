@@ -49,7 +49,7 @@ class LanguageCertificateQuerysetManager(models.QuerySet):
     def get_total_value(self):
         # The highest value among all certificates is total value
         if self._get_highest_value_obj():
-            return self._get_highest_value_obj().compute_value()[0]
+            return float(self._get_highest_value_obj().compute_value()[0])
         return 0
 
     def get_total_value_label(self):
@@ -60,21 +60,21 @@ class LanguageCertificateQuerysetManager(models.QuerySet):
 
 
 class PublicationQuerySetManager(models.QuerySet):
-    def qs_total_value(self):
-        qs = self.all().order_by('value')
+    def total_value(self):
+        qs = self.all().order_by('-value')
         total_val = 0
 
         counter = 0
-        for p in qs:
-            total_val += max((p.value - counter), 0)
+        for publication in qs:
+            total_val += max((publication.value - counter), 0)
             counter += 0.3
 
         total_val = max(total_val, 1)
         return total_val
 
-    def qs_total_value_label(self):
+    def total_value_label(self):
         value_range = ValueRange(VALUES_WITH_ATTRS["publication_qs"])
-        label = value_range.find_value_attrs(self.qs_total_value(), 'label')
+        label = value_range.find_value_attrs(self.total_value(), 'label')
 
         return label
 
