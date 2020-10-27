@@ -623,7 +623,6 @@ class UniversityThrough(models.Model):
 
     @property
     def gpa_value(self):
-        val = None
         if self.gpa < 13:
             val = 0
         elif 13 <= self.gpa < 16:
@@ -632,7 +631,7 @@ class UniversityThrough(models.Model):
             val = self.gpa / 23
         else:
             val = self.gpa / 20
-        return val
+        return float(val)
 
     def compute_value(self):
         return round(self.university.value * self.gpa_value, 2)

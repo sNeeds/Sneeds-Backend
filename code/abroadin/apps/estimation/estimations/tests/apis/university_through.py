@@ -67,5 +67,4 @@ class UniversityThroughModelTests(EstimationsAppAPITests):
                 thesis_title="Foo title",
                 gpa=18
             )
-            data = self._test_form_comments_detail("get", None, status.HTTP_200_OK, reverse_args=self.local_form1.id)
-            print(data["university_and_gpa"])
+            self._test_form_comments_detail("get", None, status.HTTP_200_OK, reverse_args=self.local_form1.id)
