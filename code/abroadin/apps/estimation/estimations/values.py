@@ -74,64 +74,76 @@ VALUES_WITH_ATTRS = {
         {
             "start": None,
             "end": 110,
-            "label": "A+"
+            "label": "A+",
+            "value": 1
         },
         {
             "start": 110,
             "end": 105,
-            "label": "A"
+            "label": "A",
+            "value": 0.9
         },
         {
             "start": 105,
             "end": 100,
-            "label": "B+"
+            "label": "B+",
+            "value": 0.8
         },
         {
             "start": 100,
             "end": 92,
-            "label": "B"
+            "label": "B",
+            "value": 0.6
         },
         {
             "start": 92,
             "end": 78,
-            "label": "C"
+            "label": "C",
+            "value": 0.4
         },
         {
             "start": 78,
             "end": None,
-            "label": "D"
+            "label": "D",
+            "value": 0
         },
     ],
     "ielts_academic_and_general": [
         {
             "start": None,
             "end": 8,
-            "label": "A+"
+            "label": "A+",
+            "value" : 1
         },
         {
             "start": 8,
             "end": 7.5,
-            "label": "A"
+            "label": "A",
+            "value": 0.9
         },
         {
             "start": 7.5,
             "end": 7,
-            "label": "B+"
+            "label": "B+",
+            "value": 0.8
         },
         {
             "start": 7,
             "end": 6.5,
-            "label": "B"
+            "label": "B",
+            "value": 0.6
         },
         {
             "start": 6.5,
             "end": 6,
-            "label": "C"
+            "label": "C",
+            "value": 0.4
         },
         {
             "start": 6,
             "end": None,
-            "label": "D"
+            "label": "D",
+            "value": 0
         },
     ],
     "ielts_academic_comments": [

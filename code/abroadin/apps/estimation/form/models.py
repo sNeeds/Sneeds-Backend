@@ -17,6 +17,7 @@ from abroadin.apps.estimation.form.managers import UniversityThroughQuerySetMana
 from abroadin.apps.data.account.models import Country, University, Major, get_student_resume_path, \
     User, BasicFormField
 from abroadin.apps.data.account.validators import validate_resume_file_size, ten_factor_validator
+from abroadin.apps.estimation.form.decorators import regular_certificate_or_none
 
 
 class GradeChoices(models.TextChoices):
@@ -714,16 +715,25 @@ class LanguageCertificate(models.Model):
         default=False
     )
 
-    value = models.FloatField(
-        validators=[MinValueValidator(0), MaxValueValidator(1)],
-        null=True,
-        editable=False
-    )
-
     objects = LanguageCertificateQuerysetManager.as_manager()
 
     class Meta:
         unique_together = ('certificate_type', 'student_detailed_info')
+
+    @regular_certificate_or_none
+    def _get_key_in_values_with_attrs(self):
+        """
+        Returns key(label) in VALUES_WITH_ATTRS dictionary.
+        """
+        if self.certificate_type == self.LanguageCertificateType.TOEFL:
+            value_label = "toefl"
+        elif self.certificate_type in {
+            self.LanguageCertificateType.IELTS_GENERAL,
+            self.LanguageCertificateType.IELTS_ACADEMIC
+        }:
+            value_label = "ielts_academic_and_general"
+
+        return value_label
 
     def is_regular_language_certificate_instance(self):
         try:
@@ -732,31 +742,28 @@ class LanguageCertificate(models.Model):
         except RegularLanguageCertificate.DoesNotExist:
             return False
 
-    def compute_value(self):
-        """
-        Returned format: (value number, value string) E.g: (0.9, A)
-        """
-        value = None
-        label = None
+    @regular_certificate_or_none
+    def value_label(self):
+        key = self._get_key_in_values_with_attrs()
 
-        # Some of subclasses don't have overall
-        if self.is_regular_language_certificate_instance():
-            overall = self.regularlanguagecertificate.overall
-            if self.certificate_type == LanguageCertificate.LanguageCertificateType.TOEFL:
-                value = max(0, overall - 80) / 40
-                value_range = ValueRange(VALUES_WITH_ATTRS["toefl"])
-                label = value_range.find_value_attrs(value, 'label')
+        overall = self.regularlanguagecertificate.overall
 
-            elif self.certificate_type in {
-                self.LanguageCertificateType.IELTS_GENERAL,
-                self.LanguageCertificateType.IELTS_ACADEMIC
-            }:
-                overall = max(overall, 8)
-                value = max(0, overall - 5) / 3
-                value_range = ValueRange(VALUES_WITH_ATTRS["ielts_academic_and_general"])
-                label = value_range.find_value_attrs(value, 'label')
+        value_range = ValueRange(VALUES_WITH_ATTRS[key])
+        label = value_range.find_value_attrs(overall, 'label')
 
-        return value, label
+        return label
+
+    @property
+    @regular_certificate_or_none
+    def value(self):
+        key = self._get_key_in_values_with_attrs()
+
+        overall = self.regularlanguagecertificate.overall
+
+        value_range = ValueRange(VALUES_WITH_ATTRS[key])
+        value = value_range.find_value_attrs(overall, 'value')
+
+        return value
 
     def save(self, *args, **kwargs):
         self.full_clean()

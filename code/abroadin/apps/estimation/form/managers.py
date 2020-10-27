@@ -49,13 +49,13 @@ class LanguageCertificateQuerysetManager(models.QuerySet):
     def get_total_value(self):
         # The highest value among all certificates is total value
         if self._get_highest_value_obj():
-            return float(self._get_highest_value_obj().compute_value()[0])
+            return float(self._get_highest_value_obj().value)
         return 0
 
     def get_total_value_label(self):
         # The highest value among all certificates is total value
         if self._get_highest_value_obj():
-            return self._get_highest_value_obj().compute_value()[1]
+            return self._get_highest_value_obj().value_label
         return None
 
 

@@ -44,7 +44,7 @@ class LanguageCertificateModelTests(EstimationsAppAPITests):
             student_detailed_info=self.local_form1,
             certificate_type=LanguageCertificate.LanguageCertificateType.IELTS_ACADEMIC,
             speaking=7,
-            listening=7,
+            listening=6,
             reading=7,
             writing=7,
             overall=7
@@ -60,4 +60,6 @@ class LanguageCertificateModelTests(EstimationsAppAPITests):
             writing=7,
             overall=7
         )
-        self._test_form_comments_detail("get", None, status.HTTP_200_OK, reverse_args=self.local_form1.id)
+        data = self._test_form_comments_detail("get", None, status.HTTP_200_OK, reverse_args=self.local_form1.id)
+
+        print(data["language"])
