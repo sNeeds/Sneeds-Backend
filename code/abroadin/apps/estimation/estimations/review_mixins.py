@@ -43,7 +43,8 @@ class ReviewLanguageMixin:
         )
 
         for t in types:
-            data[t.lower()] = None
+            t = t.lower()
+            data[t] = None
             language_type = language_certificates.get_from_this_type_or_none(
                 getattr(LanguageCertificate.LanguageCertificateType, t)
             )
@@ -58,7 +59,7 @@ class ReviewLanguageMixin:
                         "value": obj.compute_value()[0],
                         "value_label": obj.compute_value()[1]
                     }
-                except:
+                except RegularLanguageCertificate.DoesNotExist:
                     pass
             if data.get("ielts_general"):
                 data["itels_general"]["comment"] = CHANGE_GENERAL_WITH_ACADEMIC + data["itels_general"]["comment"]
@@ -347,7 +348,7 @@ class ReviewPublicationMixin:
         #             HAS_BAD_PUBLICATION_PLURAL_BETWEEN_AND_NOT_BETWEEN_OTHERS,
         #             more_than_one_publications
         #         )
-        data["total_value"] =publications_qs.qs_total_value_label()
+        data["total_value"] = publications_qs.qs_total_value_label()
         data["total_value_label"] = publications_qs.qs_total_value_label()
         data["comment"] = "Coming soon"
         return "Coming soon"

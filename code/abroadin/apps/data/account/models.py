@@ -61,7 +61,7 @@ class University(models.Model):
         elif values.AVERAGE_UNIVERSITY_RANK <= rank < values.BAD_UNIVERSITY_RANK:
             value = 0.75
         elif values.BAD_UNIVERSITY_RANK <= rank:
-            value = 0.55
+            value = 0.6
 
         return value
 

@@ -1,6 +1,6 @@
 from .classes import ValueRange
 from .review_comments import *
-from . import  review_mixins
+from . import review_mixins
 
 
 class StudentDetailedFormReview(
@@ -44,6 +44,7 @@ class StudentDetailedFormReview(
             },
             "total_value": self.student_detailed_form.value,
             "rank": self.student_detailed_form.rank,
+            "better_than_percent": 1 - self.student_detailed_form.rank / self.student_detailed_form.__class__.objects.all().count(),
             "rank_among": self.student_detailed_form.__class__.objects.all().count()
         }
 

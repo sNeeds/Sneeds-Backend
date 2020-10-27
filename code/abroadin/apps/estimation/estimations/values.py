@@ -46,26 +46,26 @@ VALUES_WITH_ATTRS = {
         },
         {
             "start": 0.83,
-            "end": 0.77,
+            "end": 0.73,
             "label": "A"
         },
         {
-            "start": 0.77,
-            "end": 0.73,
+            "start": 0.73,
+            "end": 0.65,
             "label": "B+"
         },
         {
-            "start": 0.73,
-            "end": 0.67,
+            "start": 0.65,
+            "end": 0.60,
             "label": "B"
         },
         {
-            "start": 0.67,
-            "end": 0.55,
+            "start": 0.60,
+            "end": 0.50,
             "label": "C"
         },
         {
-            "start": 0.55,
+            "start": 0.50,
             "end": None,
             "label": "D"
         },
@@ -255,6 +255,6 @@ IELTS_D_VALUE = 0
 # Universities
 
 GREAT_UNIVERSITY_RANK = 100
-GOOD_UNIVERSITY_RANK = 400
-AVERAGE_UNIVERSITY_RANK = 800
-BAD_UNIVERSITY_RANK = 1200
+GOOD_UNIVERSITY_RANK = 600
+AVERAGE_UNIVERSITY_RANK = 1200
+BAD_UNIVERSITY_RANK = 3000
