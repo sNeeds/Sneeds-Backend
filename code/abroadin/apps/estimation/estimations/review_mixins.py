@@ -46,7 +46,7 @@ class ReviewLanguageMixin:
             t = t.lower()
             data[t] = None
             language_type = language_certificates.get_from_this_type_or_none(
-                getattr(LanguageCertificate.LanguageCertificateType, t)
+                getattr(LanguageCertificate.LanguageCertificateType, t.upper())
             )
             if language_type:
                 try:
