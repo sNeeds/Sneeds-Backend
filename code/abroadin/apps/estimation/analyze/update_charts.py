@@ -67,12 +67,16 @@ def update_related_work_experience_chart(data, db_data, is_delete=False):
 
 
 def update_publication_count_chart(instance, db_instance, is_delete=False):
-    publications_count = instance.student_detailed_info.studentdetailedinfo.publication_set.count()
+    """
+        this function should be called in post delete state
+    """
+    sdi = instance.student_detailed_info.studentdetailedinfo
+    publications_count = form_models.Publication.objects.filter(student_detailed_info_id=sdi.id).count()
     data = serialize('json', [instance])
     db_data = None if db_instance is None else serialize('json', [db_instance])
 
     update_publication_count_chart_by_count(publications_count=publications_count,
-                                            data=data, db_data=db_data, is_delete=False)
+                                            data=data, db_data=db_data, is_delete=is_delete)
 
 
 @shared_task
@@ -135,6 +139,72 @@ def update_publication_count_chart_by_count(publications_count, data, db_data, i
                     ChartItemData.objects.filter(pk=obj.pk).update(count=F('count') + 1)
 
 
+def update_publications_score_chart(instance, db_instance, is_delete=False):
+    """
+    this function should be called in post delete state
+    """
+    new_label, old_label = prepare_publications_score_chart_data(instance, db_instance, is_delete)
+    print(new_label, old_label)
+    chart, created = Chart.objects.get_or_create(title=Chart.ChartTitle.PUBLICATIONS_SCORE)
+    update_chart_by_label(chart, new_label=new_label, old_label=old_label)
+
+
+def prepare_publications_score_chart_data(instance, db_instance, is_delete=False):
+    """
+        this function should be called in post delete state
+    """
+    if is_delete:
+        remained_publications = instance.student_detailed_info.studentdetailedinfo.publication_set.all()\
+            .order_by('-value')
+        new_publications_score = remained_publications.total_value()
+
+        old_publications_list = list(remained_publications)
+        old_publications_list.append(instance)
+        old_publications_list.sort(key=lambda x: x.value, reverse=True)
+
+        old_publications_score = form_managers.PublicationQuerySetManager.calculate_value(old_publications_list)
+
+        print('old score:  ', old_publications_score, ' new score:  ', new_publications_score, )
+
+        old_label = form_models.Publication.get_publications_score__store_label(old_publications_score)
+        new_label = form_models.Publication.get_publications_score__store_label(new_publications_score)
+
+    else:
+        # Save has been called in order to update an entry
+        if db_instance is not None:
+            old_publications_score = instance.student_detailed_info.studentdetailedinfo.publication_set.total_value()
+
+            except_instance_publications = instance.student_detailed_info.studentdetailedinfo.publication_set.exclude(
+                pk=instance.pk).order_by('-value')
+
+            new_publications_list = list(except_instance_publications)
+            new_publications_list.append(instance)
+            new_publications_list.sort(key=lambda x: x.value, reverse=True)
+
+            new_publications_score = form_managers.PublicationQuerySetManager.calculate_value(new_publications_list)
+
+            print('old score:  ', old_publications_score, ' new score:  ', new_publications_score,)
+            old_label = form_models.Publication.get_publications_score__store_label(old_publications_score)
+            new_label = form_models.Publication.get_publications_score__store_label(new_publications_score)
+
+        # Save has been called in order to create an entry
+        else:
+            old_publications = instance.student_detailed_info.studentdetailedinfo.publication_set.all().order_by('-value')
+            old_publications_score = old_publications.total_value()
+
+            new_publications_list = list(old_publications)
+            new_publications_list.append(instance)
+            new_publications_list.sort(key=lambda x: x.value, reverse=True)
+
+            new_publications_score = form_managers.PublicationQuerySetManager.calculate_value(new_publications_list)
+
+            print('old score:  ', old_publications_score, ' new score:  ', new_publications_score,)
+            old_label = form_models.Publication.get_publications_score__store_label(old_publications_score)
+            new_label = form_models.Publication.get_publications_score__store_label(new_publications_score)
+
+    return new_label, old_label
+
+
 def update_charts_sdi_creation(data, db_data, is_delete=False):
     update_publications_count_chart_sdi_creation(data, db_data, is_delete)
     update_publications_score_chart_sdi_creation(data, db_data, is_delete)
@@ -190,17 +260,20 @@ def update_publications_score_chart_sdi_creation(data, db_data, is_delete=False)
                 ChartItemData.objects.filter(pk=obj.pk).update(count=F('count') + 1)
 
 
-def update_charts_sdi_deletion(data, db_data, is_delete=False):
-    serializer = StudentDetailedInfoCelerySerializer(data=data)
-    serializer.is_valid()
-    instance = form_models.StudentDetailedInfo(**serializer.validated_data)
+def update_charts_sdi_deletion(instance, db_instance, is_delete=False):
+    # serializer = StudentDetailedInfoCelerySerializer(data=data)
+    # serializer.is_valid()
+    # instance = form_models.StudentDetailedInfo(**serializer.validated_data)
+    #
+    # if db_data is None:
+    #     db_instance = None
+    # else:
+    #     serializer = StudentDetailedInfoCelerySerializer(data=db_data)
+    #     serializer.is_valid()
+    #     db_instance = form_models.StudentDetailedInfo(**serializer.validated_data)
 
-    if db_data is None:
-        db_instance = None
-    else:
-        serializer = StudentDetailedInfoCelerySerializer(data=db_data)
-        serializer.is_valid()
-        db_instance = form_models.StudentDetailedInfo(**serializer.validated_data)
+    data = form_serializers.StudentDetailedInfoCelerySerializer(instance).data
+    db_data = None
 
     publications_count = instance.publication_set.count()
     update_publications_count_chart_sdi_deletion(publications_count, data, db_data, is_delete)
@@ -266,56 +339,6 @@ def update_publication_impact_factor_chart(data, db_data, is_delete=False):
         db_instance = des_db_obj.object
     update_common_chart(Chart.ChartTitle.PUBLICATION_IMPACT_FACTOR, form_models.Publication,
                         form_models.Publication.get_impact_factor__store_label, instance, db_instance, is_delete)
-
-
-def update_publications_score_chart(instance, db_instance, is_delete=False):
-    new_label, old_label = prepare_publications_score_chart_data(instance, db_instance, is_delete)
-    print(new_label, old_label)
-    chart, created = Chart.objects.get_or_create(title=Chart.ChartTitle.PUBLICATIONS_SCORE)
-    update_chart_by_label(chart, new_label=new_label, old_label=old_label)
-
-
-def prepare_publications_score_chart_data(instance, db_instance, is_delete=False):
-    if is_delete:
-        old_publications_score = instance.student_detailed_info.studentdetailedinfo.publication_set.total_value()
-        new_publications_score = instance.student_detailed_info.studentdetailedinfo.publication_set.exclude(
-            pk=instance.pk).total_value()
-
-        old_label = form_models.Publication.get_publications_score__store_label(old_publications_score)
-        new_label = form_models.Publication.get_publications_score__store_label(new_publications_score)
-
-    else:
-        # Save has been called in order to update an entry
-        if db_instance is not None:
-            old_publications_score = instance.student_detailed_info.studentdetailedinfo.publication_set.total_value()
-
-            except_instance_publications = instance.student_detailed_info.studentdetailedinfo.publication_set.exclude(
-                pk=instance.pk)
-
-            new_publications_list = list(except_instance_publications)
-            new_publications_list.append(instance)
-
-            new_publications_score = form_managers.PublicationQuerySetManager.calculate_value(new_publications_list)
-
-            print(new_publications_score, old_publications_score)
-            old_label = form_models.Publication.get_publications_score__store_label(old_publications_score)
-            new_label = form_models.Publication.get_publications_score__store_label(new_publications_score)
-
-        # Save has been called in order to create an entry
-        else:
-            old_publications = instance.student_detailed_info.studentdetailedinfo.publication_set.all()
-            old_publications_score = old_publications.total_value()
-
-            new_publications_list = list(old_publications)
-            new_publications_list.append(instance)
-
-            new_publications_score = form_managers.PublicationQuerySetManager.calculate_value(new_publications_list)
-
-            print(new_publications_score, old_publications_score)
-            old_label = form_models.Publication.get_publications_score__store_label(old_publications_score)
-            new_label = form_models.Publication.get_publications_score__store_label(new_publications_score)
-
-    return new_label, old_label
 
 
 def update_gpa_chart(instance, db_instance, is_delete=False):

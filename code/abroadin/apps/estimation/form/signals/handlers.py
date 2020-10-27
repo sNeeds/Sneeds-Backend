@@ -1,6 +1,6 @@
 from django.core.serializers import serialize
 from django.db import transaction
-from django.db.models.signals import pre_save, pre_delete, post_save
+from django.db.models.signals import pre_save, pre_delete, post_save, post_delete
 
 from abroadin.apps.estimation.analyze import update_charts
 from abroadin.apps.estimation.form.serializers import StudentDetailedInfoCelerySerializer
@@ -48,7 +48,7 @@ def pre_delete_student_detailed_info(sender, instance, *args, **kwargs):
     update_charts.update_olympiad_chart(data=data, db_data=db_data, is_delete=True)
     update_charts.update_related_work_experience_chart(data=data, db_data=db_data, is_delete=True)
 
-    update_charts.update_charts_sdi_deletion(data=data, db_data=db_data, is_delete=True)
+    update_charts.update_charts_sdi_deletion(instance=instance, db_instance=None, is_delete=True)
 
 
 def pre_save_publication(sender, instance, *args, **kwargs):
@@ -66,7 +66,7 @@ def pre_save_publication(sender, instance, *args, **kwargs):
     db_data = None if db_instance is None else serialize('json', [db_instance])
 
     update_charts.update_publication_count_chart(instance, db_instance, is_delete=False)
-    update_charts.update_publications_score_chart(instance=instance, db_instance=None, is_delete=False)
+    update_charts.update_publications_score_chart(instance, db_instance, is_delete=False)
 
     update_charts.update_publication_type_chart(data=data, db_data=db_data, is_delete=False)
     update_charts.update_publication_impact_factor_chart(data=data, db_data=db_data, is_delete=False)
@@ -77,6 +77,7 @@ def pre_delete_publication(sender, instance, *args, **kwargs):
 
 
 def post_delete_publication(sender, instance, *args, **kwargs):
+    print("post_delete_publication")
     try:
         StudentDetailedInfo.objects.get(id=instance.student_detailed_info.id)
         sdi_exists = True
@@ -87,7 +88,8 @@ def post_delete_publication(sender, instance, *args, **kwargs):
     db_data = None
 
     if sdi_exists:
-        update_charts.update_publication_count_chart(instance, db_instance=None, is_delete=True)
+        print('sdi_exists')
+        update_charts.update_publication_count_chart(instance=instance, db_instance=None, is_delete=True)
         update_charts.update_publications_score_chart(instance=instance, db_instance=None, is_delete=True)
 
     update_charts.update_publication_type_chart(data=data, db_data=db_data, is_delete=True)
@@ -197,3 +199,5 @@ pre_delete.connect(pre_delete_publication, sender=Publication)
 # pre_delete.connect(pre_delete_language_certificate, sender=LanguageCertificate)
 pre_delete.connect(pre_delete_university_through, sender=UniversityThrough)
 pre_delete.connect(pre_delete_student_detailed_info, sender=StudentDetailedInfo)
+
+post_delete.connect(post_delete_publication, sender=Publication)

@@ -68,7 +68,7 @@ class PublicationQuerySetManager(models.QuerySet):
         for publication in qs:
             total_val += max((publication.value - counter), 0)
             counter += 0.3
-        total_val = max(total_val, 1)
+        total_val = min(total_val, 1)
         return total_val
 
     def total_value(self):
