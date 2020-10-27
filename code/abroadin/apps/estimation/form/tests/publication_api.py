@@ -120,4 +120,52 @@ class PublicationAPITest(FormAPITests):
             data=self.publication_payload
         )
 
+    def test_publication_detail_get_200_1(self):
+        data = self._publication_detail(
+            "get", None, status.HTTP_200_OK, reverse_args=self.local_publication.id
+        )
+        self.assertEqual(len(data), 7)
+
+    def test_publication_detail_get_200_2(self):
+        self.local_publication.student_detailed_info.user = self.local_user
+        self.local_publication.student_detailed_info.save()
+        data = self._publication_detail(
+            "get", self.local_user, status.HTTP_200_OK, reverse_args=self.local_publication.id
+        )
+        self.assertEqual(len(data), 7)
+
+    def test_publication_detail_get_403_1(self):
+        self.local_publication.student_detailed_info.user = self.local_user
+        self.local_publication.student_detailed_info.save()
+        data = self._publication_detail(
+            "get", None, status.HTTP_401_UNAUTHORIZED, reverse_args=self.local_publication.id
+        )
+
+    def test_publication_detail_delete_204_1(self):
+        data = self._publication_detail(
+            "delete", None, status.HTTP_204_NO_CONTENT, reverse_args=self.local_publication.id
+        )
+        self.assertEqual(Publication.objects.filter(id=self.local_publication.id).count(), 0)
+
+    def test_publication_detail_delete_204_2(self):
+        self.local_publication.student_detailed_info.user = self.local_user
+        self.local_publication.student_detailed_info.save()
+        data = self._publication_detail(
+            "delete", self.local_user, status.HTTP_204_NO_CONTENT, reverse_args=self.local_publication.id
+        )
+        self.assertEqual(Publication.objects.filter(id=self.local_publication.id).count(), 0)
+
+    def test_publication_detail_delete_401_1(self):
+        self.local_publication.student_detailed_info.user = self.local_user
+        self.local_publication.student_detailed_info.save()
+        data = self._publication_detail(
+            "delete", None, status.HTTP_401_UNAUTHORIZED, reverse_args=self.local_publication.id
+        )
+
+    def test_publication_detail_delete_403_1(self):
+        data = self._publication_detail(
+            "delete", self.local_user, status.HTTP_403_FORBIDDEN, reverse_args=self.local_publication.id
+        )
+
+
 
