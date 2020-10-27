@@ -146,8 +146,8 @@ def update_publication_impact_factor_chart(data, db_data, is_delete=False):
 def prepare_publications_score_chart_data(instance, db_instance, is_delete=False):
 
     if is_delete:
-        old_publications_score = instance.student_detailed_info.studentdetailedinfo.publication_set.qs_total_value()
-        new_publications_score = instance.student_detailed_info.studentdetailedinfo.publication_set.exclude(pk=instance.pk).qs_total_value()
+        old_publications_score = instance.student_detailed_info.studentdetailedinfo.publication_set.total_value()
+        new_publications_score = instance.student_detailed_info.studentdetailedinfo.publication_set.exclude(pk=instance.pk).total_value()
 
         old_label = form_models.Publication.get_publications_score__store_label(old_publications_score)
         new_label = form_models.Publication.get_publications_score__store_label(new_publications_score)
