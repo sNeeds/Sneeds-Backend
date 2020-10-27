@@ -43,8 +43,7 @@ class ReviewLanguageMixin:
         )
 
         for t in types:
-            t = t.lower()
-            data[t] = None
+            data[t.lower()] = None
             language_type = language_certificates.get_from_this_type_or_none(
                 getattr(LanguageCertificate.LanguageCertificateType, t.upper())
             )
@@ -53,7 +52,7 @@ class ReviewLanguageMixin:
                     obj = RegularLanguageCertificate.objects.get(id=language_type.id)
                     value_range = ValueRange(VALUES_WITH_ATTRS[t.lower() + "_comments"])
                     comment = value_range.find_value_attrs(obj.overall, 'comment')
-                    data[t] = {
+                    data[t.lower()] = {
                         "comment": comment,
                         "is_mock": obj.is_mock,
                         "value": obj.compute_value()[0],
