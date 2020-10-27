@@ -1,10 +1,8 @@
 from django.contrib.auth import get_user_model
-from django.urls import reverse
 
 from rest_framework import status
 
-from abroadin.apps.estimation.form.models import StudentDetailedInfo, Grade, Publication, SemesterYear
-from abroadin.apps.data.account.models import Country, University, Major
+from abroadin.apps.estimation.form.models import StudentDetailedInfo, Publication
 from abroadin.apps.estimation.form.tests.apis import FormAPITests
 
 User = get_user_model()
@@ -139,6 +137,67 @@ class PublicationAPITest(FormAPITests):
         self.local_publication.student_detailed_info.save()
         data = self._publication_detail(
             "get", None, status.HTTP_401_UNAUTHORIZED, reverse_args=self.local_publication.id
+        )
+
+    def test_publication_detail_get_403_2(self):
+        data = self._publication_detail(
+            "get", self.local_user, status.HTTP_403_FORBIDDEN, reverse_args=self.local_publication.id
+        )
+
+    def test_publication_detail_put_405_1(self):
+        data = self._publication_detail(
+            "put", None, status.HTTP_405_METHOD_NOT_ALLOWED, reverse_args=self.local_publication.id,
+            data=self.publication_payload,
+        )
+
+    def test_publication_detail_put_405_2(self):
+        data = self._publication_detail(
+            "put", self.local_user, status.HTTP_405_METHOD_NOT_ALLOWED, reverse_args=self.local_publication.id,
+            data=self.publication_payload,
+        )
+
+    def test_publication_detail_put_405_3(self):
+        self.local_publication.student_detailed_info.user = self.local_user
+        self.local_publication.student_detailed_info.save()
+        data = self._publication_detail(
+            "put", None, status.HTTP_405_METHOD_NOT_ALLOWED, reverse_args=self.local_publication.id,
+            data=self.publication_payload,
+        )
+
+    def test_publication_detail_put_405_4(self):
+        self.local_publication.student_detailed_info.user = self.local_user
+        self.local_publication.student_detailed_info.save()
+        data = self._publication_detail(
+            "put", self.local_user, status.HTTP_405_METHOD_NOT_ALLOWED, reverse_args=self.local_publication.id,
+            data=self.publication_payload,
+        )
+
+    def test_publication_detail_patch_405_1(self):
+        data = self._publication_detail(
+            "patch", None, status.HTTP_405_METHOD_NOT_ALLOWED, reverse_args=self.local_publication.id,
+            data=self.publication_payload,
+        )
+
+    def test_publication_detail_patch_405_2(self):
+        data = self._publication_detail(
+            "patch", self.local_user, status.HTTP_405_METHOD_NOT_ALLOWED, reverse_args=self.local_publication.id,
+            data=self.publication_payload,
+        )
+
+    def test_publication_detail_patch_405_3(self):
+        self.local_publication.student_detailed_info.user = self.local_user
+        self.local_publication.student_detailed_info.save()
+        data = self._publication_detail(
+            "patch", None, status.HTTP_405_METHOD_NOT_ALLOWED, reverse_args=self.local_publication.id,
+            data=self.publication_payload,
+        )
+
+    def test_publication_detail_patch_405_4(self):
+        self.local_publication.student_detailed_info.user = self.local_user
+        self.local_publication.student_detailed_info.save()
+        data = self._publication_detail(
+            "patch", self.local_user, status.HTTP_405_METHOD_NOT_ALLOWED, reverse_args=self.local_publication.id,
+            data=self.publication_payload,
         )
 
     def test_publication_detail_delete_204_1(self):

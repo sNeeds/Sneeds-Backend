@@ -1,7 +1,6 @@
 from functools import wraps
 
 from django.contrib.auth import get_user_model
-from django.urls import reverse
 
 from rest_framework import status
 
@@ -14,23 +13,17 @@ User = get_user_model()
 
 class LanguageCertificatesAPITest(FormAPITests):
 
-    # def _makefunc(self, url, *args, **kwargs):
-    #     def result(self, url, )
-    #         return self._test_form(url, *args, **kwargs)
-    #     # @wraps(val)
-    #     # def result(self, url, *args, **kwargs):
-    #     #     return self._test_form(url, *args, **kwargs)
-    #
-    #     return result
-
     def setUp(self):
         super().setUp()
 
         self.local_student_detailed_info = StudentDetailedInfo.objects.create()
 
-        self.list_info = [
+        self.local_user = User.objects.create_user(email="t1@g.com", password="user1234")
+
+        self.info = [
             {'name': 'toefl', 'model': models.RegularLanguageCertificate,
-             'url_name': 'estimation.form:regular-certificate-list',
+             'list_url_name': 'estimation.form:regular-certificate-list',
+             'detail_url_name': 'estimation.form:regular-certificate-detail',
              'payload': {
                  'student_detailed_info': self.local_student_detailed_info,
                  'certificate_type': models.LanguageCertificate.LanguageCertificateType.TOEFL,
@@ -44,7 +37,8 @@ class LanguageCertificatesAPITest(FormAPITests):
              },
 
             {'name': 'ielts_academic', 'model': models.RegularLanguageCertificate,
-             'url_name': 'estimation.form:regular-certificate-list',
+             'list_url_name': 'estimation.form:regular-certificate-list',
+             'detail_url_name': 'estimation.form:regular-certificate-detail',
              'payload': {
                  'student_detailed_info': self.local_student_detailed_info,
                  'certificate_type': models.LanguageCertificate.LanguageCertificateType.IELTS_ACADEMIC,
@@ -57,8 +51,9 @@ class LanguageCertificatesAPITest(FormAPITests):
              'response_length': 3,
              },
 
-            {'name': 'ielts_academic', 'model': models.RegularLanguageCertificate,
-             'url_name': 'estimation.form:regular-certificate-list',
+            {'name': 'ielts_general', 'model': models.RegularLanguageCertificate,
+             'list_url_name': 'estimation.form:regular-certificate-list',
+             'detail_url_name': 'estimation.form:regular-certificate-detail',
              'payload': {
                  'student_detailed_info': self.local_student_detailed_info,
                  'certificate_type': models.LanguageCertificate.LanguageCertificateType.IELTS_GENERAL,
@@ -72,7 +67,8 @@ class LanguageCertificatesAPITest(FormAPITests):
              },
 
             {'name': 'gmat', 'model': models.GMATCertificate,
-             'url_name': 'estimation.form:gmat-certificate-list',
+             'list_url_name': 'estimation.form:gmat-certificate-list',
+             'detail_url_name': 'estimation.form:gmat-certificate-detail',
              'payload': {
                  'student_detailed_info': self.local_student_detailed_info,
                  'certificate_type': models.LanguageCertificate.LanguageCertificateType.GMAT,
@@ -85,7 +81,8 @@ class LanguageCertificatesAPITest(FormAPITests):
              },
 
             {'name': 'duolingo', 'model': models.DuolingoCertificate,
-             'url_name': 'estimation.form:duolingo-certificate-list',
+             'list_url_name': 'estimation.form:duolingo-certificate-list',
+             'detail_url_name': 'estimation.form:duolingo-certificate-detail',
              'payload': {
                  'student_detailed_info': self.local_student_detailed_info,
                  'certificate_type': models.LanguageCertificate.LanguageCertificateType.DUOLINGO,
@@ -99,7 +96,8 @@ class LanguageCertificatesAPITest(FormAPITests):
              },
 
             {'name': 'gre_general', 'model': models.GREGeneralCertificate,
-             'url_name': 'estimation.form:gre-general-certificate-list',
+             'list_url_name': 'estimation.form:gre-general-certificate-list',
+             'detail_url_name': 'estimation.form:gre-general-certificate-detail',
              'payload': {
                  'student_detailed_info': self.local_student_detailed_info,
                  'certificate_type': models.LanguageCertificate.LanguageCertificateType.GRE_GENERAL,
@@ -111,7 +109,8 @@ class LanguageCertificatesAPITest(FormAPITests):
              },
 
             {'name': 'gre_subject', 'model': models.GRESubjectCertificate,
-             'url_name': 'estimation.form:gre-subject-certificate-list',
+             'list_url_name': 'estimation.form:gre-subject-certificate-list',
+             'detail_url_name': 'estimation.form:gre-subject-certificate-detail',
              'payload': {
                  'student_detailed_info': self.local_student_detailed_info,
                  'certificate_type': models.LanguageCertificate.LanguageCertificateType.GRE_CHEMISTRY,
@@ -124,7 +123,8 @@ class LanguageCertificatesAPITest(FormAPITests):
              },
 
             {'name': 'gre_subject', 'model': models.GRESubjectCertificate,
-             'url_name': 'estimation.form:gre-subject-certificate-list',
+             'list_url_name': 'estimation.form:gre-subject-certificate-list',
+             'detail_url_name': 'estimation.form:gre-subject-certificate-detail',
              'payload': {
                  'student_detailed_info': self.local_student_detailed_info,
                  'certificate_type': models.LanguageCertificate.LanguageCertificateType.GRE_MATHEMATICS,
@@ -137,7 +137,8 @@ class LanguageCertificatesAPITest(FormAPITests):
              },
 
             {'name': 'gre_biology', 'model': models.GREBiologyCertificate,
-             'url_name': 'estimation.form:gre-biology-certificate-list',
+             'list_url_name': 'estimation.form:gre-biology-certificate-list',
+             'detail_url_name': 'estimation.form:gre-biology-certificate-detail',
              'payload': {
                  'student_detailed_info': self.local_student_detailed_info,
                  'certificate_type': models.LanguageCertificate.LanguageCertificateType.GRE_BIOLOGY,
@@ -152,7 +153,8 @@ class LanguageCertificatesAPITest(FormAPITests):
              'response_length': 1,
              },
             {'name': 'gre_physics', 'model': models.GREPhysicsCertificate,
-             'url_name': 'estimation.form:gre-physics-certificate-list',
+             'list_url_name': 'estimation.form:gre-physics-certificate-list',
+             'detail_url_name': 'estimation.form:gre-physics-certificate-detail',
              'payload': {
                  'student_detailed_info': self.local_student_detailed_info,
                  'certificate_type': models.LanguageCertificate.LanguageCertificateType.GRE_PHYSICS,
@@ -167,7 +169,8 @@ class LanguageCertificatesAPITest(FormAPITests):
              'response_length': 1,
              },
             {'name': 'gre_psychology', 'model': models.GREPsychologyCertificate,
-             'url_name': 'estimation.form:gre-psychology-certificate-list',
+             'list_url_name': 'estimation.form:gre-psychology-certificate-list',
+             'detail_url_name': 'estimation.form:gre-psychology-certificate-detail',
              'payload': {
                  'student_detailed_info': self.local_student_detailed_info,
                  'certificate_type': models.LanguageCertificate.LanguageCertificateType.GRE_PSYCHOLOGY,
@@ -186,40 +189,275 @@ class LanguageCertificatesAPITest(FormAPITests):
              },
         ]
 
-        detail_info = [
-            {'name': 'toefl', 'model': models.RegularLanguageCertificate,
-             'url_name': 'estimation.form:regular-certificate-detail', },
-            {'name': 'ielts', 'model': models.RegularLanguageCertificate,
-             'url_name': 'estimation.form:regular-certificate-detail', },
-            {'name': 'gmat', 'model': models.GMATCertificate,
-             'url_name': 'estimation.form:gmat-certificate-detail', },
-            {'name': 'duolingo', 'model': models.DuolingoCertificate,
-             'url_name': 'estimation.form:duolingo-certificate-detail', },
-            {'name': 'gre_general', 'model': models.GREGeneralCertificate,
-             'url_name': 'estimation.form:gre-general-certificate-detail', },
-            {'name': 'gre_subject', 'model': models.GRESubjectCertificate,
-             'url_name': 'estimation.form:gre-subject-certificate-detail', },
-            {'name': 'gre_biology', 'model': models.GREBiologyCertificate,
-             'url_name': 'estimation.form:gre-biology-certificate-detail', },
-            {'name': 'gre_physics', 'model': models.GREPhysicsCertificate,
-             'url_name': 'estimation.form:gre-physics-certificate-detail', },
-            {'name': 'gre_psychology', 'model': models.GREPsychologyCertificate,
-             'url_name': 'estimation.form:gre-psychology-certificate-detail', },
-        ]
-
-        for case in self.list_info:
+    def create_objects(self):
+        for case in self.info:
             case['object'] = case['model'].objects.create(**case['payload'])
-            # setattr(self, 'local_{}'.format(case['name']), 's')
-        # print(list_info)
 
-        data = self._test_form(self.list_info[0]['url_name'],
-                               "get", None, status.HTTP_200_OK,
-                               )
+    def delete_objects(self):
+        for case in self.info:
+            del(case['object'])
 
     def test_list_get_200_1(self):
-        for case in self.list_info:
-            data = self._test_form(case['url_name'],
+        self.create_objects()
+        for case in self.info:
+            data = self._test_form(case['list_url_name'],
                                    "get", None, status.HTTP_200_OK,
                                    data={"student-detailed-info": self.local_student_detailed_info.id}
                                    )
             self.assertEqual(len(data), case['response_length'])
+        self.delete_objects()
+
+    def test_list_get_200_2(self):
+        self.create_objects()
+        for case in self.info:
+            data = self._test_form(case['list_url_name'],
+                                   "get", self.local_user, status.HTTP_200_OK,
+                                   data={"student-detailed-info": self.local_student_detailed_info.id}
+                                   )
+            self.assertEqual(len(data), case['response_length'])
+        self.delete_objects()
+
+    def test_list_get_200_3(self):
+        self.create_objects()
+        self.local_student_detailed_info.user = self.local_user
+        self.local_student_detailed_info.save()
+        for case in self.info:
+            data = self._test_form(case['list_url_name'],
+                                   "get", self.local_user, status.HTTP_200_OK,
+                                   data={"student-detailed-info": self.local_student_detailed_info.id}
+                                   )
+            self.assertEqual(len(data), case['response_length'])
+        self.delete_objects()
+
+    # TODO sdi with user and it's related things should be protected to not be accessible by other users or
+    #  not authenticated clients.
+    def test_list_get_200_4(self):
+        self.local_student_detailed_info.user = self.local_user
+        self.local_student_detailed_info.save()
+        self.create_objects()
+        for case in self.info:
+            data = self._test_form(case['list_url_name'],
+                                   "get", None, status.HTTP_200_OK,
+                                   data={"student-detailed-info": self.local_student_detailed_info.id}
+                                   )
+        self.delete_objects()
+
+    def test_list_post_201_1(self):
+        for case in self.info:
+            request_data = case['payload']
+            request_data['student_detailed_info'] = request_data['student_detailed_info'].id
+            data = self._test_form(case['list_url_name'],
+                                   "post", None, status.HTTP_201_CREATED,
+                                   data=request_data
+                                   )
+
+    def test_list_post_201_2(self):
+        self.local_student_detailed_info.user = self.local_user
+        self.local_student_detailed_info.save()
+        for case in self.info:
+            request_data = case['payload']
+            request_data['student_detailed_info'] = request_data['student_detailed_info'].id
+            data = self._test_form(case['list_url_name'],
+                                   "post", self.local_user, status.HTTP_201_CREATED,
+                                   data=request_data
+                                   )
+
+    def test_list_post_400_1(self):
+        for case in self.info:
+            request_data = case['payload']
+            request_data['student_detailed_info'] = request_data['student_detailed_info'].id
+            data = self._test_form(case['list_url_name'],
+                                   "post", self.local_user, status.HTTP_400_BAD_REQUEST,
+                                   data=request_data
+                                   )
+
+    def test_list_post_400_2(self):
+        self.local_student_detailed_info.user = self.local_user
+        self.local_student_detailed_info.save()
+        for case in self.info:
+            request_data = case['payload']
+            request_data['student_detailed_info'] = request_data['student_detailed_info'].id
+            data = self._test_form(case['list_url_name'],
+                                   "post", None, status.HTTP_400_BAD_REQUEST,
+                                   data=request_data
+                                   )
+
+    def test_detail_get_200_1(self):
+        self.create_objects()
+        for case in self.info:
+            data = self._test_form(case['detail_url_name'],
+                                   "get", None, status.HTTP_200_OK,
+                                   reverse_args=case['object'].id,
+                                   )
+        self.delete_objects()
+
+    def test_detail_get_200_2(self):
+        self.local_student_detailed_info.user = self.local_user
+        self.local_student_detailed_info.save()
+        self.create_objects()
+        for case in self.info:
+            data = self._test_form(case['detail_url_name'],
+                                   "get", self.local_user, status.HTTP_200_OK,
+                                   reverse_args=case['object'].id,
+                                   )
+        self.delete_objects()
+
+    def test_detail_get_403_1(self):
+        self.create_objects()
+        for case in self.info:
+            data = self._test_form(case['detail_url_name'],
+                                   "get", self.local_user, status.HTTP_403_FORBIDDEN,
+                                   reverse_args=case['object'].id,
+                                   )
+        self.delete_objects()
+
+    def test_detail_get_403_2(self):
+        self.local_student_detailed_info.user = self.local_user
+        self.local_student_detailed_info.save()
+        self.create_objects()
+        for case in self.info:
+            data = self._test_form(case['detail_url_name'],
+                                   "get", None, status.HTTP_401_UNAUTHORIZED,
+                                   reverse_args=case['object'].id,
+                                   )
+        self.delete_objects()
+
+    def test_detail_put_405_1(self):
+        self.create_objects()
+        for case in self.info:
+            request_data = case['payload']
+            request_data['student_detailed_info'] = request_data['student_detailed_info'].id
+            data = self._test_form(case['detail_url_name'],
+                                   "put", None, status.HTTP_405_METHOD_NOT_ALLOWED,
+                                   reverse_args=case['object'].id,
+                                   data=request_data,
+                                   )
+        self.delete_objects()
+
+    def test_detail_put_405_2(self):
+        self.create_objects()
+        for case in self.info:
+            request_data = case['payload']
+            request_data['student_detailed_info'] = request_data['student_detailed_info'].id
+            data = self._test_form(case['detail_url_name'],
+                                   "put", self.local_user, status.HTTP_405_METHOD_NOT_ALLOWED,
+                                   reverse_args=case['object'].id,
+                                   data=request_data,
+                                   )
+        self.delete_objects()
+
+    def test_detail_put_405_3(self):
+        self.local_student_detailed_info.user = self.local_user
+        self.local_student_detailed_info.save()
+        self.create_objects()
+        for case in self.info:
+            request_data = case['payload']
+            request_data['student_detailed_info'] = request_data['student_detailed_info'].id
+            data = self._test_form(case['detail_url_name'],
+                                   "put", None, status.HTTP_405_METHOD_NOT_ALLOWED,
+                                   reverse_args=case['object'].id,
+                                   data=request_data,
+                                   )
+        self.delete_objects()
+
+    def test_detail_put_405_4(self):
+        self.local_student_detailed_info.user = self.local_user
+        self.local_student_detailed_info.save()
+        self.create_objects()
+        for case in self.info:
+            request_data = case['payload']
+            request_data['student_detailed_info'] = request_data['student_detailed_info'].id
+            data = self._test_form(case['detail_url_name'],
+                                   "put", self.local_user, status.HTTP_405_METHOD_NOT_ALLOWED,
+                                   reverse_args=case['object'].id,
+                                   data=request_data
+                                   )
+        self.delete_objects()
+
+    def test_detail_patch_405_1(self):
+        self.create_objects()
+        for case in self.info:
+            request_data = case['payload']
+            request_data['student_detailed_info'] = request_data['student_detailed_info'].id
+            data = self._test_form(case['detail_url_name'],
+                                   "patch", None, status.HTTP_405_METHOD_NOT_ALLOWED,
+                                   reverse_args=case['object'].id,
+                                   data=request_data,
+                                   )
+        self.delete_objects()
+
+    def test_detail_patch_405_2(self):
+        self.create_objects()
+        for case in self.info:
+            request_data = case['payload']
+            request_data['student_detailed_info'] = request_data['student_detailed_info'].id
+            data = self._test_form(case['detail_url_name'],
+                                   "patch", self.local_user, status.HTTP_405_METHOD_NOT_ALLOWED,
+                                   reverse_args=case['object'].id,
+                                   data=request_data,
+                                   )
+        self.delete_objects()
+
+    def test_detail_patch_405_3(self):
+        self.local_student_detailed_info.user = self.local_user
+        self.local_student_detailed_info.save()
+        self.create_objects()
+        for case in self.info:
+            request_data = case['payload']
+            request_data['student_detailed_info'] = request_data['student_detailed_info'].id
+            data = self._test_form(case['detail_url_name'],
+                                   "patch", None, status.HTTP_405_METHOD_NOT_ALLOWED,
+                                   reverse_args=case['object'].id,
+                                   data=request_data,
+                                   )
+        self.delete_objects()
+
+    def test_detail_patch_405_4(self):
+        self.local_student_detailed_info.user = self.local_user
+        self.local_student_detailed_info.save()
+        self.create_objects()
+        for case in self.info:
+            request_data = case['payload']
+            request_data['student_detailed_info'] = request_data['student_detailed_info'].id
+            data = self._test_form(case['detail_url_name'],
+                                   "patch", self.local_user, status.HTTP_405_METHOD_NOT_ALLOWED,
+                                   reverse_args=case['object'].id,
+                                   data=request_data
+                                   )
+        self.delete_objects()
+
+    def test_detail_delete_204_1(self):
+        self.create_objects()
+        for case in self.info:
+            data = self._test_form(case['detail_url_name'],
+                                   "delete", None, status.HTTP_204_NO_CONTENT,
+                                   reverse_args=case['object'].id,
+                                   )
+
+    def test_detail_delete_204_2(self):
+        self.local_student_detailed_info.user = self.local_user
+        self.local_student_detailed_info.save()
+        self.create_objects()
+        for case in self.info:
+            data = self._test_form(case['detail_url_name'],
+                                   "delete", self.local_user, status.HTTP_204_NO_CONTENT,
+                                   reverse_args=case['object'].id,
+                                   )
+
+    def test_detail_delete_403_1(self):
+        self.create_objects()
+        for case in self.info:
+            data = self._test_form(case['detail_url_name'],
+                                   "delete", self.local_user, status.HTTP_403_FORBIDDEN,
+                                   reverse_args=case['object'].id,
+                                   )
+
+    def test_detail_delete_401_1(self):
+        self.local_student_detailed_info.user = self.local_user
+        self.local_student_detailed_info.save()
+        self.create_objects()
+        for case in self.info:
+            data = self._test_form(case['detail_url_name'],
+                                   "delete", None, status.HTTP_401_UNAUTHORIZED,
+                                   reverse_args=case['object'].id,
+                                   )
