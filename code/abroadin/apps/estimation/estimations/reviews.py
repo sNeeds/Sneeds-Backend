@@ -1,5 +1,3 @@
-from .classes import ValueRange
-from .review_comments import *
 from . import review_mixins
 
 
@@ -18,6 +16,15 @@ class StudentDetailedFormReview(
     def _set_grade(self):
         self.last_grade = self.student_detailed_form.get_last_university_grade()
         self.last_university_through = self.student_detailed_form.get_last_university_through()
+
+    def _rank(self):
+        return self.student_detailed_form.rank
+
+    def _rank_among(self):
+        return self.student_detailed_form.__class__.objects.all().count()
+
+    def _better_than_percent(self):
+        return int((1 - self._rank() / self._rank_among()) * 100)
 
     def review_all(self):
         self._set_grade()
@@ -43,9 +50,9 @@ class StudentDetailedFormReview(
                 "value": self.student_detailed_form.others_value
             },
             "total_value": self.student_detailed_form.value,
-            "rank": self.student_detailed_form.rank,
-            "better_than_percent": 1 - self.student_detailed_form.rank / self.student_detailed_form.__class__.objects.all().count(),
-            "rank_among": self.student_detailed_form.__class__.objects.all().count()
+            "rank": self._rank(),
+            "better_than_percent": self._better_than_percent(),
+            "rank_among": self._rank_among()
         }
 
         return data

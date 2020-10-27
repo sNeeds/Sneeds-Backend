@@ -61,7 +61,7 @@ class ReviewLanguageMixin:
                 except RegularLanguageCertificate.DoesNotExist:
                     pass
             if data.get("ielts_general"):
-                data["itels_general"]["comment"] = CHANGE_GENERAL_WITH_ACADEMIC + data["itels_general"]["comment"]
+                data["ielts_general"]["comment"] = CHANGE_GENERAL_WITH_ACADEMIC + data["ielts_general"]["comment"]
 
         data["total_value"] = language_certificates.get_total_value()
         data["total_value_label"] = language_certificates.get_total_value_label()
@@ -379,3 +379,4 @@ class ReviewOthersMixin:
             data = "Since you have powerful recommendation and you don't have work experience we have no comments in this section."
 
         return data
+
