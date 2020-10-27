@@ -88,10 +88,7 @@ class ReviewUniversityMixin:
             'bachelor': None
         }
 
-        if last_grade == GradeChoices.PHD:
-            # TODO: PHD remained
-            pass
-        elif last_grade == GradeChoices.MASTER:
+        if last_grade == GradeChoices.MASTER:
             if last_grade_university.university.rank < 850:
                 if last_grade_university.gpa <= 14:
                     data['master'] = MASTER_LAST_GRADE_TOP_850_COMMENTS_GPA_UNDER_14

@@ -1,17 +1,3 @@
-# Numbers persian
-NUMBERS_PERSIAN = {
-    1: "یک",
-    2: "دو",
-    3: "شه",
-    4: "چهار",
-    5: "پنج",
-    6: "شش",
-    7: "هفت",
-    8: "هشت",
-    9: "نه",
-    10: "ده",
-}
-
 # Master university
 
 MASTER_LAST_GRADE_TOP_850_COMMENTS = "Fortunately, your university is one of the top universities in Iran and professors know these universities. (it is difficult for the students of unpopular university because professors ignore the resume without any observation.) In short, congratulations. You pass the need for a good university "
@@ -150,7 +136,7 @@ IELTS_ACADEMIC_GREAT = "Congratulations! The IELTS band score of 7.5 and higher 
 
 CHANGE_GENERAL_WITH_ACADEMIC = "You need Academic IELTS to apply and study abroad. Universities do not accept general module, but assuming Academic IELTS  with the same band score, We must say that "
 
-TOEFL_VERY_BAD = "Unfortunately, your ،Toefl score for admission is deficient. Regarding a Toefl score of 78 or lower, You need to know that it may be possible to apply to abroad universities, but this score is not high enough for middle and upper-level universities in Canada and the United States. It is not valid even for the minimum requirement of their language proficiency score. So it is almost necessary for you to retake the test and get a higher score. "
+TOEFL_VERY_BAD = "Unfortunately, your Toefl score for admission is deficient. Regarding a Toefl score of 78 or lower, You need to know that it may be possible to apply to abroad universities, but this score is not high enough for middle and upper-level universities in Canada and the United States. It is not valid even for the minimum requirement of their language proficiency score. So it is almost necessary for you to retake the test and get a higher score. "
 TOEFL_BAD = "Your Toefl score is the minimum score that you may be able to get admission from some American, Canadian or European universities. We must say that the IELTS level scores are not high enough for abroad universities at all, and it is considered a low score. You may have trouble getting university admission, So maybe you need to retake the exam and get yourself a 95 or higher score. "
 TOEFL_AVERAGE = "Toefl score of 92-100 is an average score for admission equal to or higher than the minimum language proficiency requirement for most American, Canadian and European universities. Given a large number of competitors, We must say that this score does not differentiate you from others and is considered an average score. "
 TOEFL_GOOD = "Congratulations! The Toefl score of 100-110 is perfect for university admission, and now you can focus on other application processes without worrying about English proficiency. "
