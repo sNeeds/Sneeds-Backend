@@ -22,7 +22,7 @@ from abroadin.apps.estimation.form.models import (
 User = get_user_model()
 
 
-class PublicationModelTests(EstimationsAppAPITests):
+class PublicationAPITests(EstimationsAppAPITests):
 
     def setUp(self):
         self.local_form1 = StudentDetailedInfo.objects.create()
