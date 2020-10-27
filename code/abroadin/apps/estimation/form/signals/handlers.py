@@ -77,7 +77,6 @@ def pre_delete_publication(sender, instance, *args, **kwargs):
 
 
 def post_delete_publication(sender, instance, *args, **kwargs):
-    print("post_delete_publication")
     try:
         StudentDetailedInfo.objects.get(id=instance.student_detailed_info.id)
         sdi_exists = True
@@ -88,7 +87,6 @@ def post_delete_publication(sender, instance, *args, **kwargs):
     db_data = None
 
     if sdi_exists:
-        print('sdi_exists')
         update_charts.update_publication_count_chart(instance=instance, db_instance=None, is_delete=True)
         update_charts.update_publications_score_chart(instance=instance, db_instance=None, is_delete=True)
 

@@ -144,7 +144,6 @@ def update_publications_score_chart(instance, db_instance, is_delete=False):
     this function should be called in post delete state
     """
     new_label, old_label = prepare_publications_score_chart_data(instance, db_instance, is_delete)
-    print(new_label, old_label)
     chart, created = Chart.objects.get_or_create(title=Chart.ChartTitle.PUBLICATIONS_SCORE)
     update_chart_by_label(chart, new_label=new_label, old_label=old_label)
 
@@ -164,8 +163,6 @@ def prepare_publications_score_chart_data(instance, db_instance, is_delete=False
 
         old_publications_score = form_managers.PublicationQuerySetManager.calculate_value(old_publications_list)
 
-        print('old score:  ', old_publications_score, ' new score:  ', new_publications_score, )
-
         old_label = form_models.Publication.get_publications_score__store_label(old_publications_score)
         new_label = form_models.Publication.get_publications_score__store_label(new_publications_score)
 
@@ -183,7 +180,6 @@ def prepare_publications_score_chart_data(instance, db_instance, is_delete=False
 
             new_publications_score = form_managers.PublicationQuerySetManager.calculate_value(new_publications_list)
 
-            print('old score:  ', old_publications_score, ' new score:  ', new_publications_score,)
             old_label = form_models.Publication.get_publications_score__store_label(old_publications_score)
             new_label = form_models.Publication.get_publications_score__store_label(new_publications_score)
 
@@ -198,7 +194,6 @@ def prepare_publications_score_chart_data(instance, db_instance, is_delete=False
 
             new_publications_score = form_managers.PublicationQuerySetManager.calculate_value(new_publications_list)
 
-            print('old score:  ', old_publications_score, ' new score:  ', new_publications_score,)
             old_label = form_models.Publication.get_publications_score__store_label(old_publications_score)
             new_label = form_models.Publication.get_publications_score__store_label(new_publications_score)
 

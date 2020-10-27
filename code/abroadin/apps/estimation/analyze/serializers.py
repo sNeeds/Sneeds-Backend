@@ -238,19 +238,15 @@ class PublicationsScoreChartSerializer(CommonChartSerializer):
 
         self._data['chart_items'] = self.get_chart_items(items_qs)
 
-        # self._data['user_positions'] =\
-        #     get_store_to_view_labels(user_store_based_positions,
-        #                              form_models.Publication.convert_publications_score__store_to_view_label)
-
-        self._data['user_positions'] = None
+        self._data['user_positions'] =\
+            get_store_to_view_labels(user_store_based_positions,
+                                     form_models.Publication.convert_publications_score__store_to_view_label)
 
         self._data['data_number'] = data_number
 
-        self._data['user_status'] = None
-
-        # self._data['user_status'] = get_user_status(user_store_based_positions,
-        #                                             items_qs,
-        #                                             form_models.Publication.compare_publications_score_labels)
+        self._data['user_status'] = get_user_status(user_store_based_positions,
+                                                    items_qs,
+                                                    form_models.Publication.compare_publications_score_labels)
 
     def get_chart_items(self, qs):
         return get_converted_chart_items(qs,
@@ -400,8 +396,6 @@ class RelatedWorkExperienceChartSerializer(CommonChartSerializer):
         if data_number == 0:
             data_number = 1
         items_qs = ChartItemData.objects.filter(chart=chart).annotate(percent=F('count') / data_number)
-        # for obj in items_qs:
-        #     print(obj.percent)
         user_store_based_positions = self.get_user_positions(chart)
         self._data['title'] = chart.title
 
