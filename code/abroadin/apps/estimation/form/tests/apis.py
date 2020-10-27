@@ -40,8 +40,9 @@ class FormAPITests(EstimationBaseTest):
         def _update_all_fields(update_method, update_fields):
             data = self._test_form_list("post", self.user1, status.HTTP_201_CREATED)
             for k, v in update_fields.items():
-                data = self._test_form_detail(update_method, self.user1, status.HTTP_200_OK, reverse_args=data['id'],
-                                              data={k: v}, )
+                data = self._test_form_detail(
+                    update_method, self.user1, status.HTTP_200_OK, reverse_args=data['id'], data={k: v},
+                )
 
             obj = StudentDetailedInfo.objects.get(id=data['id'])
             for k in update_fields.keys():
@@ -93,4 +94,3 @@ class FormAPITests(EstimationBaseTest):
         self._test_form_detail("patch", None, status.HTTP_401_UNAUTHORIZED, reverse_args=data['id'])
         self._test_form_detail("put", self.user2, status.HTTP_403_FORBIDDEN, reverse_args=data['id'])
         self._test_form_detail("patch", self.user2, status.HTTP_403_FORBIDDEN, reverse_args=data['id'])
-

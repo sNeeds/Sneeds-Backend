@@ -30,6 +30,7 @@ class StudentDetailedFormReview(
         self._set_grade()
         data = {
             "student_detailed_info": self.student_detailed_form.id,
+
             "university_and_gpa": {
                 "comment": self.review_universities(),
                 "value": None if self.last_university_through is None else self.last_university_through.value,
@@ -38,15 +39,20 @@ class StudentDetailedFormReview(
                 "university_value": None if self.last_university_through is None else self.last_university_through.university.value,
                 "gpa_value": None if self.last_university_through is None else self.last_university_through.gpa_value
             },
+
             "publication":  self.review_publications(),
+
             'language': self.review_language_certificates({"IELTS_ACADEMIC", "IELTS_GENERAL", "TOEFL"}),
+
             "age_and_gap": {
                 "comment": self.review_age(),
             },
+
             "others": {
                 "comment": self.review_others(),
                 "value": self.student_detailed_form.others_value
             },
+
             "total_value": self.student_detailed_form.value,
             "rank": self._rank(),
             "better_than_percent": self._better_than_percent(),

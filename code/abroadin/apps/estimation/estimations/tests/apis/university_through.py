@@ -55,3 +55,17 @@ class UniversityThroughModelTests(EstimationsAppAPITests):
                 university.delete()
 
                 self._test_form_comments_detail("get", None, status.HTTP_200_OK, reverse_args=self.local_form1.id)
+
+    def test_university_through_get_form_review_200_2(self):
+        for grade in GradeChoices:
+            UniversityThrough.objects.create(
+                student_detailed_info=self.local_form1,
+                university=self.university1,
+                grade=grade,
+                major=self.major1,
+                graduate_in=2018,
+                thesis_title="Foo title",
+                gpa=18
+            )
+            data = self._test_form_comments_detail("get", None, status.HTTP_200_OK, reverse_args=self.local_form1.id)
+            print(data["university_and_gpa"])
