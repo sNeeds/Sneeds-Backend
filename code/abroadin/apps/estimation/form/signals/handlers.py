@@ -37,7 +37,7 @@ def pre_save_student_detailed_info(sender, instance, *args, **kwargs):
     update_charts.update_olympiad_chart(data=data, db_data=db_data, is_delete=False)
     update_charts.update_related_work_experience_chart(data=data, db_data=db_data, is_delete=False)
 
-    update_charts.update_publication_count_chart_sdi_creation(data=data, db_data=db_data, is_delete=False)
+    update_charts.update_charts_sdi_creation(data=data, db_data=db_data, is_delete=False)
 
 
 def pre_delete_student_detailed_info(sender, instance, *args, **kwargs):
@@ -48,10 +48,7 @@ def pre_delete_student_detailed_info(sender, instance, *args, **kwargs):
     update_charts.update_olympiad_chart(data=data, db_data=db_data, is_delete=True)
     update_charts.update_related_work_experience_chart(data=data, db_data=db_data, is_delete=True)
 
-    publications_count = instance.publication_set.count()
-
-    update_charts.update_publication_count_chart_sdi_deletion(publications_count=publications_count,
-                                                                    data=data, db_data=db_data, is_delete=True)
+    update_charts.update_charts_sdi_deletion(data=data, db_data=db_data, is_delete=True)
 
 
 def pre_save_publication(sender, instance, *args, **kwargs):
@@ -68,14 +65,11 @@ def pre_save_publication(sender, instance, *args, **kwargs):
     data = serialize('json', [instance])
     db_data = None if db_instance is None else serialize('json', [db_instance])
 
-    publications_count = instance.student_detailed_info.studentdetailedinfo.publication_set.count()
-
-    update_charts.update_publication_count_chart(publications_count=publications_count,
-                                                       data=data, db_data=db_data, is_delete=False)
+    update_charts.update_publication_count_chart(instance, db_instance, is_delete=False)
+    update_charts.update_publications_score_chart(instance=instance, db_instance=None, is_delete=False)
 
     update_charts.update_publication_type_chart(data=data, db_data=db_data, is_delete=False)
     update_charts.update_publication_impact_factor_chart(data=data, db_data=db_data, is_delete=False)
-    # update_charts.update_publications_score_chart(data=data, db_data=db_data, is_delete=False)
 
 
 def pre_delete_publication(sender, instance, *args, **kwargs):
@@ -93,13 +87,11 @@ def post_delete_publication(sender, instance, *args, **kwargs):
     db_data = None
 
     if sdi_exists:
-        publications_count = instance.student_detailed_info.studentdetailedinfo.publication_set.count()
-        update_charts.update_publication_count_chart(publications_count=publications_count,
-                                                           data=data, db_data=db_data, is_delete=True)
+        update_charts.update_publication_count_chart(instance, db_instance=None, is_delete=True)
+        update_charts.update_publications_score_chart(instance=instance, db_instance=None, is_delete=True)
 
     update_charts.update_publication_type_chart(data=data, db_data=db_data, is_delete=True)
     update_charts.update_publication_impact_factor_chart(data=data, db_data=db_data, is_delete=True)
-    # update_charts.update_publications_score_chart(data=data, db_data=db_data, is_delete=True)
 
 
 def post_save_student_detailed_info(sender, instance, *args, **kwargs):
@@ -159,16 +151,15 @@ def pre_save_university_through(sender, instance, *args, **kwargs):
     data = serialize('json', [instance])
     db_data = None if db_instance is None else serialize('json', [db_instance])
 
-    new_label, old_label = update_charts.pre_update_update_gpa_chart(instance, db_instance, is_delete=False)
-    update_charts.update_gpa_chart(new_label=new_label, old_label=old_label)
+    update_charts.update_gpa_chart(instance, db_instance, is_delete=False)
 
 
 def pre_delete_university_through(sender, instance, *args, **kwargs):
     data = serialize('json', [instance])
     db_data = None
     db_instance = None
-    new_label, old_label = update_charts.pre_update_update_gpa_chart(instance, db_instance, is_delete=True)
-    update_charts.update_gpa_chart(new_label=new_label, old_label=old_label)
+
+    update_charts.update_gpa_chart(instance, db_instance, is_delete=True)
 
 
 def post_save_university_through(sender, instance, *args, **kwargs):

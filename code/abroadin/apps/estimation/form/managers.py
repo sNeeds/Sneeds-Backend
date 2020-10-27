@@ -60,17 +60,20 @@ class LanguageCertificateQuerysetManager(models.QuerySet):
 
 
 class PublicationQuerySetManager(models.QuerySet):
-    def total_value(self):
-        qs = self.all().order_by('-value')
-        total_val = 0
 
-        counter = 0
+    @classmethod
+    def calculate_value(cls, qs):
+        total_val = 0.0
+        counter = 0.0
         for publication in qs:
             total_val += max((publication.value - counter), 0)
             counter += 0.3
-
         total_val = max(total_val, 1)
         return total_val
+
+    def total_value(self):
+        qs = self.all().order_by('-value')
+        return self.calculate_value(qs)
 
     def total_value_label(self):
         value_range = ValueRange(VALUES_WITH_ATTRS["publication_qs"])
