@@ -350,7 +350,7 @@ class ReviewPublicationMixin:
         data["total_value"] = publications_qs.qs_total_value_label()
         data["total_value_label"] = publications_qs.qs_total_value_label()
         data["comment"] = "Coming soon"
-        return "Coming soon"
+        return data
 
 
 class ReviewOthersMixin:
@@ -379,4 +379,3 @@ class ReviewOthersMixin:
             data = "Since you have powerful recommendation and you don't have work experience we have no comments in this section."
 
         return data
-

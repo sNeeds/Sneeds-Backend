@@ -38,9 +38,7 @@ class StudentDetailedFormReview(
                 "university_value": None if self.last_university_through is None else self.last_university_through.university.value,
                 "gpa_value": None if self.last_university_through is None else self.last_university_through.gpa_value
             },
-            "publication": {
-                "data": self.review_publications(),
-            },
+            "publication":  self.review_publications(),
             'language': self.review_language_certificates({"IELTS_ACADEMIC", "IELTS_GENERAL", "TOEFL"}),
             "age_and_gap": {
                 "data": self.review_age(),
