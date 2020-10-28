@@ -1,5 +1,5 @@
 from datetime import timedelta
-
+from verification.base import CELERY_BEAT_SCHEDULE as VERIFICATION_CELERY_BEAT_SCHEDULE
 
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_RESULT_SERIALIZER = 'json'
@@ -37,3 +37,5 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': timedelta(seconds=5),
     },
 }
+
+CELERY_BEAT_SCHEDULE.update(VERIFICATION_CELERY_BEAT_SCHEDULE)
