@@ -16,7 +16,7 @@ from abroadin.apps.estimation.form.models import (
     GradeChoices,
     Publication,
     RegularLanguageCertificate,
-    LanguageCertificate, GREGeneralCertificate
+    LanguageCertificate, GREGeneralCertificate, DuolingoCertificate
 )
 
 User = get_user_model()
@@ -29,6 +29,25 @@ class LanguageCertificateModelTests(EstimationsAppAPITests):
         super().setUp()
 
     def test_language_certificate_form_review_200(self):
+        def _test_total_value():
+            data = self._test_form_comments_detail("get", None, status.HTTP_200_OK, reverse_args=self.local_form1.id)
+            max_value = 0
+            for certificate in LanguageCertificate.objects.filter(student_detailed_info=self.local_form1):
+                if certificate.value:
+                    max_value = max(certificate.value, max_value)
+            self.assertEqual(data['language']['total_value'], max_value)
+
+        DuolingoCertificate.objects.create(
+            student_detailed_info=self.local_form1,
+            certificate_type=LanguageCertificate.LanguageCertificateType.DUOLINGO,
+            literacy=90,
+            comprehension=90,
+            conversation=90,
+            production=90,
+            overall=90
+        )
+        _test_total_value()
+
         RegularLanguageCertificate.objects.create(
             student_detailed_info=self.local_form1,
             certificate_type=LanguageCertificate.LanguageCertificateType.TOEFL,
@@ -38,7 +57,7 @@ class LanguageCertificateModelTests(EstimationsAppAPITests):
             writing=90,
             overall=90
         )
-        self._test_form_comments_detail("get", None, status.HTTP_200_OK, reverse_args=self.local_form1.id)
+        _test_total_value()
 
         RegularLanguageCertificate.objects.create(
             student_detailed_info=self.local_form1,
@@ -49,7 +68,7 @@ class LanguageCertificateModelTests(EstimationsAppAPITests):
             writing=7,
             overall=7
         )
-        self._test_form_comments_detail("get", None, status.HTTP_200_OK, reverse_args=self.local_form1.id)
+        _test_total_value()
 
         RegularLanguageCertificate.objects.create(
             student_detailed_info=self.local_form1,
@@ -60,7 +79,7 @@ class LanguageCertificateModelTests(EstimationsAppAPITests):
             writing=7,
             overall=7
         )
-        data = self._test_form_comments_detail("get", None, status.HTTP_200_OK, reverse_args=self.local_form1.id)
+        _test_total_value()
 
         GREGeneralCertificate.objects.create(
             student_detailed_info=self.local_form1,
@@ -69,12 +88,5 @@ class LanguageCertificateModelTests(EstimationsAppAPITests):
             verbal=140,
             analytical_writing=3.2
         )
-        data = self._test_form_comments_detail("get", None, status.HTTP_200_OK, reverse_args=self.local_form1.id)
+        _test_total_value()
 
-        max_value = 0
-        for certificate in LanguageCertificate.objects.filter(student_detailed_info=self.local_form1):
-            if certificate.value:
-                max_value = max(certificate.value, max_value)
-            else:
-                print("None")
-        self.assertEqual(data['language']['total_value'], max_value)

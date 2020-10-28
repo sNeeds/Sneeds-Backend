@@ -51,8 +51,9 @@ class LanguageCertificateQuerysetManager(models.QuerySet):
         return qs
 
     def _get_highest_value_obj(self):
-        if self.exists():
-            return sorted(self.get_none_null_value_objects(), key=lambda l: l.value, reverse=True)[0]
+        none_null_values_qs = self.get_none_null_value_objects()
+        if none_null_values_qs:
+            return sorted(none_null_values_qs, key=lambda l: l.value, reverse=True)[0]
         return None
 
     def get_total_value(self):
