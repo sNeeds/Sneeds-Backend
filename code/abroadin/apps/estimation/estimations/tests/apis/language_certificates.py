@@ -16,7 +16,7 @@ from abroadin.apps.estimation.form.models import (
     GradeChoices,
     Publication,
     RegularLanguageCertificate,
-    LanguageCertificate
+    LanguageCertificate, GREGeneralCertificate
 )
 
 User = get_user_model()
@@ -62,4 +62,19 @@ class LanguageCertificateModelTests(EstimationsAppAPITests):
         )
         data = self._test_form_comments_detail("get", None, status.HTTP_200_OK, reverse_args=self.local_form1.id)
 
-        print(data["language"])
+        GREGeneralCertificate.objects.create(
+            student_detailed_info=self.local_form1,
+            certificate_type=LanguageCertificate.LanguageCertificateType.GRE_GENERAL,
+            quantitative=150,
+            verbal=140,
+            analytical_writing=3.2
+        )
+        data = self._test_form_comments_detail("get", None, status.HTTP_200_OK, reverse_args=self.local_form1.id)
+
+        max_value = 0
+        for certificate in LanguageCertificate.objects.filter(student_detailed_info=self.local_form1):
+            if certificate.value:
+                max_value = max(certificate.value, max_value)
+            else:
+                print("None")
+        self.assertEqual(data['language']['total_value'], max_value)

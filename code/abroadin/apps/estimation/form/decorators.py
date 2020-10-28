@@ -7,5 +7,7 @@ def regular_certificate_or_none(function):
     def wrap(self, *args, **kwargs):
         if self.is_regular_language_certificate_instance():
             return function(self, *args, **kwargs)
+        return None
 
     return wrap
+
