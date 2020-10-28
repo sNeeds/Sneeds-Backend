@@ -13,7 +13,7 @@ def send_verification_code(view, request, verification):
     user = verification.user
     email = user.email
     code = getattr(verification, VERIFICATION_CODE_FIELD)
-    full_name = user.get_full_name()
+    full_name = user.get_pretty_full_name()
     verification_type = verification.verification_type
 
     if verification_type == 'email':
@@ -22,4 +22,6 @@ def send_verification_code(view, request, verification):
 
 @shared_task()
 def send_email_verification_task(email_address, full_name, code):
-    send_verification_code_email(send_to=email_address, full_name=full_name, code=code)
+    if code is None or len(code) == 0:
+        raise Exception("Code is None or empty string")
+    return send_verification_code_email(send_to=email_address, full_name=full_name, code=code)
