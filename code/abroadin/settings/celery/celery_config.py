@@ -13,15 +13,15 @@ CELERY_TIMEZONE = 'UTC'
 # Other Celery settings
 CELERY_BEAT_SCHEDULE = {
     'create-room': {
-        'task': 'abroadin.apps.videochats.tasks.create_rooms_from_sold_time_slots',
+        'task': 'abroadin.apps.store.videochats.tasks.create_rooms_from_sold_time_slots',
         'schedule': timedelta(minutes=1),
     },
     'delete-room': {
-        'task': 'abroadin.apps.videochats.tasks.delete_used_rooms',
+        'task': 'abroadin.apps.store.videochats.tasks.delete_used_rooms',
         'schedule': timedelta(minutes=1),
     },
     'delete-time-slots': {
-        'task': 'abroadin.apps.store.tasks.delete_time_slots',
+        'task': 'abroadin.apps.store.storeBase.tasks.delete_time_slots',
         'schedule': timedelta(minutes=1),
     },
     'database-regular-backup': {
