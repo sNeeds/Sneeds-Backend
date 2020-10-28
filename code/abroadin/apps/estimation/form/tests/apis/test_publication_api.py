@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import status
 
 from abroadin.apps.estimation.form.models import StudentDetailedInfo, Publication
-from abroadin.apps.estimation.form.tests.test_apis import FormAPITests
+from abroadin.apps.estimation.form.tests.apis.test_base import FormAPITests
 
 User = get_user_model()
 
@@ -25,14 +25,15 @@ class PublicationAPITest(FormAPITests):
         }
 
         self.local_student_detailed_info = StudentDetailedInfo.objects.create()
-        self.local_publication = Publication.objects.create(student_detailed_info=self.local_student_detailed_info,
-                                                            which_author=Publication.WhichAuthorChoices.FIRST,
-                                                            title='sample title 1',
-                                                            type=Publication.PublicationChoices.CONFERENCE,
-                                                            publish_year=2018,
-                                                            journal_reputation=Publication.JournalReputationChoices.
-                                                            FOUR_TO_TEN,
-                                                            )
+        self.local_publication = Publication.objects.create(
+            student_detailed_info=self.local_student_detailed_info,
+            which_author=Publication.WhichAuthorChoices.FIRST,
+            title='sample title 1',
+            type=Publication.PublicationChoices.CONFERENCE,
+            publish_year=2018,
+            journal_reputation=Publication.JournalReputationChoices.
+                FOUR_TO_TEN,
+        )
 
         self.local_user = User.objects.create_user(email="t1@g.com", password="user1234")
 
@@ -225,6 +226,3 @@ class PublicationAPITest(FormAPITests):
         data = self._publication_detail(
             "delete", self.local_user, status.HTTP_403_FORBIDDEN, reverse_args=self.local_publication.id
         )
-
-
-

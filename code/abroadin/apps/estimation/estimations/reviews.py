@@ -42,7 +42,9 @@ class StudentDetailedFormReview(
 
             "publication":  self.review_publications(),
 
-            'language': self.review_language_certificates({"IELTS_ACADEMIC", "IELTS_GENERAL", "TOEFL"}),
+            'language': self.review_language_certificates(
+                {"IELTS_ACADEMIC", "IELTS_GENERAL", "TOEFL"}
+            ),
 
             "age_and_gap": {
                 "comment": self.review_age(),

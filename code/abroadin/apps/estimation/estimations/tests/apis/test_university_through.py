@@ -1,13 +1,9 @@
-import uuid
-from itertools import chain, combinations
-
 from django.contrib.auth import get_user_model
 
 from rest_framework import status
 
 from abroadin.apps.data.account.models import Country, University, Major
-from apps.estimation.estimations.tests.apis.base import EstimationsAppAPITests
-from apps.estimation.estimations.tests.models.base import EstimationsAppModelTests
+from abroadin.apps.estimation.estimations.tests.apis.test_base import EstimationsAppAPITests
 from abroadin.apps.estimation.form.models import (
     StudentDetailedInfo,
     Grade,
@@ -23,7 +19,7 @@ from abroadin.apps.estimation.form.models import (
 User = get_user_model()
 
 
-class UniversityThroughModelTests(EstimationsAppAPITests):
+class UniversityThroughAPITests(EstimationsAppAPITests):
 
     def setUp(self):
         self.local_form1 = StudentDetailedInfo.objects.create()

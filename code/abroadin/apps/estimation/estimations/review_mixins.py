@@ -55,8 +55,8 @@ class ReviewLanguageMixin:
                     data[t.lower()] = {
                         "comment": comment,
                         "is_mock": obj.is_mock,
-                        "value": obj.compute_value()[0],
-                        "value_label": obj.compute_value()[1]
+                        "value": obj.value_label,
+                        "value_label": obj.value
                     }
                 except RegularLanguageCertificate.DoesNotExist:
                     pass

@@ -43,19 +43,29 @@ class LanguageCertificateQuerysetManager(models.QuerySet):
         except LanguageCertificate.DoesNotExist:
             return None
 
+    def get_none_null_value_objects(self):
+        qs = self.none()
+        for obj in self.all():
+            if obj.value:
+                qs |= self.filter(id=obj.id)
+        return qs
+
     def _get_highest_value_obj(self):
-        return self.all().order_by(F('value').desc(nulls_last=True)).first()
+        none_null_values_qs = self.get_none_null_value_objects()
+        if none_null_values_qs:
+            return sorted(none_null_values_qs, key=lambda l: l.value, reverse=True)[0]
+        return None
 
     def get_total_value(self):
         # The highest value among all certificates is total value
         if self._get_highest_value_obj():
-            return float(self._get_highest_value_obj().compute_value()[0])
+            return float(self._get_highest_value_obj().value)
         return 0
 
     def get_total_value_label(self):
         # The highest value among all certificates is total value
         if self._get_highest_value_obj():
-            return self._get_highest_value_obj().compute_value()[1]
+            return self._get_highest_value_obj().value_label
         return None
 
 

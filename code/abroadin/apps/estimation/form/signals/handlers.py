@@ -103,8 +103,6 @@ def post_save_publication(sender, instance, *args, **kwargs):
 
 
 def pre_save_language_certificate(sender, instance, *args, **kwargs):
-    instance.value = instance.compute_value()[0]
-
     if instance._state.adding is True and instance._state.db is None:
         db_instance = None
     else:
