@@ -17,8 +17,6 @@ def send_verification_code(view, request, verification):
     verification_type = verification.verification_type
 
     if verification_type == 'email':
-        # print(user)
-        # print(code)
         send_email_verification_task.delay(email_address=email, full_name=full_name, code=code)
 
 
