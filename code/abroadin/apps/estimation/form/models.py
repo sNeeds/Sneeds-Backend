@@ -707,7 +707,7 @@ class UniversityThrough(models.Model):
         user_last_grade = cls.objects.filter(student_detailed_info=sdi) \
             .order_by('-graduate_in').first()
         if user_last_grade is None:
-            return None
+            return ['0.0']
         return [user_last_grade.get_gpa__store_label()]
 
     @classmethod
