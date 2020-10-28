@@ -4,8 +4,8 @@ from celery.schedules import crontab
 
 # https://stackoverflow.com/questions/21631878/celery-is-there-a-way-to-write-custom-json-encoder-decoder
 # Register your new serializer methods into kombu
-from kombu.serialization import register
-from abroadin.settings.celery.serializers import c_dumps, c_loads
+# from kombu.serialization import register
+# from abroadin.settings.celery.serializers import c_dumps, c_loads
 
 # register('cjson', c_dumps, c_loads,
 #          content_type='application/x-cjson',
@@ -15,6 +15,7 @@ from abroadin.settings.celery.serializers import c_dumps, c_loads
 # CELERY_ACCEPT_CONTENT = ['cjson']
 # CELERY_TASK_SERIALIZER = 'cjson'
 # CELERY_RESULT_SERIALIZER = 'cjson'
+
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
