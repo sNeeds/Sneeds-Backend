@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import status
 
 from abroadin.apps.estimation.form.models import StudentDetailedInfo, Publication
-from abroadin.apps.estimation.form.tests.apis import FormAPITests
+from abroadin.apps.estimation.form.tests.test_apis import FormAPITests
 
 User = get_user_model()
 

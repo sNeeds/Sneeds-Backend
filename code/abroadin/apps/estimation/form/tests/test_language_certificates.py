@@ -6,7 +6,7 @@ from rest_framework import status
 
 from abroadin.apps.estimation.form import models
 from abroadin.apps.estimation.form.models import StudentDetailedInfo
-from abroadin.apps.estimation.form.tests.apis import FormAPITests
+from abroadin.apps.estimation.form.tests.test_apis import FormAPITests
 
 User = get_user_model()
 
