@@ -1,10 +1,11 @@
 from celery import shared_task
 
-from django.core.serializers import deserialize
+from django.core.serializers import deserialize, serialize
 from django.db.models import Sum, F
 from django.db import transaction
 
 from abroadin.apps.estimation.form import models as form_models
+from abroadin.apps.estimation.form import managers as form_managers
 from abroadin.apps.estimation.analyze.models import Chart, ChartItemData
 from abroadin.apps.estimation.form.serializers import StudentDetailedInfoCelerySerializer
 from abroadin.apps.estimation.form import serializers as form_serializers
@@ -13,7 +14,73 @@ LanguageCertificateType = form_models.LanguageCertificate.LanguageCertificateTyp
 
 
 @shared_task
-def update_publication_count_chart(publications_count, data, db_data, is_delete=False):
+def update_powerful_recommendation_chart(data, db_data, is_delete=False):
+    serializer = StudentDetailedInfoCelerySerializer(data=data)
+    serializer.is_valid()
+    instance = form_models.StudentDetailedInfo(**serializer.validated_data)
+
+    if db_data is None:
+        db_instance = None
+    else:
+        serializer = StudentDetailedInfoCelerySerializer(data=db_data)
+        serializer.is_valid()
+        db_instance = form_models.StudentDetailedInfo(**serializer.validated_data)
+
+    update_common_chart(Chart.ChartTitle.POWERFUL_RECOMMENDATION, form_models.StudentDetailedInfo,
+                        form_models.StudentDetailedInfo.get_powerful_recommendation__store_label,
+                        instance, db_instance, is_delete)
+
+
+@shared_task
+def update_olympiad_chart(data, db_data, is_delete=False):
+    serializer = StudentDetailedInfoCelerySerializer(data=data)
+    serializer.is_valid()
+    instance = form_models.StudentDetailedInfo(**serializer.validated_data)
+
+    if db_data is None:
+        db_instance = None
+    else:
+        serializer = StudentDetailedInfoCelerySerializer(data=db_data)
+        serializer.is_valid()
+        db_instance = form_models.StudentDetailedInfo(**serializer.validated_data)
+
+    update_common_chart(Chart.ChartTitle.OLYMPIAD, form_models.StudentDetailedInfo,
+                        form_models.StudentDetailedInfo.get_olympiad__store_label, instance, db_instance, is_delete)
+
+
+@shared_task
+def update_related_work_experience_chart(data, db_data, is_delete=False):
+    serializer = StudentDetailedInfoCelerySerializer(data=data)
+    serializer.is_valid()
+    instance = form_models.StudentDetailedInfo(**serializer.validated_data)
+
+    if db_data is None:
+        db_instance = None
+    else:
+        serializer = StudentDetailedInfoCelerySerializer(data=db_data)
+        serializer.is_valid()
+        db_instance = form_models.StudentDetailedInfo(**serializer.validated_data)
+
+    update_common_chart(Chart.ChartTitle.RELATED_WORK_EXPERIENCE, form_models.StudentDetailedInfo,
+                        form_models.StudentDetailedInfo.get_related_work__store_label, instance, db_instance,
+                        is_delete)
+
+
+def update_publication_count_chart(instance, db_instance, is_delete=False):
+    """
+        this function should be called in post delete state
+    """
+    sdi = instance.student_detailed_info.studentdetailedinfo
+    publications_count = form_models.Publication.objects.filter(student_detailed_info_id=sdi.id).count()
+    data = serialize('json', [instance])
+    db_data = None if db_instance is None else serialize('json', [db_instance])
+
+    update_publication_count_chart_by_count(publications_count=publications_count,
+                                            data=data, db_data=db_data, is_delete=is_delete)
+
+
+@shared_task
+def update_publication_count_chart_by_count(publications_count, data, db_data, is_delete=False):
     """
     this function for delete signal should be called in post_delete
     :return:
@@ -72,9 +139,74 @@ def update_publication_count_chart(publications_count, data, db_data, is_delete=
                     ChartItemData.objects.filter(pk=obj.pk).update(count=F('count') + 1)
 
 
-@shared_task
-def update_publication_count_chart_sdi_creation(data, db_data, is_delete=False):
+def update_publications_score_chart(instance, db_instance, is_delete=False):
+    """
+    this function should be called in post delete state
+    """
+    new_label, old_label = prepare_publications_score_chart_data(instance, db_instance, is_delete)
+    chart, created = Chart.objects.get_or_create(title=Chart.ChartTitle.PUBLICATIONS_SCORE)
+    update_chart_by_label(chart, new_label=new_label, old_label=old_label)
 
+
+def prepare_publications_score_chart_data(instance, db_instance, is_delete=False):
+    """
+        this function should be called in post delete state
+    """
+    if is_delete:
+        remained_publications = instance.student_detailed_info.studentdetailedinfo.publication_set.all()\
+            .order_by('-value')
+        new_publications_score = remained_publications.total_value()
+
+        old_publications_list = list(remained_publications)
+        old_publications_list.append(instance)
+        old_publications_list.sort(key=lambda x: x.value, reverse=True)
+
+        old_publications_score = form_managers.PublicationQuerySetManager.calculate_value(old_publications_list)
+
+        old_label = form_models.Publication.get_publications_score__store_label(old_publications_score)
+        new_label = form_models.Publication.get_publications_score__store_label(new_publications_score)
+
+    else:
+        # Save has been called in order to update an entry
+        if db_instance is not None:
+            old_publications_score = instance.student_detailed_info.studentdetailedinfo.publication_set.total_value()
+
+            except_instance_publications = instance.student_detailed_info.studentdetailedinfo.publication_set.exclude(
+                pk=instance.pk).order_by('-value')
+
+            new_publications_list = list(except_instance_publications)
+            new_publications_list.append(instance)
+            new_publications_list.sort(key=lambda x: x.value, reverse=True)
+
+            new_publications_score = form_managers.PublicationQuerySetManager.calculate_value(new_publications_list)
+
+            old_label = form_models.Publication.get_publications_score__store_label(old_publications_score)
+            new_label = form_models.Publication.get_publications_score__store_label(new_publications_score)
+
+        # Save has been called in order to create an entry
+        else:
+            old_publications = instance.student_detailed_info.studentdetailedinfo.publication_set.all().order_by('-value')
+            old_publications_score = old_publications.total_value()
+
+            new_publications_list = list(old_publications)
+            new_publications_list.append(instance)
+            new_publications_list.sort(key=lambda x: x.value, reverse=True)
+
+            new_publications_score = form_managers.PublicationQuerySetManager.calculate_value(new_publications_list)
+
+            old_label = form_models.Publication.get_publications_score__store_label(old_publications_score)
+            new_label = form_models.Publication.get_publications_score__store_label(new_publications_score)
+
+    return new_label, old_label
+
+
+def update_charts_sdi_creation(data, db_data, is_delete=False):
+    update_publications_count_chart_sdi_creation(data, db_data, is_delete)
+    update_publications_score_chart_sdi_creation(data, db_data, is_delete)
+
+
+@shared_task()
+def update_publications_count_chart_sdi_creation(data, db_data, is_delete=False):
     if db_data is None:
         db_instance = None
     else:
@@ -98,14 +230,75 @@ def update_publication_count_chart_sdi_creation(data, db_data, is_delete=False):
                 ChartItemData.objects.filter(pk=obj.pk).update(count=F('count') + 1)
 
 
-@shared_task
-def update_publication_count_chart_sdi_deletion(publications_count, data, db_data, is_delete=False):
+@shared_task()
+def update_publications_score_chart_sdi_creation(data, db_data, is_delete=False):
+    if db_data is None:
+        db_instance = None
+    else:
+        serializer = StudentDetailedInfoCelerySerializer(data=db_data)
+        serializer.is_valid()
+        db_instance = form_models.StudentDetailedInfo(**serializer.validated_data)
 
+    chart, created = Chart.objects.get_or_create(title=Chart.ChartTitle.PUBLICATIONS_SCORE)
+
+    # Save has been called in order to update an entry
+    if db_instance is not None:
+        pass
+    # Save has been called in order to create an entry
+    else:
+        label = '0.0'
+
+        with transaction.atomic():
+            obj, created = ChartItemData.objects.get_or_create(chart=chart, label=label,
+                                                               defaults={'count': 1})
+            if not created:
+                ChartItemData.objects.filter(pk=obj.pk).update(count=F('count') + 1)
+
+
+def update_charts_sdi_deletion(instance, db_instance, is_delete=False):
+    # serializer = StudentDetailedInfoCelerySerializer(data=data)
+    # serializer.is_valid()
+    # instance = form_models.StudentDetailedInfo(**serializer.validated_data)
+    #
+    # if db_data is None:
+    #     db_instance = None
+    # else:
+    #     serializer = StudentDetailedInfoCelerySerializer(data=db_data)
+    #     serializer.is_valid()
+    #     db_instance = form_models.StudentDetailedInfo(**serializer.validated_data)
+
+    data = form_serializers.StudentDetailedInfoCelerySerializer(instance).data
+    db_data = None
+
+    publications_count = instance.publication_set.count()
+    update_publications_count_chart_sdi_deletion(publications_count, data, db_data, is_delete)
+
+    publications_score = instance.publication_set.total_value()
+    update_publications_score_chart_sdi_deletion(publications_score, data, db_data, is_delete)
+
+
+@shared_task()
+def update_publications_count_chart_sdi_deletion(publications_count, data, db_data, is_delete=False):
     chart, created = Chart.objects.get_or_create(title=Chart.ChartTitle.PUBLICATIONS_COUNT)
 
     if is_delete:
 
         label = str(publications_count)
+
+        with transaction.atomic():
+            obj, created = ChartItemData.objects.get_or_create(chart=chart, label=label,
+                                                               defaults={'count': 0})
+            if not created:
+                ChartItemData.objects.filter(pk=obj.pk).update(count=F('count') - 1)
+
+
+@shared_task()
+def update_publications_score_chart_sdi_deletion(publications_score, data, db_data, is_delete=False):
+    chart, created = Chart.objects.get_or_create(title=Chart.ChartTitle.PUBLICATIONS_SCORE)
+
+    if is_delete:
+
+        label = form_models.Publication.get_publications_score__store_label(publications_score)
 
         with transaction.atomic():
             obj, created = ChartItemData.objects.get_or_create(chart=chart, label=label,
@@ -143,192 +336,13 @@ def update_publication_impact_factor_chart(data, db_data, is_delete=False):
                         form_models.Publication.get_impact_factor__store_label, instance, db_instance, is_delete)
 
 
-def prepare_publications_score_chart_data(instance, db_instance, is_delete=False):
-
-    if is_delete:
-        old_publications_score = instance.student_detailed_info.studentdetailedinfo.publication_set.total_value()
-        new_publications_score = instance.student_detailed_info.studentdetailedinfo.publication_set.exclude(pk=instance.pk).total_value()
-
-        old_label = form_models.Publication.get_publications_score__store_label(old_publications_score)
-        new_label = form_models.Publication.get_publications_score__store_label(new_publications_score)
-
-    else:
-        # Save has been called in order to update an entry
-        if db_instance is not None:
-
-            old_label = get_publications_score_label(old_publications_values)
-            new_label = get_publications_score_label(new_publications_values)
-
-            if old_label != new_label:
-                with transaction.atomic():
-                    obj, created = ChartItemData.objects.get_or_create(chart=chart, label=old_label,
-                                                                       defaults={'count': 0})
-                    if not created:
-                        ChartItemData.objects.filter(pk=obj.pk).update(count=F('count') - 1)
-
-                with transaction.atomic():
-                    obj, created = ChartItemData.objects.get_or_create(chart=chart, label=new_label,
-                                                                       defaults={'count': 1})
-                    if not created:
-                        ChartItemData.objects.filter(pk=obj.pk).update(count=F('count') + 1)
-        # Save has been called in order to create an entry
-        else:
-            old_publications_values = instance.student_detailed_info.studentdetailedinfo.publication_set \
-                .aggregate(Sum('value')).get('value__sum')
-            new_publications_values = old_publications_values + instance.value
-
-            old_label = get_publications_score_label(old_publications_values)
-            new_label = get_publications_score_label(new_publications_values)
-
-            if old_label != new_label:
-                with transaction.atomic():
-                    obj, created = ChartItemData.objects.get_or_create(chart=chart, label=old_label,
-                                                                       defaults={'count': 0})
-                    if not created:
-                        ChartItemData.objects.filter(pk=obj.pk).update(count=F('count') - 1)
-
-                with transaction.atomic():
-                    obj, created = ChartItemData.objects.get_or_create(chart=chart, label=new_label,
-                                                                       defaults={'count': 1})
-                    if not created:
-                        ChartItemData.objects.filter(pk=obj.pk).update(count=F('count') + 1)
+def update_gpa_chart(instance, db_instance, is_delete=False):
+    new_label, old_label = prepare_update_gpa_chart(instance, db_instance, is_delete)
+    chart, created = Chart.objects.get_or_create(title=Chart.ChartTitle.GRADE_POINT_AVERAGE)
+    update_chart_by_label(chart, new_label=new_label, old_label=old_label)
 
 
-@shared_task
-def update_publications_score_chart(data, db_data, is_delete=False):
-    des_obj = next(deserialize('json', data))
-    instance = des_obj.object
-
-    if db_data is None:
-        db_instance = None
-    else:
-        des_db_obj = next(deserialize('json', db_data))
-        db_instance = des_db_obj.object
-
-    get_publications_score_label = form_models.Publication.get_publications_score__store_label
-    chart, created = Chart.objects.get_or_create(title=Chart.ChartTitle.PUBLICATIONS_SCORE)
-
-    if is_delete:
-        old_publications_values = instance.student_detailed_info.studentdetailedinfo.publication_set. \
-            aggregate(Sum('value')).get('value__sum')
-        new_publications_values = old_publications_values - instance.value
-
-        old_label = get_publications_score_label(old_publications_values)
-        new_label = get_publications_score_label(new_publications_values)
-
-        if old_label != new_label:
-            with transaction.atomic():
-                obj, created = ChartItemData.objects.get_or_create(chart=chart, label=old_label,
-                                                                   defaults={'count': 0})
-                if not created:
-                    ChartItemData.objects.filter(pk=obj.pk).update(count=F('count') - 1)
-
-            with transaction.atomic():
-                obj, created = ChartItemData.objects.get_or_create(chart=chart, label=new_label,
-                                                                   defaults={'count': 1})
-                if not created:
-                    ChartItemData.objects.filter(pk=obj.pk).update(count=F('count') + 1)
-
-    else:
-        # Save has been called in order to update an entry
-        if db_instance is not None:
-            old_publications_values = instance.student_detailed_info.studentdetailedinfo.publication_set \
-                .aggregate(Sum('value')).get('value__sum')
-            diff = instance.value - db_instance.value
-            new_publications_values = old_publications_values + diff
-
-            old_label = get_publications_score_label(old_publications_values)
-            new_label = get_publications_score_label(new_publications_values)
-
-            if old_label != new_label:
-                with transaction.atomic():
-                    obj, created = ChartItemData.objects.get_or_create(chart=chart, label=old_label,
-                                                                       defaults={'count': 0})
-                    if not created:
-                        ChartItemData.objects.filter(pk=obj.pk).update(count=F('count') - 1)
-
-                with transaction.atomic():
-                    obj, created = ChartItemData.objects.get_or_create(chart=chart, label=new_label,
-                                                                       defaults={'count': 1})
-                    if not created:
-                        ChartItemData.objects.filter(pk=obj.pk).update(count=F('count') + 1)
-        # Save has been called in order to create an entry
-        else:
-            old_publications_values = instance.student_detailed_info.studentdetailedinfo.publication_set \
-                .aggregate(Sum('value')).get('value__sum')
-            new_publications_values = old_publications_values + instance.value
-
-            old_label = get_publications_score_label(old_publications_values)
-            new_label = get_publications_score_label(new_publications_values)
-
-            if old_label != new_label:
-                with transaction.atomic():
-                    obj, created = ChartItemData.objects.get_or_create(chart=chart, label=old_label,
-                                                                       defaults={'count': 0})
-                    if not created:
-                        ChartItemData.objects.filter(pk=obj.pk).update(count=F('count') - 1)
-
-                with transaction.atomic():
-                    obj, created = ChartItemData.objects.get_or_create(chart=chart, label=new_label,
-                                                                       defaults={'count': 1})
-                    if not created:
-                        ChartItemData.objects.filter(pk=obj.pk).update(count=F('count') + 1)
-
-
-@shared_task
-def update_powerful_recommendation_chart(data, db_data, is_delete=False):
-    serializer = StudentDetailedInfoCelerySerializer(data=data)
-    serializer.is_valid()
-    instance = form_models.StudentDetailedInfo(**serializer.validated_data)
-
-    if db_data is None:
-        db_instance = None
-    else:
-        serializer = StudentDetailedInfoCelerySerializer(data=db_data)
-        serializer.is_valid()
-        db_instance = form_models.StudentDetailedInfo(**serializer.validated_data)
-
-    update_common_chart(Chart.ChartTitle.POWERFUL_RECOMMENDATION, form_models.StudentDetailedInfo,
-                        form_models.StudentDetailedInfo.get_powerful_recommendation__store_label,
-                        instance, db_instance, is_delete)
-
-
-@shared_task
-def update_olympiad_chart(data, db_data, is_delete=False):
-    serializer = StudentDetailedInfoCelerySerializer(data=data)
-    serializer.is_valid()
-    instance = form_models.StudentDetailedInfo(**serializer.validated_data)
-
-    if db_data is None:
-        db_instance = None
-    else:
-        serializer = StudentDetailedInfoCelerySerializer(data=db_data)
-        serializer.is_valid()
-        db_instance = form_models.StudentDetailedInfo(**serializer.validated_data)
-
-    update_common_chart(Chart.ChartTitle.OLYMPIAD, form_models.StudentDetailedInfo,
-                        form_models.StudentDetailedInfo.get_olympiad__store_label, instance, db_instance, is_delete)
-
-
-@shared_task
-def update_related_work_experience_chart(data, db_data, is_delete=False):
-    serializer = StudentDetailedInfoCelerySerializer(data=data)
-    serializer.is_valid()
-    instance = form_models.StudentDetailedInfo(**serializer.validated_data)
-
-    if db_data is None:
-        db_instance = None
-    else:
-        serializer = StudentDetailedInfoCelerySerializer(data=db_data)
-        serializer.is_valid()
-        db_instance = form_models.StudentDetailedInfo(**serializer.validated_data)
-
-    update_common_chart(Chart.ChartTitle.RELATED_WORK_EXPERIENCE, form_models.StudentDetailedInfo,
-                        form_models.StudentDetailedInfo.get_related_work__store_label, instance, db_instance,
-                        is_delete)
-
-
-def pre_update_update_gpa_chart(instance, db_instance, is_delete=False):
+def prepare_update_gpa_chart(instance, db_instance, is_delete=False):
     old_label = None
     new_label = None
     if is_delete:
@@ -361,7 +375,6 @@ def pre_update_update_gpa_chart(instance, db_instance, is_delete=False):
                 # we check that the instance graduate has changed and is not going to be the last grade any more
                 if instance.graduate_in < last_grade.graduate_in \
                         and next_last_grade is not None and instance.graduate_in < next_last_grade.graduate_in:
-
                     old_label = form_models.UniversityThrough.get_gpa__store_label(last_grade)
                     new_label = form_models.UniversityThrough.get_gpa__store_label(next_last_grade)
                     are_labels_updated = True
@@ -393,26 +406,6 @@ def pre_update_update_gpa_chart(instance, db_instance, is_delete=False):
                 new_label = form_models.UniversityThrough.get_gpa__store_label(instance)
 
     return new_label, old_label
-
-
-@shared_task
-def update_gpa_chart(new_label, old_label, is_delete=False):
-
-    chart, created = Chart.objects.get_or_create(title=Chart.ChartTitle.GRADE_POINT_AVERAGE)
-
-    if new_label is not None:
-        with transaction.atomic():
-            obj, created = ChartItemData.objects.get_or_create(chart=chart, label=new_label,
-                                                               defaults={'count': 1})
-            if not created:
-                ChartItemData.objects.filter(pk=obj.pk).update(count=F('count') + 1)
-
-    if old_label is not None:
-        with transaction.atomic():
-            obj, created = ChartItemData.objects.get_or_create(chart=chart, label=old_label,
-                                                               defaults={'count': 0})
-            if not created:
-                ChartItemData.objects.filter(pk=obj.pk).update(count=F('count') - 1)
 
 
 def serialize_language_certificate(instance) -> dict:
@@ -645,3 +638,20 @@ def update_common_chart(chart_title, instance_model, label_function, instance, d
                                                                    defaults={'count': 1})
                 if not created:
                     ChartItemData.objects.filter(pk=obj.pk).update(count=F('count') + 1)
+
+
+@shared_task
+def update_chart_by_label(chart, new_label, old_label, is_delete=False):
+    if new_label is not None:
+        with transaction.atomic():
+            obj, created = ChartItemData.objects.get_or_create(chart=chart, label=new_label,
+                                                               defaults={'count': 1})
+            if not created:
+                ChartItemData.objects.filter(pk=obj.pk).update(count=F('count') + 1)
+
+    if old_label is not None:
+        with transaction.atomic():
+            obj, created = ChartItemData.objects.get_or_create(chart=chart, label=old_label,
+                                                               defaults={'count': 0})
+            if not created:
+                ChartItemData.objects.filter(pk=obj.pk).update(count=F('count') - 1)

@@ -157,12 +157,16 @@ class Publication(models.Model):
     @classmethod
     def get_publications_score__view_label(cls, input_value):
         item_range = cls.PUBLICATIONS_SCORE__VIEW_LABEL_RANGE
+        if input_value > 1:
+            input_value = 0.95
         value = floor(input_value / item_range) * item_range
         return str(value) + ' - ' + str(value + item_range)
 
     @classmethod
     def convert_publications_score__store_to_view_label(cls, label):
         input_value = float(label)
+        if input_value > 1:
+            input_value = 0.95
         item_range = cls.PUBLICATIONS_SCORE__VIEW_LABEL_RANGE
         value = floor(input_value / item_range) * item_range
         return str(value) + ' - ' + str(value + item_range)
@@ -204,10 +208,7 @@ class Publication(models.Model):
     @classmethod
     def get_publications_score_user_store_based_positions(cls, sdi):
         qs = cls.objects.filter(student_detailed_info=sdi)
-        positions = []
-
-        for obj in qs:
-            positions.append(obj.value)
+        positions = [cls.get_publications_score__store_label(qs.total_value())]
         return positions
 
     @classmethod
