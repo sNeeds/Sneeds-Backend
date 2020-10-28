@@ -12,6 +12,7 @@ INSTALLED_APPS = [
     'ckeditor',
     'django_extensions',
     'verification',
+    'phonenumber_field',
 
     'abroadin.apps.docs',
     'abroadin.apps.chats',
@@ -209,7 +210,6 @@ from django.conf.global_settings import DATETIME_INPUT_FORMATS
 
 DATETIME_INPUT_FORMATS += ('%Y-%m-%dT%H:%M:%S',)
 
-
 VERIFICATION = {
     'VERIFICATIONS': [
         {'type': 'email', 'user_model_field': 'is_email_verified'},
@@ -224,3 +224,7 @@ VERIFICATION = {
     'LIFE_TIME_DAY': 0,
     'LIFE_TIME_PENALTY_SECOND': 60,
 }
+
+# django-phonenumber-field config
+PHONENUMBER_DB_FORMAT = 'E164'
+# ---------------------

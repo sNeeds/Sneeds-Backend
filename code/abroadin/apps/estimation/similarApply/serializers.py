@@ -11,8 +11,7 @@ class AppliedToSerializer(serializers.ModelSerializer):
     class Meta:
         model = AppliedTo
         fields = [
-            'university', 'grade', 'fund',
-            'accepted', 'comment'
+            'university', 'grade', 'fund', 'accepted', 'comment'
         ]
 
     def get_university(self, obj):
