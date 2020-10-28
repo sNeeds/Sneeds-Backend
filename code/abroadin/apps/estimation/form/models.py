@@ -742,6 +742,7 @@ class LanguageCertificate(models.Model):
         except RegularLanguageCertificate.DoesNotExist:
             return False
 
+    @property
     @regular_certificate_or_none
     def value_label(self):
         key = self._get_key_in_values_with_attrs()

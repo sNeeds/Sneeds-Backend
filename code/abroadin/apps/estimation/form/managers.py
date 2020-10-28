@@ -44,7 +44,9 @@ class LanguageCertificateQuerysetManager(models.QuerySet):
             return None
 
     def _get_highest_value_obj(self):
-        return self.all().order_by(F('value').desc(nulls_last=True)).first()
+        if self.exists():
+            return sorted(self.all(), key=lambda l: l.value, reverse=True)[0]
+        return None
 
     def get_total_value(self):
         # The highest value among all certificates is total value
