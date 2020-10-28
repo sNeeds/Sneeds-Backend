@@ -23,6 +23,8 @@ class FormComments(CAPIView):
 
 class AdmissionRankingChance(CAPIView):
     def get(self, request, form_id, format=None):
+
+
         return Response(
             {
                 "0-20": {

@@ -1,5 +1,6 @@
-from django.core.exceptions import ValidationError
+from phonenumber_field.modelfields import PhoneNumberField
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
@@ -58,7 +59,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         ADMIN_CONSULTANT = "Admin consultant"  # For automatic chat and ...
 
     email = models.EmailField(_('email address'), unique=True, max_length=256)
-    phone_number = models.CharField(_('phone number'), unique=True, max_length=11, blank=True, null=True)
+    phone_number = PhoneNumberField(null=True, blank=True)
     first_name = models.CharField(_('first name'), null=True, max_length=30, blank=True)
     last_name = models.CharField(_('last name'), null=True, max_length=150, blank=True)
 
