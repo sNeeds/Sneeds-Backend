@@ -9,7 +9,7 @@ from abroadin.apps.estimation.form import managers as form_managers
 from abroadin.apps.estimation.analyze.models import Chart, ChartItemData
 from abroadin.apps.estimation.form.serializers import StudentDetailedInfoCelerySerializer
 from abroadin.apps.estimation.form import serializers as form_serializers
-from apps.estimation.form.models import StudentDetailedInfo
+from abroadin.apps.estimation.form.models import StudentDetailedInfo
 
 LanguageCertificateType = form_models.LanguageCertificate.LanguageCertificateType
 
