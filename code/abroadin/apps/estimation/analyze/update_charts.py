@@ -9,6 +9,7 @@ from abroadin.apps.estimation.form import managers as form_managers
 from abroadin.apps.estimation.analyze.models import Chart, ChartItemData
 from abroadin.apps.estimation.form.serializers import StudentDetailedInfoCelerySerializer
 from abroadin.apps.estimation.form import serializers as form_serializers
+from apps.estimation.form.models import StudentDetailedInfo
 
 LanguageCertificateType = form_models.LanguageCertificate.LanguageCertificateType
 
@@ -70,13 +71,18 @@ def update_publication_count_chart(instance, db_instance, is_delete=False):
     """
         this function should be called in post delete state
     """
-    sdi = instance.student_detailed_info.studentdetailedinfo
-    publications_count = form_models.Publication.objects.filter(student_detailed_info_id=sdi.id).count()
-    data = serialize('json', [instance])
-    db_data = None if db_instance is None else serialize('json', [db_instance])
+    try:
+        sdi = instance.student_detailed_info.studentdetailedinfo
+        publications_count = form_models.Publication.objects.filter(student_detailed_info_id=sdi.id).count()
+        data = serialize('json', [instance])
+        db_data = None if db_instance is None else serialize('json', [db_instance])
 
-    update_publication_count_chart_by_count(publications_count=publications_count,
-                                            data=data, db_data=db_data, is_delete=is_delete)
+        update_publication_count_chart_by_count(
+            publications_count=publications_count, data=data, db_data=db_data, is_delete=is_delete
+        )
+
+    except StudentDetailedInfo.DoesNotExist:
+        pass
 
 
 @shared_task
@@ -153,7 +159,7 @@ def prepare_publications_score_chart_data(instance, db_instance, is_delete=False
         this function should be called in post delete state
     """
     if is_delete:
-        remained_publications = instance.student_detailed_info.studentdetailedinfo.publication_set.all()\
+        remained_publications = instance.student_detailed_info.studentdetailedinfo.publication_set.all() \
             .order_by('-value')
         new_publications_score = remained_publications.total_value()
 
@@ -185,7 +191,8 @@ def prepare_publications_score_chart_data(instance, db_instance, is_delete=False
 
         # Save has been called in order to create an entry
         else:
-            old_publications = instance.student_detailed_info.studentdetailedinfo.publication_set.all().order_by('-value')
+            old_publications = instance.student_detailed_info.studentdetailedinfo.publication_set.all().order_by(
+                '-value')
             old_publications_score = old_publications.total_value()
 
             new_publications_list = list(old_publications)
