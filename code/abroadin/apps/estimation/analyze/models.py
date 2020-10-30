@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from abroadin.apps.estimation.form import models as form_models
+
 CHARTS_TITLES = [
     ('grade_point_average', 'GradePointAverage'),
     ('publications_count', 'PublicationsCount'),
@@ -18,30 +20,6 @@ CHARTS_TITLES = [
     ('gre_subject_total', 'GRESubjectTotal'),
     ('duolingo', 'Duolingo'),
 ]
-
-
-
-def get_chart_titles_choices():
-    choices = []
-    for choice in Chart.ChartTitle.choices:
-        choices.append((choice.value, choice.name))
-    return choices
-
-
-class ChartItemData(models.Model):
-    label = models.CharField(
-        max_length=128,
-    )
-    count = models.FloatField(
-        default=0,
-    )
-    chart = models.ForeignKey(
-        to='Chart',
-        on_delete=models.CASCADE,
-    )
-
-    class Meta:
-        unique_together = ['label', 'chart']
 
 
 class Chart(models.Model):
@@ -70,10 +48,62 @@ class Chart(models.Model):
     )
     created = models.DateTimeField(auto_created=True, auto_now=True)
 
-    # data_number = models.PositiveIntegerField(
-    #     default=0,
-    # )
-    # pass
-
     def __str__(self):
         return self.title
+
+
+class ChartItemData(models.Model):
+    label = models.CharField(
+        max_length=128,
+    )
+    count = models.FloatField(
+        default=0,
+    )
+    label_rank = models.FloatField(
+        default=0
+    )
+    chart = models.ForeignKey(
+        to='Chart',
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        unique_together = ['label', 'chart']
+        ordering = ['chart', 'label_rank']
+
+    def set_rank(self):
+        if self.chart.title == Chart.ChartTitle.GRADE_POINT_AVERAGE:
+            self.label_rank = form_models.UniversityThrough.get_gpa__store_label_rank(self.label)
+
+        if self.chart.title == Chart.ChartTitle.PUBLICATIONS_COUNT:
+            self.label_rank = form_models.Publication.get_publications_count__store_label_rank(self.label)
+
+        if self.chart.title == Chart.ChartTitle.PUBLICATIONS_SCORE:
+            self.label_rank = form_models.Publication.get_publications_score__store_label_rank(self.label)
+
+        if self.chart.title == Chart.ChartTitle.PUBLICATION_IMPACT_FACTOR:
+            self.label_rank = form_models.Publication.get_impact_factor__store_label_rank(self.label)
+
+        if self.chart.title == Chart.ChartTitle.RELATED_WORK_EXPERIENCE:
+            self.label_rank = form_models.StudentDetailedInfo.get_related_work__store_label_rank(self.label)
+
+        if self.chart.title == Chart.ChartTitle.TOEFL:
+            self.label_rank = form_models.RegularLanguageCertificate.get_toefl__store_label_rank(self.label)
+
+        if self.chart.title == Chart.ChartTitle.IELTS:
+            self.label_rank = form_models.RegularLanguageCertificate.get_ielts__store_label_rank(self.label)
+
+        if self.chart.title == Chart.ChartTitle.GMAT:
+            self.label_rank = form_models.GMATCertificate.get_store_label_rank(self.label)
+
+        if self.chart.title == Chart.ChartTitle.GRE_GENERAL_WRITING:
+            self.label_rank = form_models.GREGeneralCertificate.get_writing__store_label_rank(self.label)
+
+        if self.chart.title == Chart.ChartTitle.GRE_GENERAL_QUANTITATIVE_AND_VERBAL:
+            self.label_rank = form_models.GREGeneralCertificate.get_q_and_v__store_label_rank(self.label)
+
+        if self.chart.title == Chart.ChartTitle.GRE_SUBJECT_TOTAL:
+            self.label_rank = form_models.GRESubjectCertificate.get_total__store_label_rank(self.label)
+
+        if self.chart.title == Chart.ChartTitle.DUOLINGO:
+            self.label_rank = form_models.DuolingoCertificate.get_store_label_rank(self.label)

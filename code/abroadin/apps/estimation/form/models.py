@@ -134,42 +134,17 @@ class Publication(models.Model):
     def __str__(self):
         return self.title
 
+    # Publications Count methods
     def get_count_chart__store_label(self):
         return str(self.student_detailed_info.publication_set.count())
 
-    def get_type__store_label(self):
-        return self.type
-
-    def get_impact_factor__store_label(self):
-        return self.journal_reputation
+    @classmethod
+    def get_publication_count_user_store_based_positions(cls, sdi):
+        return [str(cls.objects.filter(student_detailed_info=sdi).count())]
 
     @classmethod
-    def get_publications_score__store_label(cls, value):
-        item_range = cls.PUBLICATIONS_SCORE__STORE_LABEL_RANGE
-        return str(floor(value / item_range) * item_range)
-
-    def get_type__view_label(self):
-        return self.type
-
-    def get_impact_factor__view_label(self):
-        return self.journal_reputation
-
-    @classmethod
-    def get_publications_score__view_label(cls, input_value):
-        item_range = cls.PUBLICATIONS_SCORE__VIEW_LABEL_RANGE
-        if input_value > 1:
-            input_value = 0.95
-        value = floor(input_value / item_range) * item_range
-        return str(value) + ' - ' + str(value + item_range)
-
-    @classmethod
-    def convert_publications_score__store_to_view_label(cls, label):
-        input_value = float(label)
-        if input_value > 1:
-            input_value = 0.95
-        item_range = cls.PUBLICATIONS_SCORE__VIEW_LABEL_RANGE
-        value = floor(input_value / item_range) * item_range
-        return str(value) + ' - ' + str(value + item_range)
+    def get_publication_count_user_view_based_positions(cls, sdi):
+        return [cls.convert_count_chart_store_to_view_label(str(cls.objects.filter(student_detailed_info=sdi).count()))]
 
     @classmethod
     def convert_count_chart_store_to_view_label(cls, label):
@@ -180,12 +155,21 @@ class Publication(models.Model):
             return '4+'
 
     @classmethod
-    def get_publication_count_user_store_based_positions(cls, sdi):
-        return [str(cls.objects.filter(student_detailed_info=sdi).count())]
+    def compare_publication_count_labels(cls, label1, label2):
+        if int(label1) >= int(label2):
+            return label1
+        return label2
 
     @classmethod
-    def get_publication_count_user_view_based_positions(cls, sdi):
-        return [cls.convert_count_chart_store_to_view_label(str(cls.objects.filter(student_detailed_info=sdi).count()))]
+    def get_publications_count__store_label_rank(cls, label):
+        return float(label)
+
+    # Publication Type methods
+    def get_type__store_label(self):
+        return self.type
+
+    def get_type__view_label(self):
+        return self.type
 
     @classmethod
     def get_publication_type_user_store_based_positions(cls, sdi):
@@ -205,20 +189,12 @@ class Publication(models.Model):
             positions.append(obj.get_type__view_label())
         return positions
 
-    @classmethod
-    def get_publications_score_user_store_based_positions(cls, sdi):
-        qs = cls.objects.filter(student_detailed_info=sdi)
-        positions = [cls.get_publications_score__store_label(qs.total_value())]
-        return positions
+    # Publication Impact factor methods
+    def get_impact_factor__store_label(self):
+        return self.journal_reputation
 
-    @classmethod
-    def get_publications_score_user_view_based_positions(cls, sdi):
-        qs = cls.objects.filter(student_detailed_info=sdi)
-        positions = []
-
-        for obj in qs:
-            positions.append(obj.value)
-        return positions
+    def get_impact_factor__view_label(self):
+        return self.journal_reputation
 
     @classmethod
     def get_publication_impact_factor_user_store_based_positions(cls, sdi):
@@ -239,18 +215,6 @@ class Publication(models.Model):
         return positions
 
     @classmethod
-    def compare_publication_count_labels(cls, label1, label2):
-        if int(label1) >= int(label2):
-            return label1
-        return label2
-
-    @classmethod
-    def compare_publications_score_labels(cls, label1, label2):
-        if float(label1) >= float(label2):
-            return label1
-        return label2
-
-    @classmethod
     def compare_publication_impact_factor_labels(cls, label1, label2):
         if (label1 == cls.JournalReputationChoices.ONE_TO_THREE) or \
                 (
@@ -262,6 +226,64 @@ class Publication(models.Model):
                         label1 == cls.JournalReputationChoices.FOUR_TO_TEN and label2 == cls.JournalReputationChoices.ONE_TO_THREE):
             return label2
         return label1
+
+    @classmethod
+    def get_impact_factor__store_label_rank(cls, label):
+        if label == cls.JournalReputationChoices.ONE_TO_THREE:
+            return 1
+        elif label == cls.JournalReputationChoices.FOUR_TO_TEN:
+            return 5
+        elif label == cls.JournalReputationChoices.ABOVE_TEN:
+            return 10
+        return 0
+
+    # Publications Score methods
+    @classmethod
+    def get_publications_score__store_label(cls, value):
+        item_range = cls.PUBLICATIONS_SCORE__STORE_LABEL_RANGE
+        return str(floor(value / item_range) * item_range)
+
+    @classmethod
+    def get_publications_score__view_label(cls, input_value):
+        item_range = cls.PUBLICATIONS_SCORE__VIEW_LABEL_RANGE
+        if input_value > 1:
+            input_value = 0.95
+        value = floor(input_value / item_range) * item_range
+        return str(value) + ' - ' + str(value + item_range)
+
+    @classmethod
+    def convert_publications_score__store_to_view_label(cls, label):
+        input_value = float(label)
+        if input_value > 1:
+            input_value = 0.95
+        item_range = cls.PUBLICATIONS_SCORE__VIEW_LABEL_RANGE
+        value = floor(input_value / item_range) * item_range
+        return str(value) + ' - ' + str(value + item_range)
+
+    @classmethod
+    def get_publications_score_user_store_based_positions(cls, sdi):
+        qs = cls.objects.filter(student_detailed_info=sdi)
+        positions = [cls.get_publications_score__store_label(qs.total_value())]
+        return positions
+
+    @classmethod
+    def get_publications_score_user_view_based_positions(cls, sdi):
+        qs = cls.objects.filter(student_detailed_info=sdi)
+        positions = []
+
+        for obj in qs:
+            positions.append(obj.value)
+        return positions
+
+    @classmethod
+    def compare_publications_score_labels(cls, label1, label2):
+        if float(label1) >= float(label2):
+            return label1
+        return label2
+
+    @classmethod
+    def get_publications_score__store_label_rank(cls, label):
+        return float(label)
 
 
 class StudentDetailedInfoBase(models.Model):
@@ -503,23 +525,56 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
 
         return Major.objects.filter(id__in=related_major_ids)
 
+    #################################
+    # Powerful Recommendation methods
+    #################################
     def get_powerful_recommendation__store_label(self):
         return MISSING_LABEL if not self.powerful_recommendation or self.powerful_recommendation is None else REWARDED_LABEL
 
+    def get_powerful_recommendation__view_label(self):
+        return REWARDED_LABEL if self.powerful_recommendation else MISSING_LABEL
+
+    @classmethod
+    def compare_powerful_recommendation_labels(cls, label1, label2):
+        if label1 == label2 or label1 == REWARDED_LABEL:
+            return label1
+        return label2
+
+    def get_powerful_recommendation_user_store_based_positions(self):
+        return [self.get_powerful_recommendation__store_label()]
+
+    def get_powerful_recommendation_user_view_based_positions(self):
+        return [self.get_powerful_recommendation__view_label()]
+
+    ##################
+    # Olympiad methods
+    ##################
     def get_olympiad__store_label(self):
         return MISSING_LABEL if self.olympiad is None or len(self.olympiad) == 0 else REWARDED_LABEL
 
+    def get_olympiad__view_label(self):
+        return MISSING_LABEL if self.olympiad is None or len(self.olympiad) == 0 else REWARDED_LABEL
+
+    @classmethod
+    def compare_olympiad_labels(cls, label1, label2):
+        if label1 == label2 or label1 == REWARDED_LABEL:
+            return label1
+        return label2
+
+    def get_olympiad_user_store_based_positions(self):
+        return [self.get_olympiad__store_label()]
+
+    def get_olympiad_user_view_based_positions(self):
+        return [self.get_olympiad__view_label()]
+
+    #################################
+    # Related Work Experience methods
+    #################################
     def get_related_work__store_label(self):
         if self.related_work_experience is None:
             return '0'
         item_range = self.RELATED_WORK_EXPERIENCE_STORE_LABEL_RANGE
         return str(floor(self.related_work_experience / item_range) * item_range)
-
-    def get_powerful_recommendation__view_label(self):
-        return REWARDED_LABEL if self.powerful_recommendation else MISSING_LABEL
-
-    def get_olympiad__view_label(self):
-        return MISSING_LABEL if self.olympiad is None or len(self.olympiad) == 0 else REWARDED_LABEL
 
     def get_related_work__view_label(self):
         if self.related_work_experience >= 36:
@@ -538,40 +593,20 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         return str(value) + ' - ' + str(value + item_range)
 
     @classmethod
-    def compare_powerful_recommendation_labels(cls, label1, label2):
-        if label1 == label2 or label1 == REWARDED_LABEL:
-            return label1
-        return label2
-
-    @classmethod
-    def compare_olympiad_labels(cls, label1, label2):
-        if label1 == label2 or label1 == REWARDED_LABEL:
-            return label1
-        return label2
-
-    @classmethod
     def compare_related_work_labels(cls, label1, label2):
         if int(label1) >= int(label2):
             return label1
         return label2
-
-    def get_powerful_recommendation_user_store_based_positions(self):
-        return [self.get_powerful_recommendation__store_label()]
-
-    def get_powerful_recommendation_user_view_based_positions(self):
-        return [self.get_powerful_recommendation__view_label()]
-
-    def get_olympiad_user_store_based_positions(self):
-        return [self.get_olympiad__store_label()]
-
-    def get_olympiad_user_view_based_positions(self):
-        return [self.get_olympiad__view_label()]
 
     def get_related_work_user_store_based_positions(self):
         return [self.get_related_work__store_label()]
 
     def get_related_work_user_view_based_positions(self):
         return [self.get_related_work__view_label()]
+
+    @classmethod
+    def get_related_work__store_label_rank(cls, label):
+        return float(label)
 
     def save(self, *args, **kwargs):
         self.value = self._compute_value()
@@ -644,6 +679,9 @@ class UniversityThrough(models.Model):
 
         return label
 
+    #############################
+    # Grade Point Average methods
+    #############################
     def get_gpa__store_label(self):
         item_range = self.GPA_STORE_LABEL_RANGE
         return str(floor(float(self.gpa) / item_range) * item_range)
@@ -669,7 +707,7 @@ class UniversityThrough(models.Model):
         user_last_grade = cls.objects.filter(student_detailed_info=sdi) \
             .order_by('-graduate_in').first()
         if user_last_grade is None:
-            return None
+            return ['0.0']
         return [user_last_grade.get_gpa__store_label()]
 
     @classmethod
@@ -685,6 +723,10 @@ class UniversityThrough(models.Model):
         if float(label1) >= float(label2):
             return label1
         return label2
+
+    @classmethod
+    def get_gpa__store_label_rank(cls, label):
+        return float(label)
 
 
 class LanguageCertificate(models.Model):
@@ -792,21 +834,15 @@ class RegularLanguageCertificate(LanguageCertificate):
     TOEFL__STORE_LABEL_RANGE = 10
     TOEFL__VIEW_LABEL_RANGE = 20
 
+    ###############
+    # IELTS methods
+    ###############
     def get_ielts__store_label(self):
         item_range = self.IELTS__STORE_LABEL_RANGE
         return str(floor(float(self.overall) / item_range) * item_range)
 
-    def get_toefl__store_label(self):
-        item_range = self.TOEFL__STORE_LABEL_RANGE
-        return str(floor(float(self.overall) / item_range) * item_range)
-
     def get_ielts__view_label(self):
         item_range = self.IELTS__VIEW_LABEL_RANGE
-        value = floor(float(self.overall) / item_range) * item_range
-        return str(value) + '-' + str(value + item_range)
-
-    def get_toefl__view_label(self):
-        item_range = self.TOEFL__VIEW_LABEL_RANGE
         value = floor(float(self.overall) / item_range) * item_range
         return str(value) + '-' + str(value + item_range)
 
@@ -816,36 +852,6 @@ class RegularLanguageCertificate(LanguageCertificate):
         item_range = cls.IELTS__VIEW_LABEL_RANGE
         value = floor(input_value / item_range) * item_range
         return str(value) + '-' + str(value + item_range)
-
-    @classmethod
-    def convert_toefl_store_to_view_label(cls, label):
-        input_value = int(label)
-        item_range = cls.TOEFL__VIEW_LABEL_RANGE
-        value = floor(input_value / item_range) * item_range
-        return str(value) + '-' + str(value + item_range)
-
-    @classmethod
-    def get_toefl_user_store_based_positions(cls, sdi):
-        positions = []
-        user_toefl_certificates = cls.objects.filter(student_detailed_info=sdi,
-                                                     certificate_type=LanguageCertificate.LanguageCertificateType.TOEFL
-                                                     )
-        for obj in user_toefl_certificates:
-            positions.append(obj.get_toefl__store_label())
-
-        return positions
-
-    @classmethod
-    def get_toefl_user_view_based_positions(cls, sdi):
-        positions = []
-        user_toefl_certificates = cls.objects.filter(
-            student_detailed_info=sdi,
-            certificate_type=LanguageCertificate.LanguageCertificateType.TOEFL
-        )
-        for obj in user_toefl_certificates:
-            positions.append(obj.get_toefl__view_label())
-
-        return positions
 
     @classmethod
     def get_ielts_user_store_based_positions(cls, sdi):
@@ -882,10 +888,60 @@ class RegularLanguageCertificate(LanguageCertificate):
         return label2
 
     @classmethod
+    def get_ielts__store_label_rank(cls, label):
+        return float(label)
+
+    ###############
+    # TOEFL methods
+    ###############
+    def get_toefl__store_label(self):
+        item_range = self.TOEFL__STORE_LABEL_RANGE
+        return str(floor(float(self.overall) / item_range) * item_range)
+
+    def get_toefl__view_label(self):
+        item_range = self.TOEFL__VIEW_LABEL_RANGE
+        value = floor(float(self.overall) / item_range) * item_range
+        return str(value) + '-' + str(value + item_range)
+
+    @classmethod
+    def convert_toefl_store_to_view_label(cls, label):
+        input_value = int(label)
+        item_range = cls.TOEFL__VIEW_LABEL_RANGE
+        value = floor(input_value / item_range) * item_range
+        return str(value) + '-' + str(value + item_range)
+
+    @classmethod
+    def get_toefl_user_store_based_positions(cls, sdi):
+        positions = []
+        user_toefl_certificates = cls.objects.filter(student_detailed_info=sdi,
+                                                     certificate_type=LanguageCertificate.LanguageCertificateType.TOEFL
+                                                     )
+        for obj in user_toefl_certificates:
+            positions.append(obj.get_toefl__store_label())
+
+        return positions
+
+    @classmethod
+    def get_toefl_user_view_based_positions(cls, sdi):
+        positions = []
+        user_toefl_certificates = cls.objects.filter(
+            student_detailed_info=sdi,
+            certificate_type=LanguageCertificate.LanguageCertificateType.TOEFL
+        )
+        for obj in user_toefl_certificates:
+            positions.append(obj.get_toefl__view_label())
+
+        return positions
+
+    @classmethod
     def compare_toefl_labels(cls, label1, label2):
         if float(label1) >= float(label2):
             return label1
         return label2
+
+    @classmethod
+    def get_toefl__store_label_rank(cls, label):
+        return float(label)
 
 
 class GMATCertificate(LanguageCertificate):
@@ -950,6 +1006,10 @@ class GMATCertificate(LanguageCertificate):
             return label1
         return label2
 
+    @classmethod
+    def get_store_label_rank(cls, label):
+        return float(label)
+
 
 class GREGeneralCertificate(LanguageCertificate):
     quantitative = models.PositiveSmallIntegerField(
@@ -972,35 +1032,22 @@ class GREGeneralCertificate(LanguageCertificate):
     Q_AND_V_STORE_LABEL_RANGE = 10
     Q_AND_V_VIEW_LABEL_RANGE = 20
 
+    #################
+    # Writing methods
+    #################
     def get_writing_store_label(self):
         item_range = self.WRITING_STORE_LABEL_RANGE
         return str(floor(float(self.analytical_writing) / item_range) * item_range)
-
-    def get_q_and_v_store_label(self):
-        item_range = self.Q_AND_V_STORE_LABEL_RANGE
-        return str(floor((self.quantitative + self.verbal) / item_range) * item_range)
 
     def get_writing_view_label(self):
         item_range = self.WRITING_VIEW_LABEL_RANGE
         value = floor(float(self.analytical_writing) / item_range) * item_range
         return str(value) + '-' + str(value + item_range)
 
-    def get_q_and_v_view_label(self):
-        item_range = self.Q_AND_V_VIEW_LABEL_RANGE
-        value = floor((self.quantitative + self.verbal) / item_range) * item_range
-        return str(value) + '-' + str(value + item_range)
-
     @classmethod
     def convert_writing_store_to_view_label(cls, label):
         input_value = float(label)
         item_range = cls.WRITING_VIEW_LABEL_RANGE
-        value = floor(input_value / item_range) * item_range
-        return str(value) + '-' + str(value + item_range)
-
-    @classmethod
-    def convert_q_and_v_store_to_view_label(cls, label):
-        input_value = int(label)
-        item_range = cls.Q_AND_V_VIEW_LABEL_RANGE
         value = floor(input_value / item_range) * item_range
         return str(value) + '-' + str(value + item_range)
 
@@ -1025,6 +1072,35 @@ class GREGeneralCertificate(LanguageCertificate):
         return positions
 
     @classmethod
+    def compare_writing_labels(cls, label1, label2):
+        if float(label1) >= float(label2):
+            return label1
+        return label2
+
+    @classmethod
+    def get_writing__store_label_rank(cls, label):
+        return float(label)
+
+    #################################
+    # Quantitative and Verbal methods
+    #################################
+    def get_q_and_v_store_label(self):
+        item_range = self.Q_AND_V_STORE_LABEL_RANGE
+        return str(floor((self.quantitative + self.verbal) / item_range) * item_range)
+
+    def get_q_and_v_view_label(self):
+        item_range = self.Q_AND_V_VIEW_LABEL_RANGE
+        value = floor((self.quantitative + self.verbal) / item_range) * item_range
+        return str(value) + '-' + str(value + item_range)
+
+    @classmethod
+    def convert_q_and_v_store_to_view_label(cls, label):
+        input_value = int(label)
+        item_range = cls.Q_AND_V_VIEW_LABEL_RANGE
+        value = floor(input_value / item_range) * item_range
+        return str(value) + '-' + str(value + item_range)
+
+    @classmethod
     def get_q_and_v_user_store_based_positions(cls, sdi):
         positions = []
         user_gre_general_certificates = cls.objects.filter(student_detailed_info=sdi)
@@ -1045,16 +1121,14 @@ class GREGeneralCertificate(LanguageCertificate):
         return positions
 
     @classmethod
-    def compare_writing_labels(cls, label1, label2):
-        if float(label1) >= float(label2):
-            return label1
-        return label2
-
-    @classmethod
     def compare_q_and_v_labels(cls, label1, label2):
         if int(label1) >= int(label2):
             return label1
         return label2
+
+    @classmethod
+    def get_q_and_v__store_label_rank(cls, label):
+        return float(label)
 
 
 class GRESubjectCertificate(LanguageCertificate):
@@ -1123,6 +1197,10 @@ class GRESubjectCertificate(LanguageCertificate):
             positions.append(obj.get_total_view_label())
 
         return positions
+
+    @classmethod
+    def get_total__store_label_rank(cls, label):
+        return float(label)
 
 
 class GREBiologyCertificate(GRESubjectCertificate):
@@ -1250,3 +1328,7 @@ class DuolingoCertificate(LanguageCertificate):
         if int(label1) >= int(label2):
             return label1
         return label2
+
+    @classmethod
+    def get_store_label_rank(cls, label):
+        return float(label)
