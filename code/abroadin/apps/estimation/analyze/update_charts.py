@@ -158,6 +158,11 @@ def prepare_publications_score_chart_data(instance, db_instance, is_delete=False
     """
         this function should be called in post delete state
     """
+    try:
+        instance.student_detailed_info.studentdetailedinfo
+    except StudentDetailedInfo.DoesNotExist:
+        return
+
     if is_delete:
         remained_publications = instance.student_detailed_info.studentdetailedinfo.publication_set.all() \
             .order_by('-value')
