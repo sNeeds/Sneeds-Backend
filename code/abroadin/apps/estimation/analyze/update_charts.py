@@ -149,6 +149,10 @@ def update_publications_score_chart(instance, db_instance, is_delete=False):
     """
     this function should be called in post delete state
     """
+    try:
+        instance.student_detailed_info.studentdetailedinfo
+    except StudentDetailedInfo.DoesNotExist:
+        return
     new_label, old_label = prepare_publications_score_chart_data(instance, db_instance, is_delete)
     chart, created = Chart.objects.get_or_create(title=Chart.ChartTitle.PUBLICATIONS_SCORE)
     update_chart_by_label(chart, new_label=new_label, old_label=old_label)
@@ -158,11 +162,6 @@ def prepare_publications_score_chart_data(instance, db_instance, is_delete=False
     """
         this function should be called in post delete state
     """
-    try:
-        instance.student_detailed_info.studentdetailedinfo
-    except StudentDetailedInfo.DoesNotExist:
-        return
-
     if is_delete:
         remained_publications = instance.student_detailed_info.studentdetailedinfo.publication_set.all() \
             .order_by('-value')
