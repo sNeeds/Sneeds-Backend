@@ -856,8 +856,8 @@ class RegularLanguageCertificate(LanguageCertificate):
     @classmethod
     def get_ielts_user_store_based_positions(cls, sdi):
         positions = []
-        user_toefl_certificates = cls.objects.filter(Q(student_detailed_info=sdi)).filter(
-            Q(certificate_type=LanguageCertificate.LanguageCertificateType.IELTS_GENERAL) or
+        user_toefl_certificates = cls.objects.filter(student_detailed_info=sdi).filter(
+            Q(certificate_type=LanguageCertificate.LanguageCertificateType.IELTS_GENERAL) |
             Q(certificate_type=LanguageCertificate.LanguageCertificateType.IELTS_ACADEMIC)
         ).distinct()
 
