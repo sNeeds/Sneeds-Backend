@@ -44,4 +44,4 @@ class MajorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Major
-        fields = ('id', 'url', 'name', 'description', 'picture')
+        fields = ('id', 'url', 'name', 'description')
