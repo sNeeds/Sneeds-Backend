@@ -73,11 +73,6 @@ class Major(models.Model):
     name = models.CharField(max_length=256)
     search_name = models.CharField(max_length=1024)
     description = models.TextField(blank=True, null=True)
-    picture = models.ImageField(
-        blank=False,
-        null=True,
-        upload_to=get_image_upload_path("field-of-study-pictures")
-    )
     parent_major = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
 
     def hierarchy_str(self):
