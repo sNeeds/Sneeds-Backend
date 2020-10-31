@@ -1,3 +1,5 @@
+from django.utils import timezone
+
 from drf_yasg.utils import swagger_auto_schema
 
 from django.contrib.contenttypes.models import ContentType
@@ -11,6 +13,8 @@ from abroadin.base.api.generics import CListAPIView
 from abroadin.base.api.enum_views import EnumViewList
 from abroadin.base.api.permissions import permission_class_factory
 from abroadin.utils.custom.views import custom_generic_apiviews
+
+THIS_YEAR = timezone.now().year
 
 from .models import (
     SemesterYear,
@@ -147,7 +151,7 @@ class UserStudentDetailedInfoRetrieveAPIView(custom_generic_apiviews.BaseRetriev
 
 
 class SemesterYearListAPIView(custom_generic_apiviews.BaseListAPIView):
-    queryset = SemesterYear.objects.all()
+    queryset = SemesterYear.objects.all().filter(year__gte=THIS_YEAR)
     serializer_class = SemesterYearSerializer
 
 
