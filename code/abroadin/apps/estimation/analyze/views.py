@@ -1,6 +1,7 @@
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.views import APIView
 
 from abroadin.utils.custom.views import custom_generic_apiviews as c_generics
 from abroadin.apps.estimation.analyze import serializers
@@ -97,3 +98,10 @@ class LanguageCertificatesRetrieveAPIView(BaseChartsAPIView):
         'duolingo': {'serializer_class': serializers.DuolingoChartSerializer,
                      'chart_title_enum': Chart.ChartTitle.DUOLINGO},
     }
+
+
+class AkbarView(APIView):
+    def get(self, request, *args, **kwargs):
+        while True:
+            a = 1
+        return Response()
