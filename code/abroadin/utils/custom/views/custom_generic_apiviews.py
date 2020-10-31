@@ -60,7 +60,6 @@ class BaseGenericAPIView(generics.CGenericAPIView):
     #
     #     return request_serializer_class
 
-
     @property
     def request_serializer_class_or_regular_serializer_class(self):
         """ Returns the request serializer class if it not None, other wise the normal serializer class"""
@@ -150,7 +149,6 @@ class BaseUpdateAPIView(BaseUpdateModelMixin,
     """
 
     request_methods = ['put', 'patch']
-
 
     def put(self, request, *args, **kwargs):
         """Handle put method"""

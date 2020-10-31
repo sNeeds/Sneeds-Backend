@@ -546,5 +546,3 @@ class StudentDetailedInfoCelerySerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return StudentDetailedInfo(**validated_data)
-
-
