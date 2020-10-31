@@ -6,10 +6,10 @@ from abroadin.utils import sendemail
 
 
 @shared_task
-def send_reset_password_email(email, first_name, reset_link):
-    sendemail.reset_password(
+def send_reset_password_email(email, full_name, reset_link):
+    sendemail.send_reset_password_email(
         email,
-        first_name,
+        full_name,
         reset_link
     )
 
