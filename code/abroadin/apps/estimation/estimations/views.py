@@ -58,7 +58,11 @@ class WantToApplyChance(CAPIView):
             want_to_apply = WantToApply.objects.get(student_detailed_info=form)
 
             for university in want_to_apply.universities.all().order_by('rank'):
-                data.append(admission_chance.get_university_chance_with_label(university))
+                values_and_labels = {}
+                values_and_labels["university"] = university.name
+                values_and_labels["rank"] = university.rank
+                values_and_labels["chances"] = admission_chance.get_university_chance_with_label(university)
+                data.append(values_and_labels)
 
             return Response(data)
 
