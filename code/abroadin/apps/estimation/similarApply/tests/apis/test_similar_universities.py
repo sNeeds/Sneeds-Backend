@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import status
 
-from .test_base import SimilarApplyAppAPITests
+from abroadin.apps.estimation.similarApply.models import AppliedTo
 from abroadin.apps.estimation.form.models import (
     StudentDetailedInfo,
     Grade,
@@ -15,6 +15,8 @@ from abroadin.apps.estimation.form.models import (
     LanguageCertificate
 )
 
+from .test_base import SimilarApplyAppAPITests
+
 User = get_user_model()
 
 
@@ -23,8 +25,27 @@ class SimilarUniversitiesAPITests(SimilarApplyAppAPITests):
         super().setUp()
 
     def test_similar_universities_200_1(self):
-        print(self._test_similar_universities("get", None, status.HTTP_200_OK, reverse_args=self.app_form_1.id))
+        data = self._test_similar_universities("get", None, status.HTTP_200_OK, reverse_args=self.app_form_1.id)
+        self.assertEqual(len(data), 1)
+        self.assertEqual(data[0]['applied_university']['id'], self.university3.id)
 
     def test_similar_universities_200_2(self):
-        form = StudentDetailedInfo.objects.create()
-        self._test_similar_universities("get", None, status.HTTP_200_OK, reverse_args=form.id)
+        self.app_applied_student_form_1_applied_to_1.delete()
+        data = self._test_similar_universities("get", None, status.HTTP_200_OK, reverse_args=self.app_form_1.id)
+        self.assertEqual(len(data), 0)
+
+    def test_similar_universities_200_3(self):
+        self.app_applied_student_form_1_applied_to_1.delete()
+        AppliedTo.objects.create(
+            applied_student_detailed_info=self.app_applied_student_form_1,
+            university=self.university2,
+            grade=GradeChoices.PHD,
+            major=self.major3,
+            semester_year=self.semester_year2,
+            fund=20000,
+            accepted=True,
+            comment="Foo comment"
+        )
+
+        data = self._test_similar_universities("get", None, status.HTTP_200_OK, reverse_args=self.app_form_1.id)
+        self.assertEqual(len(data), 0)

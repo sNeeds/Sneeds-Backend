@@ -62,37 +62,11 @@ class SimilarApplyAppBaseTests(EstimationBaseTest):
         # Applied student 1
 
         self.app_applied_student_form_1 = AppliedStudentDetailedInfo.objects.create(
-            student_name="Foo student1",
-        )
-
-        UniversityThrough.objects.create(
-            student_detailed_info=self.app_applied_student_form_1,
-            university=self.university1,
-            grade=GradeChoices.BACHELOR,
-            major=self.major1,
-            graduate_in=2021,
-            thesis_title="Foo thesis",
-            gpa=18
-        )
-
-        UniversityThrough.objects.create(
-            student_detailed_info=self.app_applied_student_form_1,
-            university=self.university1,
-            grade=GradeChoices.MASTER,
-            major=self.major1,
-            graduate_in=2024,
-            thesis_title="Foo thesis",
-            gpa=18
-        )
-
-        # Applied student 2
-
-        self.app_applied_student_form_2 = AppliedStudentDetailedInfo.objects.create(
             student_name="Foo student2",
         )
 
-        self.app_applied_student_form_2_applied_to_1 = AppliedTo.objects.create(
-            applied_student_detailed_info=self.app_applied_student_form_2,
+        self.app_applied_student_form_1_applied_to_1 = AppliedTo.objects.create(
+            applied_student_detailed_info=self.app_applied_student_form_1,
             university=self.university3,
             grade=GradeChoices.PHD,
             major=self.major3,
@@ -101,3 +75,29 @@ class SimilarApplyAppBaseTests(EstimationBaseTest):
             accepted=True,
             comment="Foo comment"
         )
+
+        # # Applied student 1
+        #
+        # self.app_applied_student_form_1 = AppliedStudentDetailedInfo.objects.create(
+        #     student_name="Foo student1",
+        # )
+        #
+        # UniversityThrough.objects.create(
+        #     student_detailed_info=self.app_applied_student_form_1,
+        #     university=self.university1,
+        #     grade=GradeChoices.BACHELOR,
+        #     major=self.major1,
+        #     graduate_in=2021,
+        #     thesis_title="Foo thesis",
+        #     gpa=18
+        # )
+        #
+        # UniversityThrough.objects.create(
+        #     student_detailed_info=self.app_applied_student_form_1,
+        #     university=self.university1,
+        #     grade=GradeChoices.MASTER,
+        #     major=self.major1,
+        #     graduate_in=2024,
+        #     thesis_title="Foo thesis",
+        #     gpa=18
+        # )

@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import Q, F
 
+from abroadin.base.mixins.manager import GetListManagerMixin
 from ..estimations.classes import ValueRange
 from ..estimations.values import VALUES_WITH_ATTRS
 
@@ -113,3 +114,7 @@ class StudentDetailedInfoManager(models.QuerySet):
         for obj in self.all():
             obj.rank += 1
             obj.save()
+
+
+class GradeQuerySetManager(GetListManagerMixin, models.QuerySet):
+    pass

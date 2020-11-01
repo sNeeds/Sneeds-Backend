@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from abroadin.apps.data.account.serializers import UniversitySerializer
-from abroadin.apps.estimation.similarApply.models import  AppliedTo
+from abroadin.apps.estimation.similarApply.models import AppliedTo
 
 
 class AppliedToSerializer(serializers.ModelSerializer):
@@ -10,7 +10,7 @@ class AppliedToSerializer(serializers.ModelSerializer):
     class Meta:
         model = AppliedTo
         fields = [
-            'university', 'grade', 'fund', 'accepted', 'comment'
+            'applied_university', 'grade', 'fund', 'accepted', 'comment'
         ]
 
     def get_applied_university(self, obj):

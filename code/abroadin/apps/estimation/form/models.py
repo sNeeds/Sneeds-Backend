@@ -13,7 +13,7 @@ from abroadin.apps.estimation.estimations.classes import ValueRange
 from abroadin.apps.estimation.estimations.values import VALUES_WITH_ATTRS
 from abroadin.apps.estimation.form.labels import MISSING_LABEL, REWARDED_LABEL
 from abroadin.apps.estimation.form.managers import UniversityThroughQuerySetManager, \
-    LanguageCertificateQuerysetManager, PublicationQuerySetManager, StudentDetailedInfoManager
+    LanguageCertificateQuerysetManager, PublicationQuerySetManager, StudentDetailedInfoManager, GradeQuerySetManager
 from abroadin.apps.data.account.models import Country, University, Major, get_student_resume_path, \
     User, BasicFormField
 from abroadin.apps.data.account.validators import validate_resume_file_size, ten_factor_validator
@@ -57,6 +57,8 @@ class Grade(models.Model):
         default=GradeChoices.BACHELOR,
         unique=True
     )
+
+    objects = GradeQuerySetManager.as_manager()
 
     def __str__(self):
         return self.name.__str__()
