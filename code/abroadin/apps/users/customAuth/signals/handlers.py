@@ -39,6 +39,6 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
 
     send_reset_password_email.delay(
         context['email'],
-        context['current_user'].get_full_name(),
+        context['current_user'].get_pretty_full_name(),
         reset_link,
     )
