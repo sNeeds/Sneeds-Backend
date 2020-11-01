@@ -6,6 +6,7 @@ from abroadin.base.api.viewsets import CAPIView
 from abroadin.apps.estimation.form.models import WantToApply, StudentDetailedInfo
 from abroadin.apps.estimation.estimations.reviews import StudentDetailedFormReview
 from abroadin.apps.estimation.estimations.serializers import WantToApplyChanceSerializer
+from apps.estimation.estimations.chances import AdmissionChance
 
 
 class FormComments(CAPIView):
@@ -22,33 +23,24 @@ class FormComments(CAPIView):
 
 
 class AdmissionRankingChance(CAPIView):
+    def get_form_obj(self, form_id):
+        try:
+            return StudentDetailedInfo.objects.get(id=form_id)
+        except StudentDetailedInfo.DoesNotExist:
+            raise Http404
+
     def get(self, request, form_id, format=None):
+        form = self.get_form_obj(form_id)
+        admission_chance = AdmissionChance(form)
 
+        data = {
+            "0-20": admission_chance.get_1_to_20_chance(),
+            "20-100": admission_chance.get_21_to_100_chance(),
+            "100-400": admission_chance.get_101_to_400_chance(),
+            "+400": admission_chance.get_401_above_chance(),
+        }
 
-        return Response(
-            {
-                "0-20": {
-                    "admission": 0.4,
-                    "scholarship": 0,
-                    "full-fund": 0
-                },
-                "20-100": {
-                    "admission": 0.8,
-                    "scholarship": 0.5,
-                    "full-fund": 0.3
-                },
-                "100-400": {
-                    "admission": 1,
-                    "scholarship": 0.95,
-                    "full-fund": 0.9
-                },
-                "+400": {
-                    "admission": 1,
-                    "scholarship": 1,
-                    "full-fund": 1
-                },
-            }
-        )
+        return Response(data)
 
 
 class WantToApplyChance(CAPIView):
