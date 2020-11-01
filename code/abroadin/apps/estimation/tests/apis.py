@@ -39,9 +39,9 @@ class EstimationBaseTest(APITestCase):
         )
 
         self.country3 = Country.objects.create(
-            name="country2",
-            search_name="country2",
-            slug="country2",
+            name="country3",
+            search_name="country3",
+            slug="country3",
             picture=None
         )
 

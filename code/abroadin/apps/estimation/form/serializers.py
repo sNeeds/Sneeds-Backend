@@ -6,11 +6,11 @@ from rest_framework.exceptions import ValidationError
 
 import abroadin.apps
 import abroadin.apps.estimation.form.models
-from abroadin.apps.estimation.form.models import SemesterYear, WantToApply, StudentDetailedInfo, \
-    UniversityThrough, Publication, Grade
 from abroadin.apps.data.account import models
 from abroadin.apps.data.account.models import BasicFormField
 from abroadin.apps.data.account.serializers import CountrySerializer, UniversitySerializer, MajorSerializer
+
+from .models import SemesterYear, WantToApply, StudentDetailedInfo, UniversityThrough, Publication, Grade
 
 LanguageCertificateType = abroadin.apps.estimation.form.models.LanguageCertificate.LanguageCertificateType
 
@@ -70,7 +70,7 @@ class WantToApplySerializer(serializers.ModelSerializer):
     grades = GradeSerializer(many=True)
 
     class Meta:
-        model = abroadin.apps.estimation.form.models.WantToApply
+        model = WantToApply
         fields = [
             'id', 'student_detailed_info', 'countries', 'universities', 'grades', 'majors', 'semester_years',
         ]

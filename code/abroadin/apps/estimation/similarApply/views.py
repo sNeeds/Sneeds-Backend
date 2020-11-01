@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from abroadin.base.api.viewsets import CAPIView
 from abroadin.apps.estimation.form.models import WantToApply, StudentDetailedInfo
 from abroadin.apps.estimation.similarApply.models import AppliedStudentDetailedInfo, AppliedTo
-from abroadin.apps.estimation.similarApply.serializers import AppliedStudentDetailedInfoSerializer, AppliedToSerializer
+from abroadin.apps.estimation.similarApply.serializers import AppliedToExtendedSerializer
 
 
 class SimilarUniversitiesListView(CAPIView):
@@ -34,7 +34,7 @@ class SimilarUniversitiesListView(CAPIView):
 
         related_applied_tos = related_applied_tos.distinct()
 
-        data = AppliedToSerializer(
+        data = AppliedToExtendedSerializer(
             related_applied_tos,
             context={'request': request},
             many=True

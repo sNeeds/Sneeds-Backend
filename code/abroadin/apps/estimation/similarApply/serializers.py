@@ -21,32 +21,19 @@ class AppliedToSerializer(serializers.ModelSerializer):
         ).data
 
 
-class AppliedStudentDetailedInfoSerializer(StudentDetailedInfoBaseSerializer):
+class AppliedToExtendedSerializer(AppliedToSerializer):
     home_university = serializers.SerializerMethodField()
     home_university_gpa = serializers.SerializerMethodField()
-    applied_to = serializers.SerializerMethodField()
 
-    class Meta(StudentDetailedInfoBaseSerializer.Meta):
-        model = AppliedStudentDetailedInfo
-        fields = [
-            'home_university',
-            'home_university_gpa',
-            'applied_to'
-        ]
+    class Meta(AppliedTo.Meta):
+        fields = AppliedTo.Meta.fields + ['home_university', 'home_university_gpa']
 
     def get_home_university(self, obj):
-        last_university_through = obj.get_last_university_through()
+        form = obj.applied_student_detailed_info
+        last_university_through = form.get_last_university_through()
         return last_university_through.university.name if last_university_through is not None else None
 
     def get_home_university_gpa(self, obj):
-        last_university_through = obj.get_last_university_through()
+        form = obj.applied_student_detailed_info
+        last_university_through = form.get_last_university_through()
         return last_university_through.gpa if last_university_through is not None else None
-
-    def get_applied_to(self, obj):
-        try:
-            applied_to_obj = AppliedTo.objects.filter(applied_student_detailed_info__id=obj.id)
-            data = AppliedToSerializer(applied_to_obj, many=True).data
-        except AppliedTo.DoesNotExist:
-            data = None
-
-        return data

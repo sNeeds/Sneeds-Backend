@@ -23,7 +23,7 @@ class SimilarUniversitiesAPITests(SimilarApplyAppAPITests):
         super().setUp()
 
     def test_similar_universities_200_1(self):
-        self._test_similar_universities("get", None, status.HTTP_200_OK, reverse_args=self.app_form_1.id)
+        print(self._test_similar_universities("get", None, status.HTTP_200_OK, reverse_args=self.app_form_1.id))
 
     def test_similar_universities_200_2(self):
         form = StudentDetailedInfo.objects.create()
