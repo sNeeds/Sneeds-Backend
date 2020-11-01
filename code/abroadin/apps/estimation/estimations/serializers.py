@@ -38,7 +38,7 @@ class WantToApplyChanceSerializer(serializers.Serializer):
                     "full_fund": "Very low",
                     "full_fund_value": 0
                 }
-            elif 20 <= uni.rank < 100:
+            elif 21 <= uni.rank < 101:
                 append_dict["chances"] = {
                     "admission": "High",
                     "admission_value": 0.8,
@@ -48,7 +48,7 @@ class WantToApplyChanceSerializer(serializers.Serializer):
                     "full_fund_value": 0.3
                 }
 
-            elif 100 <= uni.rank < 400:
+            elif 101 <= uni.rank < 401:
                 append_dict["chances"] = {
                     "admission": "Very High",
                     "admission_value": 1,
@@ -57,7 +57,7 @@ class WantToApplyChanceSerializer(serializers.Serializer):
                     "full_fund": "Medium",
                     "full_fund_value": 0.9
                 }
-            else:
+            elif 401 <= uni.rank:
                 append_dict["chances"] = {
                     "admission": "High",
                     "admission_value": 1,

@@ -64,14 +64,12 @@ class EstimationBaseTest(APITestCase):
             name="field of study1",
             search_name="field of study1",
             description="Test desc1",
-            picture=None,
         )
 
         self.major2 = Major.objects.create(
             name="field of study2",
             search_name="field of study2",
             description="Test desc2",
-            picture=None,
         )
 
         # ------- Semester Years -------
