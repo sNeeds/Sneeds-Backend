@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import status
 
-from apps.estimation.estimations.tests.models.test_base import EstimationsAppModelTests
+from .test_base import EstimationsAppModelTests
 from abroadin.apps.estimation.form.models import (
     StudentDetailedInfo,
     Grade,

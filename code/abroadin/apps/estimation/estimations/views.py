@@ -5,7 +5,7 @@ from abroadin.base.api.viewsets import CAPIView
 
 from abroadin.apps.estimation.form.models import WantToApply, StudentDetailedInfo
 from abroadin.apps.estimation.estimations.reviews import StudentDetailedFormReview
-from apps.estimation.estimations.chances import AdmissionChance
+from abroadin.apps.estimation.estimations.chances import AdmissionChance
 
 
 class FormComments(CAPIView):

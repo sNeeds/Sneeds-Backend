@@ -1,5 +1,5 @@
 from abroadin.apps.estimation.estimations.classes import ValueRange
-from apps.estimation.estimations.values import VALUES_WITH_ATTRS
+from abroadin.apps.estimation.estimations.values import VALUES_WITH_ATTRS
 
 
 class AdmissionChance:

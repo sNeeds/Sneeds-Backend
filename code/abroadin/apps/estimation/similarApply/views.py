@@ -31,10 +31,10 @@ class SimilarUniversitiesListView(CAPIView):
             want_to_apply_countries_list = want_to_apply.countries.all().list()
             related_applied_tos |= AppliedTo.objects.filter(university__country__in=want_to_apply_countries_list)
 
-            # Filter only AppliedTos which specified in want to apply grades
-            want_to_apply_grades = want_to_apply.grades.all()
-            if want_to_apply_grades:  # list exists
-                related_applied_tos.filter(grade__in=want_to_apply_grades.values_list('name', flat=True))
+            # # Filter only AppliedTos which specified in want to apply grades
+            # want_to_apply_grades = want_to_apply.grades.all()
+            # if want_to_apply_grades:  # list exists
+            #     related_applied_tos.filter(grade__in=want_to_apply_grades.values_list('name', flat=True))
 
             related_applied_tos = related_applied_tos.filter(accepted=True)
             related_applied_tos = related_applied_tos.distinct()
