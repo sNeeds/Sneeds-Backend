@@ -113,7 +113,7 @@ VALUES_WITH_ATTRS = {
             "start": None,
             "end": 8,
             "label": "A+",
-            "value" : 1
+            "value": 1
         },
         {
             "start": 8,
@@ -242,6 +242,119 @@ VALUES_WITH_ATTRS = {
             "start": 12,
             "end": None,
             "comment": review_comments.SHORT_WORK_EXPERIENCE
+        },
+    ],
+    "0_20_university_rank_admission_chance": [
+        {
+            "start": None,
+            "end": 4,
+            "admission": 0.8,
+            "scholarship": 0.6,
+            "full-fund": 0.5
+        },
+        {
+            "start": 4,
+            "end": 3,
+            "admission": 0.5,
+            "scholarship": 0.2,
+            "full-fund": 0.1
+        },
+        {
+            "start": 3,
+            "end": None,
+            "admission": 0.3,
+            "scholarship": 0,
+            "full-fund": 0
+        },
+    ],
+    "20_100_university_rank_admission_chance": [
+        {
+            "start": None,
+            "end": 4,
+            "admission": 1,
+            "scholarship": 0.95,
+            "full-fund": 0.85
+        },
+        {
+            "start": 4,
+            "end": 3,
+            "admission": 0.7,
+            "scholarship": 0.6,
+            "full-fund": 0.55
+        },
+        {
+            "start": 3,
+            "end": 2,
+            "admission": 0.5,
+            "scholarship": 0.2,
+            "full-fund": 0.15
+        },
+        {
+            "start": 2,
+            "end": None,
+            "admission": 0.2,
+            "scholarship": 0,
+            "full-fund": 0
+        },
+    ],
+    "100_400_university_rank_admission_chance": [
+        {
+            "start": None,
+            "end": 4,
+            "admission": 1,
+            "scholarship": 1,
+            "full-fund": 1
+        },
+        {
+            "start": 4,
+            "end": 3,
+            "admission": 1,
+            "scholarship": 0.8,
+            "full-fund": 0.7
+        },
+        {
+            "start": 3,
+            "end": 2,
+            "admission": 0.6,
+            "scholarship": 0.3,
+            "full-fund": 0.2
+        },
+        {
+            "start": 2,
+            "end": None,
+            "admission": 0.3,
+            "scholarship": 0,
+            "full-fund": 0
+        },
+    ],
+    "400_above_university_rank_admission_chance": [
+        {
+            "start": None,
+            "end": 4,
+            "admission": 1,
+            "scholarship": 1,
+            "full-fund": 1
+        },
+        {
+            "start": 4,
+            "end": 3,
+            "admission": 1,
+            "scholarship": 1,
+            "full-fund": 1
+        },
+        {
+            "start": 3,
+            "end": 2,
+            "admission": 0.9,
+            "scholarship": 0.5,
+            "full-fund": 0.4
+        },
+        {
+            "start": 2,
+            "end": None,
+            "admission": 0.7,
+            "scholarship": 0.2,
+            "full-fund": 0.1
         },
     ],
 }
