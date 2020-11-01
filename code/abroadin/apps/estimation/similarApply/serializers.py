@@ -1,12 +1,11 @@
 from rest_framework import serializers
 
 from abroadin.apps.data.account.serializers import UniversitySerializer
-from abroadin.apps.estimation.form.serializers import StudentDetailedInfoBaseSerializer
-from abroadin.apps.estimation.similarApply.models import AppliedStudentDetailedInfo, AppliedTo
+from abroadin.apps.estimation.similarApply.models import  AppliedTo
 
 
 class AppliedToSerializer(serializers.ModelSerializer):
-    university = serializers.SerializerMethodField()
+    applied_university = serializers.SerializerMethodField()
 
     class Meta:
         model = AppliedTo
@@ -14,7 +13,7 @@ class AppliedToSerializer(serializers.ModelSerializer):
             'university', 'grade', 'fund', 'accepted', 'comment'
         ]
 
-    def get_university(self, obj):
+    def get_applied_university(self, obj):
         university = obj.university
         return UniversitySerializer(
             university, context={"request": self.context.get("request")}
@@ -25,8 +24,8 @@ class AppliedToExtendedSerializer(AppliedToSerializer):
     home_university = serializers.SerializerMethodField()
     home_university_gpa = serializers.SerializerMethodField()
 
-    class Meta(AppliedTo.Meta):
-        fields = AppliedTo.Meta.fields + ['home_university', 'home_university_gpa']
+    class Meta(AppliedToSerializer.Meta):
+        fields = AppliedToSerializer.Meta.fields + ['home_university', 'home_university_gpa']
 
     def get_home_university(self, obj):
         form = obj.applied_student_detailed_info
