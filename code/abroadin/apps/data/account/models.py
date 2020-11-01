@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 
-from .managers import CountryManager
+from .managers import CountryQuerySetManager, UniversityQuerySetManager
 from ...estimation.estimations import values
 
 User = get_user_model()
@@ -27,7 +27,7 @@ class Country(models.Model):
     picture = models.ImageField(upload_to=get_image_upload_path("country-pictures"))
     slug = models.SlugField(unique=True, help_text="Lowercase pls")
 
-    objects = CountryManager()
+    objects = CountryQuerySetManager.as_manager()
 
     class Meta:
         ordering = ["name"]
@@ -44,6 +44,8 @@ class University(models.Model):
     picture = models.ImageField(null=True, blank=True, upload_to=get_image_upload_path("university-pictures"))
     rank = models.PositiveIntegerField()
     is_college = models.BooleanField(default=False)
+
+    objects = UniversityQuerySetManager.as_manager()
 
     class Meta:
         ordering = ["name"]
