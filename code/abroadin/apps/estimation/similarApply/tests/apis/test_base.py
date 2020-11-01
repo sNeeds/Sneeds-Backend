@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import status
 
-from abroadin.apps.estimation.estimations.tests.test_base import EstimationsAppBaseTests
+from ..test_base import SimilarApplyAppBaseTests
 from abroadin.apps.estimation.form.models import (
     StudentDetailedInfo,
     Grade,
@@ -18,7 +18,7 @@ from abroadin.apps.estimation.form.models import (
 User = get_user_model()
 
 
-class SimilarApplyAppAPITests(EstimationsAppBaseTests):
+class SimilarApplyAppAPITests(SimilarApplyAppBaseTests):
 
     def setUp(self):
         super().setUp()
