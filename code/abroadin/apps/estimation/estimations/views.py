@@ -5,7 +5,6 @@ from abroadin.base.api.viewsets import CAPIView
 
 from abroadin.apps.estimation.form.models import WantToApply, StudentDetailedInfo
 from abroadin.apps.estimation.estimations.reviews import StudentDetailedFormReview
-from abroadin.apps.estimation.estimations.serializers import WantToApplyChanceSerializer
 from apps.estimation.estimations.chances import AdmissionChance
 
 
@@ -51,11 +50,17 @@ class WantToApplyChance(CAPIView):
             raise Http404
 
     def get(self, request, form_id, format=None):
+        data = []
         form = self.get_form_obj(form_id)
+
         try:
+            admission_chance = AdmissionChance(form)
             want_to_apply = WantToApply.objects.get(student_detailed_info=form)
-            want_to_apply_chance_serializer = WantToApplyChanceSerializer(want_to_apply)
-            return Response(want_to_apply_chance_serializer.data)
+
+            for university in want_to_apply.universities.all().order_by('rank'):
+                data.append(admission_chance.get_university_chance_with_label(university))
+
+            return data
 
         except WantToApply.DoesNotExist:
             return Response({})
