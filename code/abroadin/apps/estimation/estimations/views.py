@@ -60,7 +60,7 @@ class WantToApplyChance(CAPIView):
             for university in want_to_apply.universities.all().order_by('rank'):
                 data.append(admission_chance.get_university_chance_with_label(university))
 
-            return data
+            return Response(data)
 
         except WantToApply.DoesNotExist:
             return Response({})

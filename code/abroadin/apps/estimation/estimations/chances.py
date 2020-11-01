@@ -58,7 +58,7 @@ class AdmissionChance:
         data = self._get_university_chance(university)
 
         value_range = ValueRange(VALUES_WITH_ATTRS["admission_chance_value_to_label"])
-        for key, value in data.items():
+        for key, value in data.copy().items():
             data[key + "_label"] = value_range.find_value_attrs(value, 'label')
 
         return data

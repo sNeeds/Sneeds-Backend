@@ -18,7 +18,7 @@ from abroadin.apps.estimation.form.models import (
 User = get_user_model()
 
 
-class FormCommentsAPITests(EstimationsAppAPITests):
+class AdmissionRankingChanceAPITests(EstimationsAppAPITests):
     def setUp(self):
         super().setUp()
 
