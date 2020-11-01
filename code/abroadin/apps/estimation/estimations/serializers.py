@@ -1,6 +1,8 @@
 from rest_framework import serializers
 
 from abroadin.apps.estimation.form.models import WantToApply
+from abroadin.apps.estimation.estimations.classes import ValueRange
+from abroadin.apps.estimation.estimations.values import VALUES_WITH_ATTRS
 
 
 class WantToApplyChanceSerializer(serializers.Serializer):
@@ -15,12 +17,16 @@ class WantToApplyChanceSerializer(serializers.Serializer):
 
     def get_universities(self, obj):
         universities_with_chance_list = []
-        for uni in obj.universities.all().order_by('rank'):
-            append_dict = {
-                "university": uni.name,
-                "rank": uni.rank,
+        value_range = ValueRange(VALUES_WITH_ATTRS["admission_chance_value_to_label"])
+
+        for university in obj.universities.all().order_by('rank'):
+            rank = university.rank
+
+            universities_with_chance_list.append({
+                "university": university.name,
+                "rank": university.rank,
                 "chances": {
-                    "admission": None,
+                    "admission": value_range.find_value_attrs(value, label),
                     "admission_value": None,
                     "scholarship": None,
                     "scholarship_value": None,
@@ -28,45 +34,19 @@ class WantToApplyChanceSerializer(serializers.Serializer):
                     "full_fund_value": None
                 }
             }
+            )
 
-            if uni.rank < 20:
-                append_dict["chances"] = {
-                    "admission": "Medium",
-                    "admission_value": 0.4,
-                    "scholarship": "Very low",
-                    "scholarship_value": 0,
-                    "full_fund": "Very low",
-                    "full_fund_value": 0
-                }
-            elif 21 <= uni.rank < 101:
-                append_dict["chances"] = {
-                    "admission": "High",
-                    "admission_value": 0.8,
-                    "scholarship": "Medium",
-                    "scholarship_value": 0.5,
-                    "full_fund": "Low",
-                    "full_fund_value": 0.3
-                }
 
-            elif 101 <= uni.rank < 401:
-                append_dict["chances"] = {
-                    "admission": "Very High",
-                    "admission_value": 1,
-                    "scholarship": "High",
-                    "scholarship_value": 0.95,
-                    "full_fund": "Medium",
-                    "full_fund_value": 0.9
-                }
             elif 401 <= uni.rank:
-                append_dict["chances"] = {
-                    "admission": "High",
-                    "admission_value": 1,
-                    "scholarship": "High",
-                    "scholarship_value": 1,
-                    "full_fund": "High",
-                    "full_fund_value": 1
-                }
+            append_dict["chances"] = {
+                "admission": "High",
+                "admission_value": 1,
+                "scholarship": "High",
+                "scholarship_value": 1,
+                "full_fund": "High",
+                "full_fund_value": 1
+            }
 
-            universities_with_chance_list.append(append_dict)
+        (append_dict)
 
-        return universities_with_chance_list
+    return universities_with_chance_list

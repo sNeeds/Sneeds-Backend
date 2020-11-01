@@ -357,6 +357,23 @@ VALUES_WITH_ATTRS = {
             "full_fund": 0.1
         },
     ],
+    "admission_chance_value_to_label": [
+        {
+            "start": None,
+            "end": 0.7,
+            "label": "High"
+        },
+        {
+            "start": 0.7,
+            "end": 0.4,
+            "label": "Medium"
+        },
+        {
+            "start": 0.4,
+            "end": None,
+            "label": "Low"
+        },
+    ],
 }
 
 # TOEFL

@@ -42,7 +42,7 @@ class AdmissionChance:
             "401_above_university_rank_admission_chance"
         )
 
-    def get_university_chance(self, university):
+    def _get_university_chance(self, university):
         rank = university.rank
 
         if rank < 21:
@@ -53,3 +53,12 @@ class AdmissionChance:
             return self.get_101_to_400_chance()
         elif 401 <= rank:
             return self.get_401_above_chance()
+
+    def get_university_chance_with_label(self, university):
+        data = self._get_university_chance(university)
+
+        value_range = ValueRange(VALUES_WITH_ATTRS["admission_chance_value_to_label"])
+        for key, value in data.items():
+            data[key + "_label"] = value_range.find_value_attrs(value, 'label')
+
+        return data
