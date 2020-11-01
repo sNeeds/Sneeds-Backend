@@ -1,6 +1,55 @@
+from abroadin.apps.estimation.estimations.classes import ValueRange
+from apps.estimation.estimations.values import VALUES_WITH_ATTRS
+
+
 class AdmissionChance:
     def __init__(self, student_detailed_info):
         self.form = student_detailed_info
 
-    def zero_to_20(self):
-        if
+    def _get_label_chance(self, value, value_with_attr_key, label):
+        value_range = ValueRange(VALUES_WITH_ATTRS[value_with_attr_key])
+        return value_range.find_value_attrs(value, label)
+
+    def _get_all_chances(self, value, value_with_attr_key):
+        data = {
+            "admission": self._get_label_chance(value, value_with_attr_key, "admission"),
+            "scholarship": self._get_label_chance(value, value_with_attr_key, "scholarship"),
+            "full_fund": self._get_label_chance(value, value_with_attr_key, "full_fund")
+        }
+        return data
+
+    def get_1_to_20_chance(self):
+        return self._get_all_chances(
+            self.form.value,
+            "1_20_university_rank_admission_chance"
+        )
+
+    def get_21_to_100_chance(self):
+        return self._get_all_chances(
+            self.form.value,
+            "21_100_university_rank_admission_chance"
+        )
+
+    def get_101_to_400_chance(self):
+        return self._get_all_chances(
+            self.form.value,
+            "101_400_university_rank_admission_chance"
+        )
+
+    def get_401_above_chance(self):
+        return self._get_all_chances(
+            self.form.value,
+            "401_above_university_rank_admission_chance"
+        )
+
+    def get_university_chance(self, university):
+        rank = university.rank
+
+        if rank < 21:
+            return self.get_1_to_20_chance()
+        elif 21 <= rank < 101:
+            return self.get_21_to_100_chance()
+        elif 101 <= rank < 401:
+            return self.get_101_to_400_chance()
+        elif 401 <= rank:
+            return self.get_401_above_chance()
