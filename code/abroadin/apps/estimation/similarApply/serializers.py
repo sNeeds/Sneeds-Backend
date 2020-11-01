@@ -23,9 +23,15 @@ class AppliedToSerializer(serializers.ModelSerializer):
 class AppliedToExtendedSerializer(AppliedToSerializer):
     home_university = serializers.SerializerMethodField()
     home_university_gpa = serializers.SerializerMethodField()
+    language_certificate = serializers.SerializerMethodField()
 
     class Meta(AppliedToSerializer.Meta):
-        fields = AppliedToSerializer.Meta.fields + ['home_university', 'home_university_gpa']
+        fields = AppliedToSerializer.Meta.fields + [
+            'home_university', 'home_university_gpa', 'language_certificate'
+        ]
+
+    def get_language_certificate(self, obj):
+        return "IELTS 6.5"
 
     def get_home_university(self, obj):
         form = obj.applied_student_detailed_info
