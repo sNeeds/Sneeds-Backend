@@ -60,8 +60,8 @@ class SimilarUniversitiesAPITests(SimilarApplyAppAPITests):
         )
 
         RegularLanguageCertificate.objects.create(
-            student_detailed_info = self.app_applied_student_form_1,
-            certificate_type = LanguageCertificate.LanguageCertificateType.TOEFL,
+            student_detailed_info=self.app_applied_student_form_1,
+            certificate_type=LanguageCertificate.LanguageCertificateType.TOEFL,
             listening=90,
             speaking=90,
             writing=90,
@@ -69,15 +69,16 @@ class SimilarUniversitiesAPITests(SimilarApplyAppAPITests):
             overall=90
         )
         data = self._test_similar_universities("get", None, status.HTTP_200_OK, reverse_args=self.app_form_1.id)
-        print(data)
+        self.assertEqual(data[0]['language_certificate'], "TOEFL 90.0")
+
         RegularLanguageCertificate.objects.create(
-            student_detailed_info = self.app_applied_student_form_1,
-            certificate_type = LanguageCertificate.LanguageCertificateType.TOEFL,
-            listening=90,
-            speaking=90,
-            writing=90,
-            reading=90,
-            overall=90
+            student_detailed_info=self.app_applied_student_form_1,
+            certificate_type=LanguageCertificate.LanguageCertificateType.IELTS_GENERAL,
+            listening=8,
+            speaking=8,
+            writing=8,
+            reading=8,
+            overall=8
         )
         data = self._test_similar_universities("get", None, status.HTTP_200_OK, reverse_args=self.app_form_1.id)
-        print(data)
+        self.assertEqual(data[0]['language_certificate'], "TOEFL 90.0 & IELTS General 8.0")
