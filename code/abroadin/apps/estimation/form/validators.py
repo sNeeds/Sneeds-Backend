@@ -24,6 +24,6 @@ def validate_toefl_section_score(value):
     value = float(value)
     if 0 > value > 30:
         raise ValidationError(_("TOEFL section score should be in range 0 to 30"))
-    if value % 1 >= 0:
+    if value % 1 != 0:
         raise ValidationError(_("TOEFL section score should be integer."))
     return value
