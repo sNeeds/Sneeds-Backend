@@ -14,9 +14,9 @@ def validate_ielts_score(value):
 def validate_toefl_overall_score(value):
     value = float(value)
     if 0 > value > 120:
-        raise ValidationError(_("TOEFL score should be in range 0 to 120."))
+        raise ValidationError(_("TOEFL overall score should be in range 0 to 120."))
     if value % 1 != 0:
-        raise ValidationError(_("TOEFL score should be integer."))
+        raise ValidationError(_("TOEFL overall score should be integer."))
     return value
 
 
