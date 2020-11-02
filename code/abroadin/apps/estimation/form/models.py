@@ -817,7 +817,7 @@ class LanguageCertificate(models.Model):
     def brief_str(self):
         if self.is_regular_language_certificate_instance():
             regular_certificate = self.regularlanguagecertificate
-            return self.certificate_type + " " + regular_certificate.overall
+            return self.certificate_type + " " + str(regular_certificate.overall)
 
         return None
 
@@ -827,11 +827,11 @@ class LanguageCertificate(models.Model):
 
 
 class RegularLanguageCertificate(LanguageCertificate):
-    speaking = models.DecimalField(max_digits=5, decimal_places=2)
-    listening = models.DecimalField(max_digits=5, decimal_places=2)
-    writing = models.DecimalField(max_digits=5, decimal_places=2)
-    reading = models.DecimalField(max_digits=5, decimal_places=2)
-    overall = models.DecimalField(max_digits=5, decimal_places=2)
+    speaking = models.DecimalField(max_digits=4, decimal_places=1)
+    listening = models.DecimalField(max_digits=4, decimal_places=1)
+    writing = models.DecimalField(max_digits=4, decimal_places=1)
+    reading = models.DecimalField(max_digits=4, decimal_places=1)
+    overall = models.DecimalField(max_digits=4, decimal_places=1)
 
     def clean(self, *args, **kwargs):
         if self.certificate_type not in [LanguageCertificate.LanguageCertificateType.IELTS_ACADEMIC,

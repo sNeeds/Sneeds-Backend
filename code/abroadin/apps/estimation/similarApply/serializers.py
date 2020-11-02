@@ -31,7 +31,7 @@ class AppliedToExtendedSerializer(AppliedToSerializer):
         ]
 
     def get_language_certificate(self, obj):
-        return "IELTS 6.5"
+        return obj.applied_student_detailed_info.language_certificates_str()
 
     def get_home_university(self, obj):
         form = obj.applied_student_detailed_info

@@ -46,15 +46,10 @@ class SimilarUniversitiesAPITests(SimilarApplyAppAPITests):
         self.assertEqual(len(data), 0)
 
     def test_similar_universities_200_4(self):
-        applied_to = self.create_applied_to(
+        self.create_applied_to(
             self.app_applied_student_form_1, self.university1,
-            grade=GradeChoices.PHD, major=self.major3
+            grade=GradeChoices.BACHELOR, major=self.major3
         )
-        data = self._test_similar_universities("get", None, status.HTTP_200_OK, reverse_args=self.app_form_1.id)
-        self.assertEqual(len(data), 1)
-
-        applied_to.grade = GradeChoices.BACHELOR
-        applied_to.save()
         data = self._test_similar_universities("get", None, status.HTTP_200_OK, reverse_args=self.app_form_1.id)
         self.assertEqual(len(data), 0)
 
@@ -63,9 +58,26 @@ class SimilarUniversitiesAPITests(SimilarApplyAppAPITests):
             self.app_applied_student_form_1, self.university1,
             grade=GradeChoices.PHD, major=self.major3
         )
-        data = self._test_similar_universities("get", None, status.HTTP_200_OK, reverse_args=self.app_form_1.id)
-        self.assertEqual(len(data), 1)
 
-        self.app_form_1_want_to_apply.delete()
+        RegularLanguageCertificate.objects.create(
+            student_detailed_info = self.app_applied_student_form_1,
+            certificate_type = LanguageCertificate.LanguageCertificateType.TOEFL,
+            listening=90,
+            speaking=90,
+            writing=90,
+            reading=90,
+            overall=90
+        )
         data = self._test_similar_universities("get", None, status.HTTP_200_OK, reverse_args=self.app_form_1.id)
-        self.assertEqual(len(data), 0)
+        print(data)
+        RegularLanguageCertificate.objects.create(
+            student_detailed_info = self.app_applied_student_form_1,
+            certificate_type = LanguageCertificate.LanguageCertificateType.TOEFL,
+            listening=90,
+            speaking=90,
+            writing=90,
+            reading=90,
+            overall=90
+        )
+        data = self._test_similar_universities("get", None, status.HTTP_200_OK, reverse_args=self.app_form_1.id)
+        print(data)

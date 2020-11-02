@@ -74,6 +74,8 @@ class LanguageCertificateQuerySetManager(models.QuerySet):
         for certificate in self._chain():
             certificate_text = certificate.brief_str()
             if certificate_text:
+                if text != "":
+                    text = text + " & "
                 text += certificate_text
         return text
 
