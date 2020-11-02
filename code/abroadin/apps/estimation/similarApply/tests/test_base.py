@@ -65,39 +65,15 @@ class SimilarApplyAppBaseTests(EstimationBaseTest):
             student_name="Foo student2",
         )
 
-        self.app_applied_student_form_1_applied_to_1 = AppliedTo.objects.create(
-            applied_student_detailed_info=self.app_applied_student_form_1,
-            university=self.university3,
-            grade=GradeChoices.PHD,
-            major=self.major3,
+    def create_applied_to(self, form, university, grade, major):
+        obj = AppliedTo.objects.create(
+            applied_student_detailed_info=form,
+            university=university,
+            grade=grade,
+            major=major,
             semester_year=self.semester_year2,
             fund=20000,
             accepted=True,
             comment="Foo comment"
         )
-
-        # # Applied student 1
-        #
-        # self.app_applied_student_form_1 = AppliedStudentDetailedInfo.objects.create(
-        #     student_name="Foo student1",
-        # )
-        #
-        # UniversityThrough.objects.create(
-        #     student_detailed_info=self.app_applied_student_form_1,
-        #     university=self.university1,
-        #     grade=GradeChoices.BACHELOR,
-        #     major=self.major1,
-        #     graduate_in=2021,
-        #     thesis_title="Foo thesis",
-        #     gpa=18
-        # )
-        #
-        # UniversityThrough.objects.create(
-        #     student_detailed_info=self.app_applied_student_form_1,
-        #     university=self.university1,
-        #     grade=GradeChoices.MASTER,
-        #     major=self.major1,
-        #     graduate_in=2024,
-        #     thesis_title="Foo thesis",
-        #     gpa=18
-        # )
+        return obj

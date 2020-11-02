@@ -25,6 +25,7 @@ class SimilarUniversitiesAPITests(SimilarApplyAppAPITests):
         super().setUp()
 
     def test_similar_universities_200_1(self):
+        self.create_applied_to()
         data = self._test_similar_universities("get", None, status.HTTP_200_OK, reverse_args=self.app_form_1.id)
         self.assertEqual(len(data), 1)
         self.assertEqual(data[0]['applied_university']['id'], self.university3.id)
@@ -40,7 +41,7 @@ class SimilarUniversitiesAPITests(SimilarApplyAppAPITests):
             applied_student_detailed_info=self.app_applied_student_form_1,
             university=self.university2,
             grade=GradeChoices.PHD,
-            major=self.major3,
+            major=self.major1,
             semester_year=self.semester_year2,
             fund=20000,
             accepted=True,
