@@ -47,7 +47,7 @@ class SimilarApplyAppBaseTests(EstimationBaseTest):
             Country.objects.filter(id__in=[self.country1.id, self.country2.id]),
         )
         self.app_form_1_want_to_apply.universities.set(
-            University.objects.filter(id__in=[self.university3.id, ]),
+            University.objects.filter(id__in=[self.university1.id, ]),
         )
         self.app_form_1_want_to_apply.grades.set(
             Grade.objects.filter(id__in=[Grade.objects.get(name=GradeChoices.PHD).id]),
