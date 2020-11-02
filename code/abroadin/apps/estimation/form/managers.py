@@ -36,7 +36,7 @@ class UniversityThroughQuerySetManager(models.QuerySet):
             return None
 
 
-class LanguageCertificateQuerysetManager(models.QuerySet):
+class LanguageCertificateQuerySetManager(models.QuerySet):
     def get_from_this_type_or_none(self, certificate_type):
         from abroadin.apps.estimation.form.models import LanguageCertificate
         try:
@@ -68,6 +68,14 @@ class LanguageCertificateQuerysetManager(models.QuerySet):
         if self._get_highest_value_obj():
             return self._get_highest_value_obj().value_label
         return None
+
+    def brief_str(self):
+        text = ""
+        for certificate in self._chain():
+            certificate_text = certificate.brief_str()
+            if certificate_text:
+                text += certificate_text
+        return text
 
 
 class PublicationQuerySetManager(models.QuerySet):
