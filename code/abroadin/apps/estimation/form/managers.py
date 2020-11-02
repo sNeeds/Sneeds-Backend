@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import Q, F
 
+from abroadin.base.mixins.manager import GetListManagerMixin
 from ..estimations.classes import ValueRange
 from ..estimations.values import VALUES_WITH_ATTRS
 
@@ -35,7 +36,7 @@ class UniversityThroughQuerySetManager(models.QuerySet):
             return None
 
 
-class LanguageCertificateQuerysetManager(models.QuerySet):
+class LanguageCertificateQuerySetManager(models.QuerySet):
     def get_from_this_type_or_none(self, certificate_type):
         from abroadin.apps.estimation.form.models import LanguageCertificate
         try:
@@ -67,6 +68,16 @@ class LanguageCertificateQuerysetManager(models.QuerySet):
         if self._get_highest_value_obj():
             return self._get_highest_value_obj().value_label
         return None
+
+    def brief_str(self):
+        text = ""
+        for certificate in self._chain():
+            certificate_text = certificate.brief_str()
+            if certificate_text:
+                if text != "":
+                    text = text + " & "
+                text += certificate_text
+        return text
 
 
 class PublicationQuerySetManager(models.QuerySet):
@@ -113,3 +124,7 @@ class StudentDetailedInfoManager(models.QuerySet):
         for obj in self.all():
             obj.rank += 1
             obj.save()
+
+
+class GradeQuerySetManager(GetListManagerMixin, models.QuerySet):
+    pass

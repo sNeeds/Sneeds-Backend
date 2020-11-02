@@ -13,7 +13,7 @@ from abroadin.apps.estimation.estimations.classes import ValueRange
 from abroadin.apps.estimation.estimations.values import VALUES_WITH_ATTRS
 from abroadin.apps.estimation.form.labels import MISSING_LABEL, REWARDED_LABEL
 from abroadin.apps.estimation.form.managers import UniversityThroughQuerySetManager, \
-    LanguageCertificateQuerysetManager, PublicationQuerySetManager, StudentDetailedInfoManager
+    LanguageCertificateQuerySetManager, PublicationQuerySetManager, StudentDetailedInfoManager, GradeQuerySetManager
 from abroadin.apps.data.account.models import Country, University, Major, get_student_resume_path, \
     User, BasicFormField
 from abroadin.apps.data.account.validators import validate_resume_file_size, ten_factor_validator
@@ -57,6 +57,8 @@ class Grade(models.Model):
         default=GradeChoices.BACHELOR,
         unique=True
     )
+
+    objects = GradeQuerySetManager.as_manager()
 
     def __str__(self):
         return self.name.__str__()
@@ -360,6 +362,9 @@ class StudentDetailedInfoBase(models.Model):
             last_university_through = bachelor
 
         return last_university_through
+
+    def language_certificates_str(self):
+        return LanguageCertificate.objects.filter(student_detailed_info__id=self.id).brief_str()
 
 
 class StudentDetailedInfo(StudentDetailedInfoBase):
@@ -758,7 +763,7 @@ class LanguageCertificate(models.Model):
         default=False
     )
 
-    objects = LanguageCertificateQuerysetManager.as_manager()
+    objects = LanguageCertificateQuerySetManager.as_manager()
 
     class Meta:
         unique_together = ('certificate_type', 'student_detailed_info')
@@ -809,17 +814,24 @@ class LanguageCertificate(models.Model):
 
         return value
 
+    def brief_str(self):
+        if self.is_regular_language_certificate_instance():
+            regular_certificate = self.regularlanguagecertificate
+            return self.certificate_type + " " + str(regular_certificate.overall)
+
+        return None
+
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
 
 
 class RegularLanguageCertificate(LanguageCertificate):
-    speaking = models.DecimalField(max_digits=5, decimal_places=2)
-    listening = models.DecimalField(max_digits=5, decimal_places=2)
-    writing = models.DecimalField(max_digits=5, decimal_places=2)
-    reading = models.DecimalField(max_digits=5, decimal_places=2)
-    overall = models.DecimalField(max_digits=5, decimal_places=2)
+    speaking = models.DecimalField(max_digits=4, decimal_places=1)
+    listening = models.DecimalField(max_digits=4, decimal_places=1)
+    writing = models.DecimalField(max_digits=4, decimal_places=1)
+    reading = models.DecimalField(max_digits=4, decimal_places=1)
+    overall = models.DecimalField(max_digits=4, decimal_places=1)
 
     def clean(self, *args, **kwargs):
         if self.certificate_type not in [LanguageCertificate.LanguageCertificateType.IELTS_ACADEMIC,

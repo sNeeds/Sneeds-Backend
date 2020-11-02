@@ -38,6 +38,13 @@ class EstimationBaseTest(APITestCase):
             picture=None
         )
 
+        self.country3 = Country.objects.create(
+            name="country3",
+            search_name="country3",
+            slug="country3",
+            picture=None
+        )
+
         # ------- Universities -------
 
         self.university1 = University.objects.create(
@@ -58,20 +65,33 @@ class EstimationBaseTest(APITestCase):
             rank=800
         )
 
+        self.university3 = University.objects.create(
+            name="university3",
+            search_name="university3",
+            country=self.country3,
+            description="Test desc3",
+            picture=None,
+            rank=1500
+        )
+
         # ------- Majors -------
 
         self.major1 = Major.objects.create(
-            name="field of study1",
-            search_name="field of study1",
-            description="Test desc1",
-            picture=None,
+            name="Foo major 1",
+            search_name="Foo major 1",
+            description="Foo major 1",
         )
 
         self.major2 = Major.objects.create(
-            name="field of study2",
-            search_name="field of study2",
-            description="Test desc2",
-            picture=None,
+            name="Foo major 2",
+            search_name="Foo major 2",
+            description="Foo major 2",
+        )
+
+        self.major3 = Major.objects.create(
+            name="Foo major 3",
+            search_name="Foo major 3",
+            description="Foo major 3",
         )
 
         # ------- Semester Years -------

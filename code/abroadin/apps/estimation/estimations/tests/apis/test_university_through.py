@@ -2,8 +2,7 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import status
 
-from abroadin.apps.data.account.models import Country, University, Major
-from abroadin.apps.estimation.estimations.tests.apis.test_base import EstimationsAppAPITests
+from abroadin.apps.data.account.models import University
 from abroadin.apps.estimation.form.models import (
     StudentDetailedInfo,
     Grade,
@@ -15,6 +14,8 @@ from abroadin.apps.estimation.form.models import (
     RegularLanguageCertificate,
     LanguageCertificate
 )
+
+from .test_base import EstimationsAppAPITests
 
 User = get_user_model()
 

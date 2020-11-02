@@ -1,7 +1,9 @@
 from django.db import models
 
+from abroadin.base.mixins.manager import GetListManagerMixin
 
-class CountryManager(models.Manager):
+
+class CountryQuerySetManager(GetListManagerMixin, models.QuerySet):
     def with_active_time_slot_consultants(self):
         from abroadin.apps.users.consultants.models import StudyInfo
 
@@ -22,3 +24,7 @@ class MajorManager(models.QuerySet):
 
         parent_majors.distinct()
         return parent_majors
+
+
+class UniversityQuerySetManager(GetListManagerMixin, models.QuerySet):
+    pass

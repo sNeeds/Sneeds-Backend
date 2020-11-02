@@ -108,5 +108,3 @@ class EstimationsAppBaseTests(EstimationBaseTest):
             overall=96
         )
 
-    def test_publication_get_form_review_200(self):
-        pass

@@ -1,52 +1,44 @@
 from rest_framework import serializers
 
 from abroadin.apps.data.account.serializers import UniversitySerializer
-from abroadin.apps.estimation.form.serializers import StudentDetailedInfoBaseSerializer
-from abroadin.apps.estimation.similarApply.models import AppliedStudentDetailedInfo, AppliedTo
+from abroadin.apps.estimation.similarApply.models import AppliedTo
 
 
 class AppliedToSerializer(serializers.ModelSerializer):
-    university = serializers.SerializerMethodField()
+    applied_university = serializers.SerializerMethodField()
 
     class Meta:
         model = AppliedTo
         fields = [
-            'university', 'grade', 'fund', 'accepted', 'comment'
+            'applied_university', 'grade', 'fund', 'accepted', 'comment'
         ]
 
-    def get_university(self, obj):
+    def get_applied_university(self, obj):
         university = obj.university
         return UniversitySerializer(
             university, context={"request": self.context.get("request")}
         ).data
 
 
-class AppliedStudentDetailedInfoSerializer(StudentDetailedInfoBaseSerializer):
+class AppliedToExtendedSerializer(AppliedToSerializer):
     home_university = serializers.SerializerMethodField()
     home_university_gpa = serializers.SerializerMethodField()
-    applied_to = serializers.SerializerMethodField()
+    language_certificate = serializers.SerializerMethodField()
 
-    class Meta(StudentDetailedInfoBaseSerializer.Meta):
-        model = AppliedStudentDetailedInfo
-        fields = [
-            'home_university',
-            'home_university_gpa',
-            'applied_to'
+    class Meta(AppliedToSerializer.Meta):
+        fields = AppliedToSerializer.Meta.fields + [
+            'home_university', 'home_university_gpa', 'language_certificate'
         ]
 
+    def get_language_certificate(self, obj):
+        return obj.applied_student_detailed_info.language_certificates_str()
+
     def get_home_university(self, obj):
-        last_university_through = obj.get_last_university_through()
+        form = obj.applied_student_detailed_info
+        last_university_through = form.get_last_university_through()
         return last_university_through.university.name if last_university_through is not None else None
 
     def get_home_university_gpa(self, obj):
-        last_university_through = obj.get_last_university_through()
+        form = obj.applied_student_detailed_info
+        last_university_through = form.get_last_university_through()
         return last_university_through.gpa if last_university_through is not None else None
-
-    def get_applied_to(self, obj):
-        try:
-            applied_to_obj = AppliedTo.objects.filter(applied_student_detailed_info__id=obj.id)
-            data = AppliedToSerializer(applied_to_obj, many=True).data
-        except AppliedTo.DoesNotExist:
-            data = None
-
-        return data
