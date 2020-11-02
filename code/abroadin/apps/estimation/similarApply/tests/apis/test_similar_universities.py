@@ -57,3 +57,15 @@ class SimilarUniversitiesAPITests(SimilarApplyAppAPITests):
         applied_to.save()
         data = self._test_similar_universities("get", None, status.HTTP_200_OK, reverse_args=self.app_form_1.id)
         self.assertEqual(len(data), 0)
+
+    def test_similar_universities_200_5(self):
+        self.create_applied_to(
+            self.app_applied_student_form_1, self.university1,
+            grade=GradeChoices.PHD, major=self.major3
+        )
+        data = self._test_similar_universities("get", None, status.HTTP_200_OK, reverse_args=self.app_form_1.id)
+        self.assertEqual(len(data), 1)
+
+        self.app_form_1_want_to_apply.delete()
+        data = self._test_similar_universities("get", None, status.HTTP_200_OK, reverse_args=self.app_form_1.id)
+        self.assertEqual(len(data), 0)
