@@ -12,12 +12,26 @@ from abroadin.apps.estimation.estimations import values
 from abroadin.apps.estimation.estimations.classes import ValueRange
 from abroadin.apps.estimation.estimations.values import VALUES_WITH_ATTRS
 from abroadin.apps.estimation.form.labels import MISSING_LABEL, REWARDED_LABEL
-from abroadin.apps.estimation.form.managers import UniversityThroughQuerySetManager, \
-    LanguageCertificateQuerySetManager, PublicationQuerySetManager, StudentDetailedInfoManager, GradeQuerySetManager
-from abroadin.apps.data.account.models import Country, University, Major, get_student_resume_path, \
-    User, BasicFormField
+from abroadin.apps.estimation.form.managers import \
+    (UniversityThroughQuerySetManager,
+     LanguageCertificateQuerySetManager,
+     PublicationQuerySetManager,
+     StudentDetailedInfoManager,
+     GradeQuerySetManager)
+
+from abroadin.apps.data.account.models import \
+    (Country,
+     University,
+     Major,
+     get_student_resume_path,
+     User,
+     BasicFormField)
+
 from abroadin.apps.data.account.validators import validate_resume_file_size, ten_factor_validator
 from abroadin.apps.estimation.form.decorators import regular_certificate_or_none
+from abroadin.apps.estimation.form.validators import \
+    (validate_ielts_score, validate_toefl_overall_score,
+     validate_toefl_section_score)
 
 
 class GradeChoices(models.TextChoices):
@@ -136,7 +150,11 @@ class Publication(models.Model):
     def __str__(self):
         return self.title
 
+    MAX_ALLOWED_PUBLICATIONS_SCORE = 1.0
+
+    ############################
     # Publications Count methods
+    ############################
     def get_count_chart__store_label(self):
         return str(self.student_detailed_info.publication_set.count())
 
@@ -166,7 +184,9 @@ class Publication(models.Model):
     def get_publications_count__store_label_rank(cls, label):
         return float(label)
 
+    ##########################
     # Publication Type methods
+    ##########################
     def get_type__store_label(self):
         return self.type
 
@@ -191,7 +211,9 @@ class Publication(models.Model):
             positions.append(obj.get_type__view_label())
         return positions
 
+    ###################################
     # Publication Impact factor methods
+    ###################################
     def get_impact_factor__store_label(self):
         return self.journal_reputation
 
@@ -239,25 +261,29 @@ class Publication(models.Model):
             return 10
         return 0
 
+    ############################
     # Publications Score methods
+    ############################
     @classmethod
     def get_publications_score__store_label(cls, value):
+        if value >= cls.MAX_ALLOWED_PUBLICATIONS_SCORE:
+            value -= 0.03
         item_range = cls.PUBLICATIONS_SCORE__STORE_LABEL_RANGE
         return str(floor(value / item_range) * item_range)
 
     @classmethod
     def get_publications_score__view_label(cls, input_value):
+        if input_value >= cls.MAX_ALLOWED_PUBLICATIONS_SCORE:
+            input_value -= 0.03
         item_range = cls.PUBLICATIONS_SCORE__VIEW_LABEL_RANGE
-        if input_value > 1:
-            input_value = 0.95
         value = floor(input_value / item_range) * item_range
         return str(value) + ' - ' + str(value + item_range)
 
     @classmethod
     def convert_publications_score__store_to_view_label(cls, label):
         input_value = float(label)
-        if input_value > 1:
-            input_value = 0.95
+        if input_value >= cls.MAX_ALLOWED_PUBLICATIONS_SCORE:
+            input_value -= 0.03
         item_range = cls.PUBLICATIONS_SCORE__VIEW_LABEL_RANGE
         value = floor(input_value / item_range) * item_range
         return str(value) + ' - ' + str(value + item_range)
@@ -271,10 +297,7 @@ class Publication(models.Model):
     @classmethod
     def get_publications_score_user_view_based_positions(cls, sdi):
         qs = cls.objects.filter(student_detailed_info=sdi)
-        positions = []
-
-        for obj in qs:
-            positions.append(obj.value)
+        positions = [cls.get_publications_score__view_label(qs.total_value())]
         return positions
 
     @classmethod
@@ -662,6 +685,7 @@ class UniversityThrough(models.Model):
 
     GPA_STORE_LABEL_RANGE = 0.25
     GPA_VIEW_LABEL_RANGE = 1
+    GPA_MAX_ALLOWED = 20
 
     @property
     def gpa_value(self):
@@ -689,13 +713,19 @@ class UniversityThrough(models.Model):
     #############################
     def get_gpa__store_label(self):
         item_range = self.GPA_STORE_LABEL_RANGE
-        return str(floor(float(self.gpa) / item_range) * item_range)
+        value = float(self.gpa)
+        if value >= self.GPA_MAX_ALLOWED:
+            value -= 0.03
+        return str(floor(value / item_range) * item_range)
 
     def get_gpa__view_label(self):
         if self.gpa < 12:
             return '-12'
+        value = float(self.gpa)
+        if value >= self.GPA_MAX_ALLOWED:
+            value -= 0.03
         item_range = self.GPA_VIEW_LABEL_RANGE
-        value = floor(float(self.gpa) / item_range) * item_range
+        value = floor(value / item_range) * item_range
         return str(value) + ' - ' + str(value + item_range)
 
     @classmethod
@@ -703,6 +733,8 @@ class UniversityThrough(models.Model):
         input_value = float(label)
         if input_value < 12:
             return '-12'
+        if input_value >= cls.GPA_MAX_ALLOWED:
+            input_value -= 0.03
         item_range = cls.GPA_VIEW_LABEL_RANGE
         value = floor(input_value / item_range) * item_range
         return str(value) + ' - ' + str(value + item_range)
@@ -827,11 +859,20 @@ class LanguageCertificate(models.Model):
 
 
 class RegularLanguageCertificate(LanguageCertificate):
-    speaking = models.DecimalField(max_digits=4, decimal_places=1)
-    listening = models.DecimalField(max_digits=4, decimal_places=1)
-    writing = models.DecimalField(max_digits=4, decimal_places=1)
-    reading = models.DecimalField(max_digits=4, decimal_places=1)
-    overall = models.DecimalField(max_digits=4, decimal_places=1)
+    speaking = models.DecimalField(max_digits=4, decimal_places=1,
+                                   help_text=" IELTS speaking 0 to 9 and TOEFL speaking 0 to 120")
+
+    listening = models.DecimalField(max_digits=4, decimal_places=1,
+                                    help_text=" IELTS listening 0 to 9 and TOEFL listening 0 to 120")
+
+    writing = models.DecimalField(max_digits=4, decimal_places=1,
+                                  help_text=" IELTS writing 0 to 9 and TOEFL writing 0 to 120")
+
+    reading = models.DecimalField(max_digits=4, decimal_places=1,
+                                  help_text=" IELTS reading 0 to 9 and TOEFL reading 0 to 120")
+
+    overall = models.DecimalField(max_digits=4, decimal_places=1,
+                                  help_text=" IELTS overall 1 to 9 and TOEFL overall 0 to 120")
 
     def clean(self, *args, **kwargs):
         if self.certificate_type not in [LanguageCertificate.LanguageCertificateType.IELTS_ACADEMIC,
@@ -839,7 +880,23 @@ class RegularLanguageCertificate(LanguageCertificate):
                                          LanguageCertificate.LanguageCertificateType.TOEFL]:
             raise ValidationError({'certificate_type': _("Value is not in allowed certificate types.")})
 
-    # IELTS overall 1 to 9
+        if self.certificate_type in [LanguageCertificate.LanguageCertificateType.IELTS_ACADEMIC,
+                                     LanguageCertificate.LanguageCertificateType.IELTS_GENERAL]:
+            validate_ielts_score(self.speaking)
+            validate_ielts_score(self.listening)
+            validate_ielts_score(self.writing)
+            validate_ielts_score(self.reading)
+            validate_ielts_score(self.overall)
+
+        if self.certificate_type in [LanguageCertificate.LanguageCertificateType.TOEFL]:
+            validate_toefl_overall_score(self.overall)
+            validate_toefl_section_score(self.speaking)
+            validate_toefl_section_score(self.listening)
+            validate_toefl_section_score(self.writing)
+            validate_toefl_section_score(self.reading)
+
+            # IELTS overall 1 to 9
+
     # TOEFL overall 0 to 120
     IELTS__STORE_LABEL_RANGE = 0.5
     IELTS__VIEW_LABEL_RANGE = 1
