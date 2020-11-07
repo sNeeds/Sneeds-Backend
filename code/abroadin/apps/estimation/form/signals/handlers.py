@@ -192,7 +192,6 @@ post_save.connect(post_save_publication, sender=Publication)
 post_save.connect(post_save_university_through, sender=UniversityThrough)
 
 pre_delete.connect(pre_delete_publication, sender=Publication)
-# pre_delete.connect(pre_delete_language_certificate, sender=LanguageCertificate)
 pre_delete.connect(pre_delete_university_through, sender=UniversityThrough)
 pre_delete.connect(pre_delete_student_detailed_info, sender=StudentDetailedInfo)
 

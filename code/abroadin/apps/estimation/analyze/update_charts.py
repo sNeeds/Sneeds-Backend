@@ -155,7 +155,8 @@ def update_publications_score_chart(instance, db_instance, is_delete=False):
         return
     new_label, old_label = prepare_publications_score_chart_data(instance, db_instance, is_delete)
     chart, created = Chart.objects.get_or_create(title=Chart.ChartTitle.PUBLICATIONS_SCORE)
-    update_chart_by_label.delay(chart, new_label=new_label, old_label=old_label)
+    chart_data = serialize('json', [chart])
+    update_chart_by_label.delay(chart_data, new_label=new_label, old_label=old_label)
 
 
 def prepare_publications_score_chart_data(instance, db_instance, is_delete=False):
@@ -350,7 +351,8 @@ def update_publication_impact_factor_chart(data, db_data, is_delete=False):
 def update_gpa_chart(instance, db_instance, is_delete=False):
     new_label, old_label = prepare_update_gpa_chart(instance, db_instance, is_delete)
     chart, created = Chart.objects.get_or_create(title=Chart.ChartTitle.GRADE_POINT_AVERAGE)
-    update_chart_by_label.delay(chart, new_label=new_label, old_label=old_label)
+    chart_data = serialize('json', [chart])
+    update_chart_by_label.delay(chart_data, new_label=new_label, old_label=old_label)
 
 
 def prepare_update_gpa_chart(instance, db_instance, is_delete=False):
@@ -652,7 +654,10 @@ def update_common_chart(chart_title, instance_model, label_function, instance, d
 
 
 @shared_task
-def update_chart_by_label(chart, new_label, old_label, is_delete=False):
+def update_chart_by_label(chart_data, new_label, old_label, is_delete=False):
+    des_obj = next(deserialize('json', chart_data))
+    chart = des_obj.object
+
     if new_label is not None:
         with transaction.atomic():
             obj, created = ChartItemData.objects.get_or_create(chart=chart, label=new_label,
