@@ -860,16 +860,16 @@ class LanguageCertificate(models.Model):
 
 class RegularLanguageCertificate(LanguageCertificate):
     speaking = models.DecimalField(max_digits=4, decimal_places=1,
-                                   help_text=" IELTS speaking 0 to 9 and TOEFL speaking 0 to 120")
+                                   help_text=" IELTS speaking 0 to 9 and TOEFL speaking 0 to 30")
 
     listening = models.DecimalField(max_digits=4, decimal_places=1,
-                                    help_text=" IELTS listening 0 to 9 and TOEFL listening 0 to 120")
+                                    help_text=" IELTS listening 0 to 9 and TOEFL listening 0 to 30")
 
     writing = models.DecimalField(max_digits=4, decimal_places=1,
-                                  help_text=" IELTS writing 0 to 9 and TOEFL writing 0 to 120")
+                                  help_text=" IELTS writing 0 to 9 and TOEFL writing 0 to 30")
 
     reading = models.DecimalField(max_digits=4, decimal_places=1,
-                                  help_text=" IELTS reading 0 to 9 and TOEFL reading 0 to 120")
+                                  help_text=" IELTS reading 0 to 9 and TOEFL reading 0 to 30")
 
     overall = models.DecimalField(max_digits=4, decimal_places=1,
                                   help_text=" IELTS overall 1 to 9 and TOEFL overall 0 to 120")
@@ -895,8 +895,7 @@ class RegularLanguageCertificate(LanguageCertificate):
             validate_toefl_section_score(self.writing)
             validate_toefl_section_score(self.reading)
 
-            # IELTS overall 1 to 9
-
+    # IELTS overall 0 to 9
     # TOEFL overall 0 to 120
     IELTS__STORE_LABEL_RANGE = 0.5
     IELTS__VIEW_LABEL_RANGE = 1

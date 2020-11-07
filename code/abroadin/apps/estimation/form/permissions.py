@@ -27,7 +27,6 @@ class SameUserOrNone(permissions.BasePermission):
         return False
 
 
-
 class UserAlreadyHasForm(permissions.BasePermission):
     message = "User has an active form and cannot update this form to it's own."
 
