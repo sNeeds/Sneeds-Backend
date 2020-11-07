@@ -15,6 +15,7 @@ from abroadin.apps.estimation.form import serializers as form_serializers
 @transaction.atomic
 def pre_save_student_detailed_info(sender, instance, *args, **kwargs):
     # TODO: Temporary removed delay from celery tasks
+    print("1")
     try:
         StudentDetailedInfo.objects.get(id=instance.id)
 
@@ -38,6 +39,7 @@ def pre_save_student_detailed_info(sender, instance, *args, **kwargs):
     update_charts.update_related_work_experience_chart(data=data, db_data=db_data, is_delete=False)
 
     update_charts.update_charts_sdi_creation(data=data, db_data=db_data, is_delete=False)
+    print("2")
 
 
 def pre_delete_student_detailed_info(sender, instance, *args, **kwargs):
@@ -95,7 +97,7 @@ def post_delete_publication(sender, instance, *args, **kwargs):
 
 
 def post_save_student_detailed_info(sender, instance, *args, **kwargs):
-    update_student_detailed_info_ranks()
+    update_student_detailed_info_ranks.delay()
 
 
 def post_save_publication(sender, instance, *args, **kwargs):
@@ -166,34 +168,34 @@ def post_save_university_through(sender, instance, *args, **kwargs):
 
 # Signal is not fired when subclasses were updated.
 # https://stackoverflow.com/questions/14758250/django-post-save-signal-on-parent-class-with-multi-table-inheritance
-for subclass in LanguageCertificate.__subclasses__():
-    pre_save.connect(pre_save_language_certificate, sender=subclass)
-    post_save.connect(post_save_language_certificate, sender=subclass)
-    pre_delete.connect(pre_delete_language_certificate, sender=subclass)
+# for subclass in LanguageCertificate.__subclasses__():
+#     pre_save.connect(pre_save_language_certificate, sender=subclass)
+#     post_save.connect(post_save_language_certificate, sender=subclass)
+#     pre_delete.connect(pre_delete_language_certificate, sender=subclass)
+#
+# for subclass in RegularLanguageCertificate.__subclasses__():
+#     pre_save.connect(pre_save_language_certificate, sender=subclass)
+#     post_save.connect(post_save_language_certificate, sender=subclass)
+#     pre_delete.connect(pre_delete_language_certificate, sender=subclass)
+#
+# for subclass in GRESubjectCertificate.__subclasses__():
+#     pre_save.connect(pre_save_language_certificate, sender=subclass)
+#     post_save.connect(post_save_language_certificate, sender=subclass)
+#     pre_delete.connect(pre_delete_language_certificate, sender=subclass)
 
-for subclass in RegularLanguageCertificate.__subclasses__():
-    pre_save.connect(pre_save_language_certificate, sender=subclass)
-    post_save.connect(post_save_language_certificate, sender=subclass)
-    pre_delete.connect(pre_delete_language_certificate, sender=subclass)
-
-for subclass in GRESubjectCertificate.__subclasses__():
-    pre_save.connect(pre_save_language_certificate, sender=subclass)
-    post_save.connect(post_save_language_certificate, sender=subclass)
-    pre_delete.connect(pre_delete_language_certificate, sender=subclass)
-
-pre_save.connect(pre_save_student_detailed_info, sender=StudentDetailedInfo)
-pre_save.connect(pre_save_publication, sender=Publication)
-pre_save.connect(pre_save_language_certificate, sender=LanguageCertificate)
-pre_save.connect(pre_save_university_through, sender=UniversityThrough)
+# pre_save.connect(pre_save_student_detailed_info, sender=StudentDetailedInfo)
+# pre_save.connect(pre_save_publication, sender=Publication)
+# pre_save.connect(pre_save_language_certificate, sender=LanguageCertificate)
+# pre_save.connect(pre_save_university_through, sender=UniversityThrough)
 
 post_save.connect(post_save_student_detailed_info, sender=StudentDetailedInfo)
-post_save.connect(post_save_language_certificate, sender=LanguageCertificate)
-post_save.connect(post_save_publication, sender=Publication)
-post_save.connect(post_save_university_through, sender=UniversityThrough)
+# post_save.connect(post_save_language_certificate, sender=LanguageCertificate)
+# post_save.connect(post_save_publication, sender=Publication)
+# post_save.connect(post_save_university_through, sender=UniversityThrough)
 
-pre_delete.connect(pre_delete_publication, sender=Publication)
-# pre_delete.connect(pre_delete_language_certificate, sender=LanguageCertificate)
-pre_delete.connect(pre_delete_university_through, sender=UniversityThrough)
-pre_delete.connect(pre_delete_student_detailed_info, sender=StudentDetailedInfo)
-
-post_delete.connect(post_delete_publication, sender=Publication)
+# pre_delete.connect(pre_delete_publication, sender=Publication)
+# # pre_delete.connect(pre_delete_language_certificate, sender=LanguageCertificate)
+# pre_delete.connect(pre_delete_university_through, sender=UniversityThrough)
+# pre_delete.connect(pre_delete_student_detailed_info, sender=StudentDetailedInfo)
+#
+# post_delete.connect(post_delete_publication, sender=Publication)

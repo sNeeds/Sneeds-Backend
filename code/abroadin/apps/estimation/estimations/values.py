@@ -292,7 +292,7 @@ VALUES_WITH_ATTRS = {
         {
             "start": 2/5,
             "end": None,
-            "admission": 0.2,
+            "admission": 0.4,
             "scholarship": 0,
             "full_fund": 0
         },
