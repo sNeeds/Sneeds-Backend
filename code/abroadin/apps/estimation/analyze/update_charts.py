@@ -77,7 +77,7 @@ def update_publication_count_chart(instance, db_instance, is_delete=False):
         data = serialize('json', [instance])
         db_data = None if db_instance is None else serialize('json', [db_instance])
 
-        update_publication_count_chart_by_count(
+        update_publication_count_chart_by_count.delay(
             publications_count=publications_count, data=data, db_data=db_data, is_delete=is_delete
         )
 
@@ -155,7 +155,8 @@ def update_publications_score_chart(instance, db_instance, is_delete=False):
         return
     new_label, old_label = prepare_publications_score_chart_data(instance, db_instance, is_delete)
     chart, created = Chart.objects.get_or_create(title=Chart.ChartTitle.PUBLICATIONS_SCORE)
-    update_chart_by_label(chart, new_label=new_label, old_label=old_label)
+    chart_data = serialize('json', [chart])
+    update_chart_by_label.delay(chart_data, new_label=new_label, old_label=old_label)
 
 
 def prepare_publications_score_chart_data(instance, db_instance, is_delete=False):
@@ -212,8 +213,8 @@ def prepare_publications_score_chart_data(instance, db_instance, is_delete=False
 
 
 def update_charts_sdi_creation(data, db_data, is_delete=False):
-    update_publications_count_chart_sdi_creation(data, db_data, is_delete)
-    update_publications_score_chart_sdi_creation(data, db_data, is_delete)
+    update_publications_count_chart_sdi_creation.delay(data, db_data, is_delete)
+    update_publications_score_chart_sdi_creation.delay(data, db_data, is_delete)
 
 
 @shared_task()
@@ -282,10 +283,10 @@ def update_charts_sdi_deletion(instance, db_instance, is_delete=False):
     db_data = None
 
     publications_count = instance.publication_set.count()
-    update_publications_count_chart_sdi_deletion(publications_count, data, db_data, is_delete)
+    update_publications_count_chart_sdi_deletion.delay(publications_count, data, db_data, is_delete)
 
     publications_score = instance.publication_set.total_value()
-    update_publications_score_chart_sdi_deletion(publications_score, data, db_data, is_delete)
+    update_publications_score_chart_sdi_deletion.delay(publications_score, data, db_data, is_delete)
 
 
 @shared_task()
@@ -350,7 +351,8 @@ def update_publication_impact_factor_chart(data, db_data, is_delete=False):
 def update_gpa_chart(instance, db_instance, is_delete=False):
     new_label, old_label = prepare_update_gpa_chart(instance, db_instance, is_delete)
     chart, created = Chart.objects.get_or_create(title=Chart.ChartTitle.GRADE_POINT_AVERAGE)
-    update_chart_by_label(chart, new_label=new_label, old_label=old_label)
+    chart_data = serialize('json', [chart])
+    update_chart_by_label.delay(chart_data, new_label=new_label, old_label=old_label)
 
 
 def prepare_update_gpa_chart(instance, db_instance, is_delete=False):
@@ -652,7 +654,10 @@ def update_common_chart(chart_title, instance_model, label_function, instance, d
 
 
 @shared_task
-def update_chart_by_label(chart, new_label, old_label, is_delete=False):
+def update_chart_by_label(chart_data, new_label, old_label, is_delete=False):
+    des_obj = next(deserialize('json', chart_data))
+    chart = des_obj.object
+
     if new_label is not None:
         with transaction.atomic():
             obj, created = ChartItemData.objects.get_or_create(chart=chart, label=new_label,
