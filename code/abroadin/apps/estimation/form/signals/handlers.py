@@ -33,9 +33,9 @@ def pre_save_student_detailed_info(sender, instance, *args, **kwargs):
     data = form_serializers.StudentDetailedInfoCelerySerializer(instance).data
     db_data = None if db_instance is None else form_serializers.StudentDetailedInfoCelerySerializer(
         db_instance).data
-    update_charts.update_powerful_recommendation_chart(data=data, db_data=db_data, is_delete=False)
-    update_charts.update_olympiad_chart(data=data, db_data=db_data, is_delete=False)
-    update_charts.update_related_work_experience_chart(data=data, db_data=db_data, is_delete=False)
+    update_charts.update_powerful_recommendation_chart.delay(data=data, db_data=db_data, is_delete=False)
+    update_charts.update_olympiad_chart.delay(data=data, db_data=db_data, is_delete=False)
+    update_charts.update_related_work_experience_chart.delay(data=data, db_data=db_data, is_delete=False)
 
     update_charts.update_charts_sdi_creation(data=data, db_data=db_data, is_delete=False)
 
@@ -44,9 +44,9 @@ def pre_delete_student_detailed_info(sender, instance, *args, **kwargs):
     data = form_serializers.StudentDetailedInfoCelerySerializer(instance).data
     db_data = None
 
-    update_charts.update_powerful_recommendation_chart(data=data, db_data=db_data, is_delete=True)
-    update_charts.update_olympiad_chart(data=data, db_data=db_data, is_delete=True)
-    update_charts.update_related_work_experience_chart(data=data, db_data=db_data, is_delete=True)
+    update_charts.update_powerful_recommendation_chart.delay(data=data, db_data=db_data, is_delete=True)
+    update_charts.update_olympiad_chart.delay(data=data, db_data=db_data, is_delete=True)
+    update_charts.update_related_work_experience_chart.delay(data=data, db_data=db_data, is_delete=True)
 
     update_charts.update_charts_sdi_deletion(instance=instance, db_instance=None, is_delete=True)
 
@@ -68,8 +68,8 @@ def pre_save_publication(sender, instance, *args, **kwargs):
     update_charts.update_publication_count_chart(instance, db_instance, is_delete=False)
     update_charts.update_publications_score_chart(instance, db_instance, is_delete=False)
 
-    update_charts.update_publication_type_chart(data=data, db_data=db_data, is_delete=False)
-    update_charts.update_publication_impact_factor_chart(data=data, db_data=db_data, is_delete=False)
+    update_charts.update_publication_type_chart.delay(data=data, db_data=db_data, is_delete=False)
+    update_charts.update_publication_impact_factor_chart.delay(data=data, db_data=db_data, is_delete=False)
 
 
 def pre_delete_publication(sender, instance, *args, **kwargs):
@@ -90,8 +90,8 @@ def post_delete_publication(sender, instance, *args, **kwargs):
         update_charts.update_publication_count_chart(instance=instance, db_instance=None, is_delete=True)
         update_charts.update_publications_score_chart(instance=instance, db_instance=None, is_delete=True)
 
-    update_charts.update_publication_type_chart(data=data, db_data=db_data, is_delete=True)
-    update_charts.update_publication_impact_factor_chart(data=data, db_data=db_data, is_delete=True)
+    update_charts.update_publication_type_chart.delay(data=data, db_data=db_data, is_delete=True)
+    update_charts.update_publication_impact_factor_chart.delay(data=data, db_data=db_data, is_delete=True)
 
 
 def post_save_student_detailed_info(sender, instance, *args, **kwargs):
@@ -114,7 +114,7 @@ def pre_save_language_certificate(sender, instance, *args, **kwargs):
     data = update_charts.serialize_language_certificate(instance)
     db_data = None if db_instance is None else update_charts.serialize_language_certificate(db_instance)
 
-    update_charts.update_language_certificates_charts(data=data, db_data=db_data, is_delete=False)
+    update_charts.update_language_certificates_charts.delay(data=data, db_data=db_data, is_delete=False)
 
 
 def pre_delete_language_certificate(sender, instance, *args, **kwargs):
@@ -128,7 +128,7 @@ def pre_delete_language_certificate(sender, instance, *args, **kwargs):
              LanguageCertificate.LanguageCertificateType.GRE_PSYCHOLOGY]:
         pass
     else:
-        update_charts.update_language_certificates_charts(data=data, db_data=db_data, is_delete=True)
+        update_charts.update_language_certificates_charts.delay(data=data, db_data=db_data, is_delete=True)
 
 
 def post_save_language_certificate(sender, instance, *args, **kwargs):
