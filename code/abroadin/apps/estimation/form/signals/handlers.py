@@ -15,7 +15,6 @@ from abroadin.apps.estimation.form import serializers as form_serializers
 @transaction.atomic
 def pre_save_student_detailed_info(sender, instance, *args, **kwargs):
     # TODO: Temporary removed delay from celery tasks
-    print("1")
     try:
         StudentDetailedInfo.objects.get(id=instance.id)
 
@@ -39,7 +38,6 @@ def pre_save_student_detailed_info(sender, instance, *args, **kwargs):
     update_charts.update_related_work_experience_chart.delay(data=data, db_data=db_data, is_delete=False)
 
     update_charts.update_charts_sdi_creation(data=data, db_data=db_data, is_delete=False)
-    print("2")
 
 
 def pre_delete_student_detailed_info(sender, instance, *args, **kwargs):
