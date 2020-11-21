@@ -71,11 +71,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         choices=UserTypeChoices.choices,
         default=UserTypeChoices.STUDENT,
     )
+
     is_staff = models.BooleanField(
         _('staff status'),
         default=False,
         help_text=_('Designates whether the user can log into this admin site.'),
     )
+
     is_admin = models.BooleanField(default=False)
     is_active = models.BooleanField(
         _('active'),
@@ -93,6 +95,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     )
 
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
+    date_last_action = models.DateTimeField(null=True, blank=True)
 
     objects = CustomUserManager()
 
@@ -123,6 +126,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         self.email = self.email.lower()
 
         super().save(*args, **kwargs)
+
+    def update_date_last_action(self):
+        self.date_last_action = timezone.now
+        self.save()
 
     def compute_user_type(self):
         from abroadin.apps.users.consultants.models import ConsultantProfile

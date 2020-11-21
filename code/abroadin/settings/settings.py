@@ -66,6 +66,7 @@ MIDDLEWARE = [
 
     'abroadin.settings.middlewares.middlewares.CORSMiddleware',
     'abroadin.settings.middlewares.middlewares.TimezoneMiddleware',
+    'abroadin.settings.middlewares.middlewares.UserActionsMiddleWare',
 ]
 
 TEMPLATES = [

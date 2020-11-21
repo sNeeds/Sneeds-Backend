@@ -33,3 +33,16 @@ class CORSMiddleware(object):
         response["Access-Control-Allow-Methods"] = 'GET, PUT, POST, PATCH, DELETE, HEAD'
 
         return response
+
+
+class UserActionsMiddleWare(object):
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        user = request.user
+        response = self.get_response(request)
+
+        if user:
+            user.update_date_last_action()
+        return response
