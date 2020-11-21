@@ -43,6 +43,6 @@ class UserActionsMiddleWare(object):
         user = request.user
         response = self.get_response(request)
 
-        if user:
+        if user.is_authenticated():
             user.update_date_last_action()
         return response
