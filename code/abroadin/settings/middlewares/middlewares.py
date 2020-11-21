@@ -1,6 +1,9 @@
 import pytz
 
 from django.utils import timezone
+from django.contrib.auth.middleware import get_user
+from django.utils.functional import SimpleLazyObject
+from rest_framework_simplejwt import authentication
 
 
 class TimezoneMiddleware:
@@ -43,6 +46,24 @@ class UserActionsMiddleWare(object):
         user = request.user
         response = self.get_response(request)
 
-        if user.is_authenticated:
+        if request.user.is_authenticated:
             user.update_date_last_action()
         return response
+
+
+class JWTAuthenticationMiddleware(object):
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        request.user = SimpleLazyObject(lambda: self.__class__.get_jwt_user(request))
+        return self.get_response(request)
+
+    @staticmethod
+    def get_jwt_user(request):
+        user = get_user(request)
+        if user.is_authenticated:
+            return user
+        if authentication.JWTAuthentication().authenticate(request):
+            user = authentication.JWTAuthentication().authenticate(request)[0]
+        return user

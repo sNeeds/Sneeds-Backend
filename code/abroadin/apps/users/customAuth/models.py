@@ -94,8 +94,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         help_text=_('Designates whether the user email is verified.'),
     )
 
-    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
-    date_last_action = models.DateTimeField(null=True, blank=True)
+    date_joined = models.DateTimeField(_('date joined'), default=timezone.now, editable=False)
+    date_last_action = models.DateTimeField(null=True, blank=True, editable=False)
 
     objects = CustomUserManager()
 

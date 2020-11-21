@@ -9,12 +9,13 @@ from .forms import CustomUserChangeForm, CustomUserCreationForm
 
 @admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
+    readonly_fields = ['date_last_action', 'date_joined', 'last_login']
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'phone_number', 'is_email_verified')}),
         (_('Permissions'), {'fields': ('user_type', 'is_active', 'is_staff', 'is_superuser',
                                        'groups', 'user_permissions')}),
-        (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
+        (_('Important dates'), {'fields': ('last_login', 'date_joined', 'date_last_action')}),
     )
     add_fieldsets = (
         (None, {
