@@ -7,12 +7,8 @@ from .models import CustomUser, StudentProfile
 from .forms import CustomUserChangeForm, CustomUserCreationForm
 
 
+@admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
-    # The forms to add and change user instances
-
-    # The fields to be used in displaying the User model.
-    # These override the definitions on the base UserAdmin
-    # that reference the removed 'username' field
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'phone_number', 'is_email_verified')}),
@@ -28,7 +24,7 @@ class CustomUserAdmin(UserAdmin):
     )
     form = CustomUserChangeForm
     add_form = CustomUserCreationForm
-    list_display = ('email', 'first_name', 'last_name', 'user_type', 'is_staff')
+    list_display = ('email', 'get_full_name', 'is_email_verified', 'user_type', 'is_staff', 'last_login', 'date_joined')
     search_fields = ('email', 'first_name', 'last_name', 'phone_number')
     ordering = ('email',)
 
@@ -36,5 +32,4 @@ class CustomUserAdmin(UserAdmin):
         export_as_csv_action("CSV Export", fields=['first_name', 'last_name', 'email', 'phone_number', 'user_type'])]
 
 
-admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(StudentProfile)
