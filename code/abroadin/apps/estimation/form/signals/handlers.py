@@ -15,7 +15,6 @@ from abroadin.apps.estimation.form import serializers as form_serializers
 @transaction.atomic
 def pre_save_student_detailed_info(sender, instance, *args, **kwargs):
     # TODO: Temporary removed delay from celery tasks
-    print("1")
     try:
         StudentDetailedInfo.objects.get(id=instance.id)
 

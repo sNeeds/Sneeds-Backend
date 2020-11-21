@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 
-from rest_framework import permissions,  mixins
+from rest_framework import permissions, mixins, status
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 
@@ -10,8 +10,10 @@ from abroadin.base.api.viewsets import CAPIView
 from abroadin.base.api import generics
 
 from . import serializers
-from .serializers import UserRegisterSerializer
-from .permissions import NotLoggedInPermission, SameUserPermission
+from .serializers import (UserRegisterSerializer,
+                          SubscribeSerializer)
+from .permissions import (NotLoggedInPermission,
+                          SameUserPermission)
 from .utils import send_verification_code
 
 User = get_user_model()
@@ -67,4 +69,18 @@ class GenerateVerificationAPIView(BaseGenerateVerificationAPIView):
 
 
 class VerifyVerificationAPIView(BaseVerifyVerificationAPIView):
-    pass
+    post_check_function = None
+
+
+class SubscribeAPIView(generics.CCreateAPIView):
+    serializer_class = SubscribeSerializer
+    permission_classes = [NotLoggedInPermission]
+
+    def post(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return Response({'detail': 'You are already authenticated.Subscribe in your profile'}, status=400)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        data = request.data
+        return Response(data, status=status.HTTP_201_CREATED)
