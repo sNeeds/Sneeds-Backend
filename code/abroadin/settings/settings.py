@@ -13,6 +13,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'verification',
     'phonenumber_field',
+    'rangefilter',
 
     'abroadin.apps.docs',
     'abroadin.apps.chats',

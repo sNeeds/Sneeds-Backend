@@ -46,7 +46,7 @@ class UserActionsMiddleWare(object):
         user = request.user
         response = self.get_response(request)
 
-        if request.user.is_authenticated:
+        if user.is_authenticated:
             user.update_date_last_action()
         return response
 
@@ -62,8 +62,11 @@ class JWTAuthenticationMiddleware(object):
     @staticmethod
     def get_jwt_user(request):
         user = get_user(request)
+
         if user.is_authenticated:
             return user
+
         if authentication.JWTAuthentication().authenticate(request):
             user = authentication.JWTAuthentication().authenticate(request)[0]
+
         return user

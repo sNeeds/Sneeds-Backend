@@ -95,7 +95,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     )
 
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now, editable=False)
-    date_last_action = models.DateTimeField(null=True, blank=True, editable=False)
+    date_last_action = models.DateTimeField(_('last action'), null=True, blank=True, editable=False)
 
     objects = CustomUserManager()
 

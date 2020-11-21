@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import ugettext_lazy as _
 
+from rangefilter.filter import DateRangeFilter, DateTimeRangeFilter
+
 from abroadin.utils.custom.admin.actions import export_as_csv_action
 from .models import CustomUser, StudentProfile
 from .forms import CustomUserChangeForm, CustomUserCreationForm
@@ -22,6 +24,12 @@ class CustomUserAdmin(UserAdmin):
             'classes': ('wide',),
             'fields': ('email', 'password1', 'password2')}
          ),
+    )
+    list_filter = (
+        'is_email_verified',
+        'is_staff',
+        ('date_last_action', DateTimeRangeFilter),
+        ('date_joined', DateTimeRangeFilter),
     )
     form = CustomUserChangeForm
     add_form = CustomUserCreationForm
