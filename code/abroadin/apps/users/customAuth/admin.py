@@ -24,7 +24,7 @@ class CustomUserAdmin(UserAdmin):
     )
     form = CustomUserChangeForm
     add_form = CustomUserCreationForm
-    list_display = ('email', 'get_full_name', 'is_email_verified', 'user_type', 'is_staff', 'last_login', 'date_joined')
+    list_display = ('email', 'get_full_name', 'is_email_verified', 'user_type', 'is_staff', 'date_last_action', 'date_joined')
     search_fields = ('email', 'first_name', 'last_name', 'phone_number')
     ordering = ('email',)
 

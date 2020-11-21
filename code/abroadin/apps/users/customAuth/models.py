@@ -128,7 +128,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         super().save(*args, **kwargs)
 
     def update_date_last_action(self):
-        self.date_last_action = timezone.now
+        self.date_last_action = timezone.now()
         self.save()
 
     def compute_user_type(self):
