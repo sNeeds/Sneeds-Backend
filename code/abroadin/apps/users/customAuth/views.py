@@ -60,7 +60,6 @@ class MyAccountInfoView(CAPIView):
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
-
     serializer_class = serializers.CustomTokenObtainPairSerializer
 
 
