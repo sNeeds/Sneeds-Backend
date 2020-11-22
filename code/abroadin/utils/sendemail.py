@@ -3,16 +3,26 @@ import json
 
 from django.conf import settings
 
-url = "https://api.sendinblue.com/v3/smtp/email"
-
 headers = {
     'accept': "application/json",
     'content-type': "application/json",
     'api-key': settings.SENDINBLUE_API_KEY
 }
 
+MARKETING_LIST = 3
+DOI_LIST = 4
+
+
+def perform_appropriate_lists(user):
+    lists = []
+    if user.receive_marketing_email:
+        lists.append(MARKETING_LIST)
+    return lists
+
 
 def send_verification_code_email(send_to, full_name, code):
+    url = "https://api.sendinblue.com/v3/smtp/email"
+
     if code is None or len(code) == 0:
         raise Exception("Code is None or empty string")
 
@@ -33,6 +43,8 @@ def send_verification_code_email(send_to, full_name, code):
 
 
 def send_reset_password_email(send_to, full_name, reset_password_link):
+    url = "https://api.sendinblue.com/v3/smtp/email"
+
     if reset_password_link is None or len(reset_password_link) == 0:
         raise Exception("reset_password_link is None or empty string")
 
@@ -51,7 +63,60 @@ def send_reset_password_email(send_to, full_name, reset_password_link):
     return response.text
 
 
+def create_sib_contact(email, *args, **kwargs):
+    url = "https://api.sendinblue.com/v3/contacts"
+
+    payload = {
+        "attributes": {'FIRSTNAME': kwargs.get('first_name'),
+                       'LASTNAME': kwargs.get('last_name'),
+                       'SMS': kwargs.get('phone_number'),
+                       'OPT_IN': kwargs.get('opt_in', False),
+                       },
+        "listIds": kwargs.get('lists'),
+        "email": email,
+    }
+    json_data = json.dumps(payload)
+    response = requests.request("POST", url, data=json_data, headers=headers)
+    return response.text
+
+
+def update_sib_contact(email, *args, **kwargs):
+    url = "https://api.sendinblue.com/v3/contacts"
+
+    payload = {
+        "attributes": {'FIRSTNAME': kwargs.get('first_name'),
+                       'LASTNAME': kwargs.get('last_name'),
+                       'SMS': kwargs.get('phone_number'),
+                       'OPT_IN': kwargs.get('opt_in', False),
+                       },
+        "listIds": kwargs.get('lists'),
+        "email": email,
+    }
+    json_data = json.dumps(payload)
+    response = requests.request("POST", url, data=json_data, headers=headers)
+    return response.text
+
+
+def create_sib_doi_contact(email, *args, **kwargs):
+    url = "https://api.sendinblue.com/v3/contacts/doubleOptinConfirmation"
+
+    payload = {
+        "attributes": {'FIRSTNAME': kwargs.get('first_name'),
+                       'LASTNAME': kwargs.get('last_name'),
+                       'SMS': kwargs.get('phone_number')},
+        "includeListIds": [3],
+        "templateId": 5,
+        "email": email,
+        "redirectionUrl": "https://abroadin.com/"
+    }
+    json_data = json.dumps(payload)
+    response = requests.request("POST", url, data=json_data, headers=headers)
+    return response.text
+
+
 def send_order_created_email(send_to, name, order_url):
+    url = "https://api.sendinblue.com/v3/smtp/email"
+
     payload = {
         "sender": {"name": "abroadin", "email": 'noreply.abroadin@gmail.com'},
         "to": [{"email": send_to}],
@@ -65,6 +130,8 @@ def send_order_created_email(send_to, name, order_url):
 
 
 def send_sold_time_slot_email(send_to, name, sold_time_slot_url, start_time, end_time):
+    url = "https://api.sendinblue.com/v3/smtp/email"
+
     payload = {
         "sender": {"name": "abroadin", "email": 'noreply.abroadin@gmail.com'},
         "to": [{"email": send_to}],
@@ -83,6 +150,8 @@ def send_sold_time_slot_email(send_to, name, sold_time_slot_url, start_time, end
 
 
 def send_sold_time_slot_start_reminder_email(send_to, name, sold_time_slot_url, start_time, end_time):
+    url = "https://api.sendinblue.com/v3/smtp/email"
+
     payload = {
         "sender": {"name": "abroadin", "email": 'noreply.abroadin@gmail.com'},
         "to": [{"email": send_to}],
@@ -101,6 +170,7 @@ def send_sold_time_slot_start_reminder_email(send_to, name, sold_time_slot_url, 
 
 
 def send_sold_time_slot_changed_email(send_to, name, sold_time_slot_url, start_time, end_time):
+    url = "https://api.sendinblue.com/v3/smtp/email"
     payload = {
         "sender": {"name": "abroadin", "email": 'noreply.abroadin@gmail.com'},
         "to": [{"email": send_to}],

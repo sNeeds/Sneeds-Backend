@@ -10,7 +10,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 
 class CustomUserManager(BaseUserManager):
     def _create_user(self, email, password,
-                     is_staff, is_superuser, is_email_verified, **extra_fields):
+                     is_staff, is_superuser, is_email_verified, receive_marketing_email, **extra_fields):
         """
         Creates and saves a User with the given email and password.
         """
@@ -24,21 +24,22 @@ class CustomUserManager(BaseUserManager):
             is_active=True,
             is_superuser=is_superuser,
             is_email_verified=is_email_verified,
+            receive_marketing_email=receive_marketing_email,
             last_login=now,
-            date_joined=now, **extra_fields
-        )
+            date_joined=now, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
     def create_user(self, email, password=None, **extra_fields):
         return self._create_user(
-            email, password, False, False, False, **extra_fields
+            email, password, False, False, False, extra_fields.pop('receive_marketing_email', False),
+            **extra_fields
         )
 
     def create_superuser(self, email, password, **extra_fields):
         return self._create_user(
-            email, password, True, True, True, **extra_fields
+            email, password, True, True, True, False, **extra_fields
         )
 
     def get_admin_consultant_or_none(self):
@@ -96,6 +97,14 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now, editable=False)
     date_last_action = models.DateTimeField(_('last action'), null=True, blank=True, editable=False)
+
+    receive_marketing_email = models.BooleanField(
+        _('receive marketing email status'),
+        default=False,
+        help_text=_('Designates whether the user wants to get marketing emails or news.'),
+    )
+
+    # date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
 
     objects = CustomUserManager()
 

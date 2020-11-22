@@ -21,6 +21,7 @@ cycler==0.10.0
 dateparser==0.7.4
 defusedxml==0.6.0
 Django==3.1.1
+django-admin-rangefilter==0.6.3
 django-braces==1.13.0
 django-ckeditor==5.9.0
 django-cleanup==4.0.0
@@ -35,7 +36,7 @@ django-phonenumber-field==5.0.0
 django-polymorphic==3.0.0
 django-rest-passwordreset==1.1.0
 django-rest-polymorphic==0.1.8
-django-rest-verification==0.24
+django-rest-verification==0.36
 django-storages==1.9.1
 django-tinymce==2.8.0
 djangorestframework==3.12.1

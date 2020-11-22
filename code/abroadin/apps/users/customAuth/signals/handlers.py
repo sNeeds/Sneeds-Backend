@@ -9,6 +9,8 @@ from abroadin.apps.users.consultants.models import ConsultantProfile
 from abroadin.apps.users.customAuth.tasks import send_reset_password_email
 from abroadin.settings.config.variables import FRONTEND_URL
 
+from ..utils import user_creation_email_handling, user_update_email_handling
+
 User = get_user_model()
 
 
@@ -20,6 +22,21 @@ def post_save_consultant_profile(sender, instance, created, *args, **kwargs):
 
 
 post_save.connect(post_save_consultant_profile, sender=ConsultantProfile)
+
+
+def pre_save_user(sender, instance, *args, **kwargs):
+    if instance._state.adding is True and instance._state.db is None:
+        db_instance = None
+    else:
+        try:
+            db_instance = User.objects.get(pk=instance.pk)
+        except User.DoesNotExist:
+            db_instance = None
+
+    if db_instance is None:
+        user_creation_email_handling(instance)
+    if db_instance is not None:
+        user_update_email_handling(instance, db_instance)
 
 
 @receiver(reset_password_token_created)

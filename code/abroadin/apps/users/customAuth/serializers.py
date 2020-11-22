@@ -9,8 +9,12 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from phonenumber_field.serializerfields import PhoneNumberField
+
 from abroadin.apps.users.consultants.serializers import ShortConsultantProfileSerializer
 from abroadin.apps.users.consultants.models import ConsultantProfile
+
+from .utils import create_doi_contact
 
 User = get_user_model()
 
@@ -48,11 +52,13 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             'password',
             'phone_number',
             'token_response',
+            'receive_marketing_email',
         ]
 
         extra_kwargs = {
             'password': {'write_only': True},
-            'phone_number': {'required': True}
+            'phone_number': {'required': True},
+            'receive_marketing_email': {'required': True}
         }
 
     def get_token_response(self, obj):
@@ -78,6 +84,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         user_obj = User(
             email=validated_data.get('email'),
             phone_number=validated_data.get('phone_number'),
+            receive_marketing_email=validated_data.get('receive_marketing_email'),
             user_type=1,  # Only student can register with serializer
         )
         user_obj.set_password(validated_data.get('password'))
@@ -111,6 +118,7 @@ class UserSerializer(serializers.ModelSerializer):
             'phone_number',
             'password',
             'is_email_verified',
+            'receive_marketing_email',
         ]
         extra_kwargs = {
             'id': {'read_only': True},
@@ -120,6 +128,7 @@ class UserSerializer(serializers.ModelSerializer):
             'phone_number': {'required': False},
             'password': {'write_only': True, 'required': False},
             'is_email_verified': {'read_only': True, 'required': False},
+            'receive_marketing_email': {'required': False},
         }
 
     def update(self, instance, validated_data):
@@ -184,3 +193,42 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         data = super().validate(attrs)
         return data
+
+
+class SubscribeSerializer(serializers.Serializer):
+    email = serializers.CharField(
+        max_length=256,
+        required=False,
+    )
+
+    phone_number = PhoneNumberField(
+        required=False
+    )
+
+    class Meta:
+        fields = [
+            'email', 'phone_number'
+        ]
+
+        extra_kwargs = {
+        }
+
+    def validate_email(self, value):
+        validate_email(value)
+        return value.lower()
+
+    def validate_phone_number(self, value):
+        validate_phone_number(value)
+        return value
+
+    def validate(self, attrs):
+        assert attrs['email'] or attrs['phone_number'], (
+            'User must enter at least Email or Phone number for subscription.'
+        )
+        return attrs
+
+    def update(self, instance, validated_data):
+        pass
+
+    def create(self, validated_data):
+        create_doi_contact(validated_data['email'], validated_data['phone_number'])
