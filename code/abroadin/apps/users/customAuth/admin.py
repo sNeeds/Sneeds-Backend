@@ -14,7 +14,8 @@ class CustomUserAdmin(UserAdmin):
     readonly_fields = ['date_last_action', 'date_joined', 'last_login']
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        (_('Personal info'), {'fields': ('first_name', 'last_name', 'phone_number', 'is_email_verified')}),
+        (_('Personal info'), {'fields': ('first_name', 'last_name', 'phone_number', 'is_email_verified',
+                                         'receive_marketing_email')}),
         (_('Permissions'), {'fields': ('user_type', 'is_active', 'is_staff', 'is_superuser',
                                        'groups', 'user_permissions')}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined', 'date_last_action')}),
@@ -33,7 +34,8 @@ class CustomUserAdmin(UserAdmin):
     )
     form = CustomUserChangeForm
     add_form = CustomUserCreationForm
-    list_display = ('email', 'get_full_name', 'is_email_verified', 'user_type', 'is_staff', 'date_last_action', 'date_joined')
+    list_display = ('email', 'get_full_name', 'is_email_verified', 'user_type', 'is_staff', 'date_last_action',
+                    'date_joined')
     search_fields = ('email', 'first_name', 'last_name', 'phone_number')
     ordering = ('email',)
 

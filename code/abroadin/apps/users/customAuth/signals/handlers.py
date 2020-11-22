@@ -1,4 +1,4 @@
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.contrib.auth import get_user_model
 from django.dispatch import receiver
 from django.urls import reverse
@@ -9,7 +9,7 @@ from abroadin.apps.users.consultants.models import ConsultantProfile
 from abroadin.apps.users.customAuth.tasks import send_reset_password_email
 from abroadin.settings.config.variables import FRONTEND_URL
 
-from ..utils import user_creation_email_handling, user_update_email_handling
+from ..utils import user_creation_handle_contact, user_update_handle_contact
 
 User = get_user_model()
 
@@ -34,9 +34,12 @@ def pre_save_user(sender, instance, *args, **kwargs):
             db_instance = None
 
     if db_instance is None:
-        user_creation_email_handling(instance)
+        user_creation_handle_contact(instance)
     if db_instance is not None:
-        user_update_email_handling(instance, db_instance)
+        user_update_handle_contact(instance, db_instance)
+
+
+pre_save.connect(pre_save_user, sender=User)
 
 
 @receiver(reset_password_token_created)

@@ -71,6 +71,7 @@ def create_sib_contact(email, *args, **kwargs):
                        'LASTNAME': kwargs.get('last_name'),
                        'SMS': kwargs.get('phone_number'),
                        'OPT_IN': kwargs.get('opt_in', False),
+                       'RECEIVE_MARKETING_EMAIL': kwargs.get('receive_marketing_email', False),
                        },
         "listIds": kwargs.get('lists'),
         "email": email,
@@ -81,29 +82,35 @@ def create_sib_contact(email, *args, **kwargs):
 
 
 def update_sib_contact(email, *args, **kwargs):
-    url = "https://api.sendinblue.com/v3/contacts"
+    url = "https://api.sendinblue.com/v3/contacts/"+str(email)+"/"
 
     payload = {
         "attributes": {'FIRSTNAME': kwargs.get('first_name'),
                        'LASTNAME': kwargs.get('last_name'),
                        'SMS': kwargs.get('phone_number'),
                        'OPT_IN': kwargs.get('opt_in', False),
+                       'RECEIVE_MARKETING_EMAIL': kwargs.get('receive_marketing_email', False),
                        },
         "listIds": kwargs.get('lists'),
         "email": email,
     }
     json_data = json.dumps(payload)
-    response = requests.request("POST", url, data=json_data, headers=headers)
+    response = requests.request("PUT", url, data=json_data, headers=headers)
+    print(response.text)
     return response.text
 
 
 def create_sib_doi_contact(email, *args, **kwargs):
     url = "https://api.sendinblue.com/v3/contacts/doubleOptinConfirmation"
 
+    attributes = {'FIRSTNAME': kwargs.get('first_name'),
+                  'LASTNAME': kwargs.get('last_name')}
+
+    if kwargs.get('phone_number'):
+        attributes['SMS'] = kwargs.get('phone_number')
+
     payload = {
-        "attributes": {'FIRSTNAME': kwargs.get('first_name'),
-                       'LASTNAME': kwargs.get('last_name'),
-                       'SMS': kwargs.get('phone_number')},
+        "attributes": attributes,
         "includeListIds": [3],
         "templateId": 5,
         "email": email,

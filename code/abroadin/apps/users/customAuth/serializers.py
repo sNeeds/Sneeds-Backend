@@ -3,9 +3,10 @@ from django.utils.translation import gettext as _
 import django.contrib.auth.password_validation as validators
 from django.contrib.auth import get_user_model
 from django.core import exceptions
+from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import serializers
-from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.exceptions import AuthenticationFailed, ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -38,7 +39,7 @@ def validate_email(email):
 def validate_phone_number(phone):
     try:
         int(phone)
-    except ValueError:
+    except (ValueError, TypeError):
         raise serializers.ValidationError(_("Phone number should be number only"))
 
 
@@ -205,6 +206,16 @@ class SubscribeSerializer(serializers.Serializer):
         required=False
     )
 
+    first_name = serializers.CharField(
+        max_length=256,
+        required=False,
+    )
+
+    last_name = serializers.CharField(
+        max_length=256,
+        required=False,
+    )
+
     class Meta:
         fields = [
             'email', 'phone_number'
@@ -217,18 +228,59 @@ class SubscribeSerializer(serializers.Serializer):
         validate_email(value)
         return value.lower()
 
-    def validate_phone_number(self, value):
-        validate_phone_number(value)
-        return value
+    # def validate_phone_number(self, value):
+    #     validate_phone_number(value)
+    #     return value
 
     def validate(self, attrs):
-        assert attrs['email'] or attrs['phone_number'], (
-            'User must enter at least Email or Phone number for subscription.'
-        )
+        if attrs.get('email') is None and attrs.get('phone_number') is None:
+            raise ValidationError(_('User must enter at least Email or Phone number for subscription.'))
+        if attrs.get('email') is None:
+            raise ValidationError(_('User must enter Email for subscription.'))
         return attrs
 
     def update(self, instance, validated_data):
         pass
 
     def create(self, validated_data):
-        create_doi_contact(validated_data['email'], validated_data['phone_number'])
+        create_doi_contact.delay(validated_data.get('email'), str(validated_data.get('phone_number')),
+                                 receive_marketing_email=True,
+                                 first_name=validated_data.get('first_name'), last_name=validated_data.get('last_name'))
+        return None
+
+    def save(self, **kwargs):
+        assert hasattr(self, '_errors'), (
+            'You must call `.is_valid()` before calling `.save()`.'
+        )
+
+        assert not self.errors, (
+            'You cannot call `.save()` on a serializer with invalid data.'
+        )
+
+        # Guard against incorrect use of `serializer.save(commit=False)`
+        assert 'commit' not in kwargs, (
+            "'commit' is not a valid keyword argument to the 'save()' method. "
+            "If you need to access data before committing to the database then "
+            "inspect 'serializer.validated_data' instead. "
+            "You can also pass additional keyword arguments to 'save()' if you "
+            "need to set extra attributes on the saved model instance. "
+            "For example: 'serializer.save(owner=request.user)'.'"
+        )
+
+        assert not hasattr(self, '_data'), (
+            "You cannot call `.save()` after accessing `serializer.data`."
+            "If you need to access data before committing to the database then "
+            "inspect 'serializer.validated_data' instead. "
+        )
+
+        validated_data = {**self.validated_data, **kwargs}
+
+        if self.instance is not None:
+            self.instance = self.update(self.instance, validated_data)
+            assert self.instance is not None, (
+                '`update()` did not return an object instance.'
+            )
+        else:
+            self.instance = self.create(validated_data)
+
+        return self.instance
