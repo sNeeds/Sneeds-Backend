@@ -400,6 +400,13 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         MALE = 'Male', 'Male'
         FEMALE = 'Female', 'Female'
 
+    @staticmethod
+    def _has_age(self):
+        if self.age is not None:
+            return True
+        return False
+
+    completed_funcs = [_has_age,]
     user = models.OneToOneField(
         User,
         null=True,
@@ -533,8 +540,30 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
 
         return value
 
-    def is_complete(self):
-        return True
+
+    def _has_is_married(self):
+        if self.is_married is not None:
+            return True
+        return False
+
+    def _has_gender(self):
+        if self.gender is not None:
+            return True
+        return False
+
+    def _has_university_through(self):
+        if self.universities.all().exists():
+            return True
+        return False
+
+    def _has_want_to_apply(self):
+        if self.want_to_apply_qs.exists():
+            return True
+        return False
+
+    @property
+    def want_to_apply_qs(self):
+        return WantToApply.objects.filter(student_detailed_info__id=self.id)
 
     def get_last_university_grade(self):
         return None if self.get_last_university_through() is None else self.get_last_university_through().grade
