@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import ugettext_lazy as _
 
-from rangefilter.filter import DateRangeFilter, DateTimeRangeFilter
+from rangefilter.filter import DateTimeRangeFilter
 
 from abroadin.utils.custom.admin.actions import export_as_csv_action
 from .models import CustomUser, StudentProfile
@@ -40,7 +40,8 @@ class CustomUserAdmin(UserAdmin):
     ordering = ('email',)
 
     actions = [
-        export_as_csv_action("CSV Export", fields=['first_name', 'last_name', 'email', 'phone_number', 'user_type'])]
+        export_as_csv_action("CSV Export", fields=['first_name', 'last_name', 'email', 'phone_number', 'user_type'])
+    ]
 
 
 admin.site.register(StudentProfile)
