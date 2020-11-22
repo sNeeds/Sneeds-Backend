@@ -81,10 +81,8 @@ class SubscribeAPIView(generics.CCreateAPIView):
 
         if check_email_assigned_to_user(serializer.validated_data['email']):
             set_user_receive_marketing_email(serializer.validated_data['email'])
-            print(1)
         else:
             self.perform_create(serializer)
-            print(2)
         data = serializer.validated_data
         data['phone_number'] = str(data['phone_number'])
         return Response(data, status=status.HTTP_201_CREATED)
