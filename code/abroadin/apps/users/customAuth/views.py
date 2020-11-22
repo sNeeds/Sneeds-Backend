@@ -84,5 +84,4 @@ class SubscribeAPIView(generics.CCreateAPIView):
         else:
             self.perform_create(serializer)
         data = serializer.data
-        # data['phone_number'] = str(data['phone_number'])
         return Response(data, status=status.HTTP_201_CREATED)
