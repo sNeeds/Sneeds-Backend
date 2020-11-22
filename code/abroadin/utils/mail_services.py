@@ -96,7 +96,6 @@ def update_sib_contact(email, *args, **kwargs):
     }
     json_data = json.dumps(payload)
     response = requests.request("PUT", url, data=json_data, headers=headers)
-    print(response.text)
     return response.text
 
 

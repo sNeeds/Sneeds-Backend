@@ -228,10 +228,6 @@ class SubscribeSerializer(serializers.Serializer):
         validate_email(value)
         return value.lower()
 
-    # def validate_phone_number(self, value):
-    #     validate_phone_number(value)
-    #     return value
-
     def validate(self, attrs):
         if attrs.get('email') is None and attrs.get('phone_number') is None:
             raise ValidationError(_('User must enter at least Email or Phone number for subscription.'))

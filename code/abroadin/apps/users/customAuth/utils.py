@@ -59,7 +59,6 @@ def create_doi_contact(email, phone_number, **kwargs):
         'User must enter Email for subscription.'
     )
     result = create_sib_doi_contact(email, phone_number=phone_number, lists=[MARKETING_LIST, DOI_LIST], **kwargs)
-    print(result)
 
 
 def send_verification_code(view, request, verification):
