@@ -197,7 +197,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 
 class SubscribeSerializer(serializers.Serializer):
-    email = serializers.CharField(
+    email = serializers.EmailField(
         max_length=256,
         required=False,
     )
@@ -225,7 +225,7 @@ class SubscribeSerializer(serializers.Serializer):
         }
 
     def validate_email(self, value):
-        validate_email(value)
+        # validate_email(value)
         return value.lower()
 
     def validate(self, attrs):

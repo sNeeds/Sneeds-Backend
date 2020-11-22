@@ -14,7 +14,7 @@ from .serializers import (UserRegisterSerializer,
                           SubscribeSerializer)
 from .permissions import (NotLoggedInPermission,
                           SameUserPermission)
-from .utils import send_verification_code
+from .utils import send_verification_code, check_email_assigned_to_user, set_user_receive_marketing_email
 
 User = get_user_model()
 
@@ -73,13 +73,15 @@ class VerifyVerificationAPIView(BaseVerifyVerificationAPIView):
 
 class SubscribeAPIView(generics.CCreateAPIView):
     serializer_class = SubscribeSerializer
-    permission_classes = [NotLoggedInPermission]
+    permission_classes = []
 
     def post(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return Response({'detail': 'You are already authenticated.Subscribe in your profile'}, status=400)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        data = request.data
+
+        if check_email_assigned_to_user(serializer.validated_data['email']):
+            set_user_receive_marketing_email(serializer.validated_data['email'])
+        else:
+            self.perform_create(serializer)
+        data = serializer.validated_data
         return Response(data, status=status.HTTP_201_CREATED)

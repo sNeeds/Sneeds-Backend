@@ -1,4 +1,5 @@
 from django.db.models.signals import post_save, pre_save
+from django.core.signals import request_finished
 from django.contrib.auth import get_user_model
 from django.dispatch import receiver
 from django.urls import reverse
@@ -25,6 +26,11 @@ post_save.connect(post_save_consultant_profile, sender=ConsultantProfile)
 
 
 def pre_save_user(sender, instance, *args, **kwargs):
+    # print('pre_save_user')
+    # print(sender)
+    # print(args)
+    # print(kwargs)
+
     if instance._state.adding is True and instance._state.db is None:
         db_instance = None
     else:
@@ -39,7 +45,7 @@ def pre_save_user(sender, instance, *args, **kwargs):
         user_update_handle_contact(instance, db_instance)
 
 
-pre_save.connect(pre_save_user, sender=User)
+pre_save.connect(pre_save_user, sender=User, dispatch_uid="vjkvjbjvlbvl")
 
 
 @receiver(reset_password_token_created)

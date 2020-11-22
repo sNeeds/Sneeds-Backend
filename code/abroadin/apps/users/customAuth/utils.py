@@ -18,6 +18,8 @@ def user_creation_handle_contact(instance: User):
 
 
 def user_update_handle_contact(instance: User, db_instance: User):
+    # print('user_update_handle_contact')
+    # print(instance.receive_marketing_email)
     if instance.receive_marketing_email != db_instance.receive_marketing_email:
         create_contact_inductor(instance)
         update_contact_inductor(instance)
@@ -26,7 +28,7 @@ def user_update_handle_contact(instance: User, db_instance: User):
         update_contact_inductor(instance)
 
 
-def create_contact_inductor(user: User):
+def create_contact_inductor(user):
     create_contact.delay(user.email, first_name=user.first_name, last_name=user.last_name,
                          phone_number=str(user.phone_number), opt_in=user.is_email_verified,
                          receive_marketing_email=user.receive_marketing_email,
@@ -38,7 +40,9 @@ def create_contact(email, *args, **kwargs):
     create_sib_contact(email, *args, **kwargs)
 
 
-def update_contact_inductor(user: User):
+def update_contact_inductor(user):
+    # print('update_contact_inductor')
+    # print(user.receive_marketing_email)
     update_contact.delay(user.email, first_name=user.first_name, last_name=user.last_name,
                          phone_number=str(user.phone_number), opt_in=user.is_email_verified,
                          receive_marketing_email=user.receive_marketing_email,
@@ -47,6 +51,8 @@ def update_contact_inductor(user: User):
 
 @shared_task()
 def update_contact(email, *args, **kwargs):
+    # print('update_contact')
+    # print(kwargs.get('receive_marketing_email'))
     update_sib_contact(email, *args, **kwargs)
 
 
@@ -59,6 +65,26 @@ def create_doi_contact(email, phone_number, **kwargs):
         'User must enter Email for subscription.'
     )
     result = create_sib_doi_contact(email, phone_number=phone_number, lists=[MARKETING_LIST, DOI_LIST], **kwargs)
+
+
+def check_email_assigned_to_user(email):
+    qs = User.objects.filter(email__iexact=email)
+    return qs.exists()
+
+
+def set_user_receive_marketing_email(email):
+    qs = User.objects.filter(email__iexact=email)
+    if qs.exists():
+        # User.objects.filter(email__iexact=email).update(receive_marketing_email=True)
+        # print('set_user_receive_marketing_email')
+        user = User.objects.get(email__iexact=email)
+        user.receive_marketing_email = True
+        user.save()
+        # print(User.objects.filter(email__iexact=email))
+        # print(value)
+        user.refresh_from_db()
+        # print('HERERERER')
+        # print(user.receive_marketing_email)
 
 
 def send_verification_code(view, request, verification):
