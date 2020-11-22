@@ -64,7 +64,7 @@ def create_doi_contact(email, phone_number, **kwargs):
     assert email, (
         'User must enter Email for subscription.'
     )
-    result = create_sib_doi_contact(email, phone_number=phone_number, lists=[MARKETING_LIST, DOI_LIST], **kwargs)
+    result = create_sib_doi_contact(email, phone_number=str(phone_number), lists=[MARKETING_LIST, DOI_LIST], **kwargs)
 
 
 def check_email_assigned_to_user(email):
