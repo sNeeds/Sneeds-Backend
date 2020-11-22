@@ -83,6 +83,6 @@ class SubscribeAPIView(generics.CCreateAPIView):
             set_user_receive_marketing_email(serializer.validated_data['email'])
         else:
             self.perform_create(serializer)
-        data = serializer.validated_data
-        data['phone_number'] = str(data['phone_number'])
+        data = serializer.data
+        # data['phone_number'] = str(data['phone_number'])
         return Response(data, status=status.HTTP_201_CREATED)
