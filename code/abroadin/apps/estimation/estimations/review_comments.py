@@ -52,7 +52,11 @@ BACHELOR_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_ABOVE_18 = BACHELOR_LAST_GRADE_ABOVE
 # Age
 AGE_DESCRIPTION_COMMENT = "The age of the applicant is not very influential and is not considered as a barrier. It can only cause issues in some cases. Age can affect two things: getting accepted and getting visa. "
 
-AGE_OKAY_MESSAGE = "Since you don't have academic break we have no comment on this section."
+NO_AGE_ENTERED_MESSAGE = "Since you didn't entered your age we have no comments for this section. Please enter your age to get comments. "
+
+AGE_UNDER_28_WITHOUT_ACADEMIC_BREAK = "Because you are young and do not have an academic gap, you will not have any problems in terms of age for admission or embassy. "
+AGE_UNDER_28_WITH_SHORT_ACADEMIC_BREAK = "Although you have a short academic gap, you are young and you will not have any problems in terms of age for admission or embassy."
+AGE_UNDER_28_WITH_LONG_ACADEMIC_BREAK = "Although you have a long academic gap, you are young and you will not have any problems in terms of age for admission or embassy."
 
 AGE_BETWEEN_28_AND_30 = AGE_DESCRIPTION_COMMENT + "Your age doesn’t make any troubles. "
 AGE_BETWEEN_28_AND_30_WITHOUT_ACADEMIC_BREAK = AGE_BETWEEN_28_AND_30 + "You don’t have any educational gap. "

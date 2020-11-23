@@ -5,7 +5,7 @@ class StudentDetailedFormReview(
     review_mixins.ReviewUniversityMixin,
     review_mixins.ReviewPublicationMixin,
     review_mixins.ReviewLanguageMixin,
-    review_mixins.ReviewAgeMixin,
+    review_mixins.ReviewAgeAndAcademicBreakMixin,
     review_mixins.ReviewOthersMixin,
 ):
     def __init__(self, student_detailed_form):
@@ -47,7 +47,7 @@ class StudentDetailedFormReview(
             ),
 
             "age_and_gap": {
-                "comment": self.review_age(),
+                "comment": self.review_age_and_academic_break(),
             },
 
             "others": {

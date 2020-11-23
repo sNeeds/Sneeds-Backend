@@ -5,33 +5,38 @@ from abroadin.apps.estimation.form.models import LanguageCertificate, RegularLan
     GradeChoices, Publication
 
 
-class ReviewAgeMixin:
-    def review_age(self):
+class ReviewAgeAndAcademicBreakMixin:
+    def review_age_and_academic_break(self):
         age = self.student_detailed_form.age
-        form = self.student_detailed_form
+        academic_break = self.student_detailed_form.academic_break
 
         if age is None:
-            return AGE_OKAY_MESSAGE
+            return NO_AGE_ENTERED_MESSAGE
 
         elif age < 28:
-            return AGE_OKAY_MESSAGE
+            if academic_break is None or academic_break == 0:
+                return AGE_UNDER_28_WITHOUT_ACADEMIC_BREAK
+            elif academic_break < 3:
+                return AGE_UNDER_28_WITH_SHORT_ACADEMIC_BREAK
+            elif 3 <= academic_break:
+                return AGE_UNDER_28_WITH_LONG_ACADEMIC_BREAK
 
         elif 28 <= age < 30:
-            if form.academic_break is None:
+            if academic_break is None:
                 return AGE_BETWEEN_28_AND_30_WITHOUT_ACADEMIC_BREAK
-            elif form.academic_break:
+            elif academic_break:
                 return AGE_BETWEEN_28_AND_30_WITH_ACADEMIC_BREAK
 
         elif 30 <= age < 34:
-            if form.academic_break is None:
+            if academic_break is None:
                 return AGE_BETWEEN_30_AND_34_WITHOUT_ACADEMIC_BREAK
-            elif form.academic_break:
+            elif academic_break:
                 return AGE_BETWEEN_30_AND_34_WITH_ACADEMIC_BREAK
 
         elif 34 <= age:
-            if form.academic_break is None:
+            if academic_break is None:
                 return AGE_ABOVE_34_WITHOUT_ACADEMIC_BREAK
-            elif form.academic_break:
+            elif academic_break:
                 return AGE_ABOVE_34_WITH_ACADEMIC_BREAK
 
 
