@@ -142,6 +142,8 @@ TOEFL_AVERAGE = "Toefl score of 92-100 is an average score for admission equal t
 TOEFL_GOOD = "Congratulations! The Toefl score of 100-110 is perfect for university admission, and now you can focus on other application processes without worrying about English proficiency. "
 TOEFL_GREAT = "Congratulations! The Toefl score of 7.5 and higher is rewardable for university admission and sets you apart from others! You can now safely focus on other aspects of your resume. "
 
+NO_CERTIFICATE_COMMENT = "You did not enter any IELTS/TOEFL certificate, We strongly advise you to get IELTS or TOEFL since most of the universities require one of these documents. For special cases you can get a conditional admission without language certificates but it's in very rare cases so please get ready to one of these exams. For most of the universities it doesn't matter whether you have IELTS or TOEFL nowadays."
+
 # Recommendation
 NO_POWERFUL_RECOMMENDATION = "Since you say you do not have a strong letter of recommendation, try to get a great letter of recommendation from less experienced professors with whom you have a closer relationship. "
 

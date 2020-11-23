@@ -37,7 +37,7 @@ class ReviewAgeMixin:
 
 class ReviewLanguageMixin:
     def review_language_certificates(self, types: set):
-        data = {}
+        data = {"total_comment": None}
         language_certificates = LanguageCertificate.objects.filter(
             student_detailed_info=self.student_detailed_form
         )
@@ -62,6 +62,14 @@ class ReviewLanguageMixin:
                     pass
             if data.get("ielts_general"):
                 data["ielts_general"]["comment"] = CHANGE_GENERAL_WITH_ACADEMIC + data["ielts_general"]["comment"]
+
+        no_comments = True
+        for t in types:
+            if data[t.lower()]:
+                no_comments = False
+
+        if no_comments:
+            data["total_comment"] = NO_CERTIFICATE_COMMENT
 
         data["total_value"] = language_certificates.get_total_value()
         data["total_value_label"] = language_certificates.get_total_value_label()
