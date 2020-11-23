@@ -78,10 +78,13 @@ class SubscribeAPIView(generics.CCreateAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-
+        data = serializer.data
+        
         if check_email_assigned_to_user(serializer.validated_data['email']):
             set_user_receive_marketing_email(serializer.validated_data['email'])
+            data['message'] = "You Subscribed successfully."
         else:
             self.perform_create(serializer)
-        data = serializer.data
+            data['message'] = "A confirmation email has been sent. please check your inbox, Spam and Promotions" \
+                              " folders also."
         return Response(data, status=status.HTTP_201_CREATED)
