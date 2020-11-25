@@ -29,15 +29,23 @@ def user_update_handle_contact(instance: User, db_instance: User):
 
 
 def create_contact_inductor(user):
+    phone_number = None if user.phone_number is None else str(user.phone_number)
     create_contact.delay(user.email, first_name=user.first_name, last_name=user.last_name,
-                         phone_number=str(user.phone_number), opt_in=user.is_email_verified,
+                         phone_number=phone_number, opt_in=user.is_email_verified,
                          receive_marketing_email=user.receive_marketing_email,
                          lists=perform_appropriate_lists(user))
 
 
 @shared_task()
 def create_contact(email, *args, **kwargs):
-    create_sib_contact(email, *args, **kwargs)
+    phone_number = kwargs.get('phone_number')
+    assert email, (
+        'User must enter Email for subscription.'
+    )
+    assert phone_number is None or (isinstance(phone_number, str) and phone_number != 'None'), (
+        'Phone number should be None or string'
+    )
+    return create_sib_contact(email, *args, **kwargs)
 
 
 def update_contact_inductor(user):
@@ -53,7 +61,7 @@ def update_contact_inductor(user):
 def update_contact(email, *args, **kwargs):
     # print('update_contact')
     # print(kwargs.get('receive_marketing_email'))
-    update_sib_contact(email, *args, **kwargs)
+    return update_sib_contact(email, *args, **kwargs)
 
 
 @shared_task()
@@ -67,8 +75,7 @@ def create_doi_contact(email, phone_number, **kwargs):
     assert phone_number is None or (isinstance(phone_number, str) and phone_number != 'None'), (
         'Phone number should be None or string'
     )
-    result = create_sib_doi_contact(email, phone_number=phone_number, lists=[MARKETING_LIST, DOI_LIST], **kwargs)
-    return result
+    return create_sib_doi_contact(email, phone_number=phone_number, lists=[MARKETING_LIST, DOI_LIST], **kwargs)
 
 
 def check_email_assigned_to_user(email):
