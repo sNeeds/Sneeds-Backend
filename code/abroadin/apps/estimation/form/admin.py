@@ -95,7 +95,12 @@ class StudentDetailedInfoBaseAdmin(admin.ModelAdmin):
 @admin.register(models.StudentDetailedInfo)
 class StudentDetailedInfoAdmin(StudentDetailedInfoBaseAdmin):
     inlines = [WantToApplyInline] + StudentDetailedInfoBaseAdmin.inlines
-    list_display = ['id', 'user', 'value', 'rank', 'created', 'updated']
+    list_display = ['id', 'user', 'value', 'rank', 'created', 'updated', 'is_complete']
+
+    def is_complete(self, instance):
+        return instance.is_complete
+
+    is_complete.boolean = True
 
 
 @admin.register(models.Publication)
