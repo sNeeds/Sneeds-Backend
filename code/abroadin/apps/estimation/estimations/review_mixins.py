@@ -99,7 +99,8 @@ class ReviewUniversityMixin:
             'post_doc': None,
             'phd': None,
             'master': None,
-            'bachelor': None
+            'bachelor': None,
+            'no_field' : None
         }
 
         if last_grade == GradeChoices.POST_DOC:
@@ -178,6 +179,8 @@ class ReviewUniversityMixin:
                     data['bachelor'] = BACHELOR_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_BETWEEN_16_18
                 if 18 < last_grade_university.gpa:
                     data['bachelor'] = BACHELOR_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_ABOVE_18
+        else:
+            data['total_comment'] = "Please enter your previous degree to get comment in this section. "
 
         return data
 

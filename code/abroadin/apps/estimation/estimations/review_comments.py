@@ -1,10 +1,10 @@
 # Post Doc University
 
-POST_DOC_NO_SUPPORT = "Unfortunately, currently we do not support Postdoc students in this section but we are developing the system to support Postdoc students. We will inform you as soon as this section is ready for you."
+POST_DOC_NO_SUPPORT = "Unfortunately, currently we do not support Postdoc students in this section but we are developing the system to support Postdoc students. We will inform you as soon as this section is ready for you. "
 
 # PHD University
 
-PHD_NO_SUPPORT = "Unfortunately, currently we do not support PhD students in this section but we are developing the system to support PhD students. We will inform you as soon as this section is ready for you."
+PHD_NO_SUPPORT = "Unfortunately, currently we do not support PhD students in this section but we are developing the system to support PhD students. We will inform you as soon as this section is ready for you. "
 
 # Master university
 
