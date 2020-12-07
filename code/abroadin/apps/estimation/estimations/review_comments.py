@@ -1,3 +1,11 @@
+# Post Doc University
+
+POST_DOC_NO_SUPPORT = "Unfortunately, currently we do not support Postdoc students in this section but we are developing the system to support Postdoc students. We will inform you as soon as this section is ready for you."
+
+# PHD University
+
+PHD_NO_SUPPORT = "Unfortunately, currently we do not support PhD students in this section but we are developing the system to support PhD students. We will inform you as soon as this section is ready for you."
+
 # Master university
 
 MASTER_LAST_GRADE_TOP_850_COMMENTS = "Fortunately, your university is one of the top universities in Iran and professors know these universities. (it is difficult for the students of unpopular university because professors ignore the resume without any observation.) In short, congratulations. You pass the need for a good university "
