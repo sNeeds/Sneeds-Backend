@@ -1,3 +1,11 @@
+# Post Doc University
+
+POST_DOC_NO_SUPPORT = "Unfortunately, currently we do not support Postdoc students in this section but we are developing the system to support Postdoc students. We will inform you as soon as this section is ready for you."
+
+# PHD University
+
+PHD_NO_SUPPORT = "Unfortunately, currently we do not support PhD students in this section but we are developing the system to support PhD students. We will inform you as soon as this section is ready for you."
+
 # Master university
 
 MASTER_LAST_GRADE_TOP_850_COMMENTS = "Fortunately, your university is one of the top universities in Iran and professors know these universities. (it is difficult for the students of unpopular university because professors ignore the resume without any observation.) In short, congratulations. You pass the need for a good university "
@@ -50,7 +58,7 @@ BACHELOR_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_BETWEEN_16_18 = BACHELOR_LAST_GRADE_
 BACHELOR_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_ABOVE_18 = BACHELOR_LAST_GRADE_ABOVE_1100_START_TEXT + "Your GPA is very good and to some extent it covers the low rank of your university! if you Focus on a quality articles, you may be able to count on getting scholarships. it is not because of your university, your chance is zero! "
 
 # Age
-AGE_DESCRIPTION_COMMENT = "The age of the applicant is not very influential and is not considered as a barrier. It can only cause issues in some cases. Age can affect two things: getting accepted and getting visa. "
+AGE_DESCRIPTION_COMMENT = "The age of the applicant is not very influential and is not considered as a barrier. It can only cause issues in some cases. Age can affect two things: getting accepted and getting VISA. "
 
 NO_AGE_ENTERED_MESSAGE = "Since you didn't entered your age we have no comments for this section. Please enter your age to get comments. "
 
@@ -60,15 +68,15 @@ AGE_UNDER_28_WITH_LONG_ACADEMIC_BREAK = "Although you have a long academic gap, 
 
 AGE_BETWEEN_28_AND_30 = AGE_DESCRIPTION_COMMENT + "Your age doesn’t make any troubles. "
 AGE_BETWEEN_28_AND_30_WITHOUT_ACADEMIC_BREAK = AGE_BETWEEN_28_AND_30 + "You don’t have any educational gap. "
-AGE_BETWEEN_28_AND_30_WITH_ACADEMIC_BREAK = AGE_BETWEEN_28_AND_30 + "If you can, justify your educational gap in SOP and getting visa process with logical reasons that show your connection with your field. "
+AGE_BETWEEN_28_AND_30_WITH_ACADEMIC_BREAK = AGE_BETWEEN_28_AND_30 + "If you can, justify your educational gap in SOP and getting VISA process with logical reasons that show your connection with your field. "
 
-AGE_BETWEEN_30_AND_34 = AGE_DESCRIPTION_COMMENT + "You may say that you are too old, this does not cause any problems for admission, but it can be a little difficult to get a visa from more sensitive countries in getting visa. "
+AGE_BETWEEN_30_AND_34 = AGE_DESCRIPTION_COMMENT + "You may say that you are too old, this does not cause any problems for admission, but it can be a little difficult to get a VISA from more sensitive countries in getting VISA. "
 AGE_BETWEEN_30_AND_34_WITHOUT_ACADEMIC_BREAK = AGE_BETWEEN_30_AND_34 + "You wrote that you don’t have educational gap, so you can justify the relatively old age for the embassy. "
-AGE_BETWEEN_30_AND_34_WITH_ACADEMIC_BREAK = AGE_BETWEEN_30_AND_34 + "educational gap is more important than age, because you said you have educational gap, it may be a little difficult to get a visa and you need to make it less important with works related to your field. "
+AGE_BETWEEN_30_AND_34_WITH_ACADEMIC_BREAK = AGE_BETWEEN_30_AND_34 + "Educational gap is more important than age, because you said you have educational gap, it may be a little difficult to get a VISA and you need to make it less important with works related to your field. "
 
-AGE_ABOVE_34 = AGE_DESCRIPTION_COMMENT + "Your age probably causes some problems in getting accepted and getting visa. "
-AGE_ABOVE_34_WITHOUT_ACADEMIC_BREAK = AGE_ABOVE_34 + "Because you wrote that you don’t have any educational gap, so try to talk about your connection with academic environments in your SOP and visa process. "
-AGE_ABOVE_34_WITH_ACADEMIC_BREAK = AGE_ABOVE_34 + "educational gap is more important than age, because you said you have educational gap, it may be a little difficult to get a visa and you need to make it less important with works related to your field and you also should show high motivation to continue your education. "
+AGE_ABOVE_34 = AGE_DESCRIPTION_COMMENT + "Your age probably causes some problems in getting accepted and getting VISA. "
+AGE_ABOVE_34_WITHOUT_ACADEMIC_BREAK = AGE_ABOVE_34 + "Because you wrote that you don’t have any educational gap, so try to talk about your connection with academic environments in your SOP and VISA process. "
+AGE_ABOVE_34_WITH_ACADEMIC_BREAK = AGE_ABOVE_34 + "Educational gap is more important than age, because you said you have educational gap, it may be a little difficult to get a VISA and you need to make it less important with works related to your field and you also should show high motivation to continue your education. "
 
 # Publication
 

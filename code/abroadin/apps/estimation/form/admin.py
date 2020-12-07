@@ -1,4 +1,5 @@
 from django.contrib import admin
+from rangefilter.filter import DateTimeRangeFilter
 
 from . import models
 
@@ -95,7 +96,17 @@ class StudentDetailedInfoBaseAdmin(admin.ModelAdmin):
 @admin.register(models.StudentDetailedInfo)
 class StudentDetailedInfoAdmin(StudentDetailedInfoBaseAdmin):
     inlines = [WantToApplyInline] + StudentDetailedInfoBaseAdmin.inlines
-    list_display = ['id', 'user', 'value', 'rank', 'created', 'updated']
+    list_filter = (
+
+        ('updated', DateTimeRangeFilter),
+        ('created', DateTimeRangeFilter),
+    )
+    list_display = ['id', 'user', 'value', 'rank', 'updated', 'created', 'is_complete']
+
+    def is_complete(self, instance):
+        return instance.is_complete
+
+    is_complete.boolean = True
 
 
 @admin.register(models.Publication)
