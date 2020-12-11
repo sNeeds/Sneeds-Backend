@@ -7,13 +7,13 @@ from apps.analytics.events.serializers import EventSerializer
 
 
 class EventsList(CAPIView):
-    def get_user_email_or_empty_string(self, user):
+    def get_user_email_or_anonymous_string(self, user):
         if user.is_authenticated:
             return user.email
-        return ""
+        return "Anonymous"
 
     def post(self, request, format=None):
-        user_email = self.get_user_email_or_empty_string(request.user)
+        user_email = self.get_user_email_or_anonymous_string(request.user)
         serializer = EventSerializer(data=request.data)
 
         if serializer.is_valid():
