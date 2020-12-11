@@ -11,5 +11,3 @@ class EventConfig(AppConfig):
         posthog.api_key = posthog_api
         posthog.host = 'https://app.posthog.com'
 
-        posthog.capture('test-id', 'test-event')
-
