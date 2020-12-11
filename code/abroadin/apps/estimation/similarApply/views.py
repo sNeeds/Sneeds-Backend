@@ -57,8 +57,8 @@ class SimilarUniversitiesListView(CAPIView):
                 "grade": form.get_last_university_grade(),
                 "gpa": self.get_gpa(form),
                 "graduate_year" : 2019,
-                "exams": "IELTS 7.5 & GRE",
-                "scholarship": "30,000$/year",
+                "language_certificate": "IELTS 7.5 & GRE",
+                "fund": "30,000$/year",
                 "accepted": True
             }
         ]
