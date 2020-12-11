@@ -1,3 +1,5 @@
+import decimal
+
 from django.http import Http404
 from rest_framework.response import Response
 
@@ -29,7 +31,17 @@ class SimilarUniversitiesListView(CAPIView):
 
     def get_gpa(self, form):
         last_university_through = form.get_last_university_through()
-        return last_university_through.gpa if last_university_through is not None else None
+        gpa = last_university_through.gpa if last_university_through is not None else None
+
+        if gpa:
+            margin = (form.id.int % 30 - 15) / 10
+            margin = min(margin, 1)
+            margin = max(margin, -1)
+            gpa += decimal.Decimal(margin)
+            gpa = min(gpa, 20)
+            gpa = max(0, gpa)
+
+        return gpa
 
     def get_applied_university_data(self, form):
         want_to_apply = form.get_want_to_apply_or_none()
@@ -56,7 +68,7 @@ class SimilarUniversitiesListView(CAPIView):
                 "major": self.get_major(form),
                 "grade": form.get_last_university_grade(),
                 "gpa": self.get_gpa(form),
-                "graduate_year" : 2019,
+                "graduate_year": 2019,
                 "language_certificate": "IELTS 7.5 & GRE",
                 "fund": "30,000$/year",
                 "accepted": True
