@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from abroadin.base.api.viewsets import CAPIView
-from apps.analytics.events.serializers import EventSerializer
+from abroadin.apps.analytics.events.serializers import EventSerializer
 
 
 class EventsList(CAPIView):
