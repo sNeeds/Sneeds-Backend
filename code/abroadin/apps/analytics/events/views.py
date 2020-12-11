@@ -17,7 +17,7 @@ class EventsList(CAPIView):
         serializer = EventSerializer(data=request.data)
 
         if serializer.is_valid():
-            posthog.capture(user_email, event='test-event')
+            posthog.capture(user_email, event=serializer.data["name"])
             return Response(status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
