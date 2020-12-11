@@ -556,8 +556,14 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
             return True
         return False
 
+    def get_want_to_apply_or_none(self):
+        try:
+            return WantToApply.objects.get(student_detailed_info__id=self.id)
+        except WantToApply.DoesNotExist:
+            return None
+
     def _has_want_to_apply(self):
-        if self.want_to_apply_qs.exists():
+        if self.get_want_to_apply_or_none():
             return True
         return False
 
@@ -567,11 +573,6 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         for func_str in self.completed_funcs:
             completed = completed & getattr(self, func_str)()
         return completed
-
-
-    @property
-    def want_to_apply_qs(self):
-        return WantToApply.objects.filter(student_detailed_info__id=self.id)
 
     def get_last_university_grade(self):
         return None if self.get_last_university_through() is None else self.get_last_university_through().grade
