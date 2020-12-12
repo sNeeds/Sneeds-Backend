@@ -1,5 +1,12 @@
 from abroadin.apps.estimation.estimations import review_comments
 
+# language certificate values
+LANGUAGE_AP_VALUE = 1
+LANGUAGE_A_VALUE = 0.9
+LANGUAGE_B_VALUE = 0.6
+LANGUAGE_C_VALUE = 0.3
+LANGUAGE_D_VALUE = 0
+
 VALUES_WITH_ATTRS = {
     "publication_qs": [
         {
@@ -74,157 +81,74 @@ VALUES_WITH_ATTRS = {
         {
             "start": None,
             "end": 110,
+            "value": LANGUAGE_AP_VALUE,
             "label": "A+",
-            "value": 1
-        },
-        {
-            "start": 110,
-            "end": 105,
-            "label": "A",
-            "value": 0.9
-        },
-        {
-            "start": 105,
-            "end": 100,
-            "label": "B+",
-            "value": 0.8
-        },
-        {
-            "start": 100,
-            "end": 92,
-            "label": "B",
-            "value": 0.6
-        },
-        {
-            "start": 92,
-            "end": 78,
-            "label": "C",
-            "value": 0.4
-        },
-        {
-            "start": 78,
-            "end": None,
-            "label": "D",
-            "value": 0
-        },
-    ],
-    "ielts_academic_and_general": [
-        {
-            "start": None,
-            "end": 8,
-            "label": "A+",
-            "value": 1
-        },
-        {
-            "start": 8,
-            "end": 7.5,
-            "label": "A",
-            "value": 0.9
-        },
-        {
-            "start": 7.5,
-            "end": 7,
-            "label": "B+",
-            "value": 0.8
-        },
-        {
-            "start": 7,
-            "end": 6.5,
-            "label": "B",
-            "value": 0.6
-        },
-        {
-            "start": 6.5,
-            "end": 6,
-            "label": "C",
-            "value": 0.4
-        },
-        {
-            "start": 6,
-            "end": None,
-            "label": "D",
-            "value": 0
-        },
-    ],
-    "ielts_academic_comments": [
-        {
-            "start": None,
-            "end": 7.5,
-            "comment": review_comments.IELTS_ACADEMIC_GREAT
-        },
-        {
-            "start": 7.5,
-            "end": 7,
-            "comment": review_comments.IELTS_ACADEMIC_GOOD
-        },
-        {
-            "start": 7,
-            "end": 6.5,
-            "comment": review_comments.IELTS_ACADEMIC_AVERAGE
-        },
-        {
-            "start": 6.5,
-            "end": 6,
-            "comment": review_comments.IELTS_ACADEMIC_BAD
-        },
-        {
-            "start": 6,
-            "end": None,
-            "comment": review_comments.IELTS_ACADEMIC_VERY_BAD
-        },
-    ],
-    "ielts_general_comments": [  # Customize later
-        {
-            "start": None,
-            "end": 7.5,
-            "comment": review_comments.IELTS_ACADEMIC_GREAT
-        },
-        {
-            "start": 7.5,
-            "end": 7,
-            "comment": review_comments.IELTS_ACADEMIC_GOOD
-        },
-        {
-            "start": 7,
-            "end": 6.5,
-            "comment": review_comments.IELTS_ACADEMIC_AVERAGE
-        },
-        {
-            "start": 6.5,
-            "end": 6,
-            "comment": review_comments.IELTS_ACADEMIC_BAD
-        },
-        {
-            "start": 6,
-            "end": None,
-            "comment": review_comments.IELTS_ACADEMIC_VERY_BAD
-        },
-    ],
-    "toefl_comments": [
-        {
-            "start": None,
-            "end": 110,
             "comment": review_comments.TOEFL_GREAT
         },
         {
             "start": 110,
             "end": 100,
+            "value": LANGUAGE_A_VALUE,
+            "label": "A",
             "comment": review_comments.TOEFL_GOOD
         },
         {
             "start": 100,
             "end": 92,
+            "value": LANGUAGE_B_VALUE,
+            "label": "B",
             "comment": review_comments.TOEFL_AVERAGE
         },
         {
             "start": 92,
             "end": 79,
+            "value": LANGUAGE_C_VALUE,
+            "label": "C",
             "comment": review_comments.TOEFL_BAD
         },
         {
             "start": 79,
             "end": None,
+            "value": LANGUAGE_D_VALUE,
+            "label": "D",
             "comment": review_comments.TOEFL_VERY_BAD
+        },
+    ],
+    "ielts_academic_and_general": [
+        {
+            "start": None,
+            "end": 7.5,
+            "value": LANGUAGE_AP_VALUE,
+            "label": "A+",
+            "comment": review_comments.IELTS_ACADEMIC_GREAT
+        },
+        {
+            "start": 7.5,
+            "end": 7,
+            "value": LANGUAGE_A_VALUE,
+            "label": "A",
+            "comment": review_comments.IELTS_ACADEMIC_GOOD
+        },
+        {
+            "start": 7,
+            "end": 6.5,
+            "value": LANGUAGE_B_VALUE,
+            "label": "B",
+            "comment": review_comments.IELTS_ACADEMIC_AVERAGE
+        },
+        {
+            "start": 6.5,
+            "end": 6,
+            "value": LANGUAGE_C_VALUE,
+            "label": "C",
+            "comment": review_comments.IELTS_ACADEMIC_BAD
+        },
+        {
+            "start": 6,
+            "end": None,
+            "value": LANGUAGE_D_VALUE,
+            "label": "D",
+            "comment": review_comments.IELTS_ACADEMIC_VERY_BAD
         },
     ],
     "work_experience_comments": [
@@ -383,23 +307,6 @@ VALUES_WITH_ATTRS = {
     ],
 }
 
-# TOEFL
-TOEFL_AP_VALUE = 1
-TOEFL_A_VALUE = 0.9
-TOEFL_BP_VALUE = 0.8
-TOEFL_B_VALUE = 0.7
-TOEFL_C_VALUE = 0.3
-TOEFL_D_VALUE = 0
-
-# IELTS
-
-
-IELTS_AP_VALUE = 1
-IELTS_A_VALUE = 0.9
-IELTS_BP_VALUE = 0.8
-IELTS_B_VALUE = 0.7
-IELTS_C_VALUE = 0.3
-IELTS_D_VALUE = 0
 
 # Universities
 

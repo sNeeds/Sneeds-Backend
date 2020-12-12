@@ -507,10 +507,11 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         if self.get_last_university_through():
             total_value += 2 * self.get_last_university_through().value
 
-        if languages.get_total_value():
+        if languages.exists():
             total_value += languages.get_total_value()
         else:  # when user inputted nothing
-            total_value = 0.6
+            MODERATE_LANGUAGE
+            total_value += 0.6
 
         total_value += publications.total_value()
 
