@@ -42,43 +42,57 @@ class ReviewAgeAndAcademicBreakMixin:
 
 class ReviewLanguageMixin:
     def review_language_certificates(self, types):
-        type_with_label = {
+        TYPE_WITH_LABEL = {
             "TOEFL": "toefl",
             "IELTS_ACADEMIC": "ielts_academic_and_general",
             "IELTS_GENERAL": "ielts_academic_and_general",
         }
-
         data = {
-            "total_comment": None,
+            "toefl": None
             "ielts_general": None,
             "ielts_academic": None,
-            "toefl": None
+            "total_comment": None,
+            "total_value": None,
+            "total_value_label": None
         }
+
         form = self.student_detailed_form
         language_certificates = LanguageCertificate.objects.filter(student_detailed_info=form)
 
-        for exam_title in types:
-            if exam_title not in type_with_label:
-                raise Exception("Label for {} type is not provided.".format(exam_title))
+        for type in types:
+            if type not in TYPE_WITH_LABEL.keys():
+                raise Exception("Label for {} type is not provided.".format(type))
 
-            label = type_with_label[exam_title]
-            data[exam_title.lower()] = self._review_language_certificate(form, exam_title, label)
+            if type.lower() not in data.keys():
+                raise Exception("Type is not supported in current return data format.")
 
-        if data.get("ielts_general"):
-            data["ielts_general"]["comment"] = CHANGE_GENERAL_WITH_ACADEMIC + data["ielts_general"]["comment"]
+            label = TYPE_WITH_LABEL[type]
+            data[type.lower()] = self._review_language_certificate(form, type, label)
 
-        no_comments = True
-        for t in types:
-            if data[t.lower()]:
-                no_comments = False
-
-        if no_comments:
-            data["total_comment"] = NO_CERTIFICATE_COMMENT
+        data["ielts_general"] = self._add_ielts_general_prefix_to_academic(data["ielts_general"])
+        data["total_comment"] = self._get_total_comment(types, data)
 
         data["total_value"] = language_certificates.get_total_value()
         data["total_value_label"] = language_certificates.get_total_value_label()
 
         return data
+
+    def _add_ielts_general_prefix_to_academic(self, ielts_general_data):
+        if ielts_general_data:
+            ielts_general_data = CHANGE_GENERAL_WITH_ACADEMIC + ielts_general_data["comment"]
+        return ielts_general_data
+
+    def _get_total_comment(self, types, data):
+        no_comments = True
+
+        for t in types:
+            if data[t.lower()]:
+                no_comments = False
+
+        if no_comments:
+            return NO_CERTIFICATE_COMMENT
+
+        return None
 
     def _review_language_certificate(self, form, type, label):
         data = None
