@@ -37,7 +37,7 @@ class UniversityThroughQuerySetManager(models.QuerySet):
 
 
 class LanguageCertificateQuerySetManager(models.QuerySet):
-    def get_from_this_type_or_none(self, certificate_type):
+    def get_from_type_or_none(self, certificate_type):
         from abroadin.apps.estimation.form.models import LanguageCertificate
         try:
             return self.get(certificate_type=certificate_type)

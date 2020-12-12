@@ -100,8 +100,3 @@ class LanguageCertificatesRetrieveAPIView(BaseChartsAPIView):
     }
 
 
-class AkbarView(APIView):
-    def get(self, request, *args, **kwargs):
-        while True:
-            a = 1
-        return Response()

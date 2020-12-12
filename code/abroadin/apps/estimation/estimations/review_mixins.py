@@ -41,45 +41,55 @@ class ReviewAgeAndAcademicBreakMixin:
 
 
 class ReviewLanguageMixin:
-    def review_language_certificates(self, types):
+    def review_language_certificates(self, certificate_titles):
         TYPE_WITH_LABEL = {
-            "TOEFL": "toefl",
-            "IELTS_ACADEMIC": "ielts_academic_and_general",
-            "IELTS_GENERAL": "ielts_academic_and_general",
+            "TOEFL": {
+                "label": "toefl",
+                "type": LanguageCertificate.LanguageCertificateType.TOEFL
+            },
+            "IELTS_ACADEMIC": {
+                "label": "ielts_academic_and_general",
+                "type": LanguageCertificate.LanguageCertificateType.IELTS_ACADEMIC
+            },
+            "IELTS_GENERAL": {
+                "label": "ielts_academic_and_general",
+                "type": LanguageCertificate.LanguageCertificateType.IELTS_GENERAL
+            },
         }
         data = {
-            "toefl": None
+            "toefl": None,
             "ielts_general": None,
             "ielts_academic": None,
             "total_comment": None,
             "total_value": None,
-            "total_value_label": None
+            "total_value_label": None,
         }
 
         form = self.student_detailed_form
         language_certificates = LanguageCertificate.objects.filter(student_detailed_info=form)
 
-        for type in types:
-            if type not in TYPE_WITH_LABEL.keys():
+        for certificate_title in certificate_titles:
+            if certificate_title not in TYPE_WITH_LABEL.keys():
                 raise Exception("Label for {} type is not provided.".format(type))
 
-            if type.lower() not in data.keys():
+            if certificate_title.lower() not in data.keys():
                 raise Exception("Type is not supported in current return data format.")
 
-            label = TYPE_WITH_LABEL[type]
-            data[type.lower()] = self._review_language_certificate(form, type, label)
+            label = TYPE_WITH_LABEL[certificate_title]["label"]
+            type = TYPE_WITH_LABEL[certificate_title]["type"]
+            data[certificate_title.lower()] = self._review_language_certificate(language_certificates, type, label)
 
-        data["ielts_general"] = self._add_ielts_general_prefix_to_academic(data["ielts_general"])
-        data["total_comment"] = self._get_total_comment(types, data)
+        data["ielts_general"] = self._add_ielts_general_comment_prefix(data["ielts_general"])
+        data["total_comment"] = self._get_total_comment(certificate_titles, data)
 
         data["total_value"] = language_certificates.get_total_value()
         data["total_value_label"] = language_certificates.get_total_value_label()
 
         return data
 
-    def _add_ielts_general_prefix_to_academic(self, ielts_general_data):
+    def _add_ielts_general_comment_prefix(self, ielts_general_data):
         if ielts_general_data:
-            ielts_general_data = CHANGE_GENERAL_WITH_ACADEMIC + ielts_general_data["comment"]
+            ielts_general_data["comment"] = CHANGE_GENERAL_WITH_ACADEMIC + ielts_general_data["comment"]
         return ielts_general_data
 
     def _get_total_comment(self, types, data):
@@ -94,18 +104,12 @@ class ReviewLanguageMixin:
 
         return None
 
-    def _review_language_certificate(self, form, type, label):
+    def _review_language_certificate(self, certificates, type, label):
         data = None
+        language_type = certificates.get_from_type_or_none(type)
 
-        language_certificates = LanguageCertificate.objects.filter(
-            student_detailed_info=form
-        )
-
-        language_type = language_certificates.get_from_this_type_or_none(
-            getattr(LanguageCertificate.LanguageCertificateType, type.upper())
-        )
         if language_type:
-            obj = RegularLanguageCertificate.objects.get(id=language_type.id)
+            obj = language_type.regularlanguagecertificate
             value_range = ValueRange(VALUES_WITH_ATTRS[label])
             comment = value_range.find_value_attrs(obj.overall, 'comment')
             data = {
