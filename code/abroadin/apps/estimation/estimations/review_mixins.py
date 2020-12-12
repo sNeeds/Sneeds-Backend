@@ -41,32 +41,31 @@ class ReviewAgeAndAcademicBreakMixin:
 
 
 class ReviewLanguageMixin:
-    def review_language_certificates(self, types: set):
-        data = {"total_comment": None}
-        language_certificates = LanguageCertificate.objects.filter(
-            student_detailed_info=self.student_detailed_form
-        )
+    def review_language_certificates(self, types):
+        type_with_label = {
+            "TOEFL": "toefl",
+            "IELTS_ACADEMIC": "ielts_academic_and_general",
+            "IELTS_GENERAL": "ielts_academic_and_general",
+        }
 
-        for t in types:
-            data[t.lower()] = None
-            language_type = language_certificates.get_from_this_type_or_none(
-                getattr(LanguageCertificate.LanguageCertificateType, t.upper())
-            )
-            if language_type:
-                try:
-                    obj = RegularLanguageCertificate.objects.get(id=language_type.id)
-                    value_range = ValueRange(VALUES_WITH_ATTRS[t.lower() + "_comments"])
-                    comment = value_range.find_value_attrs(obj.overall, 'comment')
-                    data[t.lower()] = {
-                        "comment": comment,
-                        "is_mock": obj.is_mock,
-                        "value": obj.value_label,
-                        "value_label": obj.value
-                    }
-                except RegularLanguageCertificate.DoesNotExist:
-                    pass
-            if data.get("ielts_general"):
-                data["ielts_general"]["comment"] = CHANGE_GENERAL_WITH_ACADEMIC + data["ielts_general"]["comment"]
+        data = {
+            "total_comment": None,
+            "ielts_general": None,
+            "ielts_academic": None,
+            "toefl": None
+        }
+        form = self.student_detailed_form
+        language_certificates = LanguageCertificate.objects.filter(student_detailed_info=form)
+
+        for exam_title in types:
+            if exam_title not in type_with_label:
+                raise Exception("Label for {} type is not provided.".format(exam_title))
+
+            label = type_with_label[exam_title]
+            data[exam_title.lower()] = self._review_language_certificate(form, exam_title, label)
+
+        if data.get("ielts_general"):
+            data["ielts_general"]["comment"] = CHANGE_GENERAL_WITH_ACADEMIC + data["ielts_general"]["comment"]
 
         no_comments = True
         for t in types:
@@ -78,6 +77,29 @@ class ReviewLanguageMixin:
 
         data["total_value"] = language_certificates.get_total_value()
         data["total_value_label"] = language_certificates.get_total_value_label()
+
+        return data
+
+    def _review_language_certificate(self, form, type, label):
+        data = None
+
+        language_certificates = LanguageCertificate.objects.filter(
+            student_detailed_info=form
+        )
+
+        language_type = language_certificates.get_from_this_type_or_none(
+            getattr(LanguageCertificate.LanguageCertificateType, type.upper())
+        )
+        if language_type:
+            obj = RegularLanguageCertificate.objects.get(id=language_type.id)
+            value_range = ValueRange(VALUES_WITH_ATTRS[label])
+            comment = value_range.find_value_attrs(obj.overall, 'comment')
+            data = {
+                "comment": comment,
+                "is_mock": obj.is_mock,
+                "value": obj.value_label,
+                "value_label": obj.value
+            }
 
         return data
 
@@ -100,7 +122,7 @@ class ReviewUniversityMixin:
             'phd': None,
             'master': None,
             'bachelor': None,
-            'no_field' : None
+            'no_field': None
         }
 
         if last_grade == GradeChoices.POST_DOC:
