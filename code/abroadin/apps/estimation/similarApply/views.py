@@ -5,8 +5,6 @@ from rest_framework.response import Response
 
 from abroadin.base.api.viewsets import CAPIView
 from abroadin.apps.estimation.form.models import WantToApply, StudentDetailedInfo
-from abroadin.apps.estimation.similarApply.models import AppliedStudentDetailedInfo, AppliedTo
-from abroadin.apps.estimation.similarApply.serializers import AppliedToExtendedSerializer
 from abroadin.apps.data.account.serializers import UniversitySerializer
 from abroadin.apps.data.account.models import University, Country
 from abroadin.apps.estimation.estimations.chances import AdmissionChance
@@ -56,7 +54,7 @@ class SimilarUniversitiesListView(CAPIView):
 
             return None
 
-        def _preferred_university_or_none(countries):
+        def _preferred_country_or_none(countries):
             canada = Country.objects.get(name="Canada")
             usa = Country.objects.get(name="United States")
 
@@ -96,8 +94,8 @@ class SimilarUniversitiesListView(CAPIView):
                 university = picked_universities["canada"][-1]
 
         elif not want_to_apply.universities.all().exists():
-            countries = Country.objects.all()
-            preferred_country = _preferred_university_or_none(countries)
+            countries = want_to_apply.countries.all()
+            preferred_country = _preferred_country_or_none(countries)
 
             if preferred_country == Country.objects.get(name="United States"):
                 universities = picked_universities["usa"]
@@ -112,7 +110,9 @@ class SimilarUniversitiesListView(CAPIView):
             universities = want_to_apply.universities.all().order_by('-rank')
             university = _acceptable_university(universities, admission_chance)
             if university is None:
-                university = universities.last()
+                university = _acceptable_university(picked_universities["canada"], admission_chance)
+                if university is None:
+                    university = picked_universities["canada"][-1]
 
         return UniversitySerializer(university, context={"request": self.request}).data
 
