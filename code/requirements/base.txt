@@ -5,6 +5,7 @@ asgiref==3.2.10
 attrs==19.1.0
 autopep8==1.4.4
 Babel==2.7.0
+backoff==1.6.0
 beautifulsoup4==4.9.1
 billiard==3.6.3.0
 bitcoin==1.1.42
@@ -36,7 +37,7 @@ django-phonenumber-field==5.0.0
 django-polymorphic==3.0.0
 django-rest-passwordreset==1.1.0
 django-rest-polymorphic==0.1.8
-django-rest-verification==0.42
+django-rest-verification==0.24
 django-storages==1.9.1
 django-tinymce==2.8.0
 djangorestframework==3.12.1
@@ -60,10 +61,12 @@ kombu==5.0.2
 lxml==4.5.0
 MarkupSafe==1.1.1
 matplotlib==3.0.3
+monotonic==1.5
 numpy==1.17.4
 packaging==20.4
 phonenumbers==8.12.11
-Pillow==7.2.0
+Pillow==7.1.1
+posthog==1.1.3
 prompt-toolkit==2.0.9
 psycopg2==2.8.3
 psycopg2-binary==2.8.4

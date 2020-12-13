@@ -1,3 +1,11 @@
+# Post Doc University
+
+POST_DOC_NO_SUPPORT = "Unfortunately, currently we do not support Postdoc students in this section but we are developing the system to support Postdoc students. We will inform you as soon as this section is ready for you. "
+
+# PHD University
+
+PHD_NO_SUPPORT = "Unfortunately, currently we do not support PhD students in this section but we are developing the system to support PhD students. We will inform you as soon as this section is ready for you. "
+
 # Master university
 
 MASTER_LAST_GRADE_TOP_850_COMMENTS = "Fortunately, your university is one of the top universities in Iran and professors know these universities. (it is difficult for the students of unpopular university because professors ignore the resume without any observation.) In short, congratulations. You pass the need for a good university "
@@ -50,7 +58,7 @@ BACHELOR_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_BETWEEN_16_18 = BACHELOR_LAST_GRADE_
 BACHELOR_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_ABOVE_18 = BACHELOR_LAST_GRADE_ABOVE_1100_START_TEXT + "Your GPA is very good and to some extent it covers the low rank of your university! if you Focus on a quality articles, you may be able to count on getting scholarships. it is not because of your university, your chance is zero! "
 
 # Age
-AGE_DESCRIPTION_COMMENT = "The age of the applicant is not very influential and is not considered as a barrier. It can only cause issues in some cases. Age can affect two things: getting accepted and getting visa. "
+AGE_DESCRIPTION_COMMENT = "The age of the applicant is not very influential and is not considered as a barrier. It can only cause issues in some cases. Age can affect two things: getting accepted and getting VISA. "
 
 NO_AGE_ENTERED_MESSAGE = "Since you didn't entered your age we have no comments for this section. Please enter your age to get comments. "
 
@@ -60,15 +68,15 @@ AGE_UNDER_28_WITH_LONG_ACADEMIC_BREAK = "Although you have a long academic gap, 
 
 AGE_BETWEEN_28_AND_30 = AGE_DESCRIPTION_COMMENT + "Your age doesn’t make any troubles. "
 AGE_BETWEEN_28_AND_30_WITHOUT_ACADEMIC_BREAK = AGE_BETWEEN_28_AND_30 + "You don’t have any educational gap. "
-AGE_BETWEEN_28_AND_30_WITH_ACADEMIC_BREAK = AGE_BETWEEN_28_AND_30 + "If you can, justify your educational gap in SOP and getting visa process with logical reasons that show your connection with your field. "
+AGE_BETWEEN_28_AND_30_WITH_ACADEMIC_BREAK = AGE_BETWEEN_28_AND_30 + "If you can, justify your educational gap in SOP and getting VISA process with logical reasons that show your connection with your field. "
 
-AGE_BETWEEN_30_AND_34 = AGE_DESCRIPTION_COMMENT + "You may say that you are too old, this does not cause any problems for admission, but it can be a little difficult to get a visa from more sensitive countries in getting visa. "
+AGE_BETWEEN_30_AND_34 = AGE_DESCRIPTION_COMMENT + "You may say that you are too old, this does not cause any problems for admission, but it can be a little difficult to get a VISA from more sensitive countries in getting VISA. "
 AGE_BETWEEN_30_AND_34_WITHOUT_ACADEMIC_BREAK = AGE_BETWEEN_30_AND_34 + "You wrote that you don’t have educational gap, so you can justify the relatively old age for the embassy. "
-AGE_BETWEEN_30_AND_34_WITH_ACADEMIC_BREAK = AGE_BETWEEN_30_AND_34 + "educational gap is more important than age, because you said you have educational gap, it may be a little difficult to get a visa and you need to make it less important with works related to your field. "
+AGE_BETWEEN_30_AND_34_WITH_ACADEMIC_BREAK = AGE_BETWEEN_30_AND_34 + "Educational gap is more important than age, because you said you have educational gap, it may be a little difficult to get a VISA and you need to make it less important with works related to your field. "
 
-AGE_ABOVE_34 = AGE_DESCRIPTION_COMMENT + "Your age probably causes some problems in getting accepted and getting visa. "
-AGE_ABOVE_34_WITHOUT_ACADEMIC_BREAK = AGE_ABOVE_34 + "Because you wrote that you don’t have any educational gap, so try to talk about your connection with academic environments in your SOP and visa process. "
-AGE_ABOVE_34_WITH_ACADEMIC_BREAK = AGE_ABOVE_34 + "educational gap is more important than age, because you said you have educational gap, it may be a little difficult to get a visa and you need to make it less important with works related to your field and you also should show high motivation to continue your education. "
+AGE_ABOVE_34 = AGE_DESCRIPTION_COMMENT + "Your age probably causes some problems in getting accepted and getting VISA. "
+AGE_ABOVE_34_WITHOUT_ACADEMIC_BREAK = AGE_ABOVE_34 + "Because you wrote that you don’t have any educational gap, so try to talk about your connection with academic environments in your SOP and VISA process. "
+AGE_ABOVE_34_WITH_ACADEMIC_BREAK = AGE_ABOVE_34 + "Educational gap is more important than age, because you said you have educational gap, it may be a little difficult to get a VISA and you need to make it less important with works related to your field and you also should show high motivation to continue your education. "
 
 # Publication
 
@@ -132,19 +140,19 @@ MASTER_HAS_AVERAGE_PUBLICATION_PLURAL = "با توجه به ارشد بودنت 
 MASTER_HAS_BAD_PUBLICATION_PLURAL = "دو مورد impact factor بالا و جزو نفرات اول مقاله بودن خیلی مهمه که متاسفانه این مقاله‌ها این دو مورد رو ندارن. "
 
 # Language Certificate
-IELTS_ACADEMIC_VERY_BAD = "Unfortunately, your IELTS score for admission is deficient. Regarding an IELTS band score 6 or lower, You need to know that it may be possible to apply to abroad universities, but this score is not high enough for middle and upper-level universities in Canada and the United States. It is not valid even for the minimum requirement of their language proficiency score. So it is almost necessary for you to retake the test and get a higher score. "
-IELTS_ACADEMIC_BAD = "IELTS band score 6 With a speaking band score above 6 is the minimum IELTS score that you may be able to get admission from some American, Canadian or European universities. We must say that the IELTS level scores are not high enough for abroad universities at all, and it is considered a low score. You may have trouble getting university admission, So maybe you need to retake the exam and get yourself a band score of 6.5 or 7. "
-IELTS_ACADEMIC_AVERAGE = "An IELTS band score of 6.5 is an average score for admission equal to or higher than the minimum language proficiency requirement for most American, Canadian and European universities. Given a large number of competitors, We must say that this score does not differentiate you from others and is considered an average score. "
-IELTS_ACADEMIC_GOOD = "Congratulations! The IELTS 7 band score is perfect for university admission, and now you can focus on other application processes without worrying about English proficiency. "
-IELTS_ACADEMIC_GREAT = "Congratulations! The IELTS band score of 7.5 and higher is rewardable for university admission and sets you apart from others! You can now safely focus on other aspects of your resume. "
+IELTS_ACADEMIC_VERY_BAD = "Unfortunately, your IELTS score for admission is deficient. Regarding an IELTS overall 6 or lower, You need to know that it may be possible to apply to abroad universities, but this score is not high enough for middle and upper-level universities in Canada and the United States. It is not valid even for the minimum requirement of their language proficiency score. So it is almost necessary for you to retake the test and get a higher score. "
+IELTS_ACADEMIC_BAD = "IELTS overall 6 with a speaking score above 6 is the minimum IELTS score that you may be able to get admission from some American, Canadian or European universities. We must say that the IELTS level scores are not high enough for abroad universities at all, and it is considered a low score. You may have trouble getting university admission, So maybe you need to retake the exam and get yourself a overall of 6.5 or 7. "
+IELTS_ACADEMIC_AVERAGE = "An IELTS overall of 6.5 is an average score for admission equal to or higher than the minimum language proficiency requirement for most American, Canadian and European universities. Given a large number of competitors, We must say that this score does not differentiate you from others and is considered an average score. "
+IELTS_ACADEMIC_GOOD = "Congratulations! The IELTS 7 overall is good for university admission, and now you can focus on other application processes without worrying about your English proficiency. "
+IELTS_ACADEMIC_GREAT = "Congratulations! The IELTS overall of 7.5 and higher is rewardale for university admission and sets you apart from others! You can now safely focus on other aspects of your resume. "
 
-CHANGE_GENERAL_WITH_ACADEMIC = "You need Academic IELTS to apply and study abroad. Universities do not accept general module, but assuming Academic IELTS  with the same band score, We must say that "
+CHANGE_GENERAL_WITH_ACADEMIC = "You need Academic IELTS to apply and study abroad. Universities do not accept general module, but assuming Academic IELTS with the same overall score, We must say that "
 
-TOEFL_VERY_BAD = "Unfortunately, your Toefl score for admission is deficient. Regarding a Toefl score of 78 or lower, You need to know that it may be possible to apply to abroad universities, but this score is not high enough for middle and upper-level universities in Canada and the United States. It is not valid even for the minimum requirement of their language proficiency score. So it is almost necessary for you to retake the test and get a higher score. "
-TOEFL_BAD = "Your Toefl score is the minimum score that you may be able to get admission from some American, Canadian or European universities. We must say that the IELTS level scores are not high enough for abroad universities at all, and it is considered a low score. You may have trouble getting university admission, So maybe you need to retake the exam and get yourself a 95 or higher score. "
-TOEFL_AVERAGE = "Toefl score of 92-100 is an average score for admission equal to or higher than the minimum language proficiency requirement for most American, Canadian and European universities. Given a large number of competitors, We must say that this score does not differentiate you from others and is considered an average score. "
-TOEFL_GOOD = "Congratulations! The Toefl score of 100-110 is perfect for university admission, and now you can focus on other application processes without worrying about English proficiency. "
-TOEFL_GREAT = "Congratulations! The Toefl score of 7.5 and higher is rewardable for university admission and sets you apart from others! You can now safely focus on other aspects of your resume. "
+TOEFL_VERY_BAD = "Unfortunately, your TOEFL score for admission is deficient. Regarding a TOEFL score of 78 or lower, You need to know that it may be possible to apply to abroad universities, but this score is not high enough for middle and upper-level universities in Canada and the United States. It is not valid even for the minimum requirement of their language proficiency score. So it is almost necessary for you to retake the test and get a higher score. "
+TOEFL_BAD = "Your TOEFL score is the minimum score that you may be able to get admission from some American, Canadian or European universities. We must say that the IELTS level scores are not high enough for abroad universities at all, and it is considered a low score. You may have trouble getting university admission, So maybe you need to retake the exam and get yourself a 95 or higher score. "
+TOEFL_AVERAGE = "TOEFL score of 92-100 is an average score for admission equal to or higher than the minimum language proficiency requirement for most American, Canadian and European universities. Given a large number of competitors, We must say that this score does not differentiate you from others and is considered an average score. "
+TOEFL_GOOD = "Congratulations! The TOEFL score of 100-110 is perfect for university admission, and now you can focus on other application processes without worrying about English proficiency documents. "
+TOEFL_GREAT = "Congratulations! The TOEFL score of 110 and higher is rewardable for university admission and sets you apart from others! You can now safely focus on other aspects of your resume. "
 
 NO_CERTIFICATE_COMMENT = "You did not enter any IELTS/TOEFL certificate, We strongly advise you to get IELTS or TOEFL since most of the universities require one of these documents. For special cases you can get a conditional admission without language certificates but it's in very rare cases so please get ready to one of these exams. For most of the universities it doesn't matter whether you have IELTS or TOEFL nowadays."
 

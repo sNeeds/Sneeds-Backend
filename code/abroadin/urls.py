@@ -39,6 +39,7 @@ urlpatterns = [
                   path('analyze/estimation/', include('abroadin.apps.estimation.estimations.urls')),
                   path('analyze/similars/', include('abroadin.apps.estimation.similarApply.urls')),
                   path('analyze/charts/', include('abroadin.apps.estimation.analyze.urls')),
+                  path('analytics/events/', include('abroadin.apps.analytics.events.urls')),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

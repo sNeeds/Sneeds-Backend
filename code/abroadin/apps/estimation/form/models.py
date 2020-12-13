@@ -400,13 +400,9 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         MALE = 'Male', 'Male'
         FEMALE = 'Female', 'Female'
 
-    @staticmethod
-    def _has_age(self):
-        if self.age is not None:
-            return True
-        return False
+    # If all of these functions return True the form completion definition satisfies
+    completed_funcs = {"_has_age", "_has_is_married", "_has_gender", "_has_university_through", "_has_want_to_apply"}
 
-    completed_funcs = [_has_age,]
     user = models.OneToOneField(
         User,
         null=True,
@@ -540,6 +536,10 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
 
         return value
 
+    def _has_age(self):
+        if self.age is not None:
+            return True
+        return False
 
     def _has_is_married(self):
         if self.is_married is not None:
@@ -556,14 +556,23 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
             return True
         return False
 
+    def get_want_to_apply_or_none(self):
+        try:
+            return WantToApply.objects.get(student_detailed_info__id=self.id)
+        except WantToApply.DoesNotExist:
+            return None
+
     def _has_want_to_apply(self):
-        if self.want_to_apply_qs.exists():
+        if self.get_want_to_apply_or_none():
             return True
         return False
 
     @property
-    def want_to_apply_qs(self):
-        return WantToApply.objects.filter(student_detailed_info__id=self.id)
+    def is_complete(self):
+        completed = True
+        for func_str in self.completed_funcs:
+            completed = completed & getattr(self, func_str)()
+        return completed
 
     def get_last_university_grade(self):
         return None if self.get_last_university_through() is None else self.get_last_university_through().grade

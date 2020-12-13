@@ -96,12 +96,18 @@ class ReviewUniversityMixin:
             last_grade_university = university_through.get(grade=self.last_grade)
 
         data = {
+            'post_doc': None,
             'phd': None,
             'master': None,
-            'bachelor': None
+            'bachelor': None,
+            'no_field' : None
         }
 
-        if last_grade == GradeChoices.MASTER:
+        if last_grade == GradeChoices.POST_DOC:
+            data['post_doc'] = POST_DOC_NO_SUPPORT
+        elif last_grade == GradeChoices.PHD:
+            data['phd'] = PHD_NO_SUPPORT
+        elif last_grade == GradeChoices.MASTER:
             if last_grade_university.university.rank < 850:
                 if last_grade_university.gpa <= 14:
                     data['master'] = MASTER_LAST_GRADE_TOP_850_COMMENTS_GPA_UNDER_14
@@ -173,6 +179,8 @@ class ReviewUniversityMixin:
                     data['bachelor'] = BACHELOR_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_BETWEEN_16_18
                 if 18 < last_grade_university.gpa:
                     data['bachelor'] = BACHELOR_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_ABOVE_18
+        else:
+            data['total_comment'] = "Please enter your previous degree to get comment in this section. "
 
         return data
 
