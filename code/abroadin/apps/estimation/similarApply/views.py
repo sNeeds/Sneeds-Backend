@@ -8,8 +8,8 @@ from abroadin.apps.estimation.form.models import WantToApply, StudentDetailedInf
 from abroadin.apps.estimation.similarApply.models import AppliedStudentDetailedInfo, AppliedTo
 from abroadin.apps.estimation.similarApply.serializers import AppliedToExtendedSerializer
 from abroadin.apps.data.account.serializers import UniversitySerializer
-from apps.data.account.models import University
-from apps.estimation.estimations.chances import AdmissionChance
+from abroadin.apps.data.account.models import University, Country
+from abroadin.apps.estimation.estimations.chances import AdmissionChance
 
 
 class SimilarUniversitiesListView(CAPIView):
@@ -46,43 +46,71 @@ class SimilarUniversitiesListView(CAPIView):
         return gpa
 
     def get_applied_university_data(self, form):
-        UNI_UNDER_20 = University.objects.get(name="Princeton University")
-        UNI_21_100 = University.objects.get(name="Princeton University")
-        UNI_101_400 = University.objects.get(name="Princeton University")
-        UNI_ABOVE_400 = University.objects.get(name="Princeton University")
+        def _acceptable_university(universities, admission_chance):
+            ACCEPTED_ADMISSION_CHANCE_VALUE = 0.4
 
-        ACCEPTED_ADMISSION_CHANCE = 0.4
+            for university in universities:
+                admission_chance_value = admission_chance.get_university_chance["admission"]
+                if ACCEPTED_ADMISSION_CHANCE_VALUE < admission_chance_value:
+                    return university
 
-        def generate_applied_university(admission_chance):
-            for university in {UNI_UNDER_20, UNI_21_100, UNI_101_400, UNI_ABOVE_400}:
-                
-                if ACCEPTED_ADMISSION_CHANCE admission_chance.get_university_chance()
-                return university
-            if admission_chance.university_chance(UNI_UNDER_20) > ACCEPTED_ADMISSION_CHANCE:
-                return UNI_UNDER_20
-            elif admission_chance.university_chance(UNI_21_100) > ACCEPTED_ADMISSION_CHANCE:
-                return UNI
+            return universities[-1]
 
-        admission_chance = AdmissionChance(form)
-        data = {
-            "top_20": admission_chance.get_1_to_20_chance(),
-            "20-100": admission_chance.get_21_to_100_chance(),
-            "100-400": admission_chance.get_101_to_400_chance(),
-            "+400": admission_chance.get_401_above_chance(),
+        def _preferred_university_or_none(countries):
+            canada = Country.objects.get("Canada")
+            usa = Country.objects.get("United States")
+
+            if canada in countries:
+                return canada
+            elif usa in countries:
+                return usa
+
+            return None
+
+        picked_universities = {
+            "usa": [
+                University.objects.get(name="Princeton University"),  # 12
+                University.objects.get(name="University of Washington"),  # 73
+                University.objects.get(name="University of Virginia"),  # 219
+                University.objects.get(name="Colorado State University"),  # 443
+            ],
+            "canada": [
+                University.objects.get(name="McGill University"),  # 33
+                University.objects.get(name="University of Alberta"),  # 120
+                University.objects.get(name="Université Laval"),  # 420
+            ],
+            "europe": [
+                University.objects.get("École Polytechnique Fédérale de Lausanne (EPFL)"),  # 14,
+                University.objects.get("The University of Melbourne"),  # 41,
+                University.objects.get("Politecnico di Milano"),  # 137,
+                University.objects.get("University of Trento"), # 406,
+            ]
         }
 
+        admission_chance = AdmissionChance(form)
         want_to_apply = form.get_want_to_apply_or_none()
 
         if not want_to_apply:
-            return None
+            university = _acceptable_university(picked_universities["canada"], admission_chance)
 
-        want_to_apply_universities = want_to_apply.universities.all()
-        if not want_to_apply_universities.exists():
-            return None
+        elif not want_to_apply.universities.all().exists():
+            countries = Country.objects.all()
+            preferred_country = _preferred_university_or_none(countries)
 
-        return UniversitySerializer(
-            want_to_apply_universities[0], context={"request": self.request}
-        ).data
+            if preferred_country == Country.objects.get("United States"):
+                universities = picked_universities["usa"]
+            elif preferred_country == Country.objects.get("Canada"):
+                universities = picked_universities["canada"]
+            else:
+                universities = picked_universities["europe"]
+
+            university = _acceptable_university(universities, admission_chance)
+
+        else:
+            universities = want_to_apply.universities.all().order_by('-rank')
+            university = _acceptable_university(universities, admission_chance)
+
+        return UniversitySerializer(university, context={"request": self.request}).data
 
     def get(self, request, form_id, format=None):
         form = self.get_form_obj(form_id)
