@@ -8,6 +8,8 @@ from abroadin.apps.estimation.form.models import WantToApply, StudentDetailedInf
 from abroadin.apps.estimation.similarApply.models import AppliedStudentDetailedInfo, AppliedTo
 from abroadin.apps.estimation.similarApply.serializers import AppliedToExtendedSerializer
 from abroadin.apps.data.account.serializers import UniversitySerializer
+from apps.data.account.models import University
+from apps.estimation.estimations.chances import AdmissionChance
 
 
 class SimilarUniversitiesListView(CAPIView):
@@ -44,6 +46,31 @@ class SimilarUniversitiesListView(CAPIView):
         return gpa
 
     def get_applied_university_data(self, form):
+        UNI_UNDER_20 = University.objects.get(name="Princeton University")
+        UNI_21_100 = University.objects.get(name="Princeton University")
+        UNI_101_400 = University.objects.get(name="Princeton University")
+        UNI_ABOVE_400 = University.objects.get(name="Princeton University")
+
+        ACCEPTED_ADMISSION_CHANCE = 0.4
+
+        def generate_applied_university(admission_chance):
+            for university in {UNI_UNDER_20, UNI_21_100, UNI_101_400, UNI_ABOVE_400}:
+                
+                if ACCEPTED_ADMISSION_CHANCE admission_chance.get_university_chance()
+                return university
+            if admission_chance.university_chance(UNI_UNDER_20) > ACCEPTED_ADMISSION_CHANCE:
+                return UNI_UNDER_20
+            elif admission_chance.university_chance(UNI_21_100) > ACCEPTED_ADMISSION_CHANCE:
+                return UNI
+
+        admission_chance = AdmissionChance(form)
+        data = {
+            "top_20": admission_chance.get_1_to_20_chance(),
+            "20-100": admission_chance.get_21_to_100_chance(),
+            "100-400": admission_chance.get_101_to_400_chance(),
+            "+400": admission_chance.get_401_above_chance(),
+        }
+
         want_to_apply = form.get_want_to_apply_or_none()
 
         if not want_to_apply:
