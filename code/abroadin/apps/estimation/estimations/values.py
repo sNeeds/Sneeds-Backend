@@ -307,7 +307,6 @@ VALUES_WITH_ATTRS = {
     ],
 }
 
-
 # Universities
 
 GREAT_UNIVERSITY_RANK = 100

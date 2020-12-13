@@ -47,18 +47,18 @@ class SimilarUniversitiesListView(CAPIView):
 
     def get_applied_university_data(self, form):
         def _acceptable_university(universities, admission_chance):
-            ACCEPTED_ADMISSION_CHANCE_VALUE = 0.4
+            ACCEPTED_ADMISSION_CHANCE_VALUE = 0.5
 
             for university in universities:
-                admission_chance_value = admission_chance.get_university_chance["admission"]
+                admission_chance_value = admission_chance.get_university_chance(university)["admission"]
                 if ACCEPTED_ADMISSION_CHANCE_VALUE < admission_chance_value:
                     return university
 
-            return universities[-1]
+            return None
 
         def _preferred_university_or_none(countries):
-            canada = Country.objects.get("Canada")
-            usa = Country.objects.get("United States")
+            canada = Country.objects.get(name="Canada")
+            usa = Country.objects.get(name="United States")
 
             if canada in countries:
                 return canada
@@ -80,10 +80,10 @@ class SimilarUniversitiesListView(CAPIView):
                 University.objects.get(name="Université Laval"),  # 420
             ],
             "europe": [
-                University.objects.get("École Polytechnique Fédérale de Lausanne (EPFL)"),  # 14,
-                University.objects.get("The University of Melbourne"),  # 41,
-                University.objects.get("Politecnico di Milano"),  # 137,
-                University.objects.get("University of Trento"), # 406,
+                University.objects.get(name="École Polytechnique Fédérale de Lausanne (EPFL)"),  # 14,
+                University.objects.get(name="The University of Melbourne"),  # 41,
+                University.objects.get(name="Politecnico di Milano"),  # 137,
+                University.objects.get(name="University of Trento"),  # 406,
             ]
         }
 
@@ -92,14 +92,16 @@ class SimilarUniversitiesListView(CAPIView):
 
         if not want_to_apply:
             university = _acceptable_university(picked_universities["canada"], admission_chance)
+            if university is None:
+                university = picked_universities["canada"][-1]
 
         elif not want_to_apply.universities.all().exists():
             countries = Country.objects.all()
             preferred_country = _preferred_university_or_none(countries)
 
-            if preferred_country == Country.objects.get("United States"):
+            if preferred_country == Country.objects.get(name="United States"):
                 universities = picked_universities["usa"]
-            elif preferred_country == Country.objects.get("Canada"):
+            elif preferred_country == Country.objects.get(name="Canada"):
                 universities = picked_universities["canada"]
             else:
                 universities = picked_universities["europe"]
@@ -109,6 +111,8 @@ class SimilarUniversitiesListView(CAPIView):
         else:
             universities = want_to_apply.universities.all().order_by('-rank')
             university = _acceptable_university(universities, admission_chance)
+            if university is None:
+                university = universities.last()
 
         return UniversitySerializer(university, context={"request": self.request}).data
 

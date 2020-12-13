@@ -10,7 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from abroadin.apps.estimation.estimations import values
 from abroadin.apps.estimation.estimations.classes import ValueRange
-from abroadin.apps.estimation.estimations.values import VALUES_WITH_ATTRS
+from abroadin.apps.estimation.estimations.values import VALUES_WITH_ATTRS, LANGUAGE_B_VALUE
 from abroadin.apps.estimation.form.labels import MISSING_LABEL, REWARDED_LABEL
 from abroadin.apps.estimation.form.managers import \
     (UniversityThroughQuerySetManager,
@@ -84,17 +84,15 @@ class WantToApply(models.Model):
         on_delete=models.CASCADE,
         related_name="want_to_apply"
     )
-    countries = models.ManyToManyField(Country)
+    countries = models.ManyToManyField(Country, blank=True)
 
-    universities = models.ManyToManyField(University)
+    universities = models.ManyToManyField(University, blank=True)
 
-    grades = models.ManyToManyField(Grade)
+    grades = models.ManyToManyField(Grade, blank=True)
 
-    majors = models.ManyToManyField(Major)
+    majors = models.ManyToManyField(Major, blank=True)
 
-    semester_years = models.ManyToManyField(
-        SemesterYear,
-    )
+    semester_years = models.ManyToManyField(SemesterYear, blank=True)
 
 
 class Publication(models.Model):
@@ -510,8 +508,7 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         if languages.exists():
             total_value += languages.get_total_value()
         else:  # when user inputted nothing
-            MODERATE_LANGUAGE
-            total_value += 0.6
+            total_value += LANGUAGE_B_VALUE
 
         total_value += publications.total_value()
 
