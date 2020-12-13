@@ -1,6 +1,6 @@
 from django.core.serializers import serialize
 from django.db import transaction
-from django.db.models.signals import pre_save, pre_delete, post_save, post_delete
+from django.db.models.signals import pre_save, pre_delete, post_save, post_delete, m2m_changed
 
 from abroadin.apps.estimation.analyze import update_charts
 from abroadin.apps.estimation.form.serializers import StudentDetailedInfoCelerySerializer
@@ -40,17 +40,6 @@ def pre_save_student_detailed_info(sender, instance, *args, **kwargs):
     update_charts.update_charts_sdi_creation(data=data, db_data=db_data, is_delete=False)
 
 
-def pre_delete_student_detailed_info(sender, instance, *args, **kwargs):
-    data = form_serializers.StudentDetailedInfoCelerySerializer(instance).data
-    db_data = None
-
-    update_charts.update_powerful_recommendation_chart.delay(data=data, db_data=db_data, is_delete=True)
-    update_charts.update_olympiad_chart.delay(data=data, db_data=db_data, is_delete=True)
-    update_charts.update_related_work_experience_chart.delay(data=data, db_data=db_data, is_delete=True)
-
-    update_charts.update_charts_sdi_deletion(instance=instance, db_instance=None, is_delete=True)
-
-
 def pre_save_publication(sender, instance, *args, **kwargs):
     instance.value = compute_publication_value(instance)
 
@@ -72,34 +61,18 @@ def pre_save_publication(sender, instance, *args, **kwargs):
     update_charts.update_publication_impact_factor_chart.delay(data=data, db_data=db_data, is_delete=False)
 
 
-def pre_delete_publication(sender, instance, *args, **kwargs):
-    instance.value = compute_publication_value(instance)
+def pre_save_university_through(sender, instance, *args, **kwargs):
+    instance.value = instance.compute_value()
 
+    if instance._state.adding is True and instance._state.db is None:
+        db_instance = None
+    else:
+        try:
+            db_instance = UniversityThrough.objects.get(pk=instance.pk)
+        except UniversityThrough.DoesNotExist:
+            db_instance = None
 
-def post_delete_publication(sender, instance, *args, **kwargs):
-    try:
-        StudentDetailedInfo.objects.get(id=instance.student_detailed_info.id)
-        sdi_exists = True
-    except StudentDetailedInfo.DoesNotExist:
-        sdi_exists = False
-
-    data = serialize('json', [instance])
-    db_data = None
-
-    if sdi_exists:
-        update_charts.update_publication_count_chart(instance=instance, db_instance=None, is_delete=True)
-        update_charts.update_publications_score_chart(instance=instance, db_instance=None, is_delete=True)
-
-    update_charts.update_publication_type_chart.delay(data=data, db_data=db_data, is_delete=True)
-    update_charts.update_publication_impact_factor_chart.delay(data=data, db_data=db_data, is_delete=True)
-
-
-def post_save_student_detailed_info(sender, instance, *args, **kwargs):
-    update_student_detailed_info_ranks.delay()
-
-
-def post_save_publication(sender, instance, *args, **kwargs):
-    instance.student_detailed_info.save()
+    update_charts.update_gpa_chart(instance, db_instance, is_delete=False)
 
 
 def pre_save_language_certificate(sender, instance, *args, **kwargs):
@@ -117,6 +90,37 @@ def pre_save_language_certificate(sender, instance, *args, **kwargs):
     update_charts.update_language_certificates_charts.delay(data=data, db_data=db_data, is_delete=False)
 
 
+def post_save_language_certificate(sender, instance, *args, **kwargs):
+    instance.student_detailed_info.save()
+
+
+def post_save_student_detailed_info(sender, instance, *args, **kwargs):
+    update_student_detailed_info_ranks.delay()
+
+
+def post_save_university_through(sender, instance, *args, **kwargs):
+    instance.student_detailed_info.save()
+
+
+def post_save_publication(sender, instance, *args, **kwargs):
+    instance.student_detailed_info.save()
+
+
+def pre_delete_student_detailed_info(sender, instance, *args, **kwargs):
+    data = form_serializers.StudentDetailedInfoCelerySerializer(instance).data
+    db_data = None
+
+    update_charts.update_powerful_recommendation_chart.delay(data=data, db_data=db_data, is_delete=True)
+    update_charts.update_olympiad_chart.delay(data=data, db_data=db_data, is_delete=True)
+    update_charts.update_related_work_experience_chart.delay(data=data, db_data=db_data, is_delete=True)
+
+    update_charts.update_charts_sdi_deletion(instance=instance, db_instance=None, is_delete=True)
+
+
+def pre_delete_publication(sender, instance, *args, **kwargs):
+    instance.value = compute_publication_value(instance)
+
+
 def pre_delete_language_certificate(sender, instance, *args, **kwargs):
     data = update_charts.serialize_language_certificate(instance)
     db_data = None
@@ -131,36 +135,36 @@ def pre_delete_language_certificate(sender, instance, *args, **kwargs):
         update_charts.update_language_certificates_charts.delay(data=data, db_data=db_data, is_delete=True)
 
 
-def post_save_language_certificate(sender, instance, *args, **kwargs):
-    instance.student_detailed_info.save()
-
-
-def pre_save_university_through(sender, instance, *args, **kwargs):
-    instance.value = instance.compute_value()
-
-    if instance._state.adding is True and instance._state.db is None:
-        db_instance = None
-    else:
-        try:
-            db_instance = UniversityThrough.objects.get(pk=instance.pk)
-        except UniversityThrough.DoesNotExist:
-            db_instance = None
-
-    data = serialize('json', [instance])
-    db_data = None if db_instance is None else serialize('json', [db_instance])
-
-    update_charts.update_gpa_chart(instance, db_instance, is_delete=False)
-
-
 def pre_delete_university_through(sender, instance, *args, **kwargs):
-    data = serialize('json', [instance])
-    db_data = None
     db_instance = None
-
     update_charts.update_gpa_chart(instance, db_instance, is_delete=True)
 
 
-def post_save_university_through(sender, instance, *args, **kwargs):
+def post_delete_publication(sender, instance, *args, **kwargs):
+    instance.student_detailed_info.save()
+
+    try:
+        StudentDetailedInfo.objects.get(id=instance.student_detailed_info.id)
+        sdi_exists = True
+    except StudentDetailedInfo.DoesNotExist:
+        sdi_exists = False
+
+    data = serialize('json', [instance])
+    db_data = None
+
+    if sdi_exists:
+        update_charts.update_publication_count_chart(instance=instance, db_instance=None, is_delete=True)
+        update_charts.update_publications_score_chart(instance=instance, db_instance=None, is_delete=True)
+
+    update_charts.update_publication_type_chart.delay(data=data, db_data=db_data, is_delete=True)
+    update_charts.update_publication_impact_factor_chart.delay(data=data, db_data=db_data, is_delete=True)
+
+
+def post_delete_university_through(sender, instance, *args, **kwargs):
+    instance.student_detailed_info.save()
+
+
+def post_delete_language_certificate(sender, instance, *args, **kwargs):
     instance.student_detailed_info.save()
 
 
@@ -170,16 +174,19 @@ for subclass in LanguageCertificate.__subclasses__():
     pre_save.connect(pre_save_language_certificate, sender=subclass)
     post_save.connect(post_save_language_certificate, sender=subclass)
     pre_delete.connect(pre_delete_language_certificate, sender=subclass)
+    post_delete.connect(post_delete_language_certificate, sender=subclass)
 
 for subclass in RegularLanguageCertificate.__subclasses__():
     pre_save.connect(pre_save_language_certificate, sender=subclass)
     post_save.connect(post_save_language_certificate, sender=subclass)
     pre_delete.connect(pre_delete_language_certificate, sender=subclass)
+    post_delete.connect(post_delete_language_certificate, sender=subclass)
 
 for subclass in GRESubjectCertificate.__subclasses__():
     pre_save.connect(pre_save_language_certificate, sender=subclass)
     post_save.connect(post_save_language_certificate, sender=subclass)
     pre_delete.connect(pre_delete_language_certificate, sender=subclass)
+    post_delete.connect(post_delete_language_certificate, sender=subclass)
 
 pre_save.connect(pre_save_student_detailed_info, sender=StudentDetailedInfo)
 pre_save.connect(pre_save_publication, sender=Publication)
@@ -196,3 +203,4 @@ pre_delete.connect(pre_delete_university_through, sender=UniversityThrough)
 pre_delete.connect(pre_delete_student_detailed_info, sender=StudentDetailedInfo)
 
 post_delete.connect(post_delete_publication, sender=Publication)
+post_delete.connect(post_delete_university_through, sender=UniversityThrough)
