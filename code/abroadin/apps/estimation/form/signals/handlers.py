@@ -95,7 +95,8 @@ def post_save_language_certificate(sender, instance, *args, **kwargs):
 
 
 def post_save_student_detailed_info(sender, instance, *args, **kwargs):
-    update_student_detailed_info_ranks.delay()
+    # update_student_detailed_info_ranks()
+    pass
 
 
 def post_save_university_through(sender, instance, *args, **kwargs):
