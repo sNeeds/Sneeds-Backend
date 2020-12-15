@@ -26,19 +26,19 @@ class Profile(object):
             "match_percent": self.match_percent,
             "language_certificate": self.language_certificate,
             "home": {
-                "university": UniversitySerializer(self.home_university),
+                "university": self.home_university.name,
                 "major": self.home_major.name
             },
             "accepted_destination": {
-                "university": UniversitySerializer(self.destination_university),
+                "university": self.destination_university.name,
                 "major": self.destination_major.name,
                 "grade": self.destination_grade,
                 "scholarship": self.destination_scholarship
             },
             "rejected_destination": {
-                "university": UniversitySerializer(self.destination_rejected_university),
+                "university": self.destination_rejected_university.name,
                 "year": self.destination_rejected_year,
-                "major": self.destination_rejected_major,
+                "major": self.destination_rejected_major.name,
                 "scholarship": self.destination_rejected_scholarship
             },
             "accepted_universities_number": self.accepted_universities_number,
