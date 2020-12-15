@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class SimilarapplyConfig(AppConfig):
-    name = 'similarApply'
+class SimilarProfilesConfig(AppConfig):
+    name = 'similarProfiles'
