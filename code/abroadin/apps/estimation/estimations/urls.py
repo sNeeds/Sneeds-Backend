@@ -10,6 +10,4 @@ urlpatterns = [
          name="form-admission-ranking-chance"),
     path('form/<uuid:form_id>/want-to-apply-chance/', views.WantToApplyChance.as_view(),
          name="want-to-apply-chance"),
-
-    path('akbar/', views.AkbarView.as_view()),
 ]
