@@ -40,6 +40,7 @@ urlpatterns = [
                   path('analyze/similars/', include('abroadin.apps.estimation.similarApply.urls')),
                   path('analyze/charts/', include('abroadin.apps.estimation.analyze.urls')),
                   path('analytics/events/', include('abroadin.apps.analytics.events.urls')),
+                  path('test/similar-profiles/', include('abroadin.apps.testapps.similarProfiles.urls')),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
