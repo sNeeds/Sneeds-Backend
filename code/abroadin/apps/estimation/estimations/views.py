@@ -68,12 +68,3 @@ class WantToApplyChance(CAPIView):
 
         except WantToApply.DoesNotExist:
             return Response({})
-
-
-class AkbarView(CAPIView):
-    def get(self, request, *args, **kwargs):
-        for obj in StudentDetailedInfo.objects.filter(value=0.22000000000000003):
-            try:
-                obj.delete()
-            except:
-                pass
