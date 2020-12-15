@@ -564,12 +564,12 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
             return None
 
     def _has_want_to_apply(self):
-        t = (True, [1, 2])
-
-        def __bool__(self):
-            return self[0]
-
-        t.__bool__ = __bool__
+        # t = (True, [1, 2])
+        #
+        # def __bool__(self):
+        #     return self[0]
+        #
+        # t.__bool__ = __bool__
         check_fields = ['countries', 'grades', 'semester_years']
         want_to_apply = self.get_want_to_apply_or_none()
         if want_to_apply:
