@@ -73,4 +73,7 @@ class WantToApplyChance(CAPIView):
 class AkbarView(CAPIView):
     def get(self, request, *args, **kwargs):
         for obj in StudentDetailedInfo.objects.filter(value=0.22000000000000003):
-            obj.delete()
+            try:
+                obj.delete()
+            except:
+                pass
