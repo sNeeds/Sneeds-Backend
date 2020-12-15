@@ -1,10 +1,10 @@
 from django.shortcuts import render
 from rest_framework.response import Response
 
+from abroadin.base.api.viewsets import CAPIView
 from abroadin.apps.testapps.similarProfiles.profiles import Profile
 from abroadin.apps.data.account.models import University, Major
 from abroadin.apps.estimation.form.models import GradeChoices, StudentDetailedInfo
-from base.api.viewsets import CAPIView
 
 
 class SimilarProfiles(CAPIView):
