@@ -11,6 +11,8 @@ from abroadin.apps.data.account.serializers import UniversitySerializer
 
 
 class SimilarUniversitiesListView(CAPIView):
+    lookup_url_kwarg = 'form_id'
+
     def get_form_obj(self, form_id):
         try:
             return StudentDetailedInfo.objects.get(id=form_id)
@@ -58,6 +60,8 @@ class SimilarUniversitiesListView(CAPIView):
         ).data
 
     def get(self, request, form_id, format=None):
+        self.kwargs[self.lookup_url_kwarg] = form_id
+
         form = self.get_form_obj(form_id)
 
         data = [

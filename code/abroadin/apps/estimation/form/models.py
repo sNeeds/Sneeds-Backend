@@ -403,6 +403,7 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
     # If all of these functions return True the form completion definition satisfies
     completed_funcs = {"_has_age", "_has_is_married", "_has_gender", "_has_university_through", "_has_want_to_apply"}
 
+
     user = models.OneToOneField(
         User,
         null=True,
@@ -563,8 +564,22 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
             return None
 
     def _has_want_to_apply(self):
-        if self.get_want_to_apply_or_none():
-            return True
+        t = (True, [1, 2])
+
+        def __bool__(self):
+            return self[0]
+
+        t.__bool__ = __bool__
+        check_fields = ['countries', 'grades', 'semester_years']
+        want_to_apply = self.get_want_to_apply_or_none()
+        if want_to_apply:
+            completed = True
+            non_complete_fields = []
+            for field in check_fields:
+                if not getattr(want_to_apply, field).exists():
+                    non_complete_fields.append(field)
+                    completed = False
+            return completed
         return False
 
     @property

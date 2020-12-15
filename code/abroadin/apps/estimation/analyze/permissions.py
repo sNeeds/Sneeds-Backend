@@ -6,7 +6,7 @@ from abroadin.apps.estimation.form.models import StudentDetailedInfo
 class IsFormOwner(BasePermission):
     def has_permission(self, request, view):
         user = request.user
-        sdi_id = view.kwargs.get('student_form', None)
+        sdi_id = view.kwargs.get('form_id', None)
 
         if sdi_id and user and user.is_authenticated:
             try:
