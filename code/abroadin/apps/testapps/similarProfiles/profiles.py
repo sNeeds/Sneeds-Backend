@@ -27,6 +27,7 @@ class Profile(object):
             "language_certificate": self.language_certificate,
             "home": {
                 "university": self.home_university.name,
+                "country": self.home_university.country.name,
                 "major": self.home_major.name
             },
             "accepted_destination": {
