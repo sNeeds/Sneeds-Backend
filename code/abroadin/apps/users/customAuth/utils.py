@@ -51,8 +51,9 @@ def create_contact(email, *args, **kwargs):
 def update_contact_inductor(user):
     # print('update_contact_inductor')
     # print(user.receive_marketing_email)
+    phone_number = None if user.phone_number is None else str(user.phone_number)
     update_contact.delay(user.email, first_name=user.first_name, last_name=user.last_name,
-                         phone_number=str(user.phone_number), opt_in=user.is_email_verified,
+                         phone_number=phone_number, opt_in=user.is_email_verified,
                          receive_marketing_email=user.receive_marketing_email,
                          lists=perform_appropriate_lists(user))
 
