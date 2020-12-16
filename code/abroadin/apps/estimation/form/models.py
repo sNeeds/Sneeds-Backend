@@ -52,6 +52,11 @@ class GradeChoices(models.TextChoices):
     def order_num(cls, grade):
         return cls.values.index(grade)
 
+    @classmethod
+    def higher_grade_or_same(cls, grade):
+        next_grade_index = min(cls.order_num(grade) + 1, len(cls.values) - 1)
+        return cls.values[next_grade_index]
+
 
 class SemesterYear(models.Model):
     class SemesterChoices(models.TextChoices):

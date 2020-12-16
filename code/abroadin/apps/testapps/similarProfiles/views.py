@@ -18,7 +18,7 @@ class SimilarProfiles(CAPIView):
     def get_form(self):
         return self.form
 
-    def get_destination_university(self):
+    def destination_university(self):
         def _acceptable_university(universities, admission_chance):
             ACCEPTED_ADMISSION_CHANCE_VALUE = 0.5
 
@@ -90,12 +90,17 @@ class SimilarProfiles(CAPIView):
                 if university is None:
                     university = picked_universities["canada"][-1]
 
-        return UniversitySerializer(university, context={"request": self.request}).data
+        return university
+
+    def nearest_university(self, university):
+        return University.objects.filter(
+            country=university.country,
+            rank__gt=university.rank
+        ).order_by('rank').first()
 
     def _create_profile_1(self):
         profile = Profile()
         form = self.get_form()
-        want_to_apply = form.get_want_to_apply_or_none()
         last_university_through = form.last_university_through()
 
         profile.match_percent = "91"
@@ -104,15 +109,18 @@ class SimilarProfiles(CAPIView):
         profile.home_major = last_university_through.major
 
         profile.accepted_universities_number = 4
-        profile.destination_university = self.get_destination_university()
+        profile.destination_university = self.destination_university()
         profile.destination_major = last_university_through.major
-        profile.destination_grade = GradeChoices.PHD
-        profile.destination_scholarship = "Full Fund (21000$/Y)"
+        profile.destination_grade = GradeChoices.higher_grade_or_same(last_university_through.grade)
+        profile.destination_scholarship = "Full Fund - 21000$/Y"
 
         profile.rejected_universities_number = 3
-        profile.destination_rejected_university = University.objects.get(name="University of Oxford")
+        profile.destination_rejected_university = self.nearest_university(profile.destination_university)
         profile.destination_rejected_year = 2019
-        profile.destination_rejected_major = Major.objects.get(name="Computer science")
+        if last_university_through.major.parent_major:
+            profile.destination_rejected_major = last_university_through.major.parent_major
+        else:
+            profile.destination_rejected_major = last_university_through.major
         profile.destination_rejected_scholarship = "No fund granted"
 
         return profile
