@@ -58,7 +58,6 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 ROOT_URLCONF = 'abroadin.urls'
 
 MIDDLEWARE = [
-
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',  # For per-request translation

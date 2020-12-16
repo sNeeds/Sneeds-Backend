@@ -92,10 +92,10 @@ class SimilarProfiles(CAPIView):
 
         return university
 
-    def nearest_university(self, university):
+    def near_university(self, university, ranks_above):
         return University.objects.filter(
             country=university.country,
-            rank__gt=university.rank
+            rank__gte=university.rank + ranks_above
         ).order_by('rank').first()
 
     def _create_profile_1(self):
@@ -103,10 +103,13 @@ class SimilarProfiles(CAPIView):
         form = self.get_form()
         last_university_through = form.last_university_through()
 
-        profile.match_percent = "91"
+        profile.match_percent = "91%"
         profile.language_certificate = "7.5 Overall"
         profile.home_university = last_university_through.university
-        profile.home_major = last_university_through.major
+        if last_university_through.major.parent_major:
+            profile.home_major = last_university_through.major.parent_major
+        else:
+            profile.home_major = last_university_through.major
 
         profile.accepted_universities_number = 4
         profile.destination_university = self.destination_university()
@@ -115,8 +118,8 @@ class SimilarProfiles(CAPIView):
         profile.destination_scholarship = "Full Fund - 21000$/Y"
 
         profile.rejected_universities_number = 3
-        profile.destination_rejected_university = self.nearest_university(profile.destination_university)
-        profile.destination_rejected_year = 2019
+        profile.destination_rejected_university = self.near_university(profile.destination_university, 1)
+        profile.destination_rejected_year = "Winter 2019"
         if last_university_through.major.parent_major:
             profile.destination_rejected_major = last_university_through.major.parent_major
         else:
@@ -125,11 +128,35 @@ class SimilarProfiles(CAPIView):
 
         return profile
 
+    def _create_profile_2(self):
+        profile = Profile()
+        form = self.get_form()
+        last_university_through = form.last_university_through()
+
+        profile.match_percent = "85%"
+        profile.language_certificate = "7 Overall"
+        profile.home_university = last_university_through.university
+        profile.home_major = last_university_through.major
+
+        profile.accepted_universities_number = 2
+        profile.destination_university = self.near_university(self.destination_university(), 2)
+        profile.destination_major = last_university_through.major
+        profile.destination_grade = GradeChoices.higher_grade_or_same(last_university_through.grade)
+        profile.destination_scholarship = "Full Fund - 25000$/Y"
+
+        profile.rejected_universities_number = 5
+        profile.destination_rejected_university = self.near_university(profile.destination_university, 1)
+        profile.destination_rejected_year = "Fall 2020"
+        profile.destination_rejected_major = last_university_through.major
+        profile.destination_rejected_scholarship = "No fund granted"
+
+        return profile
+
     def get(self, request, form_id, format=None):
         self.set_form(form_id)
 
         profile_1 = self._create_profile_1()
-        profile_2 = self._create_profile_1()
+        profile_2 = self._create_profile_2()
 
         data = {
             "profiles": [
