@@ -35,10 +35,18 @@ from abroadin.apps.estimation.form.validators import \
 
 
 class GradeChoices(models.TextChoices):
+    "Don't change order"
     BACHELOR = 'Bachelor', 'Bachelor'
     MASTER = 'Master', 'Master'
     PHD = 'PH.D', 'PH.D'
     POST_DOC = 'Post Doc', 'Post Doc'
+
+    @classmethod
+    def get_ordered(cls):
+        """
+        From low to high. e.g. Bachelor, Master, ...
+        """
+        return cls.values
 
 
 class SemesterYear(models.Model):
@@ -363,26 +371,13 @@ class StudentDetailedInfoBase(models.Model):
         return found
 
     def last_university_through(self):
-        last_university_through = None
+        qs = UniversityThrough.objects.filter(student_detailed_info__id=self.id)
+        ordered_qs = qs.order_by_grade()
 
-        university_through = UniversityThrough.objects.filter(
-            student_detailed_info__id=self.id
-        )
-        post_doc = university_through.get_post_doc()
-        phd = university_through.get_phd()
-        master = university_through.get_master()
-        bachelor = university_through.get_bachelor()
+        if ordered_qs.exists():
+            return ordered_qs.last()
 
-        if post_doc:
-            last_university_through = post_doc
-        elif phd:
-            last_university_through = phd
-        elif master:
-            last_university_through = master
-        elif bachelor:
-            last_university_through = bachelor
-
-        return last_university_through
+        return None
 
     def language_certificates_str(self):
         return LanguageCertificate.objects.filter(student_detailed_info__id=self.id).brief_str()

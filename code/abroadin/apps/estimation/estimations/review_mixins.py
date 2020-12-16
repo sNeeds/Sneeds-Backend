@@ -124,7 +124,6 @@ class ReviewLanguageMixin:
 
 class ReviewUniversityMixin:
     def review_universities(self):
-        last_grade = self.last_grade
         university_through = UniversityThrough.objects.filter(
             student_detailed_info=self.student_detailed_form
         )
@@ -135,6 +134,7 @@ class ReviewUniversityMixin:
         if self.last_grade:
             last_grade_university = university_through.get(grade=self.last_grade)
 
+        last_grade = self.last_grade
         data = {
             'post_doc': None,
             'phd': None,

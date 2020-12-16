@@ -7,33 +7,18 @@ from ..estimations.values import VALUES_WITH_ATTRS
 
 
 class UniversityThroughQuerySetManager(models.QuerySet):
-    def get_bachelor(self):
-        from abroadin.apps.estimation.form.models import GradeChoices
-        try:
-            return self.all().get(grade=GradeChoices.BACHELOR)
-        except self.model.DoesNotExist:
-            return None
+    def order_by_grade(self):
+        """
+        First object is lowest one. e.g. Bachelor, Master, ...
+        """
+        from .models import GradeChoices
 
-    def get_master(self):
-        from abroadin.apps.estimation.form.models import GradeChoices
-        try:
-            return self.all().get(grade=GradeChoices.MASTER)
-        except self.model.DoesNotExist:
-            return None
+        qs = self.none()
 
-    def get_phd(self):
-        from abroadin.apps.estimation.form.models import GradeChoices
-        try:
-            return self.all().get(grade=GradeChoices.PHD)
-        except self.model.DoesNotExist:
-            return None
+        for grade in GradeChoices.get_ordered():
+            qs |= self.filter(grade=grade)
 
-    def get_post_doc(self):
-        from abroadin.apps.estimation.form.models import GradeChoices
-        try:
-            return self.all().get(grade=GradeChoices.POST_DOC)
-        except self.model.DoesNotExist:
-            return None
+        return qs
 
 
 class LanguageCertificateQuerySetManager(models.QuerySet):

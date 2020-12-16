@@ -18,7 +18,7 @@ class SimilarProfiles(CAPIView):
     def get_form(self):
         return self.form
 
-    def get_applied_university_data(self, form):
+    def get_destination_university(self):
         def _acceptable_university(universities, admission_chance):
             ACCEPTED_ADMISSION_CHANCE_VALUE = 0.5
 
@@ -60,6 +60,7 @@ class SimilarProfiles(CAPIView):
             ]
         }
 
+        form = self.form
         admission_chance = AdmissionChance(form)
         want_to_apply = form.get_want_to_apply_or_none()
 
@@ -103,8 +104,8 @@ class SimilarProfiles(CAPIView):
         profile.home_major = last_university_through.major
 
         profile.accepted_universities_number = 4
-        profile.destination_university = University.objects.get(name="McGill University")
-        profile.destination_major = Major.objects.get(name="Computer science")
+        profile.destination_university = self.get_destination_university()
+        profile.destination_major = last_university_through.major
         profile.destination_grade = GradeChoices.PHD
         profile.destination_scholarship = "Full Fund (21000$/Y)"
 
