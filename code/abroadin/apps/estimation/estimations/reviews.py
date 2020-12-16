@@ -15,7 +15,7 @@ class StudentDetailedFormReview(
 
     def _set_grade(self):
         self.last_grade = self.student_detailed_form.get_last_university_grade()
-        self.last_university_through = self.student_detailed_form.get_last_university_through()
+        self.last_university_through = self.student_detailed_form.last_university_through()
 
     def _rank(self):
         return self.student_detailed_form.rank

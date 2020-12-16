@@ -3,8 +3,10 @@ from rest_framework.response import Response
 
 from abroadin.base.api.viewsets import CAPIView
 from abroadin.apps.testapps.similarProfiles.profiles import Profile
-from abroadin.apps.data.account.models import University, Major
+from abroadin.apps.data.account.models import University, Major, Country
 from abroadin.apps.estimation.form.models import GradeChoices, StudentDetailedInfo
+from abroadin.apps.estimation.estimations.chances import AdmissionChance
+from abroadin.apps.data.account.serializers import UniversitySerializer
 
 
 class SimilarProfiles(CAPIView):
@@ -16,13 +18,89 @@ class SimilarProfiles(CAPIView):
     def get_form(self):
         return self.form
 
+    def get_applied_university_data(self, form):
+        def _acceptable_university(universities, admission_chance):
+            ACCEPTED_ADMISSION_CHANCE_VALUE = 0.5
+
+            for university in universities:
+                admission_chance_value = admission_chance.get_university_chance(university)["admission"]
+                if ACCEPTED_ADMISSION_CHANCE_VALUE < admission_chance_value:
+                    return university
+
+            return None
+
+        def _preferred_country_or_none(countries):
+            canada = Country.objects.get(name="Canada")
+            usa = Country.objects.get(name="United States")
+
+            if canada in countries:
+                return canada
+            elif usa in countries:
+                return usa
+
+            return None
+
+        picked_universities = {
+            "usa": [
+                University.objects.get(name="Princeton University"),  # 12
+                University.objects.get(name="University of Washington"),  # 73
+                University.objects.get(name="University of Virginia"),  # 219
+                University.objects.get(name="Colorado State University"),  # 443
+            ],
+            "canada": [
+                University.objects.get(name="McGill University"),  # 33
+                University.objects.get(name="University of Alberta"),  # 120
+                University.objects.get(name="Université Laval"),  # 420
+            ],
+            "europe": [
+                University.objects.get(name="École Polytechnique Fédérale de Lausanne (EPFL)"),  # 14,
+                University.objects.get(name="The University of Melbourne"),  # 41,
+                University.objects.get(name="Politecnico di Milano"),  # 137,
+                University.objects.get(name="University of Trento"),  # 406,
+            ]
+        }
+
+        admission_chance = AdmissionChance(form)
+        want_to_apply = form.get_want_to_apply_or_none()
+
+        if not want_to_apply:
+            university = _acceptable_university(picked_universities["canada"], admission_chance)
+            if university is None:
+                university = picked_universities["canada"][-1]
+
+        elif not want_to_apply.universities.all().exists():
+            countries = want_to_apply.countries.all()
+            preferred_country = _preferred_country_or_none(countries)
+
+            if preferred_country == Country.objects.get(name="United States"):
+                universities = picked_universities["usa"]
+            elif preferred_country == Country.objects.get(name="Canada"):
+                universities = picked_universities["canada"]
+            else:
+                universities = picked_universities["europe"]
+
+            university = _acceptable_university(universities, admission_chance)
+
+        else:
+            universities = want_to_apply.universities.all().order_by('-rank')
+            university = _acceptable_university(universities, admission_chance)
+            if university is None:
+                university = _acceptable_university(picked_universities["canada"], admission_chance)
+                if university is None:
+                    university = picked_universities["canada"][-1]
+
+        return UniversitySerializer(university, context={"request": self.request}).data
+
     def _create_profile_1(self):
         profile = Profile()
+        form = self.get_form()
+        want_to_apply = form.get_want_to_apply_or_none()
+        last_university_through = form.last_university_through()
 
         profile.match_percent = "91"
-        profile.language_certificate = "IELTS 7"
-        profile.home_university = University.objects.get(name="McGill University")
-        profile.home_major = Major.objects.get(name="Computer science")
+        profile.language_certificate = "7.5 Overall"
+        profile.home_university = last_university_through.university
+        profile.home_major = last_university_through.major
 
         profile.accepted_universities_number = 4
         profile.destination_university = University.objects.get(name="McGill University")
