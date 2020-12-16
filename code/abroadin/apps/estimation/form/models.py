@@ -48,6 +48,10 @@ class GradeChoices(models.TextChoices):
         """
         return cls.values
 
+    @classmethod
+    def order_num(cls, grade):
+        return cls.values.index(grade)
+
 
 class SemesterYear(models.Model):
     class SemesterChoices(models.TextChoices):

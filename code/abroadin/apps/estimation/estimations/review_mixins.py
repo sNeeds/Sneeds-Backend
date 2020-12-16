@@ -178,7 +178,7 @@ class ReviewUniversityMixin:
                 if 18 < last_grade_university.gpa:
                     data['master'] = MASTER_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_ABOVE_18
 
-            bachelor = university_through.get_bachelor()
+            bachelor = university_through.get_grade_or_none(grade=GradeChoices.BACHELOR)
             if bachelor is not None:
                 if bachelor.gpa <= 14:
                     data['bachelor'] = MASTER_WITH_BACHELOR_BAD_GPA

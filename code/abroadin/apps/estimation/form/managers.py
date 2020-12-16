@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import Q, F
+from django.db.models import Q, F, Case, When, Value, IntegerField
 
 from abroadin.base.mixins.manager import GetListManagerMixin
 from ..estimations.classes import ValueRange
@@ -9,16 +9,34 @@ from ..estimations.values import VALUES_WITH_ATTRS
 class UniversityThroughQuerySetManager(models.QuerySet):
     def order_by_grade(self):
         """
-        First object is lowest one. e.g. Bachelor, Master, ...
+            Returns from lower to higher grade. e.g, Bachelor, Master, ...
         """
         from .models import GradeChoices
 
-        qs = self.none()
+        q_list = []
+        when_list = []
 
         for grade in GradeChoices.get_ordered():
-            qs |= self.filter(grade=grade)
+            q = Q(grade=grade)
+            when = When(q, then=Value(GradeChoices.order_num(grade)))
+
+            q_list.append(q)
+            when_list.append(when)
+
+        qs = self.all().annotate(
+            grade_ordering=Case(
+                *when_list,
+                output_field=IntegerField())
+        ).order_by('grade_ordering')
 
         return qs
+
+
+def get_grade_or_none(self, grade):
+    try:
+        return self.all().get(grade=grade)
+    except self.model.DoesNotExist:
+        return None
 
 
 class LanguageCertificateQuerySetManager(models.QuerySet):
