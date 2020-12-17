@@ -32,12 +32,14 @@ class Profile(object):
             },
             "accepted_destination": {
                 "university": self.destination_university.name,
+                "country" : self.destination_university.country.name,
                 "major": self.destination_major.name,
                 "grade": self.destination_grade,
                 "scholarship": self.destination_scholarship
             },
             "rejected_destination": {
                 "university": self.destination_rejected_university.name,
+                "country": self.destination_rejected_university.country.name,
                 "year": self.destination_rejected_year,
                 "major": self.destination_rejected_major.name,
                 "scholarship": self.destination_rejected_scholarship
