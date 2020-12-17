@@ -196,10 +196,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             setattr(instance, key, value)
         instance.save()
 
+    # TODO: Move to ModelAdmin and change export_as_csv IMPORTANT - Bad design
     def has_form(self):
         from abroadin.apps.estimation.form.models import StudentDetailedInfo
         return StudentDetailedInfo.objects.filter(user__id=self.id).exists()
 
+    # TODO: Move to ModelAdmin and change export_as_csv IMPORTANT - Bad design
     def home_university(self):
         from abroadin.apps.estimation.form.models import StudentDetailedInfo
 
@@ -215,7 +217,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         last_grade = university_through_qs.order_by_grade().last()
 
         return last_grade.university
-
 
 
 class StudentProfile(models.Model):
