@@ -97,7 +97,6 @@ class StudentDetailedInfoBaseAdmin(admin.ModelAdmin):
 class StudentDetailedInfoAdmin(StudentDetailedInfoBaseAdmin):
     inlines = [WantToApplyInline] + StudentDetailedInfoBaseAdmin.inlines
     list_filter = (
-
         ('updated', DateTimeRangeFilter),
         ('created', DateTimeRangeFilter),
     )

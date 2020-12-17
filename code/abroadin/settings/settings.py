@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'abroadin.apps.estimation.analyze',
     'abroadin.apps.data.account',
     'abroadin.apps.analytics.events',
+    'abroadin.apps.testapps.similarProfiles',
 
     'django.contrib.auth',
     'django.contrib.admin',
@@ -57,7 +58,6 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 ROOT_URLCONF = 'abroadin.urls'
 
 MIDDLEWARE = [
-
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',  # For per-request translation

@@ -1,17 +1,13 @@
 import decimal
 
 from django.http import Http404
-
 from rest_framework.response import Response
-from rest_framework.exceptions import NotFound
 
-from abroadin.base.api.generics import CGenericAPIView
 from abroadin.base.api.viewsets import CAPIView
-
 from abroadin.apps.estimation.form.models import WantToApply, StudentDetailedInfo
-from abroadin.apps.estimation.similarApply.models import AppliedStudentDetailedInfo, AppliedTo
-from abroadin.apps.estimation.similarApply.serializers import AppliedToExtendedSerializer
 from abroadin.apps.data.account.serializers import UniversitySerializer
+from abroadin.apps.data.account.models import University, Country
+from abroadin.apps.estimation.estimations.chances import AdmissionChance
 from abroadin.apps.estimation.form.permissions import CompletedForm
 
 
@@ -23,22 +19,22 @@ class SimilarUniversitiesListView(CAPIView):
         try:
             return StudentDetailedInfo.objects.get(id=form_id)
         except StudentDetailedInfo.DoesNotExist:
-            raise Http404
+            return Http404
 
     def get_home_university(self, form):
-        last_university_through = form.get_last_university_through()
+        last_university_through = form.last_university_through()
         return last_university_through.university.name if last_university_through is not None else None
 
     def get_home_university_gpa(self, form):
-        last_university_through = form.get_last_university_through()
+        last_university_through = form.last_university_through()
         return last_university_through.gpa if last_university_through is not None else None
 
     def get_major(self, form):
-        last_university_through = form.get_last_university_through()
+        last_university_through = form.last_university_through()
         return last_university_through.major.name if last_university_through is not None else None
 
     def get_gpa(self, form):
-        last_university_through = form.get_last_university_through()
+        last_university_through = form.last_university_through()
         gpa = last_university_through.gpa if last_university_through is not None else None
 
         if gpa:
@@ -52,21 +48,79 @@ class SimilarUniversitiesListView(CAPIView):
         return gpa
 
     def get_applied_university_data(self, form):
+        def _acceptable_university(universities, admission_chance):
+            ACCEPTED_ADMISSION_CHANCE_VALUE = 0.5
+
+            for university in universities:
+                admission_chance_value = admission_chance.get_university_chance(university)["admission"]
+                if ACCEPTED_ADMISSION_CHANCE_VALUE < admission_chance_value:
+                    return university
+
+            return None
+
+        def _preferred_country_or_none(countries):
+            canada = Country.objects.get(name="Canada")
+            usa = Country.objects.get(name="United States")
+
+            if canada in countries:
+                return canada
+            elif usa in countries:
+                return usa
+
+            return None
+
+        picked_universities = {
+            "usa": [
+                University.objects.get(name="Princeton University"),  # 12
+                University.objects.get(name="University of Washington"),  # 73
+                University.objects.get(name="University of Virginia"),  # 219
+                University.objects.get(name="Colorado State University"),  # 443
+            ],
+            "canada": [
+                University.objects.get(name="McGill University"),  # 33
+                University.objects.get(name="University of Alberta"),  # 120
+                University.objects.get(name="Université Laval"),  # 420
+            ],
+            "europe": [
+                University.objects.get(name="École Polytechnique Fédérale de Lausanne (EPFL)"),  # 14,
+                University.objects.get(name="The University of Melbourne"),  # 41,
+                University.objects.get(name="Politecnico di Milano"),  # 137,
+                University.objects.get(name="University of Trento"),  # 406,
+            ]
+        }
+
+        admission_chance = AdmissionChance(form)
         want_to_apply = form.get_want_to_apply_or_none()
 
         if not want_to_apply:
-            return None
+            university = _acceptable_university(picked_universities["canada"], admission_chance)
+            if university is None:
+                university = picked_universities["canada"][-1]
 
-        want_to_apply_universities = want_to_apply.universities.all()
-        if not want_to_apply_universities.exists():
-            return None
+        elif not want_to_apply.universities.all().exists():
+            countries = want_to_apply.countries.all()
+            preferred_country = _preferred_country_or_none(countries)
 
-        return UniversitySerializer(
-            want_to_apply_universities[0], context={"request": self.request}
-        ).data
+            if preferred_country == Country.objects.get(name="United States"):
+                universities = picked_universities["usa"]
+            elif preferred_country == Country.objects.get(name="Canada"):
+                universities = picked_universities["canada"]
+            else:
+                universities = picked_universities["europe"]
+
+            university = _acceptable_university(universities, admission_chance)
+
+        else:
+            universities = want_to_apply.universities.all().order_by('-rank')
+            university = _acceptable_university(universities, admission_chance)
+            if university is None:
+                university = _acceptable_university(picked_universities["canada"], admission_chance)
+                if university is None:
+                    university = picked_universities["canada"][-1]
+
+        return UniversitySerializer(university, context={"request": self.request}).data
 
     def get(self, request, form_id, format=None):
-
         form = self.get_form_obj(form_id)
 
         data = [
