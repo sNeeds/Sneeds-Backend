@@ -7,6 +7,8 @@ from django.core.validators import MinValueValidator, MaxValueValidator, FileExt
 from django.db import models
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
+from rest_framework.settings import api_settings
+from rest_framework.exceptions import ValidationError as DRFValidationError
 
 from abroadin.apps.estimation.estimations import values
 from abroadin.apps.estimation.estimations.classes import ValueRange
@@ -28,10 +30,11 @@ from abroadin.apps.data.account.models import \
      BasicFormField)
 
 from abroadin.apps.data.account.validators import validate_resume_file_size, ten_factor_validator
-from abroadin.apps.estimation.form.decorators import regular_certificate_or_none
+from abroadin.apps.estimation.form.decorators import regular_certificate_or_none, set_variable
 from abroadin.apps.estimation.form.validators import \
     (validate_ielts_score, validate_toefl_overall_score,
      validate_toefl_section_score)
+from abroadin.base.python.classes import BooleanList
 
 
 class GradeChoices(models.TextChoices):
@@ -401,8 +404,25 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         FEMALE = 'Female', 'Female'
 
     # If all of these functions return True the form completion definition satisfies
-    completed_funcs = {"_has_age", "_has_is_married", "_has_gender", "_has_university_through", "_has_want_to_apply"}
-
+    # The keys are function names
+    completed_credentials = [
+        {'function_name': "_has_age",
+         'information': {'section': 'personal', 'model': 'StudentDetailedInfo', 'fields': ['age'], 'id': 1},
+         },
+        {'function_name': "_has_is_married",
+         'information': {'section': 'personal', 'model': 'StudentDetailedInfo', 'fields': ['is_married'], 'id': 2},
+         },
+        {'function_name': "_has_gender",
+         'information': {'section': 'personal', 'model': 'StudentDetailedInfo', 'fields': ['gender'], 'id': 3},
+         },
+        {'function_name': "_has_university_through",
+         'information': {'section': 'academic_degree', 'model': 'UniversityThrough', 'fields': [], 'id': 4},
+         },
+        {'function_name': "_has_want_to_apply",
+         'information': {'section': 'apply_destination', 'model': 'WantToApply',
+                         'fields': ['countries', 'grades', 'semester_years'], 'id': 5},
+         },
+    ]
 
     user = models.OneToOneField(
         User,
@@ -538,24 +558,37 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         return value
 
     def _has_age(self):
+        res = BooleanList()
+        # return True
         if self.age is not None:
             return True
         return False
+        # return res.append(['age'])
+    # _has_age = set_variable(_has_age, 'check_fields', ['age'])
 
     def _has_is_married(self):
+        # res = BooleanList()
+        # self._has_is_married.check_fields = ['is_married']
         if self.is_married is not None:
             return True
         return False
+        # return res.append(['is_married'])
 
     def _has_gender(self):
+        # res = BooleanList()
+        # self._has_gender.check_fields = ['gender']
         if self.gender is not None:
             return True
         return False
+        # return res.append(['gender'])
 
     def _has_university_through(self):
+        # res = BooleanList()
+        # self._has_university_through.check_fields = []
         if self.universities.all().exists():
             return True
         return False
+        # return res.append([])
 
     def get_want_to_apply_or_none(self):
         try:
@@ -564,30 +597,56 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
             return None
 
     def _has_want_to_apply(self):
-        # t = (True, [1, 2])
-        #
-        # def __bool__(self):
-        #     return self[0]
-        #
-        # t.__bool__ = __bool__
+        # res = BooleanList()
         check_fields = ['countries', 'grades', 'semester_years']
+        # self._has_want_to_apply.check_fields = check_fields
         want_to_apply = self.get_want_to_apply_or_none()
-        if want_to_apply:
-            completed = True
-            non_complete_fields = []
-            for field in check_fields:
-                if not getattr(want_to_apply, field).exists():
-                    non_complete_fields.append(field)
-                    completed = False
-            return completed
-        return False
+        if not want_to_apply:
+            return False
+        completed = True
+        non_complete_fields = []
+        for field in check_fields:
+            if not getattr(want_to_apply, field).exists():
+                non_complete_fields.append(field)
+                completed = False
+        return completed
 
     @property
     def is_complete(self):
         completed = True
-        for func_str in self.completed_funcs:
-            completed = completed & getattr(self, func_str)()
+        for credential in self.completed_credentials:
+            print(completed)
+            completed = completed & getattr(self, credential.get('function_name'))()
         return completed
+
+    def check_is_completed(self, raise_exception=True) -> (bool, list):
+        # print('is compl', self.is_complete)
+        errors = []
+        completed = True
+        for credential in self.completed_credentials:
+            # function = getattr(self, credential['function_name'])
+            # sub_completed = function()
+            if not getattr(self, credential['function_name'])():
+                # t = []
+                # for tt in credential['information']:
+                #     t.append(ValidationError({tt: credential['information'][tt]}))
+                # print(t)
+                # print(sub_completed)
+                # detail = credential['information']
+                # detail['fields'] = sub_completed[1]
+                # print(function.check_fields)
+                # errors.append(detail)
+                errors.append(credential['information'])
+                # errors.append(ValidationError({credential['information']['section']: t}))
+                # errors.append(t)
+                # print(credential['information'])
+                completed = False
+        if not completed and raise_exception:
+            # print(errors)
+            raise DRFValidationError({
+                api_settings.NON_FIELD_ERRORS_KEY: {'incomplete_form': errors}
+            })
+        return completed, errors
 
     def get_last_university_grade(self):
         return None if self.get_last_university_through() is None else self.get_last_university_through().grade

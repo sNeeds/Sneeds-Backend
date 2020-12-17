@@ -1,23 +1,29 @@
 import decimal
 
 from django.http import Http404
-from rest_framework.response import Response
 
+from rest_framework.response import Response
+from rest_framework.exceptions import NotFound
+
+from abroadin.base.api.generics import CGenericAPIView
 from abroadin.base.api.viewsets import CAPIView
+
 from abroadin.apps.estimation.form.models import WantToApply, StudentDetailedInfo
 from abroadin.apps.estimation.similarApply.models import AppliedStudentDetailedInfo, AppliedTo
 from abroadin.apps.estimation.similarApply.serializers import AppliedToExtendedSerializer
 from abroadin.apps.data.account.serializers import UniversitySerializer
+from abroadin.apps.estimation.form.permissions import CompletedForm
 
 
 class SimilarUniversitiesListView(CAPIView):
     lookup_url_kwarg = 'form_id'
+    permission_classes = [CompletedForm]
 
     def get_form_obj(self, form_id):
         try:
             return StudentDetailedInfo.objects.get(id=form_id)
         except StudentDetailedInfo.DoesNotExist:
-            return Http404
+            raise Http404
 
     def get_home_university(self, form):
         last_university_through = form.get_last_university_through()
@@ -60,7 +66,6 @@ class SimilarUniversitiesListView(CAPIView):
         ).data
 
     def get(self, request, form_id, format=None):
-        self.kwargs[self.lookup_url_kwarg] = form_id
 
         form = self.get_form_obj(form_id)
 

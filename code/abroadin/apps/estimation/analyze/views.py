@@ -1,3 +1,5 @@
+from django.utils.translation import gettext_lazy as _
+
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework import status
@@ -17,6 +19,9 @@ class BaseChartsAPIView(c_generics.BaseGenericAPIView):
 
     def get(self, request, *args, **kwargs):
         form_id = self.kwargs.get(self.lookup_url_kwarg, None)
+        assert form_id is not None, \
+            _('Missing form id lookup_url_kwarg "{}" in view {} kwargs.'.format(self.lookup_url_kwarg, str(self)))
+
         if form_id is None:
             raise NotFound(detail="No from found!")
 

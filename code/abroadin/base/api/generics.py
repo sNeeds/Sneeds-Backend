@@ -31,6 +31,8 @@ class CGenericAPIView(CAPIView):
     pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
 
     def get_queryset(self):
+        print("get query_set called")
+
         """
         Get the list of items for this view.
         This must be an iterable, and may be a queryset.

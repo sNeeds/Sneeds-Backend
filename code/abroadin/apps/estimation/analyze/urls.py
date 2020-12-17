@@ -1,7 +1,7 @@
 from django.urls import path
 from abroadin.apps.estimation.analyze import views
 
-app_name = "analyze"
+app_name = "estimation.analyze"
 
 urlpatterns = [
     path('<uuid:form_id>/publication/', views.PublicationChartsRetrieveAPIView.as_view(),
@@ -13,6 +13,6 @@ urlpatterns = [
     path('<uuid:form_id>/other/', views.OtherChartsRetrieveAPIView.as_view(),
          name='other-charts'),
 
-    path('akbar/', views.AkbarView.as_view(),
-         name='other-charts'),
+    # path('akbar/', views.AkbarView.as_view(),
+    #      name='other-charts'),
 ]

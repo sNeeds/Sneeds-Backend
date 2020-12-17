@@ -37,10 +37,10 @@ class WantToApplyAPITest(FormAPITests):
         self.local_user = User.objects.create_user(email="t1@g.com", password="user1234")
 
     def _want_to_apply_list(self, *args, **kwargs):
-        return self._test_form('estimation.form:want-to-apply-list', *args, **kwargs)
+        return self._endpoint_test_method('estimation.form:want-to-apply-list', *args, **kwargs)
 
     def _want_to_apply_detail(self, *args, **kwargs):
-        return self._test_form('estimation.form:want-to-apply-detail', *args, **kwargs)
+        return self._endpoint_test_method('estimation.form:want-to-apply-detail', *args, **kwargs)
 
     def test_want_to_apply_list_get_200_1(self):
         data = self._want_to_apply_list(

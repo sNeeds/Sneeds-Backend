@@ -16,6 +16,7 @@ from abroadin.apps.estimation.form.models import (
 )
 
 from .test_base import SimilarApplyAppAPITests
+from abroadin.apps.estimation.form.tests.apis.form_completion.base import BaseTests as FormCompletionBaseTests
 
 User = get_user_model()
 
@@ -82,3 +83,17 @@ class SimilarUniversitiesAPITests(SimilarApplyAppAPITests):
         )
         data = self._test_similar_universities("get", None, status.HTTP_200_OK, reverse_args=self.app_form_1.id)
         self.assertEqual(data[0]['language_certificate'], "TOEFL 90.0 & IELTS General 8.0")
+
+
+class EndpointMethodMixin:
+    def _similar_universities(self, *args, **kwargs):
+        return self._endpoint_test_method('similar_apply:similar-universities', *args, **kwargs)
+
+    def _endpoint_method(self, *args, **kwargs):
+        return self._similar_universities(*args, **kwargs)
+
+
+class FormCommentsAPITestsFormCompletionTests(EndpointMethodMixin, FormCompletionBaseTests):
+
+    def setUp(self) -> None:
+        super().setUp()

@@ -40,10 +40,10 @@ class UniversityThroughAPITest(FormAPITests):
         self.local_user = User.objects.create_user(email="t1@g.com", password="user1234")
 
     def _university_through_list(self, *args, **kwargs):
-        return self._test_form('estimation.form:university-through-list', *args, **kwargs)
+        return self._endpoint_test_method('estimation.form:university-through-list', *args, **kwargs)
 
     def _university_through_detail(self, *args, **kwargs):
-        return self._test_form('estimation.form:university-through-detail', *args, **kwargs)
+        return self._endpoint_test_method('estimation.form:university-through-detail', *args, **kwargs)
 
     def test_university_through_list_get_200_1(self):
         data = self._university_through_list(

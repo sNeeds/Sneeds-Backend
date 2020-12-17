@@ -1,15 +1,19 @@
+from django.db.models import QuerySet
 from django.http import Http404
 from rest_framework.response import Response
 
+from abroadin.apps.estimation.form.permissions import CompletedForm
 from abroadin.base.api.viewsets import CAPIView
 
 from abroadin.apps.estimation.form.models import WantToApply, StudentDetailedInfo
 from abroadin.apps.estimation.estimations.reviews import StudentDetailedFormReview
 from abroadin.apps.estimation.estimations.chances import AdmissionChance
+from abroadin.base.api.generics import CGenericAPIView
 
 
 class FormComments(CAPIView):
     lookup_url_kwarg = 'form_id'
+    permission_classes = [CompletedForm]
 
     def get_form_obj(self, form_id):
         try:
@@ -27,6 +31,7 @@ class FormComments(CAPIView):
 
 class AdmissionRankingChance(CAPIView):
     lookup_url_kwarg = 'form_id'
+    permission_classes = [CompletedForm]
 
     def get_form_obj(self, form_id):
         try:
@@ -51,6 +56,7 @@ class AdmissionRankingChance(CAPIView):
 
 class WantToApplyChance(CAPIView):
     lookup_url_kwarg = 'form_id'
+    permission_classes = [CompletedForm]
 
     def get_form_obj(self, form_id):
         try:

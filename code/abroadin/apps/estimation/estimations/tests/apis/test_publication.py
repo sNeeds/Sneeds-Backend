@@ -5,14 +5,7 @@ from rest_framework import status
 from .test_base import EstimationsAppAPITests
 from abroadin.apps.estimation.form.models import (
     StudentDetailedInfo,
-    Grade,
-    WantToApply,
-    SemesterYear,
-    UniversityThrough,
-    GradeChoices,
     Publication,
-    RegularLanguageCertificate,
-    LanguageCertificate
 )
 
 User = get_user_model()
