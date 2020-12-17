@@ -36,6 +36,7 @@ class EndpointMethodMixin:
 
 
 class WantToApplyChanceFormCompletionTests(EndpointMethodMixin, FormCompletionBaseTests):
+    include_in_test = True
 
     def setUp(self) -> None:
         super().setUp()

@@ -14,6 +14,7 @@ User = get_user_model()
 
 
 class BaseTests(EstimationBaseTest):
+    include_in_test = False
 
     def setUp(self) -> None:
 
@@ -57,11 +58,15 @@ class BaseTests(EstimationBaseTest):
         raise NotImplementedError
 
     def test_completed_form_get_charts_200(self):
+        if not self.include_in_test:
+            return
         self._endpoint_method(
             'get', self.user1, status.HTTP_200_OK, reverse_args=self.completed_sdi_1.id
         )
 
     def test_incomplete_form_age_get_charts_400(self):
+        if not self.include_in_test:
+            return
         self.completed_sdi_1.age = None
         self.completed_sdi_1.save()
         data = self._endpoint_method(
@@ -79,6 +84,8 @@ class BaseTests(EstimationBaseTest):
         )
 
     def test_incomplete_form_is_married_get_charts_400(self):
+        if not self.include_in_test:
+            return
         self.completed_sdi_1.is_married = None
         self.completed_sdi_1.save()
         data = self._endpoint_method(
@@ -93,6 +100,8 @@ class BaseTests(EstimationBaseTest):
         )
 
     def test_incomplete_form_gender_get_charts_400(self):
+        if not self.include_in_test:
+            return
         self.completed_sdi_1.gender = None
         self.completed_sdi_1.save()
         data = self._endpoint_method(
@@ -107,6 +116,8 @@ class BaseTests(EstimationBaseTest):
         )
 
     def test_incomplete_form_university_through_get_charts_400(self):
+        if not self.include_in_test:
+            return
         self.completed_sdi_1.universities.set([])
         data = self._endpoint_method(
             'get', self.user1, status.HTTP_400_BAD_REQUEST, reverse_args=self.completed_sdi_1.id
@@ -120,6 +131,8 @@ class BaseTests(EstimationBaseTest):
         )
 
     def test_incomplete_form_no_want_to_apply_get_charts_400(self):
+        if not self.include_in_test:
+            return
         self.completed_sdi_1.want_to_apply.delete()
         data = self._endpoint_method(
             'get', self.user1, status.HTTP_400_BAD_REQUEST, reverse_args=self.completed_sdi_1.id
@@ -133,6 +146,8 @@ class BaseTests(EstimationBaseTest):
         )
 
     def test_incomplete_form_want_to_apply_no_countries_get_charts_400(self):
+        if not self.include_in_test:
+            return
         self.completed_sdi_1.want_to_apply.countries.set([])
         data = self._endpoint_method(
             'get', self.user1, status.HTTP_400_BAD_REQUEST, reverse_args=self.completed_sdi_1.id
@@ -146,6 +161,8 @@ class BaseTests(EstimationBaseTest):
         )
 
     def test_incomplete_form_want_to_apply_no_grades_get_charts_400(self):
+        if not self.include_in_test:
+            return
         self.completed_sdi_1.want_to_apply.grades.set([])
         data = self._endpoint_method(
             'get', self.user1, status.HTTP_400_BAD_REQUEST, reverse_args=self.completed_sdi_1.id
@@ -159,6 +176,8 @@ class BaseTests(EstimationBaseTest):
         )
 
     def test_incomplete_form_want_to_apply_no_semester_years_get_charts_400(self):
+        if not self.include_in_test:
+            return
         self.completed_sdi_1.want_to_apply.semester_years.set([])
         data = self._endpoint_method(
             'get', self.user1, status.HTTP_400_BAD_REQUEST, reverse_args=self.completed_sdi_1.id
@@ -172,18 +191,24 @@ class BaseTests(EstimationBaseTest):
         )
 
     def test_incomplete_form_want_to_apply_no_universities_get_charts_200(self):
+        if not self.include_in_test:
+            return
         self.completed_sdi_1.want_to_apply.universities.set([])
         data = self._endpoint_method(
             'get', self.user1, status.HTTP_200_OK, reverse_args=self.completed_sdi_1.id
         )
 
     def test_incomplete_form_want_to_apply_no_majors_get_charts_200(self):
+        if not self.include_in_test:
+            return
         self.completed_sdi_1.want_to_apply.majors.set([])
         data = self._endpoint_method(
             'get', self.user1, status.HTTP_200_OK, reverse_args=self.completed_sdi_1.id
         )
 
     def test_incomplete_form_no_age_want_to_apply_no_semester_years_get_charts_400(self):
+        if not self.include_in_test:
+            return
         self.completed_sdi_1.want_to_apply.semester_years.set([])
         self.completed_sdi_1.age = None
         self.completed_sdi_1.save()
@@ -203,6 +228,8 @@ class BaseTests(EstimationBaseTest):
         )
 
     def test_incomplete_form_no_is_married_want_to_apply_no_countries_get_charts_400(self):
+        if not self.include_in_test:
+            return
         self.completed_sdi_1.want_to_apply.countries.set([])
         self.completed_sdi_1.is_married = None
         self.completed_sdi_1.save()
