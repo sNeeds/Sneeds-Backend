@@ -572,32 +572,21 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         if self.age is not None:
             return True
         return False
-        # return res.append(['age'])
-    # _has_age = set_variable(_has_age, 'check_fields', ['age'])
 
     def _has_is_married(self):
-        # res = BooleanList()
-        # self._has_is_married.check_fields = ['is_married']
         if self.is_married is not None:
             return True
         return False
-        # return res.append(['is_married'])
 
     def _has_gender(self):
-        # res = BooleanList()
-        # self._has_gender.check_fields = ['gender']
         if self.gender is not None:
             return True
         return False
-        # return res.append(['gender'])
 
     def _has_university_through(self):
-        # res = BooleanList()
-        # self._has_university_through.check_fields = []
         if self.universities.all().exists():
             return True
         return False
-        # return res.append([])
 
     def get_want_to_apply_or_none(self):
         try:
@@ -606,9 +595,7 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
             return None
 
     def _has_want_to_apply(self):
-        # res = BooleanList()
         check_fields = ['countries', 'grades', 'semester_years']
-        # self._has_want_to_apply.check_fields = check_fields
         want_to_apply = self.get_want_to_apply_or_none()
         if not want_to_apply:
             return False
@@ -624,34 +611,17 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
     def is_complete(self):
         completed = True
         for credential in self.completed_credentials:
-            print(completed)
             completed = completed & getattr(self, credential.get('function_name'))()
         return completed
 
     def check_is_completed(self, raise_exception=True) -> (bool, list):
-        # print('is compl', self.is_complete)
         errors = []
         completed = True
         for credential in self.completed_credentials:
-            # function = getattr(self, credential['function_name'])
-            # sub_completed = function()
             if not getattr(self, credential['function_name'])():
-                # t = []
-                # for tt in credential['information']:
-                #     t.append(ValidationError({tt: credential['information'][tt]}))
-                # print(t)
-                # print(sub_completed)
-                # detail = credential['information']
-                # detail['fields'] = sub_completed[1]
-                # print(function.check_fields)
-                # errors.append(detail)
                 errors.append(credential['information'])
-                # errors.append(ValidationError({credential['information']['section']: t}))
-                # errors.append(t)
-                # print(credential['information'])
                 completed = False
         if not completed and raise_exception:
-            # print(errors)
             raise DRFValidationError({
                 api_settings.NON_FIELD_ERRORS_KEY: {'incomplete_form': errors}
             })
