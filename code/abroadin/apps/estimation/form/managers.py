@@ -24,9 +24,7 @@ class UniversityThroughQuerySetManager(models.QuerySet):
             when_list.append(when)
 
         qs = self.all().annotate(
-            grade_ordering=Case(
-                *when_list,
-                output_field=IntegerField())
+            grade_ordering=Case(*when_list, output_field=IntegerField())
         ).order_by('grade_ordering')
 
         return qs

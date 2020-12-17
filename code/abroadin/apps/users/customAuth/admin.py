@@ -5,6 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 from rangefilter.filter import DateTimeRangeFilter
 
 from abroadin.utils.custom.admin.actions import export_as_csv_action
+from abroadin.apps.estimation.form.models import StudentDetailedInfo
 from .models import CustomUser, StudentProfile
 from .forms import CustomUserChangeForm, CustomUserCreationForm
 
@@ -34,14 +35,20 @@ class CustomUserAdmin(UserAdmin):
     )
     form = CustomUserChangeForm
     add_form = CustomUserCreationForm
-    list_display = ('email', 'get_full_name', 'is_email_verified', 'user_type', 'is_staff', 'date_last_action',
-                    'date_joined')
+    list_display = (
+        'email', 'has_form', 'get_full_name', 'is_email_verified', 'user_type', 'is_staff', 'date_last_action',
+        'date_joined')
     search_fields = ('email', 'first_name', 'last_name', 'phone_number')
     ordering = ('email',)
 
     actions = [
-        export_as_csv_action("CSV Export", fields=['first_name', 'last_name', 'email', 'phone_number', 'user_type'])
+        export_as_csv_action(
+            "CSV Export",
+            fields=['email', 'phone_number', 'get_full_name', 'is_email_verified', 'user_type', 'is_staff',
+                    'date_last_action', 'date_joined', 'has_form', 'home_university']
+        )
     ]
+
 
 
 admin.site.register(StudentProfile)

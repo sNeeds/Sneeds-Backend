@@ -607,6 +607,9 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
                 completed = False
         return completed
 
+    def university_through_qs(self):
+        return UniversityThrough.objects.filter(student_detailed_info__id=self.id)
+
     @property
     def is_complete(self):
         completed = True

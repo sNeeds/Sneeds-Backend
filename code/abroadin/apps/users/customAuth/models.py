@@ -196,6 +196,27 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             setattr(instance, key, value)
         instance.save()
 
+    def has_form(self):
+        from abroadin.apps.estimation.form.models import StudentDetailedInfo
+        return StudentDetailedInfo.objects.filter(user__id=self.id).exists()
+
+    def home_university(self):
+        from abroadin.apps.estimation.form.models import StudentDetailedInfo
+
+        try:
+            form = StudentDetailedInfo.objects.get(user__id=self.id)
+        except StudentDetailedInfo.DoesNotExist:
+            return None
+
+        university_through_qs = form.university_through_qs()
+        if not university_through_qs.exists():
+            return None
+
+        last_grade = university_through_qs.order_by_grade().last()
+
+        return last_grade.university
+
+
 
 class StudentProfile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)
