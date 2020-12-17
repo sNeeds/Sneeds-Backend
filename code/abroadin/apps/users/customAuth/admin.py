@@ -40,7 +40,11 @@ class CustomUserAdmin(UserAdmin):
     ordering = ('email',)
 
     actions = [
-        export_as_csv_action("CSV Export", fields=['first_name', 'last_name', 'email', 'phone_number', 'user_type'])
+        export_as_csv_action(
+            "CSV Export",
+            fields=['email','phone_number', 'get_full_name', 'is_email_verified', 'user_type', 'is_staff', 'date_last_action',
+                    'date_joined']
+        )
     ]
 
 

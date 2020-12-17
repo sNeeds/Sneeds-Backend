@@ -18,7 +18,7 @@ def export_as_csv_action(description="Export selected objects as CSV file",
         else:
             field_names = fields
 
-        response = HttpResponse(mimetype='text/csv')
+        response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename=%s.csv' % str(opts).replace('.', '_')
 
         writer = unicodecsv.writer(response, encoding='utf-8')
