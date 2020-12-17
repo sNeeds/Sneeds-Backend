@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import Q, F
+from django.db.models import Q, F, Case, When, Value, IntegerField
 
 from abroadin.base.mixins.manager import GetListManagerMixin
 from ..estimations.classes import ValueRange
@@ -7,33 +7,36 @@ from ..estimations.values import VALUES_WITH_ATTRS
 
 
 class UniversityThroughQuerySetManager(models.QuerySet):
-    def get_bachelor(self):
-        from abroadin.apps.estimation.form.models import GradeChoices
-        try:
-            return self.all().get(grade=GradeChoices.BACHELOR)
-        except self.model.DoesNotExist:
-            return None
+    def order_by_grade(self):
+        """
+            Returns from lower to higher grade. e.g, Bachelor, Master, ...
+        """
+        from .models import GradeChoices
 
-    def get_master(self):
-        from abroadin.apps.estimation.form.models import GradeChoices
-        try:
-            return self.all().get(grade=GradeChoices.MASTER)
-        except self.model.DoesNotExist:
-            return None
+        q_list = []
+        when_list = []
 
-    def get_phd(self):
-        from abroadin.apps.estimation.form.models import GradeChoices
-        try:
-            return self.all().get(grade=GradeChoices.PHD)
-        except self.model.DoesNotExist:
-            return None
+        for grade in GradeChoices.get_ordered():
+            q = Q(grade=grade)
+            when = When(q, then=Value(GradeChoices.order_num(grade)))
 
-    def get_post_doc(self):
-        from abroadin.apps.estimation.form.models import GradeChoices
-        try:
-            return self.all().get(grade=GradeChoices.POST_DOC)
-        except self.model.DoesNotExist:
-            return None
+            q_list.append(q)
+            when_list.append(when)
+
+        qs = self.all().annotate(
+            grade_ordering=Case(
+                *when_list,
+                output_field=IntegerField())
+        ).order_by('grade_ordering')
+
+        return qs
+
+
+def get_grade_or_none(self, grade):
+    try:
+        return self.all().get(grade=grade)
+    except self.model.DoesNotExist:
+        return None
 
 
 class LanguageCertificateQuerySetManager(models.QuerySet):

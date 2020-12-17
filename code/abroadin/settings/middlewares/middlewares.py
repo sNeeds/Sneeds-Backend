@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.contrib.auth.middleware import get_user
 from django.utils.functional import SimpleLazyObject
 from rest_framework_simplejwt import authentication
+from rest_framework_simplejwt.exceptions import AuthenticationFailed
 
 
 class TimezoneMiddleware:
@@ -46,8 +47,11 @@ class UserActionsMiddleWare(object):
         user = request.user
         response = self.get_response(request)
 
-        if user.is_authenticated:
-            user.update_date_last_action()
+        try:
+            if user.is_authenticated:
+                user.update_date_last_action()
+        except AuthenticationFailed: # Errors are not caught in middleware
+            pass
         return response
 
 

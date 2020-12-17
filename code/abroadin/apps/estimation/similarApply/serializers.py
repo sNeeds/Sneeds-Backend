@@ -35,10 +35,10 @@ class AppliedToExtendedSerializer(AppliedToSerializer):
 
     def get_home_university(self, obj):
         form = obj.applied_student_detailed_info
-        last_university_through = form.get_last_university_through()
+        last_university_through = form.last_university_through()
         return last_university_through.university.name if last_university_through is not None else None
 
     def get_home_university_gpa(self, obj):
         form = obj.applied_student_detailed_info
-        last_university_through = form.get_last_university_through()
+        last_university_through = form.last_university_through()
         return last_university_through.gpa if last_university_through is not None else None

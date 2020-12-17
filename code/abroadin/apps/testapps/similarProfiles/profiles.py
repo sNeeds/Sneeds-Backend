@@ -32,12 +32,14 @@ class Profile(object):
             },
             "accepted_destination": {
                 "university": self.destination_university.name,
+                "country" : self.destination_university.country.name,
                 "major": self.destination_major.name,
                 "grade": self.destination_grade,
                 "scholarship": self.destination_scholarship
             },
             "rejected_destination": {
                 "university": self.destination_rejected_university.name,
+                "country": self.destination_rejected_university.country.name,
                 "year": self.destination_rejected_year,
                 "major": self.destination_rejected_major.name,
                 "scholarship": self.destination_rejected_scholarship
@@ -75,19 +77,19 @@ class Profile(object):
 #                 return Http404
 #
 #         def get_home_university(self, form):
-#             last_university_through = form.get_last_university_through()
+#             last_university_through = form.last_university_through()
 #             return last_university_through.university.name if last_university_through is not None else None
 #
 #         def get_home_university_gpa(self, form):
-#             last_university_through = form.get_last_university_through()
+#             last_university_through = form.last_university_through()
 #             return last_university_through.gpa if last_university_through is not None else None
 #
 #         def get_major(self, form):
-#             last_university_through = form.get_last_university_through()
+#             last_university_through = form.last_university_through()
 #             return last_university_through.major.name if last_university_through is not None else None
 #
 #         def get_gpa(self, form):
-#             last_university_through = form.get_last_university_through()
+#             last_university_through = form.last_university_through()
 #             gpa = last_university_through.gpa if last_university_through is not None else None
 #
 #             if gpa:
