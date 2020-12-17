@@ -93,7 +93,8 @@ class EndpointMethodMixin:
         return self._similar_universities(*args, **kwargs)
 
 
-class FormCommentsAPITestsFormCompletionTests(EndpointMethodMixin, FormCompletionBaseTests):
+class SimilarUniversitiesFormCompletionTests(EndpointMethodMixin, FormCompletionBaseTests):
+    include_in_test = True
 
     def setUp(self) -> None:
         super().setUp()
