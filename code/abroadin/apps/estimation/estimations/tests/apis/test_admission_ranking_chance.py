@@ -35,7 +35,7 @@ class EndpointMethodMixin:
         return self._admission_ranking_chance(*args, **kwargs)
 
 
-class FormCommentsAPITestsFormCompletionTests(EndpointMethodMixin, FormCompletionBaseTests):
+class AdmissionRankingChanceFormCompletionTests(EndpointMethodMixin, FormCompletionBaseTests):
     include_in_test = True
 
     def setUp(self) -> None:
