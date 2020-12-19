@@ -1,8 +1,11 @@
+from django.utils.translation import gettext_lazy as _
+
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 
+from abroadin.apps.estimation.form.permissions import CompletedForm
 from abroadin.utils.custom.views import custom_generic_apiviews as c_generics
 from abroadin.apps.estimation.analyze import serializers
 from abroadin.apps.estimation.analyze.models import Chart
@@ -10,11 +13,15 @@ from abroadin.apps.estimation.analyze.permissions import IsFormOwner
 
 
 class BaseChartsAPIView(c_generics.BaseGenericAPIView):
-    permission_classes = [IsFormOwner]
+    lookup_url_kwarg = 'form_id'
+    permission_classes = [IsFormOwner, CompletedForm]
     charts_data = {}
 
     def get(self, request, *args, **kwargs):
-        form_id = self.kwargs.get('student_form', None)
+        form_id = self.kwargs.get(self.lookup_url_kwarg, None)
+        assert form_id is not None, \
+            _('Missing form id lookup_url_kwarg "{}" in view {} kwargs.'.format(self.lookup_url_kwarg, str(self)))
+
         if form_id is None:
             raise NotFound(detail="No from found!")
 

@@ -24,4 +24,4 @@ class SimilarApplyAppAPITests(SimilarApplyAppBaseTests):
         super().setUp()
 
     def _test_similar_universities(self, *args, **kwargs):
-        return self._test_form('similar_apply:similar-universities', *args, **kwargs)
+        return self._endpoint_test_method('similar_apply:similar-universities', *args, **kwargs)

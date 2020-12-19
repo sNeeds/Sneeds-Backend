@@ -1,4 +1,9 @@
+from django.utils.translation import gettext_lazy as _
+
 from rest_framework import permissions
+from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import ValidationError
+from rest_framework.settings import api_settings
 
 from abroadin.apps.estimation.form.models import StudentDetailedInfo
 
@@ -69,3 +74,37 @@ class IsWantToApplyOwnerOrDetailedInfoWithoutUser(SDIThirdModelsPermission):
 
 class IsUniversityThroughOwnerOrDetailedInfoWithoutUser(SDIThirdModelsPermission):
     pass
+
+
+class CompletedForm(permissions.BasePermission):
+
+    def has_permission(self, request, view):
+        assert hasattr(view, 'lookup_url_kwarg'), \
+            _('Missing form id lookup_url_kwarg in view: {}'.format(str(view)))
+        assert view.kwargs.get(view.lookup_url_kwarg, None) is not None, \
+            _('Missing form id lookup_url_kwarg "{}" in view {} kwargs.'.format(view.lookup_url_kwarg, str(view)))
+
+        form = get_form_obj(view.kwargs.get(view.lookup_url_kwarg, None))
+        if form:
+            form.check_is_completed(raise_exception=True)
+        return True
+
+    def has_object_permission(self, request, view, obj):
+        assert hasattr(view, 'lookup_url_kwarg'), \
+            _('Missing form id lookup_url_kwarg in view: {}'.format(str(view)))
+        assert view.kwargs.get(view.lookup_url_kwarg, None) is not None, \
+            _('Missing form id lookup_url_kwarg "{}" in view {} kwargs.'.format(view.lookup_url_kwarg, str(view)))
+
+        form = obj or get_form_obj(view.kwargs.get(view.lookup_url_kwarg, None))
+        if form:
+            form.check_is_completed(raise_exception=True)
+        return True
+
+
+def get_form_obj(form_id):
+    if form_id is None:
+        return None
+    try:
+        return StudentDetailedInfo.objects.get(id=form_id)
+    except StudentDetailedInfo.DoesNotExist:
+        return None
