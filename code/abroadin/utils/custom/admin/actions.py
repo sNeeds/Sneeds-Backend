@@ -1,4 +1,5 @@
 import unicodecsv
+from django.contrib.admin.utils import lookup_field
 from django.http import HttpResponse
 
 
@@ -25,9 +26,12 @@ def export_as_csv_action(description="Export selected objects as CSV file",
         if header:
             writer.writerow(field_names)
         for obj in queryset:
-            row = [getattr(obj, field)() if callable(getattr(obj, field)) else getattr(obj, field) for field in
-                   field_names]
+            row = []
+            for field in field_names:
+                _, _, value = lookup_field(field, obj, modeladmin)
+                row.append(value)
             writer.writerow(row)
+
         return response
 
     export_as_csv.short_description = description
