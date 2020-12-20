@@ -50,12 +50,9 @@ class CustomUserAdmin(UserAdmin):
     ]
 
     def has_form(self, obj):
-        from abroadin.apps.estimation.form.models import StudentDetailedInfo
         return StudentDetailedInfo.objects.filter(user__id=obj.id).exists()
 
     def home_university(self, obj):
-        from abroadin.apps.estimation.form.models import StudentDetailedInfo
-
         try:
             form = StudentDetailedInfo.objects.get(user__id=obj.id)
         except StudentDetailedInfo.DoesNotExist:
