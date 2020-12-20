@@ -8,9 +8,13 @@ from abroadin.apps.estimation.form.models import WantToApply, StudentDetailedInf
 from abroadin.apps.data.account.serializers import UniversitySerializer
 from abroadin.apps.data.account.models import University, Country
 from abroadin.apps.estimation.estimations.chances import AdmissionChance
+from abroadin.apps.estimation.form.permissions import CompletedForm
 
 
 class SimilarUniversitiesListView(CAPIView):
+    lookup_url_kwarg = 'form_id'
+    permission_classes = [CompletedForm]
+
     def get_form_obj(self, form_id):
         try:
             return StudentDetailedInfo.objects.get(id=form_id)

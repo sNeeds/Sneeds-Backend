@@ -239,8 +239,9 @@ class SubscribeSerializer(serializers.Serializer):
         pass
 
     def create(self, validated_data):
+        phone_number = None if (validated_data.get('phone_number')) is None else str(validated_data.get('phone_number'))
         create_doi_contact.delay(email=validated_data.get('email'),
-                                 phone_number=str(validated_data.get('phone_number')),
+                                 phone_number=phone_number,
                                  receive_marketing_email=True,
                                  first_name=validated_data.get('first_name'), last_name=validated_data.get('last_name'))
         return None

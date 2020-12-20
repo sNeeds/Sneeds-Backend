@@ -4,12 +4,13 @@ from django.urls import reverse
 from rest_framework.test import APITestCase, APIClient
 
 from abroadin.apps.data.account.models import University, Major, Country
-from abroadin.apps.estimation.form.models import SemesterYear, StudentDetailedInfo
+from abroadin.apps.estimation.form.models import SemesterYear, StudentDetailedInfo, Grade
+from abroadin.base.mixins.tests import TestBriefMethodMixin
 
 User = get_user_model()
 
 
-class EstimationBaseTest(APITestCase):
+class EstimationBaseTest(TestBriefMethodMixin, APITestCase):
     def setUp(self):
         # ------- Users -------
 
@@ -109,35 +110,20 @@ class EstimationBaseTest(APITestCase):
             semester=SemesterYear.SemesterChoices.FALL
         )
 
+        # ------- Grade Objects -------
+
+        self.grade1 = Grade.objects.create(
+            name='Grade 1'
+        )
+
+        self.grade2 = Grade.objects.create(
+            name='Grade 2'
+        )
+
+        self.grade3 = Grade.objects.create(
+            name='Grade 3'
+        )
+
         # ----- Setup ------
 
         self.client = APIClient()
-
-    def _test_form(
-            self,
-            reverse_str,
-            method,
-            user,
-            expected_status,
-            reverse_args=None,
-            *args,
-            **kwargs
-    ):
-        if reverse_args:
-            url = reverse(reverse_str, args=[reverse_args])
-        else:
-            url = reverse(reverse_str)
-
-        client = self.client
-
-        if user:
-            client.force_login(user)
-        else:
-            client.logout()
-
-        response = getattr(client, method)(url, *args, **kwargs)
-        if response.status_code != expected_status:
-            print("AssertionError occurred, Response data: ", response.data)
-        self.assertEqual(response.status_code, expected_status)
-
-        return response.data

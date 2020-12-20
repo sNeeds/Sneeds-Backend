@@ -5,14 +5,8 @@ from rest_framework import status
 from abroadin.apps.data.account.models import University
 from abroadin.apps.estimation.form.models import (
     StudentDetailedInfo,
-    Grade,
-    WantToApply,
-    SemesterYear,
     UniversityThrough,
     GradeChoices,
-    Publication,
-    RegularLanguageCertificate,
-    LanguageCertificate
 )
 
 from .test_base import EstimationsAppAPITests

@@ -15,10 +15,10 @@ class FormAPITests(EstimationBaseTest):
         super().setUp()
 
     def _test_form_list(self, *args, **kwargs):
-        return self._test_form('estimation.form:student-detailed-info-list', *args, **kwargs)
+        return self._endpoint_test_method('estimation.form:student-detailed-info-list', *args, **kwargs)
 
     def _test_form_detail(self, *args, **kwargs):
-        return self._test_form('estimation.form:student-detailed-info-detail', *args, **kwargs)
+        return self._endpoint_test_method('estimation.form:student-detailed-info-detail', *args, **kwargs)
 
     def test_form_list_post_201(self):
         self._test_form_list("post", None, status.HTTP_201_CREATED)

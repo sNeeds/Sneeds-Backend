@@ -38,10 +38,10 @@ class PublicationAPITest(FormAPITests):
         self.local_user = User.objects.create_user(email="t1@g.com", password="user1234")
 
     def _publication_list(self, *args, **kwargs):
-        return self._test_form('estimation.form:publication-list', *args, **kwargs)
+        return self._endpoint_test_method('estimation.form:publication-list', *args, **kwargs)
 
     def _publication_detail(self, *args, **kwargs):
-        return self._test_form('estimation.form:publication-detail', *args, **kwargs)
+        return self._endpoint_test_method('estimation.form:publication-detail', *args, **kwargs)
 
     def test_publication_list_get_200_1(self):
         data = self._publication_list(
