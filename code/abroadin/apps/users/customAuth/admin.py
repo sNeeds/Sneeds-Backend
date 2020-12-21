@@ -49,6 +49,22 @@ class CustomUserAdmin(UserAdmin):
         )
     ]
 
+    def has_form(self, obj):
+        return StudentDetailedInfo.objects.filter(user__id=obj.id).exists()
+
+    def home_university(self, obj):
+        try:
+            form = StudentDetailedInfo.objects.get(user__id=obj.id)
+        except StudentDetailedInfo.DoesNotExist:
+            return None
+
+        university_through_qs = form.university_through_qs()
+        if not university_through_qs.exists():
+            return None
+
+        last_grade = university_through_qs.order_by_grade().last()
+
+        return last_grade.university
 
 
 admin.site.register(StudentProfile)
