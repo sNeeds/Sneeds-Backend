@@ -508,7 +508,7 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
     objects = StudentDetailedInfoManager.as_manager()
 
     class Meta:
-        ordering = ['-created', ]
+        ordering = ['rank', ]
 
     RELATED_WORK_EXPERIENCE_STORE_LABEL_RANGE = 2
     RELATED_WORK_EXPERIENCE_VIEW_LABEL_RANGE = 6

@@ -25,7 +25,7 @@ CELERY_BEAT_SCHEDULE = {
     },
     'update-student-detailed-info-ranks': {
         'task': 'abroadin.apps.estimation.form.tasks.update_student_detailed_info_ranks',
-        'schedule': timedelta(hours=1),
+        'schedule': timedelta(hours=24),
     }
 }
 
