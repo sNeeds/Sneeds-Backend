@@ -1,4 +1,10 @@
+import sys
+import os
+
 from celery import shared_task
+
+from django.conf import settings
+from django.utils import timezone
 
 from .models import StudentDetailedInfo
 
@@ -17,3 +23,8 @@ def update_student_detailed_info_ranks():
 def add_one_to_rank_with_values_greater_than_this(value, exclude_id):
     student_detailed_info_qs = StudentDetailedInfo.objects.filter(value__lt=value).exclude(id=exclude_id)
     student_detailed_info_qs.add_one_to_rank()
+
+
+@shared_task()
+def delete_forms_without_user(live_period=None):
+    StudentDetailedInfo.objects.delete_forms_without_user(live_period=live_period)

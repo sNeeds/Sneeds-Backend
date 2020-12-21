@@ -1,7 +1,9 @@
 from django.db import models
 from django.db.models import Q, F, Case, When, Value, IntegerField
+from django.utils import timezone
 
 from abroadin.base.mixins.manager import GetListManagerMixin
+from .variables import FORM_WITHOUT_USER_LIVE_PERIOD_DAYS
 from ..estimations.classes import ValueRange
 from ..estimations.values import VALUES_WITH_ATTRS
 
@@ -125,6 +127,13 @@ class StudentDetailedInfoManager(models.QuerySet):
         for obj in self.all():
             obj.rank += 1
             obj.save()
+
+    def delete_forms_without_user(self, live_period=None):
+        if not live_period:
+            live_period = FORM_WITHOUT_USER_LIVE_PERIOD_DAYS
+        deadline = timezone.now() - timezone.timedelta(days=live_period)
+        qs = self.all().filter(created__lt=deadline, user__isnull=True)
+        return qs.delete()
 
 
 class GradeQuerySetManager(GetListManagerMixin, models.QuerySet):
