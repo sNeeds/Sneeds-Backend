@@ -101,6 +101,35 @@ class CompletedForm(permissions.BasePermission):
         return True
 
 
+class IsFormOwner(permissions.BasePermission):
+    message = "User should be the owner of form"
+
+    def has_permission(self, request, view):
+        assert hasattr(view, 'lookup_url_kwarg'), \
+            _('Missing form id lookup_url_kwarg in view: {}'.format(str(view)))
+        assert view.kwargs.get(view.lookup_url_kwarg, None) is not None, \
+            _('Missing form id lookup_url_kwarg "{}" in view {} kwargs.'.format(view.lookup_url_kwarg, str(view)))
+
+        user = request.user
+        if user and user.is_authenticated:
+            form = get_form_obj(view.kwargs.get(view.lookup_url_kwarg, None))
+            if form:
+                return form.user == user
+        return True
+
+    def has_object_permission(self, request, view, obj: StudentDetailedInfo):
+        assert hasattr(view, 'lookup_url_kwarg'), \
+            _('Missing form id lookup_url_kwarg in view: {}'.format(str(view)))
+        assert view.kwargs.get(view.lookup_url_kwarg, None) is not None, \
+            _('Missing form id lookup_url_kwarg "{}" in view {} kwargs.'.format(view.lookup_url_kwarg, str(view)))
+
+        user = request.user
+        if user and user.is_authenticated:
+            if obj:
+                return obj.user == user
+        return True
+
+
 def get_form_obj(form_id):
     if form_id is None:
         return None

@@ -57,7 +57,7 @@ class BaseTests(EstimationBaseTest):
     def _endpoint_method(self, *args, **kwargs):
         raise NotImplementedError
 
-    def test_completed_form_get_charts_200(self):
+    def test_completed_form_get_200(self):
         if not self.include_in_test:
             return
         self._endpoint_method(
@@ -72,9 +72,6 @@ class BaseTests(EstimationBaseTest):
         data = self._endpoint_method(
             'get', self.user1, status.HTTP_400_BAD_REQUEST, reverse_args=self.completed_sdi_1.id
         )
-        # print(data[api_settings.NON_FIELD_ERRORS_KEY]['incomplete_form'])
-        # print(type(data[api_settings.NON_FIELD_ERRORS_KEY]['incomplete_form']))
-        # print(len(data[api_settings.NON_FIELD_ERRORS_KEY]['incomplete_form']))
 
         self.assertEqual(
             len(data[api_settings.NON_FIELD_ERRORS_KEY]['incomplete_form']), 1

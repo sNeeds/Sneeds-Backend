@@ -17,3 +17,16 @@ class SameUserPermission(permissions.BasePermission):
         if request.user == obj:
             return True
         return False
+
+
+class UserEmailIsVerified(permissions.BasePermission):
+    message = "User email is not verified."
+
+    def has_permission(self, request, view):
+        user = request.user
+        if user and user.is_authenticated:
+            return user.is_email_verified
+        return True
+
+    def has_object_permission(self, request, view, obj):
+        return self.has_permission(request, view)
