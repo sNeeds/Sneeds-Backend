@@ -9,11 +9,12 @@ from abroadin.apps.data.account.serializers import UniversitySerializer
 from abroadin.apps.data.account.models import University, Country
 from abroadin.apps.estimation.estimations.chances import AdmissionChance
 from abroadin.apps.estimation.form.permissions import CompletedForm
+from abroadin.apps.users.customAuth.permissions import UserEmailIsVerified
 
 
 class SimilarUniversitiesListView(CAPIView):
     lookup_url_kwarg = 'form_id'
-    permission_classes = [CompletedForm]
+    permission_classes = [CompletedForm, UserEmailIsVerified]
 
     def get_form_obj(self, form_id):
         try:

@@ -9,12 +9,13 @@ from abroadin.apps.estimation.form.permissions import CompletedForm
 from abroadin.utils.custom.views import custom_generic_apiviews as c_generics
 from abroadin.apps.estimation.analyze import serializers
 from abroadin.apps.estimation.analyze.models import Chart
-from abroadin.apps.estimation.analyze.permissions import IsFormOwner
+from abroadin.apps.estimation.form.permissions import IsFormOwner
+from abroadin.apps.users.customAuth.permissions import UserEmailIsVerified
 
 
 class BaseChartsAPIView(c_generics.BaseGenericAPIView):
     lookup_url_kwarg = 'form_id'
-    permission_classes = [IsFormOwner, CompletedForm]
+    permission_classes = [IsFormOwner, CompletedForm, UserEmailIsVerified]
     charts_data = {}
 
     def get(self, request, *args, **kwargs):
