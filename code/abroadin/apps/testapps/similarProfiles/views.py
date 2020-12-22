@@ -64,16 +64,13 @@ class SimilarProfiles(CAPIView):
         admission_chance = AdmissionChance(form)
         want_to_apply = form.get_want_to_apply_or_none()
 
-        if not want_to_apply:
-            university = _acceptable_university(picked_universities["canada"], admission_chance)
-            if university is None:
-                university = picked_universities["canada"][-1]
-
-        elif not want_to_apply.universities.all().exists():
+        if not want_to_apply.universities.all().exists():
             countries = want_to_apply.countries.all()
             preferred_country = _preferred_country_or_none(countries)
 
-            if preferred_country == Country.objects.get(name="United States"):
+            if not countries.exists():
+                universities = picked_universities["canada"]
+            elif preferred_country == Country.objects.get(name="United States"):
                 universities = picked_universities["usa"]
             elif preferred_country == Country.objects.get(name="Canada"):
                 universities = picked_universities["canada"]
@@ -95,8 +92,8 @@ class SimilarProfiles(CAPIView):
     def near_university(self, university, ranks_above):
         return University.objects.filter(
             country=university.country,
-            rank__gte=university.rank + ranks_above
-        ).order_by('rank').first()
+            rank__gte=university.rank
+        ).order_by('rank')[ranks_above]
 
     def _create_profile_1(self):
         profile = Profile()
