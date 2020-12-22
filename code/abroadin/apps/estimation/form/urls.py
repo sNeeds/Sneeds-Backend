@@ -92,4 +92,7 @@ urlpatterns = [
     path('choices/language-certificate-choices/', views.LanguageCertificateTypeListAPIView.as_view(),
          name="language-certificate-choices-list"),
 
+    path('ali/', views.Akbar.as_view(),
+         name="language-certificate-choices-list"),
+
 ]

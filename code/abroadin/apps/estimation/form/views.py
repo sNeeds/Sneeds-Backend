@@ -14,7 +14,7 @@ from abroadin.base.api.enum_views import EnumViewList
 from abroadin.base.api.permissions import permission_class_factory
 from abroadin.utils.custom.views import custom_generic_apiviews
 
-THIS_YEAR = timezone.now().year
+from abroadin.base.api.viewsets import CAPIView
 
 from .models import (
     SemesterYear,
@@ -151,6 +151,7 @@ class UserStudentDetailedInfoRetrieveAPIView(custom_generic_apiviews.BaseRetriev
 
 
 class SemesterYearListAPIView(custom_generic_apiviews.BaseListAPIView):
+    THIS_YEAR = timezone.now().year
     queryset = SemesterYear.objects.all().filter(year__gte=THIS_YEAR)
     serializer_class = SemesterYearSerializer
 
@@ -406,7 +407,6 @@ class UniversityThroughDetailAPIView(custom_generic_apiviews.BaseRetrieveDestroy
     permission_classes = [IsUniversityThroughOwnerOrDetailedInfoWithoutUser]
 
 
-
 class GradesListAPIView(CListAPIView):
     queryset = Grade.objects.all()
     serializer_class = GradeSerializer
@@ -434,3 +434,10 @@ class GenderChoicesListAPIView(EnumViewList):
 
 class LanguageCertificateTypeListAPIView(EnumViewList):
     enum_class = LanguageCertificate.LanguageCertificateType
+
+
+class Akbar(CAPIView):
+    def get(self, request):
+        from abroadin.apps.estimation.form.tasks import update_student_detailed_info_ranks
+        update_student_detailed_info_ranks()
+        return Response()

@@ -12,9 +12,10 @@ from abroadin.base.api.generics import CGenericAPIView
 from abroadin.apps.users.customAuth.permissions import UserEmailIsVerified
 
 
+# TODO Add Email Verified permission
 class FormComments(CAPIView):
     lookup_url_kwarg = 'form_id'
-    permission_classes = [CompletedForm, UserEmailIsVerified]
+    permission_classes = [CompletedForm]
 
     def get_form_obj(self, form_id):
         try:
@@ -30,9 +31,10 @@ class FormComments(CAPIView):
         return Response(review.review_all())
 
 
+# TODO Add Email Verified permission
 class AdmissionRankingChance(CAPIView):
     lookup_url_kwarg = 'form_id'
-    permission_classes = [CompletedForm, UserEmailIsVerified]
+    permission_classes = [CompletedForm]
 
     def get_form_obj(self, form_id):
         try:
@@ -55,9 +57,10 @@ class AdmissionRankingChance(CAPIView):
         return Response(data)
 
 
+# TODO Add Email Verified permission
 class WantToApplyChance(CAPIView):
     lookup_url_kwarg = 'form_id'
-    permission_classes = [CompletedForm, UserEmailIsVerified]
+    permission_classes = [CompletedForm]
 
     def get_form_obj(self, form_id):
         try:

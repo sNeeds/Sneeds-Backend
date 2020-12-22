@@ -1,7 +1,7 @@
-import sys
-import os
+import time
 
 from celery import shared_task
+from django.db.models import F
 
 from django.conf import settings
 from django.utils import timezone
@@ -12,11 +12,11 @@ from .models import StudentDetailedInfo
 # TODO: Change logic
 @shared_task
 def update_student_detailed_info_ranks():
-    # student_detailed_info_qs = StudentDetailedInfo.objects.all().order_by("-value")
-    #
-    # for r, obj in enumerate(student_detailed_info_qs):
-    #     StudentDetailedInfo.objects.filter(id=obj.id).update(rank=r + 1)
-    pass
+    student_detailed_info_qs = StudentDetailedInfo.objects.all().order_by("-value")
+
+    for r, obj in enumerate(student_detailed_info_qs):
+        StudentDetailedInfo.objects.filter(id=obj.id).update(rank=r + 1)
+
 
 
 @shared_task
