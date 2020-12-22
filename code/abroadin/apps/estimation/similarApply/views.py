@@ -12,10 +12,9 @@ from abroadin.apps.estimation.form.permissions import CompletedForm
 from abroadin.apps.users.customAuth.permissions import UserEmailIsVerified
 
 
-# TODO Add Email Verified permission
 class SimilarUniversitiesListView(CAPIView):
     lookup_url_kwarg = 'form_id'
-    permission_classes = [CompletedForm]
+    permission_classes = [CompletedForm, UserEmailIsVerified]
 
     def get_form_obj(self, form_id):
         try:
