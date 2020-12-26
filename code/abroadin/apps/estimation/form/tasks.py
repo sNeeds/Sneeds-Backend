@@ -18,7 +18,6 @@ def update_student_detailed_info_ranks():
         StudentDetailedInfo.objects.filter(id=obj.id).update(rank=r + 1)
 
 
-
 @shared_task
 def add_one_to_rank_with_values_greater_than_this(value, exclude_id):
     student_detailed_info_qs = StudentDetailedInfo.objects.filter(value__lt=value).exclude(id=exclude_id)
