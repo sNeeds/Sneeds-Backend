@@ -9,10 +9,11 @@ from rest_framework import permissions, status, exceptions
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from abroadin.base.api.generics import CListAPIView
+from abroadin.base.api import generics
 from abroadin.base.api.enum_views import EnumViewList
 from abroadin.base.api.permissions import permission_class_factory
-from abroadin.utils.custom.views import custom_generic_apiviews
+# from abroadin.utils.custom.views import custom_generic_apiviews
+
 
 from abroadin.base.api.viewsets import CAPIView
 
@@ -58,13 +59,13 @@ from .serializers import (
 # )
 
 
-class SemesterYearListAPIView(custom_generic_apiviews.BaseListAPIView):
+class SemesterYearListAPIView(generics.CListAPIView):
     THIS_YEAR = timezone.now().year
     queryset = SemesterYear.objects.all().filter(year__gte=THIS_YEAR)
     serializer_class = SemesterYearSerializer
 
 
-# class BasicFormFieldListAPIView(custom_generic_apiviews.BaseListAPIView):
+# class BasicFormFieldListAPIView(generics.CListAPIView):
 #     queryset = BasicFormField.objects.all()
 #     serializer_class = BasicFormFieldSerializer
 #
@@ -86,7 +87,7 @@ class SemesterYearListAPIView(custom_generic_apiviews.BaseListAPIView):
 #         return qs
 
 
-class LanguageCertificateListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
+class LanguageCertificateListCreateAPIView(generics.CListCreateAPIView):
     model_class = LanguageCertificate
     queryset = model_class.objects.all()
     serializer_class = LanguageCertificateSerializer
@@ -99,7 +100,7 @@ class LanguageCertificateListCreateAPIView(custom_generic_apiviews.BaseListCreat
     #     return qs
 
 
-class LanguageCertificateRetrieveDestroyAPIView(custom_generic_apiviews.BaseRetrieveDestroyAPIView):
+class LanguageCertificateRetrieveDestroyAPIView(generics.CRetrieveDestroyAPIView):
     lookup_field = 'id'
     model_class = LanguageCertificate
     queryset = model_class.objects.all()
@@ -224,7 +225,7 @@ class DuolingoCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestr
     # permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
-class PublicationListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
+class PublicationListCreateAPIView(generics.CListCreateAPIView):
     queryset = Publication.objects.all()
     serializer_class = PublicationSerializer
 
@@ -243,14 +244,14 @@ class PublicationListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView
         return super().post(request, *args, **kwargs)
 
 
-class PublicationRetrieveDestroyAPIView(custom_generic_apiviews.BaseRetrieveDestroyAPIView):
+class PublicationRetrieveDestroyAPIView(generics.CRetrieveDestroyAPIView):
     lookup_field = 'id'
     queryset = Publication.objects.all()
     serializer_class = PublicationSerializer
     # permission_classes = [IsPublicationOwnerOrDetailedInfoWithoutUser]
 
 
-class EducationListAPIView(custom_generic_apiviews.BaseListCreateAPIView):
+class EducationListAPIView(generics.CListCreateAPIView):
     queryset = Education.objects.all()
     serializer_class = EducationSerializer
     request_serializer_class = EducationRequestSerializer
@@ -268,14 +269,14 @@ class EducationListAPIView(custom_generic_apiviews.BaseListCreateAPIView):
         return super().post(request, *args, **kwargs)
 
 
-class EducationDetailAPIView(custom_generic_apiviews.BaseRetrieveDestroyAPIView):
+class EducationDetailAPIView(generics.CRetrieveDestroyAPIView):
     lookup_field = 'id'
     queryset = Education.objects.all()
     serializer_class = EducationSerializer
     # permission_classes = [IsEducationOwnerOrDetailedInfoWithoutUser]
 
 
-class GradesListAPIView(CListAPIView):
+class GradesListAPIView(generics.CListAPIView):
     queryset = Grade.objects.all()
     serializer_class = GradeSerializer
 

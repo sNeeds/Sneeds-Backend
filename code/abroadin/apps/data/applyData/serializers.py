@@ -72,14 +72,21 @@ class BasicFormFieldSerializer(serializers.ModelSerializer):
 
 class PublicationSerializer(serializers.ModelSerializer):
     related_classes = [
-            {
-                'model_class': ApplyProfile,
-                'hyperlink_view_name': 'platform.applyProfile:apply-profile-detail',
-                'hyperlink_lookup_field': 'id',
-                'hyperlink_lookup_url_kwarg': 'id',
-                'hyperlink_format': None
-            }
-        ]
+        {
+            'model_class': ApplyProfile,
+            'hyperlink_view_name': 'platform.applyProfile:apply-profile-detail',
+            'hyperlink_lookup_field': 'id',
+            'hyperlink_lookup_url_kwarg': 'id',
+            'hyperlink_format': None
+        },
+        {
+            'model_class': StudentDetailedInfo,
+            'hyperlink_view_name': 'estimation.form:student-detailed-info-detail',
+            'hyperlink_lookup_field': 'id',
+            'hyperlink_lookup_url_kwarg': 'form-id',
+            'hyperlink_format': None
+        }
+    ]
 
     content_type = ContentTypeRelatedField(
         related_classes=related_classes,
