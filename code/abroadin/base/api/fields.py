@@ -9,9 +9,9 @@ a = [
         'representation_identifier': '',
         'pk_field': 'id',
         'pk': 2,
-        'primary_key_related_field': serializers.PrimaryKeyRelatedField()
+        'primary_key_related_field': serializers.PrimaryKeyRelatedField(),
         'query_set': '',
-        'hyperlinked_serializer': serializers.CharField,
+        'hyperlinked_related_field': serializers.HyperlinkedRelatedField(),
     }
 ]
 
@@ -32,18 +32,11 @@ class ContentTypeRelatedField(serializers.RelatedField):
 
     def to_internal_value(self, data):
         representation_identifier = data.get('representation_identifier')
+        pk = data.get('pk')
         for module in self.related_classes:
             if representation_identifier == module.get('representation_identifier'):
-                # if module.get('pk_field') is not None:
-                #     data = self.pk_field.to_internal_value(data)
-                # try:
-                #     return self.get_queryset().get(pk=data)
-                # except ObjectDoesNotExist:
-                #     self.fail('does_not_exist', pk_value=data)
-                # except (TypeError, ValueError):
-                #     self.fail('incorrect_type', data_type=type(data).__name__)
-        else:
-            raise serializers.ValidationError({"content_type": "ContentTypeRelatedField wrong instance."}, code=400)
+                module.get('primary_key_related_field').to_internal_value(pk)
+        raise serializers.ValidationError({"content_type": "ContentTypeRelatedField wrong instance."}, code=400)
 
     def to_representation(self, value):
         print('ASDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD')
@@ -54,7 +47,8 @@ class ContentTypeRelatedField(serializers.RelatedField):
                 return {
                     'representation_identifier': module.get('representation_identifier'),
                     'model_class': module.get('model_class'),
-                    'object_pk': value.pk
+                    'pk': value.pk,
+                    'url': module.get('hyperlinked_related_field').to_representation(value)
                 }
 
         raise serializers.ValidationError({"content_type": "ContentTypeRelatedField wrong instance."}, code=400)
