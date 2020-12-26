@@ -6,5 +6,5 @@ app_name = "platform.applyProfile"
 
 urlpatterns = [
     path('apply_profiles/', views.ApplyProfileAPIView.as_view(), name='apply-profile-list'),
-    # path('apply_profiles/<id:int>/'),
+    path('apply_profiles/<int:id>/', views.ApplyProfileDetailAPIView.as_view(), name='apply-profile-detail'),
 ]

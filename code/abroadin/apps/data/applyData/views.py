@@ -227,7 +227,6 @@ class DuolingoCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestr
 class PublicationListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView):
     queryset = Publication.objects.all()
     serializer_class = PublicationSerializer
-    request_serializer_class = PublicationRequestSerializer
 
     # def get_queryset(self):
     #     user = self.request.user
@@ -237,7 +236,7 @@ class PublicationListCreateAPIView(custom_generic_apiviews.BaseListCreateAPIView
     #     return qs
 
     @swagger_auto_schema(
-        request_body=request_serializer_class,
+        request_body=serializer_class,
         responses={200: serializer_class},
     )
     def post(self, request, *args, **kwargs):

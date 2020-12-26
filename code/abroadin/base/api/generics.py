@@ -4,12 +4,13 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.settings import api_settings
 
 from .viewsets import CAPIView
+from . import view_mixins
 
 
 class CGenericAPIView(CAPIView):
     """
       Base class for all other generic views.
-      """
+    """
     # You'll need to either set these attributes,
     # or override `get_queryset()`/`get_serializer_class()`.
     # If you are overriding a view method, it is important that you call
@@ -29,6 +30,10 @@ class CGenericAPIView(CAPIView):
 
     # The style to use for queryset pagination.
     pagination_class = api_settings.DEFAULT_PAGINATION_CLASS
+
+    # The serializer instance that should be used for validating and
+    # deserializing requests
+    request_serializer_class = None
 
     def get_queryset(self):
 
@@ -163,8 +168,45 @@ class CGenericAPIView(CAPIView):
         assert self.paginator is not None
         return self.paginator.get_paginated_response(data)
 
+    def get_request_serializer(self, *args, **kwargs):
+        """
+        Return the serializer instance that should be used for validating and
+        deserializing request.
+        """
+        request_serializer_class = self.get_request_serializer_class()
 
-class CCreateAPIView(mixins.CreateModelMixin,
+        if request_serializer_class is None:
+            request_serializer_class = self.get_serializer_class()
+            kwargs['context'] = self.get_serializer_context()
+        else:
+            kwargs['context'] = self.get_request_serializer_context()
+
+        return request_serializer_class(*args, **kwargs)
+
+    def get_request_serializer_class(self):
+        """
+        Return the class to use for the request serializer.
+        Defaults to using `self.request_serializer_class`.
+
+        You may want to override this if you need to provide different
+        serializations depending on the incoming request.
+
+        (Eg. admins get full serialization, others get basic serialization)
+        """
+        return self.request_serializer_class
+
+    def get_request_serializer_context(self):
+        """
+        Extra context provided to the request serializer class.
+        """
+        return {
+            'request': self.request,
+            'format': self.format_kwarg,
+            'view': self
+        }
+
+
+class CCreateAPIView(view_mixins.BaseCreateModelMixin,
                      CGenericAPIView):
     """
     Concrete view for creating a model instance.
@@ -174,7 +216,7 @@ class CCreateAPIView(mixins.CreateModelMixin,
         return self.create(request, *args, **kwargs)
 
 
-class CListAPIView(mixins.ListModelMixin,
+class CListAPIView(view_mixins.BaseListModelMixin,
                    CGenericAPIView):
     """
     Concrete view for listing a queryset.
@@ -184,7 +226,7 @@ class CListAPIView(mixins.ListModelMixin,
         return self.list(request, *args, **kwargs)
 
 
-class CRetrieveAPIView(mixins.RetrieveModelMixin,
+class CRetrieveAPIView(view_mixins.BaseRetrieveModelMixin,
                        CGenericAPIView):
     """
     Concrete view for retrieving a model instance.
@@ -194,7 +236,7 @@ class CRetrieveAPIView(mixins.RetrieveModelMixin,
         return self.retrieve(request, *args, **kwargs)
 
 
-class CDestroyAPIView(mixins.DestroyModelMixin,
+class CDestroyAPIView(view_mixins.BaseDestroyModelMixin,
                       CGenericAPIView):
     """
     Concrete view for deleting a model instance.
@@ -204,7 +246,7 @@ class CDestroyAPIView(mixins.DestroyModelMixin,
         return self.destroy(request, *args, **kwargs)
 
 
-class CUpdateAPIView(mixins.UpdateModelMixin,
+class CUpdateAPIView(view_mixins.BaseUpdateModelMixin,
                      CGenericAPIView):
     """
     Concrete view for updating a model instance.
@@ -217,8 +259,8 @@ class CUpdateAPIView(mixins.UpdateModelMixin,
         return self.partial_update(request, *args, **kwargs)
 
 
-class CListCreateAPIView(mixins.ListModelMixin,
-                         mixins.CreateModelMixin,
+class CListCreateAPIView(view_mixins.BaseListModelMixin,
+                         view_mixins.BaseCreateModelMixin,
                          CGenericAPIView):
     """
     Concrete view for listing a queryset or creating a model instance.
@@ -231,8 +273,8 @@ class CListCreateAPIView(mixins.ListModelMixin,
         return self.create(request, *args, **kwargs)
 
 
-class CRetrieveUpdateAPIView(mixins.RetrieveModelMixin,
-                             mixins.UpdateModelMixin,
+class CRetrieveUpdateAPIView(view_mixins.BaseRetrieveModelMixin,
+                             view_mixins.BaseUpdateModelMixin,
                              CGenericAPIView):
     """
     Concrete view for retrieving, updating a model instance.
@@ -248,8 +290,8 @@ class CRetrieveUpdateAPIView(mixins.RetrieveModelMixin,
         return self.partial_update(request, *args, **kwargs)
 
 
-class CRetrieveDestroyAPIView(mixins.RetrieveModelMixin,
-                              mixins.DestroyModelMixin,
+class CRetrieveDestroyAPIView(view_mixins.BaseRetrieveModelMixin,
+                              view_mixins.BaseDestroyModelMixin,
                               CGenericAPIView):
     """
     Concrete view for retrieving or deleting a model instance.
@@ -262,9 +304,9 @@ class CRetrieveDestroyAPIView(mixins.RetrieveModelMixin,
         return self.destroy(request, *args, **kwargs)
 
 
-class CRetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
-                                    mixins.UpdateModelMixin,
-                                    mixins.DestroyModelMixin,
+class CRetrieveUpdateDestroyAPIView(view_mixins.BaseRetrieveModelMixin,
+                                    view_mixins.BaseUpdateModelMixin,
+                                    view_mixins.BaseDestroyModelMixin,
                                     CGenericAPIView):
     """
     Concrete view for retrieving, updating or deleting a model instance.
