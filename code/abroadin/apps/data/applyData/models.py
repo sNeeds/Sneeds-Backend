@@ -63,7 +63,7 @@ def _get_other_major_id():
 
 
 class GradeChoices(models.TextChoices):
-    "Don't change order"
+    # Don't change order
     BACHELOR = 'Bachelor', 'Bachelor'
     MASTER = 'Master', 'Master'
     PHD = 'PH.D', 'PH.D'
@@ -1114,8 +1114,8 @@ class DuolingoCertificate(LanguageCertificate):
         return float(label)
 
 
+# Do we need to inheritance, move or ...
 class Admission(models.Model):
-
     content_type = models.ForeignKey(
         ContentType, on_delete=models.CASCADE
     )
@@ -1126,10 +1126,12 @@ class Admission(models.Model):
         'content_type', 'object_id',
     )
 
+    # Sale daneshgahe , :)))
     enrolled = models.CharField(
         max_length=255
     )
 
+    #origin
     origin_university = models.ForeignKey(
         University,
         on_delete=models.SET(_get_other_university_id),
@@ -1137,6 +1139,7 @@ class Admission(models.Model):
         related_query_name='admission_origin_university',
     )
 
+    #detination
     goal_university = models.ForeignKey(
         University,
         on_delete=models.SET(_get_other_university_id),
@@ -1167,12 +1170,14 @@ class Admission(models.Model):
         blank=True,
     )
 
+    # Remove
     choose_reason = models.TextField(
         max_length=4096,
         null=True,
         blank=True,
     )
 
+    # Change name gap and move this please :D
     academic_gap = models.IntegerField(
         help_text='In months'
     )

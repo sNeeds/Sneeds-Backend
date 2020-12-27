@@ -10,13 +10,18 @@ User = get_user_model()
 
 
 class ApplyProfile(models.Model):
+    # Profile is not connected to any user
     models.ForeignKey(
         User,
         on_delete=models.CASCADE,
     )
+
+    # Change the name
     show_name = models.CharField(
         max_length=255,
     )
+
+    # Remove
     latest_degree = models.ForeignKey(
         Education,
         on_delete=models.SET_NULL,
@@ -36,3 +41,4 @@ class ApplyProfile(models.Model):
         LanguageCertificate, related_query_name='apply_profile'
     )
 
+    # Admissions here
