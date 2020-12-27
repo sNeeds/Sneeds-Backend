@@ -12,7 +12,6 @@ from rest_framework.response import Response
 from abroadin.base.api import generics
 from abroadin.base.api.enum_views import EnumViewList
 from abroadin.base.api.permissions import permission_class_factory
-# from abroadin.utils.custom.views import custom_generic_apiviews
 
 
 from abroadin.base.api.viewsets import CAPIView
@@ -30,8 +29,8 @@ from .models import (
     DuolingoCertificate,
     Publication,
     Education,
-    Grade
-)
+    Grade,
+    Admission)
 from .serializers import (
     SemesterYearSerializer,
     LanguageCertificateSerializer,
@@ -47,8 +46,8 @@ from .serializers import (
     PublicationRequestSerializer,
     EducationSerializer,
     EducationRequestSerializer,
-    GradeSerializer
-)
+    GradeSerializer,
+    AdmissionSerializer)
 # from .permissions import (
 #     IsLanguageCertificateOwnerOrDetailedInfoWithoutUser,
 #     IsWantToApplyOwnerOrDetailedInfoWithoutUser,
@@ -283,6 +282,17 @@ class GradesListAPIView(generics.CListAPIView):
 
 class LanguageCertificateTypeListAPIView(EnumViewList):
     enum_class = LanguageCertificate.LanguageCertificateType
+
+
+class AdmissionListAPIView(generics.CListAPIView):
+    queryset = Admission.objects.all()
+    serializer_class = AdmissionSerializer
+
+
+class AdmissionDetailAPIView(generics.CRetrieveAPIView):
+    lookup_field = 'id'
+    queryset = Admission.objects.all()
+    serializer_class = AdmissionSerializer
 
 
 class Akbar(CAPIView):

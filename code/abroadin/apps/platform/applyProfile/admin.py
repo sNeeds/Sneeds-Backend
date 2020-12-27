@@ -5,7 +5,13 @@ from .models import ApplyProfile
 from ...data.applyData.models import (
     Publication, Education, RegularLanguageCertificate, GMATCertificate, DuolingoCertificate,
     GRESubjectCertificate, GREGeneralCertificate, GREPsychologyCertificate, GREPhysicsCertificate,
-    GREBiologyCertificate)
+    GREBiologyCertificate, Admission)
+
+
+class AdmissionInline(GenericTabularInline):
+    model = Admission
+    extra = 1
+    autocomplete_fields = ['origin_university', 'goal_university', 'major']
 
 
 class EducationInline(GenericTabularInline):
@@ -62,6 +68,8 @@ class PublicationInline(GenericTabularInline):
 @admin.register(ApplyProfile)
 class ApplyProfileAdmin(admin.ModelAdmin):
     inlines = [
+        AdmissionInline,
+
         EducationInline,
         PublicationInline,
 
