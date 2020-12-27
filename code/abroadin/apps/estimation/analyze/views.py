@@ -17,7 +17,7 @@ from abroadin.apps.users.customAuth.permissions import UserEmailIsVerified
 # TODO Add Email Verified permission
 class BaseChartsAPIView(generics.CGenericAPIView):
     lookup_url_kwarg = 'form_id'
-    permission_classes = [CompletedForm]
+    permission_classes = [CompletedForm] #TODO: Add is form owner (Temporary removed because of front bug)
     charts_data = {}
 
     def get(self, request, *args, **kwargs):
