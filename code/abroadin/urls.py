@@ -27,7 +27,7 @@ urlpatterns = [
                   path('utils/', include('abroadin.apps.customUtils.urls')),
                   path('users/', include('abroadin.apps.users.urls')),
                   path('data/account/', include('abroadin.apps.data.account.urls')),
-                  path('data/apply-data/', include('abroadin.apps.data.applyData.urls')),
+                  path('data/apply-data/', include('abroadin.apps.data.applydata.urls')),
                   path('store/packages/', include('abroadin.apps.store.storePackages.urls')),
                   path('store/base/', include('abroadin.apps.store.storeBase.urls')),
                   path('store/cart/', include('abroadin.apps.store.carts.urls')),
@@ -42,7 +42,7 @@ urlpatterns = [
                   path('analyze/similars/', include('abroadin.apps.estimation.similarApply.urls')),
                   path('analyze/charts/', include('abroadin.apps.estimation.analyze.urls')),
                   path('analytics/events/', include('abroadin.apps.analytics.events.urls')),
-                  path('platform/apply-profile/', include('abroadin.apps.platform.applyProfile.urls')),
+                  path('apply-profile/', include('abroadin.apps.applyprofile.urls')),
 
                   path('test/similar-profiles/', include('abroadin.apps.testapps.similarProfiles.urls')),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

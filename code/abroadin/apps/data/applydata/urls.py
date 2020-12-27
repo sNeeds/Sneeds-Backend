@@ -2,7 +2,7 @@ from django.urls import path
 
 from . import views
 
-app_name = "data.applyData"
+app_name = "data.applydata"
 
 urlpatterns = [
     path('regular-certificates/', views.RegularLanguageCertificateListCreateAPIView.as_view(),
@@ -57,10 +57,4 @@ urlpatterns = [
 
     path('choices/language-certificate-choices/', views.LanguageCertificateTypeListAPIView.as_view(),
          name="language-certificate-choices-list"),
-
-    path('admissions/', views.AdmissionListAPIView.as_view(),
-         name="admission-list"),
-
-    path('admissions/<int:id>', views.AdmissionDetailAPIView.as_view(),
-         name="admission-detail"),
 ]

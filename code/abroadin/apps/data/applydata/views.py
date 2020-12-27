@@ -29,8 +29,7 @@ from .models import (
     DuolingoCertificate,
     Publication,
     Education,
-    Grade,
-    Admission)
+    Grade,)
 from .serializers import (
     SemesterYearSerializer,
     LanguageCertificateSerializer,
@@ -46,8 +45,7 @@ from .serializers import (
     PublicationRequestSerializer,
     EducationSerializer,
     EducationRequestSerializer,
-    GradeSerializer,
-    AdmissionSerializer)
+    GradeSerializer,)
 # from .permissions import (
 #     IsLanguageCertificateOwnerOrDetailedInfoWithoutUser,
 #     IsWantToApplyOwnerOrDetailedInfoWithoutUser,
@@ -227,6 +225,7 @@ class DuolingoCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestr
 class PublicationListCreateAPIView(generics.CListCreateAPIView):
     queryset = Publication.objects.all()
     serializer_class = PublicationSerializer
+    request_serializer_class = PublicationRequestSerializer
 
     # def get_queryset(self):
     #     user = self.request.user
@@ -236,7 +235,7 @@ class PublicationListCreateAPIView(generics.CListCreateAPIView):
     #     return qs
 
     @swagger_auto_schema(
-        request_body=serializer_class,
+        request_body=request_serializer_class,
         responses={200: serializer_class},
     )
     def post(self, request, *args, **kwargs):
@@ -282,17 +281,6 @@ class GradesListAPIView(generics.CListAPIView):
 
 class LanguageCertificateTypeListAPIView(EnumViewList):
     enum_class = LanguageCertificate.LanguageCertificateType
-
-
-class AdmissionListAPIView(generics.CListAPIView):
-    queryset = Admission.objects.all()
-    serializer_class = AdmissionSerializer
-
-
-class AdmissionDetailAPIView(generics.CRetrieveAPIView):
-    lookup_field = 'id'
-    queryset = Admission.objects.all()
-    serializer_class = AdmissionSerializer
 
 
 class Akbar(CAPIView):

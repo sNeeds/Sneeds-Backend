@@ -1,17 +1,17 @@
 from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
 
-from .models import ApplyProfile
-from ...data.applyData.models import (
+from .models import ApplyProfile, Admission
+from abroadin.apps.data.applydata.models import (
     Publication, Education, RegularLanguageCertificate, GMATCertificate, DuolingoCertificate,
     GRESubjectCertificate, GREGeneralCertificate, GREPsychologyCertificate, GREPhysicsCertificate,
-    GREBiologyCertificate, Admission)
+    GREBiologyCertificate)
 
 
-class AdmissionInline(GenericTabularInline):
+class AdmissionInline(admin.TabularInline):
     model = Admission
     extra = 1
-    autocomplete_fields = ['origin_university', 'goal_university', 'major']
+    autocomplete_fields = ['origin_university', 'destination_university', 'major']
 
 
 class EducationInline(GenericTabularInline):

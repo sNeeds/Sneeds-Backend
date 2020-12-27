@@ -7,20 +7,37 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SerializerMethodField
 
 from abroadin.apps.data.account.models import BasicFormField, University, Major
-from abroadin.apps.data.account.serializers import CountrySerializer, UniversitySerializer, MajorSerializer
-from abroadin.base.api.fields import GenericRelatedField, ContentTypeRelatedField, GenericHyperlinkedRelatedField
+from abroadin.apps.data.account.serializers import UniversitySerializer, MajorSerializer
+from abroadin.base.api.fields import ContentTypeRelatedField
 from abroadin.base.api.serializers import generic_hyperlinked_related_method
 
 from .models import (
-    SemesterYear, Publication, Grade, Education, Admission, LanguageCertificate,
+    SemesterYear, Publication, Grade, Education, LanguageCertificate,
     RegularLanguageCertificate, GMATCertificate, GREGeneralCertificate, GRESubjectCertificate, GREPhysicsCertificate,
     GREBiologyCertificate, GREPsychologyCertificate, DuolingoCertificate)
 
 from abroadin.apps.estimation.form.models import StudentDetailedInfo
 
-from abroadin.apps.platform.applyProfile.models import ApplyProfile
+from abroadin.apps.applyprofile.models import ApplyProfile
 
 LanguageCertificateType = LanguageCertificate.LanguageCertificateType
+
+related_classes = [
+        {
+            'model_class': ApplyProfile,
+            'hyperlink_view_name': 'platform.applyprofile:apply-profile-detail',
+            'hyperlink_lookup_field': 'object_id',
+            'hyperlink_lookup_url_kwarg': 'id',
+            'hyperlink_format': None
+        },
+        {
+            'model_class': StudentDetailedInfo,
+            'hyperlink_view_name': 'estimation.form:student-detailed-info-detail',
+            'hyperlink_lookup_field': 'object_id',
+            'hyperlink_lookup_url_kwarg': 'form-id',
+            'hyperlink_format': None
+        }
+    ]
 
 
 class GradeSerializer(serializers.ModelSerializer):
@@ -71,22 +88,6 @@ class BasicFormFieldSerializer(serializers.ModelSerializer):
 
 
 class PublicationSerializer(serializers.ModelSerializer):
-    related_classes = [
-        {
-            'model_class': ApplyProfile,
-            'hyperlink_view_name': 'platform.applyProfile:apply-profile-detail',
-            'hyperlink_lookup_field': 'object_id',
-            'hyperlink_lookup_url_kwarg': 'id',
-            'hyperlink_format': None
-        },
-        {
-            'model_class': StudentDetailedInfo,
-            'hyperlink_view_name': 'estimation.form:student-detailed-info-detail',
-            'hyperlink_lookup_field': 'object_id',
-            'hyperlink_lookup_url_kwarg': 'form-id',
-            'hyperlink_format': None
-        }
-    ]
 
     content_type = ContentTypeRelatedField(
         related_classes=related_classes,
@@ -105,7 +106,7 @@ class PublicationSerializer(serializers.ModelSerializer):
     #             'hyperlinked_related_field': serializers.HyperlinkedRelatedField(
     #                 queryset=ApplyProfile.objects.all(),
     #                 lookup_field='id',
-    #                 view_name='platform.applyProfile:apply-profile-list'
+    #                 view_name='platform.applyprofile:apply-profile-list'
     #             ),
     #         }
     #     ]
@@ -123,27 +124,10 @@ class PublicationSerializer(serializers.ModelSerializer):
         }
 
     def get_content_url(self, obj):
-        return generic_hyperlinked_related_method(self, self.related_classes, obj)
+        return generic_hyperlinked_related_method(self, related_classes, obj)
 
 
 class PublicationRequestSerializer(serializers.ModelSerializer):
-    related_classes = [
-        {
-            'model_class': ApplyProfile,
-            'hyperlink_view_name': 'platform.applyProfile:apply-profile-detail',
-            'hyperlink_lookup_field': 'object_id',
-            'hyperlink_lookup_url_kwarg': 'id',
-            'hyperlink_format': None
-        },
-        {
-            'model_class': StudentDetailedInfo,
-            'hyperlink_view_name': 'estimation.form:student-detailed-info-detail',
-            'hyperlink_lookup_field': 'object_id',
-            'hyperlink_lookup_url_kwarg': 'form-id',
-            'hyperlink_format': None
-        }
-    ]
-
     content_type = ContentTypeRelatedField(
         related_classes=related_classes,
     )
@@ -158,42 +142,31 @@ class PublicationRequestSerializer(serializers.ModelSerializer):
         ]
 
     def get_content_url(self, obj):
-        return generic_hyperlinked_related_method(self, self.related_classes, obj)
+        return generic_hyperlinked_related_method(self, related_classes, obj)
 
-    # def validate(self, attrs):
-    #     request = self.context.get("request")
-    #     if request and hasattr(request, "user"):
-    #         request_user = request.user
-    #         student_detailed_info = attrs.get("student_detailed_info")
-    #         if student_detailed_info.user is not None and student_detailed_info.user != request_user:
-    #             raise ValidationError(_("User can't set student_detailed_info of another user."))
-    #         if student_detailed_info.user is None and request_user.is_authenticated:
-    #             raise ValidationError(_("User can't set student_detailed_info of another user."))
-    #     else:
-    #         raise ValidationError(_("Can't validate data.Can't get request user."))
-    #     return attrs
+    def validate(self, attrs):
+        request = self.context.get("request")
+        if request and hasattr(request, "user"):
+            request_user = request.user
+            content_type: ContentType = attrs.get("content_type")
+            if content_type.model_class() == StudentDetailedInfo:
+                try:
+                    student_detailed_info = StudentDetailedInfo.objects.get(
+                        pk=attrs.get(Publication.content_object.fk_field))
+                    if student_detailed_info.user is not None and student_detailed_info.user != request_user:
+                        raise ValidationError(_("User can't set student_detailed_info of another user."))
+                    if student_detailed_info.user is None and request_user.is_authenticated:
+                        raise ValidationError(_("User can't set student_detailed_info of another user."))
+                except StudentDetailedInfo.DoesNotExist:
+                    pass
+        else:
+            raise ValidationError(_("Can't validate data.Can't get request user."))
+        return attrs
 
 
 class EducationSerializer(serializers.ModelSerializer):
     university = UniversitySerializer()
     major = MajorSerializer()
-
-    related_classes = [
-        {
-            'model_class': ApplyProfile,
-            'hyperlink_view_name': 'platform.applyProfile:apply-profile-detail',
-            'hyperlink_lookup_field': 'object_id',
-            'hyperlink_lookup_url_kwarg': 'id',
-            'hyperlink_format': None
-        },
-        {
-            'model_class': StudentDetailedInfo,
-            'hyperlink_view_name': 'estimation.form:student-detailed-info-detail',
-            'hyperlink_lookup_field': 'object_id',
-            'hyperlink_lookup_url_kwarg': 'form-id',
-            'hyperlink_format': None
-        }
-    ]
 
     content_type = ContentTypeRelatedField(
         related_classes=related_classes,
@@ -209,7 +182,7 @@ class EducationSerializer(serializers.ModelSerializer):
         ]
 
     def get_content_url(self, obj):
-        return generic_hyperlinked_related_method(self, self.related_classes, obj)
+        return generic_hyperlinked_related_method(self, related_classes, obj)
 
     def create(self, validated_data):
         raise ValidationError(_("Creating object through this serializer is not allowed"))
@@ -232,23 +205,6 @@ class EducationRequestSerializer(serializers.ModelSerializer):
         required=True,
     )
 
-    related_classes = [
-        {
-            'model_class': ApplyProfile,
-            'hyperlink_view_name': 'platform.applyProfile:apply-profile-detail',
-            'hyperlink_lookup_field': 'object_id',
-            'hyperlink_lookup_url_kwarg': 'id',
-            'hyperlink_format': None
-        },
-        {
-            'model_class': StudentDetailedInfo,
-            'hyperlink_view_name': 'estimation.form:student-detailed-info-detail',
-            'hyperlink_lookup_field': 'object_id',
-            'hyperlink_lookup_url_kwarg': 'form-id',
-            'hyperlink_format': None
-        }
-    ]
-
     content_type = ContentTypeRelatedField(
         related_classes=related_classes,
     )
@@ -263,7 +219,7 @@ class EducationRequestSerializer(serializers.ModelSerializer):
         ]
 
     def get_content_url(self, obj):
-        return generic_hyperlinked_related_method(self, self.related_classes, obj)
+        return generic_hyperlinked_related_method(self, related_classes, obj)
 
     # def validate(self, attrs):
     #     request = self.context.get("request")
@@ -280,23 +236,6 @@ class EducationRequestSerializer(serializers.ModelSerializer):
 
 
 class LanguageCertificateSerializer(serializers.ModelSerializer):
-    related_classes = [
-        {
-            'model_class': ApplyProfile,
-            'hyperlink_view_name': 'platform.applyProfile:apply-profile-detail',
-            'hyperlink_lookup_field': 'object_id',
-            'hyperlink_lookup_url_kwarg': 'id',
-            'hyperlink_format': None
-        },
-        {
-            'model_class': StudentDetailedInfo,
-            'hyperlink_view_name': 'estimation.form:student-detailed-info-detail',
-            'hyperlink_lookup_field': 'object_id',
-            'hyperlink_lookup_url_kwarg': 'form-id',
-            'hyperlink_format': None
-        }
-    ]
-
     content_type = ContentTypeRelatedField(
         related_classes=related_classes,
     )
@@ -308,7 +247,7 @@ class LanguageCertificateSerializer(serializers.ModelSerializer):
         fields = exclude = ['content_object']
 
     def get_content_url(self, obj):
-        return generic_hyperlinked_related_method(self, self.related_classes, obj)
+        return generic_hyperlinked_related_method(self, related_classes, obj)
 
     # def validate(self, attrs):
     #     request = self.context.get("request")
@@ -474,40 +413,3 @@ class DuolingoCertificateCelerySerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         return attrs
-
-
-class AdmissionSerializer(serializers.ModelSerializer):
-    related_classes = [
-        {
-            'model_class': ApplyProfile,
-            'hyperlink_view_name': 'platform.applyProfile:apply-profile-detail',
-            'hyperlink_lookup_field': 'object_id',
-            'hyperlink_lookup_url_kwarg': 'id',
-            'hyperlink_format': None
-        },
-        {
-            'model_class': StudentDetailedInfo,
-            'hyperlink_view_name': 'estimation.form:student-detailed-info-detail',
-            'hyperlink_lookup_field': 'object_id',
-            'hyperlink_lookup_url_kwarg': 'form-id',
-            'hyperlink_format': None
-        }
-    ]
-
-    content_type = ContentTypeRelatedField(
-        related_classes=related_classes,
-    )
-
-    content_url = SerializerMethodField(method_name='get_content_url')
-
-    class Meta:
-        model = Admission
-        fields = [
-            'id', 'enrolled', 'origin_university', 'goal_university',
-            'scholarships', 'scholarships_unit', 'major',
-            'academic_gap', 'accepted', 'description', 'choose_reason',
-            'content_type', 'object_id', 'content_url',
-        ]
-
-    def get_content_url(self, obj):
-        return generic_hyperlinked_related_method(self, self.related_classes, obj)

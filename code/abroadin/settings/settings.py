@@ -38,8 +38,8 @@ INSTALLED_APPS = [
     'abroadin.apps.data.account',
     'abroadin.apps.analytics.events',
     'abroadin.apps.testapps.similarProfiles',
-    'abroadin.apps.data.applyData',
-    'abroadin.apps.platform.applyProfile',
+    'abroadin.apps.data.applydata',
+    'abroadin.apps.applyprofile',
 
     'django.contrib.auth',
     'django.contrib.admin',

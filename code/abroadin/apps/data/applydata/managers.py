@@ -1,8 +1,8 @@
 from django.db import models
 from django.db.models import When, Q, Value, IntegerField, Case
 
-from abroadin.apps.data.applyData.classes import ValueRange
-from abroadin.apps.data.applyData.values import VALUES_WITH_ATTRS
+from abroadin.apps.data.applydata.classes import ValueRange
+from abroadin.apps.data.applydata.values import VALUES_WITH_ATTRS
 from abroadin.base.mixins.manager import GetListManagerMixin
 
 

@@ -1,13 +1,10 @@
 from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
 
 from rest_framework.exceptions import ValidationError
-
-from abroadin.apps.platform.applyProfile.models import ApplyProfile
 
 APP_MODEL_SEPARATOR = '__'
 

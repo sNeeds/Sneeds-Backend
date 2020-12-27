@@ -10,56 +10,13 @@ from django.utils.translation import gettext_lazy as _
 
 from abroadin.apps.data.account.models import University, Major, Country
 from abroadin.apps.data.account.validators import ten_factor_validator
-from abroadin.apps.data.applyData.classes import ValueRange
-from abroadin.apps.data.applyData.decorators import regular_certificate_or_none
-from abroadin.apps.data.applyData.managers import EducationQuerySetManager, GradeQuerySetManager, \
+from abroadin.apps.data.applydata.classes import ValueRange
+from abroadin.apps.data.applydata.decorators import regular_certificate_or_none
+from abroadin.apps.data.applydata.managers import EducationQuerySetManager, GradeQuerySetManager, \
     PublicationQuerySetManager, LanguageCertificateQuerySetManager
-from abroadin.apps.data.applyData.validators import validate_ielts_score, validate_toefl_overall_score, \
+from abroadin.apps.data.applydata.validators import validate_ielts_score, validate_toefl_overall_score, \
     validate_toefl_section_score
-from abroadin.apps.data.applyData.values import VALUES_WITH_ATTRS
-
-
-def _get_other_country_id():
-    """
-    Returns a country which is named 'Other'
-    """
-    qs = Country.objects.filter(name__iexact='Other')
-    if qs.exists():
-        return qs.first().id
-    return Country.objects.create(
-        name='Other',
-        search_name='other',
-        slug='other'
-    ).id
-
-
-def _get_other_university_id():
-    """
-    Returns a university which is named 'Other'
-    """
-    qs = University.objects.filter(name__iexact='Other')
-    if qs.exists():
-        return qs.first().id
-    return University.objects.create(
-        name='Other',
-        search_name='other',
-        slug='other',
-        country_id=_get_other_country_id(),
-        rank=20000,
-    ).id
-
-
-def _get_other_major_id():
-    """
-        Returns a major which is named 'Other'
-    """
-    qs = Major.objects.filter(name__iexact='Other')
-    if qs.exists():
-        return qs.first().id
-    return Major.objects.create(
-        name='Other',
-        search_name='other',
-    ).id
+from abroadin.apps.data.applydata.values import VALUES_WITH_ATTRS
 
 
 class GradeChoices(models.TextChoices):
@@ -1112,67 +1069,3 @@ class DuolingoCertificate(LanguageCertificate):
     @classmethod
     def get_store_label_rank(cls, label):
         return float(label)
-
-
-class Admission(models.Model):
-
-    content_type = models.ForeignKey(
-        ContentType, on_delete=models.CASCADE
-    )
-    object_id = models.CharField(
-        max_length=255,
-    )
-    content_object = GenericForeignKey(
-        'content_type', 'object_id',
-    )
-
-    enrolled = models.CharField(
-        max_length=255
-    )
-
-    origin_university = models.ForeignKey(
-        University,
-        on_delete=models.SET(_get_other_university_id),
-        related_name='admission_origin_universities',
-        related_query_name='admission_origin_university',
-    )
-
-    goal_university = models.ForeignKey(
-        University,
-        on_delete=models.SET(_get_other_university_id),
-        related_name='admission_goal_universities',
-        related_query_name='admission_goal_university',
-    )
-
-    major = models.ForeignKey(
-        Major,
-        on_delete=models.SET(_get_other_major_id),
-    )
-
-    accepted = models.BooleanField(
-        default=False
-    )
-
-    scholarships = models.IntegerField(
-    )
-
-    scholarships_unit = models.CharField(
-        max_length=8,
-        help_text='Scholarship unit. For example $/Y or €/M'
-    )
-
-    description = models.TextField(
-        max_length=4096,
-        null=True,
-        blank=True,
-    )
-
-    choose_reason = models.TextField(
-        max_length=4096,
-        null=True,
-        blank=True,
-    )
-
-    academic_gap = models.IntegerField(
-        help_text='In months'
-    )

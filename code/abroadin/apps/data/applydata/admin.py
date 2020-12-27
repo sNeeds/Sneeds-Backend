@@ -2,8 +2,6 @@ from django.contrib import admin
 
 from . import models
 
-admin.site.register(models.Admission)
-
 admin.site.register(models.Grade)
 admin.site.register(models.SemesterYear)
 admin.site.register(models.Education)
