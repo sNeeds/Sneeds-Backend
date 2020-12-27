@@ -5,8 +5,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 
+
+from abroadin.base.api import generics
 from abroadin.apps.estimation.form.permissions import CompletedForm
-from abroadin.utils.custom.views import custom_generic_apiviews as c_generics
 from abroadin.apps.estimation.analyze import serializers
 from abroadin.apps.estimation.analyze.models import Chart
 from abroadin.apps.estimation.form.permissions import IsFormOwner
@@ -14,7 +15,7 @@ from abroadin.apps.users.customAuth.permissions import UserEmailIsVerified
 
 
 # TODO Add Email Verified permission
-class BaseChartsAPIView(c_generics.BaseGenericAPIView):
+class BaseChartsAPIView(generics.CGenericAPIView):
     lookup_url_kwarg = 'form_id'
     permission_classes = [IsFormOwner, CompletedForm, UserEmailIsVerified]
     charts_data = {}
