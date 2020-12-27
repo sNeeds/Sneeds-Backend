@@ -1,5 +1,7 @@
 from datetime import timedelta
+from celery.schedules import crontab
 from verification.base import CELERY_BEAT_SCHEDULE as VERIFICATION_CELERY_BEAT_SCHEDULE
+
 
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_RESULT_SERIALIZER = 'json'
@@ -26,6 +28,10 @@ CELERY_BEAT_SCHEDULE = {
     'update-student-detailed-info-ranks': {
         'task': 'abroadin.apps.estimation.form.tasks.update_student_detailed_info_ranks',
         'schedule': timedelta(hours=24),
+    },
+    'delete-forms-without-user': {
+        'task': 'abroadin.apps.estimation.form.tasks.delete_forms_without_user',
+        'schedule': crontab(minute=0, hour=3),
     }
 }
 

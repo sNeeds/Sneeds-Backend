@@ -13,7 +13,7 @@ from rest_framework.exceptions import ValidationError as DRFValidationError
 from abroadin.apps.estimation.estimations import values
 from abroadin.apps.estimation.estimations.classes import ValueRange
 from abroadin.apps.estimation.estimations.values import VALUES_WITH_ATTRS, LANGUAGE_B_VALUE
-from abroadin.apps.estimation.form.labels import MISSING_LABEL, REWARDED_LABEL
+from abroadin.apps.estimation.form.variables import MISSING_LABEL, REWARDED_LABEL
 from abroadin.apps.estimation.form.managers import \
     (UniversityThroughQuerySetManager,
      LanguageCertificateQuerySetManager,
