@@ -114,7 +114,6 @@ class WantToApply(models.Model):
 
     semester_years = models.ManyToManyField(SemesterYear, blank=True)
 
-
 class Publication(models.Model):
     class WhichAuthorChoices(models.TextChoices):
         FIRST = 'First', 'First'
