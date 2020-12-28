@@ -3,8 +3,10 @@ from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
 
-
 from rest_framework.exceptions import ValidationError
+from rest_framework.fields import SerializerMethodField
+
+from abroadin.base.api.serializers import generic_hyperlinked_related_method
 
 APP_MODEL_SEPARATOR = '__'
 
@@ -73,34 +75,65 @@ class GenericRelatedField(serializers.RelatedField):
         raise AssertionError("ContentTypeRelatedField wrong instance.")
 
 
-class ContentTypeRelatedField(serializers.RelatedField):
+class GenericContentTypeRelatedField(serializers.RelatedField):
+    """
+    Sample right definition of related_classes
+    related_classes = [
+        {
+            'model_class': ApplyProfile,
+            'hyperlink_view_name': 'applyprofile:apply-profile-detail',
+            'hyperlink_lookup_field': 'object_id',
+            'hyperlink_lookup_url_kwarg': 'id',
+            'hyperlink_format': None
+        },
+        {
+            'model_class': StudentDetailedInfo,
+            'hyperlink_view_name': 'estimation.form:student-detailed-info-detail',
+            'hyperlink_lookup_field': 'object_id',
+            'hyperlink_lookup_url_kwarg': 'form-id',
+            'hyperlink_format': None
+        }
+    ]
+    """
     allowed_content_types = None
+    related_classes = None
 
     def __init__(self, **kwargs):
         self.related_classes = kwargs.pop('related_classes', None)
+        assert self.related_classes is None or isinstance(self.related_classes, list), \
+            _("related classes should be an object of list")
+
+        self.queryset = []
+        super().__init__(**kwargs)
+
+    def bind(self, field_name, parent):
+        super().bind(field_name, parent)
+        # TODO iterate over parents to discover related classes
+        if self.related_classes is None or len(self.related_classes) == 0:
+            self.related_classes = self.parent.related_classes
+
         assert self.related_classes is not None, _("related_classes may not be None.")
         assert isinstance(self.related_classes, list), _("related classes should be an object of list")
 
-        self.queryset = self.perform_query_set()
         self.allowed_content_types = self.perform_allowed_content_types()
-        super().__init__(**kwargs)
+        self.queryset = self.perform_query_set()
 
     def to_internal_value(self, data):
         if data not in self.allowed_content_types:
-            raise serializers.ValidationError({"content_type": "ContentTypeRelatedField wrong instance."}, code=400)
+            raise serializers.ValidationError({"content_type": _("ContentTypeRelatedField wrong instance.")}, code=400)
         app_label, model = _get_content_type_by_identifier(data)
         return ContentType.objects.get(app_label=app_label, model=model)
 
     def to_representation(self, value):
         ret = _get_content_type_identifier(value)
         assert ret in self.allowed_content_types, _("Object is not allowed to be serialized through this"
-                                                    " related serializer")
+                                                    " related serializer.\n"
+                                                    "object type: {}  allowed_content_types: {}"
+                                                    .format(ret, self.allowed_content_types))
         return ret
-        # raise serializers.ValidationError({"content_type": "ContentTypeRelatedField wrong instance."}, code=400)
 
     def perform_query_set(self):
         query_set = ContentType.objects.none()
-
         for module in self.related_classes:
             content_type = ContentType.objects.get_for_model(model=module['model_class'])
             query_set |= ContentType.objects.filter(app_label=content_type.app_label, model=content_type.model)
@@ -109,6 +142,49 @@ class ContentTypeRelatedField(serializers.RelatedField):
     def perform_allowed_content_types(self):
         return [_get_content_type_identifier(ContentType.objects.get_for_model(module['model_class']))
                 for module in self.related_classes]
+
+
+class GenericContentObjectRelatedURL(SerializerMethodField):
+    allowed_content_types = None
+    related_classes = None
+    default_content_type_field = 'content_type'
+    default_object_id_field = 'object_id'
+
+    def __init__(self, **kwargs):
+        self.related_classes = kwargs.pop('related_classes', None)
+        self.content_type_field = kwargs.pop('content_type_field', self.default_content_type_field)
+        self.object_id_field = kwargs.pop('object_id_field', self.default_object_id_field)
+        assert self.related_classes is None or isinstance(self.related_classes, list), \
+            _("related classes should be an object of list")
+
+        self.queryset = []
+        super().__init__(**kwargs)
+
+    def bind(self, field_name, parent):
+        super().bind(field_name, parent)
+
+        # TODO iterate over parents to discover related classes and other variables
+        if self.related_classes is None or len(self.related_classes) == 0:
+            self.related_classes = self.parent.related_classes
+
+        self.content_type_field = self.parent.content_type_field if hasattr(self.parent,
+                                                                            'content_type_field') and self.parent.content_type_field \
+            else self.content_type_field
+        self.object_id_field = self.parent.object_id_field if hasattr(self.parent,
+                                                                      'object_id_field') and self.parent.object_id_field \
+            else self.object_id_field
+
+        assert self.related_classes is not None, _("related_classes may not be None.")
+        assert self.content_type_field is not None, _("content_type_field may not be None.")
+        assert self.object_id_field is not None, _("object_id_field may not be None.")
+        assert isinstance(self.related_classes, list), _("related classes should be an object of list")
+
+    def to_internal_value(self, data):
+        pass
+
+    def to_representation(self, value):
+        return generic_hyperlinked_related_method(self.parent, self.related_classes, value, self.content_type_field,
+                                                  self.object_id_field)
 
 
 # h =[
@@ -145,4 +221,5 @@ class GenericHyperlinkedRelatedField(serializers.RelatedField):
         return query_set
 
     def perform_allowed_content_types(self):
-        return [_get_content_type_identifier(ContentType.objects.get_for_model(module[0])) for module in self.related_classes]
+        return [_get_content_type_identifier(ContentType.objects.get_for_model(module[0])) for module in
+                self.related_classes]

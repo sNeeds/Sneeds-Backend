@@ -79,16 +79,6 @@ class ApplyProfile(models.Model):
 
 class Admission(models.Model):
 
-    # content_type = models.ForeignKey(
-    #     ContentType, on_delete=models.CASCADE
-    # )
-    # object_id = models.CharField(
-    #     max_length=255,
-    # )
-    # content_object = GenericForeignKey(
-    #     'content_type', 'object_id',
-    # )
-
     class ScholarshipsUnitChoices(models.TextChoices):
         DOLLAR_MONTH = '$/M', _("$/M")
         DOLLAR_YEAR = '$/Y', _("$/Y")

@@ -5,10 +5,11 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SerializerMethodField
+from rest_framework.request import Request
 
 from abroadin.apps.data.account.models import BasicFormField, University, Major
 from abroadin.apps.data.account.serializers import UniversitySerializer, MajorSerializer
-from abroadin.base.api.fields import ContentTypeRelatedField
+from abroadin.base.api.fields import GenericContentTypeRelatedField, GenericContentObjectRelatedURL
 from abroadin.base.api.serializers import generic_hyperlinked_related_method
 
 from .models import (
@@ -20,24 +21,25 @@ from abroadin.apps.estimation.form.models import StudentDetailedInfo
 
 from abroadin.apps.applyprofile.models import ApplyProfile
 
-LanguageCertificateType = LanguageCertificate.LanguageCertificateType
+LCType = LanguageCertificate.LanguageCertificateType
 
-related_classes = [
-        {
-            'model_class': ApplyProfile,
-            'hyperlink_view_name': 'platform.applyprofile:apply-profile-detail',
-            'hyperlink_lookup_field': 'object_id',
-            'hyperlink_lookup_url_kwarg': 'id',
-            'hyperlink_format': None
-        },
-        {
-            'model_class': StudentDetailedInfo,
-            'hyperlink_view_name': 'estimation.form:student-detailed-info-detail',
-            'hyperlink_lookup_field': 'object_id',
-            'hyperlink_lookup_url_kwarg': 'form-id',
-            'hyperlink_format': None
-        }
-    ]
+
+# related_classes = [
+#     {
+#         'model_class': ApplyProfile,
+#         'hyperlink_view_name': 'applyprofile:apply-profile-detail',
+#         'hyperlink_lookup_field': 'object_id',
+#         'hyperlink_lookup_url_kwarg': 'id',
+#         'hyperlink_format': None
+#     },
+#     {
+#         'model_class': StudentDetailedInfo,
+#         'hyperlink_view_name': 'estimation.form:student-detailed-info-detail',
+#         'hyperlink_lookup_field': 'object_id',
+#         'hyperlink_lookup_url_kwarg': 'form-id',
+#         'hyperlink_format': None
+#     }
+# ]
 
 
 class GradeSerializer(serializers.ModelSerializer):
@@ -88,12 +90,10 @@ class BasicFormFieldSerializer(serializers.ModelSerializer):
 
 
 class PublicationSerializer(serializers.ModelSerializer):
+    related_classes = []
 
-    content_type = ContentTypeRelatedField(
-        related_classes=related_classes,
-    )
-
-    content_url = SerializerMethodField(method_name='get_content_url')
+    content_type = GenericContentTypeRelatedField()
+    content_url = GenericContentObjectRelatedURL()
 
     # content_object = GenericRelatedField(
     #     related_classes=[
@@ -114,6 +114,7 @@ class PublicationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Publication
+        abstract = True
         fields = [
             'id', 'title', 'publish_year', 'which_author', 'type', 'journal_reputation',
             'content_type', 'object_id', 'content_url',
@@ -123,29 +124,21 @@ class PublicationSerializer(serializers.ModelSerializer):
             # 'content_object': {'read_only': True},
         }
 
-    def get_content_url(self, obj):
-        return generic_hyperlinked_related_method(self, related_classes, obj)
-
 
 class PublicationRequestSerializer(serializers.ModelSerializer):
-    content_type = ContentTypeRelatedField(
-        related_classes=related_classes,
-    )
+    related_classes = []
 
-    content_url = SerializerMethodField(method_name='get_content_url')
+    content_type = GenericContentTypeRelatedField()
 
     class Meta:
         model = Publication
         fields = [
             'id', 'content_object', 'title', 'publish_year', 'which_author', 'type', 'journal_reputation',
-            'content_type', 'object_id', 'content_url',
+            'content_type', 'object_id',
         ]
 
-    def get_content_url(self, obj):
-        return generic_hyperlinked_related_method(self, related_classes, obj)
-
     def validate(self, attrs):
-        request = self.context.get("request")
+        request: Request = self.context.get("request")
         if request and hasattr(request, "user"):
             request_user = request.user
             content_type: ContentType = attrs.get("content_type")
@@ -165,30 +158,27 @@ class PublicationRequestSerializer(serializers.ModelSerializer):
 
 
 class EducationSerializer(serializers.ModelSerializer):
+    related_classes = []
     university = UniversitySerializer()
     major = MajorSerializer()
 
-    content_type = ContentTypeRelatedField(
-        related_classes=related_classes,
-    )
-
-    content_url = SerializerMethodField(method_name='get_content_url')
+    content_type = GenericContentTypeRelatedField()
+    content_url = GenericContentObjectRelatedURL()
 
     class Meta:
         model = Education
         fields = [
-            'id', 'university', 'content_object', 'grade', 'major', 'graduate_in', 'thesis_title', 'gpa',
+            'id', 'university', 'grade', 'major', 'graduate_in', 'thesis_title', 'gpa',
             'content_type', 'object_id', 'content_url',
         ]
-
-    def get_content_url(self, obj):
-        return generic_hyperlinked_related_method(self, related_classes, obj)
 
     def create(self, validated_data):
         raise ValidationError(_("Creating object through this serializer is not allowed"))
 
 
 class EducationRequestSerializer(serializers.ModelSerializer):
+    related_classes = []
+
     university = serializers.PrimaryKeyRelatedField(
         queryset=University.objects.all(),
         pk_field=serializers.IntegerField(label='id'),
@@ -205,21 +195,15 @@ class EducationRequestSerializer(serializers.ModelSerializer):
         required=True,
     )
 
-    content_type = ContentTypeRelatedField(
-        related_classes=related_classes,
-    )
-
-    content_url = SerializerMethodField(method_name='get_content_url')
+    content_type = GenericContentTypeRelatedField()
+    content_url = GenericContentObjectRelatedURL()
 
     class Meta:
         model = Education
         fields = [
             'id', 'university', 'content_object', 'grade', 'major', 'graduate_in', 'thesis_title', 'gpa',
-            'content_type', 'object_id', 'content_url',
+            'content_type', 'object_id',
         ]
-
-    def get_content_url(self, obj):
-        return generic_hyperlinked_related_method(self, related_classes, obj)
 
     # def validate(self, attrs):
     #     request = self.context.get("request")
@@ -236,18 +220,15 @@ class EducationRequestSerializer(serializers.ModelSerializer):
 
 
 class LanguageCertificateSerializer(serializers.ModelSerializer):
-    content_type = ContentTypeRelatedField(
-        related_classes=related_classes,
-    )
+    related_classes = []
 
-    content_url = SerializerMethodField(method_name='get_content_url')
+    content_type = GenericContentTypeRelatedField()
+    content_url = GenericContentObjectRelatedURL()
 
     class Meta:
         model = LanguageCertificate
-        fields = exclude = ['content_object']
-
-    def get_content_url(self, obj):
-        return generic_hyperlinked_related_method(self, related_classes, obj)
+        fields = '__all__'
+        # exclude = ['content_object']
 
     # def validate(self, attrs):
     #     request = self.context.get("request")
@@ -268,11 +249,12 @@ class LanguageCertificateSerializer(serializers.ModelSerializer):
 class RegularLanguageCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = RegularLanguageCertificate
-        exclude = ['content_object']
+        fields = '__all__'
+        # # exclude = ['content_object']
 
     def validate_certificate_type(self, value):
-        if value not in [LanguageCertificateType.IELTS_ACADEMIC, LanguageCertificateType.IELTS_GENERAL,
-                         LanguageCertificateType.TOEFL]:
+        if value not in [LCType.IELTS_ACADEMIC, LCType.IELTS_GENERAL,
+                         LCType.TOEFL]:
             raise ValidationError(_("Value is not in allowed certificate types."))
         return value
 
@@ -281,7 +263,8 @@ class RegularLanguageCertificateCelerySerializer(serializers.ModelSerializer):
     class Meta:
         model = RegularLanguageCertificate
         validators = []
-        exclude = ['content_object']
+        fields = '__all__'
+        # # exclude = ['content_object']
 
     default_validators = []
 
@@ -292,10 +275,11 @@ class RegularLanguageCertificateCelerySerializer(serializers.ModelSerializer):
 class GMATCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = GMATCertificate
-        exclude = ['content_object']
+        fields = '__all__'
+        # exclude = ['content_object']
 
     def validate_certificate_type(self, value):
-        if value not in [LanguageCertificateType.GMAT]:
+        if value not in [LCType.GMAT]:
             raise ValidationError(_("Value is not in allowed certificate types."))
         return value
 
@@ -304,7 +288,8 @@ class GMATCertificateCelerySerializer(serializers.ModelSerializer):
     class Meta:
         model = GMATCertificate
         validators = []
-        exclude = ['content_object']
+        fields = '__all__'
+        # exclude = ['content_object']
 
     default_validators = []
 
@@ -315,10 +300,11 @@ class GMATCertificateCelerySerializer(serializers.ModelSerializer):
 class GREGeneralCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = GREGeneralCertificate
-        exclude = ['content_object']
+        fields = '__all__'
+        # exclude = ['content_object']
 
     def validate_certificate_type(self, value):
-        if value not in [LanguageCertificateType.GRE_GENERAL]:
+        if value not in [LCType.GRE_GENERAL]:
             raise ValidationError(_("Value is not in allowed certificate types."))
         return value
 
@@ -327,7 +313,8 @@ class GREGeneralCertificateCelerySerializer(serializers.ModelSerializer):
     class Meta:
         model = GREGeneralCertificate
         validators = []
-        exclude = ['content_object']
+        fields = '__all__'
+        # exclude = ['content_object']
 
     default_validators = []
 
@@ -338,11 +325,12 @@ class GREGeneralCertificateCelerySerializer(serializers.ModelSerializer):
 class GRESubjectCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = GRESubjectCertificate
-        exclude = ['content_object']
+        fields = '__all__'
+        # exclude = ['content_object']
 
     def validate_certificate_type(self, value):
-        if value not in [LanguageCertificateType.GRE_CHEMISTRY, LanguageCertificateType.GRE_LITERATURE,
-                         LanguageCertificateType.GRE_MATHEMATICS]:
+        if value not in [LCType.GRE_CHEMISTRY, LCType.GRE_LITERATURE,
+                         LCType.GRE_MATHEMATICS]:
             raise ValidationError(_("Value is not in allowed certificate types."))
         return value
 
@@ -351,7 +339,8 @@ class GRESubjectCertificateCelerySerializer(serializers.ModelSerializer):
     class Meta:
         model = GRESubjectCertificate
         validators = []
-        exclude = ['content_object']
+        fields = '__all__'
+        # exclude = ['content_object']
 
     default_validators = []
 
@@ -362,10 +351,11 @@ class GRESubjectCertificateCelerySerializer(serializers.ModelSerializer):
 class GREBiologyCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = GREBiologyCertificate
-        exclude = ['content_object']
+        fields = '__all__'
+        # exclude = ['content_object']
 
     def validate_certificate_type(self, value):
-        if value not in [LanguageCertificateType.GRE_BIOLOGY]:
+        if value not in [LCType.GRE_BIOLOGY]:
             raise ValidationError(_("Value is not in allowed certificate types."))
         return value
 
@@ -373,10 +363,11 @@ class GREBiologyCertificateSerializer(LanguageCertificateSerializer):
 class GREPhysicsCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = GREPhysicsCertificate
-        exclude = ['content_object']
+        fields = '__all__'
+        # exclude = ['content_object']
 
     def validate_certificate_type(self, value):
-        if value not in [LanguageCertificateType.GRE_PHYSICS]:
+        if value not in [LCType.GRE_PHYSICS]:
             raise ValidationError(_("Value is not in allowed certificate types."))
         return value
 
@@ -384,10 +375,11 @@ class GREPhysicsCertificateSerializer(LanguageCertificateSerializer):
 class GREPsychologyCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = GREPsychologyCertificate
-        exclude = ['content_object']
+        fields = '__all__'
+        # exclude = ['content_object']
 
     def validate_certificate_type(self, value):
-        if value not in [LanguageCertificateType.GRE_PSYCHOLOGY]:
+        if value not in [LCType.GRE_PSYCHOLOGY]:
             raise ValidationError(_("Value is not in allowed certificate types."))
         return value
 
@@ -396,9 +388,10 @@ class DuolingoCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = DuolingoCertificate
         fields = '__all__'
+        # exclude = ['content_object']
 
     def validate_certificate_type(self, value):
-        if value not in [LanguageCertificateType.DUOLINGO]:
+        if value not in [LCType.DUOLINGO]:
             raise ValidationError(_("Value is not in allowed certificate types."))
         return value
 
@@ -407,9 +400,62 @@ class DuolingoCertificateCelerySerializer(serializers.ModelSerializer):
     class Meta:
         model = DuolingoCertificate
         validators = []
-        exclude = ['content_object']
+        fields = '__all__'
+        # exclude = ['content_object']
 
     default_validators = []
 
     def validate(self, attrs):
         return attrs
+
+
+def serialize_language_certificates(queryset, parent_serializer, related_classes):
+    """
+    parameter: queryset is a queryset of parent LanguageCertificate objects
+    """
+    ret = {}
+
+    for obj in queryset:
+        if obj.certificate_type in [LCType.TOEFL, LCType.IELTS_GENERAL, LCType.IELTS_ACADEMIC]:
+            serializer = RegularLanguageCertificateSerializer(obj.regularlanguagecertificate,
+                                                              many=False,
+                                                              context=parent_serializer.context)
+
+        elif obj.certificate_type in [LCType.GMAT]:
+            serializer = GMATCertificateSerializer(obj.gmatertificate,
+                                                   many=False,
+                                                   context=parent_serializer.context)
+
+        elif obj.certificate_type in [LCType.GRE_GENERAL]:
+            serializer = GREGeneralCertificateSerializer(obj.gregeneralcertificate,
+                                                         many=False,
+                                                         context=parent_serializer.context)
+
+        elif obj.certificate_type in [LCType.GRE_CHEMISTRY, LCType.GRE_LITERATURE, LCType.GRE_MATHEMATICS]:
+            serializer = GRESubjectCertificateSerializer(obj.gresubjectcertificate,
+                                                         many=False,
+                                                         context=parent_serializer.context)
+
+        elif obj.certificate_type in [LCType.GRE_BIOLOGY]:
+            serializer = GREBiologyCertificateSerializer(obj.gresubjectcertificate.grebiologycertificate,
+                                                         many=False,
+                                                         context=parent_serializer.context)
+
+        elif obj.certificate_type in [LCType.GRE_PHYSICS]:
+            serializer = GREPhysicsCertificateSerializer(obj.gresubjectcertificate.grephysicscertificate,
+                                                         many=False,
+                                                         context=parent_serializer.context)
+
+        elif obj.certificate_type in [LCType.GRE_PSYCHOLOGY]:
+            serializer = GREPsychologyCertificateSerializer(obj.gresubjectcertificate.grepsychologycertificate,
+                                                            many=False,
+                                                            context=parent_serializer.context)
+
+        elif obj.certificate_type in [LCType.DUOLINGO]:
+            serializer = DuolingoCertificateSerializer(obj.dulingocertificate,
+                                                       many=False,
+                                                       context=parent_serializer.context)
+
+        serializer.related_classes = related_classes
+        ret[obj.certificate_type] = serializer.data
+    return ret

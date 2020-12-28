@@ -21,6 +21,19 @@ def _create_hyperlinked_field(parent_serializer, module, object_id_field):
 
 def generic_hyperlinked_related_method(parent_serializer, related_classes: list, obj,
                                        content_type_field='content_type', object_id_field='object_id'):
+    """
+    Sample right definition of related_classes
+    related_classes = [
+        {
+            'model_class': ApplyProfile,
+            'hyperlink_view_name': 'applyprofile:apply-profile-detail',
+            'hyperlink_lookup_field': 'object_id',
+            'hyperlink_lookup_url_kwarg': 'id',
+            'hyperlink_format': None
+        },
+    ]
+    """
+
     for module in related_classes:
         model_content_type = ContentType.objects.get_for_model(module.get('model_class'))
         obj_content_type = getattr(obj, content_type_field)
