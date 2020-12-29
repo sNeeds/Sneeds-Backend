@@ -31,12 +31,11 @@ class UniversityThroughQuerySetManager(models.QuerySet):
 
         return qs
 
-
-def get_grade_or_none(self, grade):
-    try:
-        return self.all().get(grade=grade)
-    except self.model.DoesNotExist:
-        return None
+    def get_grade_or_none(self, grade):
+        try:
+            return self.all().get(grade=grade)
+        except self.model.DoesNotExist:
+            return None
 
 
 class LanguageCertificateQuerySetManager(models.QuerySet):
