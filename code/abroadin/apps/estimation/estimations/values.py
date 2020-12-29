@@ -95,16 +95,15 @@ VALUES_WITH_ATTRS = {
             "label": "A",
             "comment": review_comments.TOEFL_105_109
         },
-
         {
-            "start": 105,  # خود100 نیست
+            "start": 105,
             "end": 100,
             "value": LANGUAGE_AM_VALUE,
             "label": "A-",
-            "comment": review_comments.TOEFL_VERY_GOOD_GOOD
+            "comment": review_comments.TOEFL_100_104
         },
         {
-            "start": 100,  # خود100 نیست
+            "start": 100,
             "end": 95,
             "value": LANGUAGE_BP_VALUE,
             "label": "B+",
@@ -188,7 +187,7 @@ VALUES_WITH_ATTRS = {
             "end": 5.5,
             "value": LANGUAGE_C_VALUE,
             "label": "C",
-            "comment": review_comments.IELTS_ACADEMIC_VERY__BAD
+            "comment": review_comments.IELTS_ACADEMIC_5H
         },
         {
             "start": 5.5,
