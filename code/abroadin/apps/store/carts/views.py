@@ -10,14 +10,14 @@ from .permissions import CartOwnerPermission
 class CartListView(generics.CListCreateAPIView):
     queryset = Cart.objects.all()
     serializer_class = serializers.CartSerializer
-    # permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
         return Cart.objects.filter(user=self.request.user)
 
 
 class CartDetailView(generics.CRetrieveAPIView):
+    lookup_field = 'id'
     queryset = Cart.objects.all()
     serializer_class = serializers.CartSerializer
-    lookup_field = 'id'
-    # permission_classes = (CartOwnerPermission, permissions.IsAuthenticated)
+    permission_classes = (CartOwnerPermission, permissions.IsAuthenticated,)
