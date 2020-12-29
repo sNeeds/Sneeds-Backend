@@ -3,8 +3,11 @@ from abroadin.apps.estimation.estimations import review_comments
 # language certificate values
 LANGUAGE_AP_VALUE = 1
 LANGUAGE_A_VALUE = 0.9
-LANGUAGE_B_VALUE = 0.6
-LANGUAGE_C_VALUE = 0.3
+LANGUAGE_AM_VALUE = 0.7
+LANGUAGE_BP_VALUE = 0.5
+LANGUAGE_B_VALUE = 0.4
+LANGUAGE_BM_VALUE = 0.2
+LANGUAGE_C_VALUE = 0.05
 LANGUAGE_D_VALUE = 0
 
 VALUES_WITH_ATTRS = {
@@ -83,72 +86,116 @@ VALUES_WITH_ATTRS = {
             "end": 110,
             "value": LANGUAGE_AP_VALUE,
             "label": "A+",
-            "comment": review_comments.TOEFL_GREAT
+            "comment": review_comments.TOEFL_ABOVE_110
         },
         {
             "start": 110,
-            "end": 100,
+            "end": 105,
             "value": LANGUAGE_A_VALUE,
             "label": "A",
-            "comment": review_comments.TOEFL_GOOD
+            "comment": review_comments.TOEFL_105_109
+        },
+
+        {
+            "start": 105,  # خود100 نیست
+            "end": 100,
+            "value": LANGUAGE_AM_VALUE,
+            "label": "A-",
+            "comment": review_comments.TOEFL_VERY_GOOD_GOOD
         },
         {
-            "start": 100,
-            "end": 92,
+            "start": 100,  # خود100 نیست
+            "end": 95,
+            "value": LANGUAGE_BP_VALUE,
+            "label": "B+",
+            "comment": review_comments.TOEFL_95_99
+        },
+        {
+            "start": 95,
+            "end": 90,
             "value": LANGUAGE_B_VALUE,
             "label": "B",
-            "comment": review_comments.TOEFL_AVERAGE
+            "comment": review_comments.TOEFL_90_94
         },
         {
-            "start": 92,
+            "start": 90,
+            "end": 85,
+            "value": LANGUAGE_BM_VALUE,
+            "label": "B-",
+            "comment": review_comments.TOEFL_85_89
+        },
+        {
+            "start": 85,
             "end": 79,
             "value": LANGUAGE_C_VALUE,
             "label": "C",
-            "comment": review_comments.TOEFL_BAD
+            "comment": review_comments.TOEFL_79_84
         },
         {
             "start": 79,
             "end": None,
             "value": LANGUAGE_D_VALUE,
             "label": "D",
-            "comment": review_comments.TOEFL_VERY_BAD
+            "comment": review_comments.TOEFL_BELOW_79
         },
     ],
     "ielts_academic_and_general": [
         {
             "start": None,
-            "end": 7.5,
+            "end": 8.5,
             "value": LANGUAGE_AP_VALUE,
+            "label": "A++",
+            "comment": review_comments.IELTS_ACADEMIC_ABOVE_8H
+        },
+
+        {
+            "start": 8.5,
+            "end": 8,
+            "value": LANGUAGE_A_VALUE,
             "label": "A+",
-            "comment": review_comments.IELTS_ACADEMIC_GREAT
+            "comment": review_comments.IELTS_ACADEMIC_8
+        },
+        {
+            "start": 8,
+            "end": 7.5,
+            "value": LANGUAGE_AM_VALUE,
+            "label": "A",
+            "comment": review_comments.IELTS_ACADEMIC_7H
         },
         {
             "start": 7.5,
             "end": 7,
-            "value": LANGUAGE_A_VALUE,
-            "label": "A",
-            "comment": review_comments.IELTS_ACADEMIC_GOOD
+            "value": LANGUAGE_BP_VALUE,
+            "label": "A-",
+            "comment": review_comments.IELTS_ACADEMIC_7
         },
         {
             "start": 7,
             "end": 6.5,
             "value": LANGUAGE_B_VALUE,
-            "label": "B",
-            "comment": review_comments.IELTS_ACADEMIC_AVERAGE
+            "label": "B+",
+            "comment": review_comments.IELTS_ACADEMIC_6H
         },
         {
             "start": 6.5,
             "end": 6,
-            "value": LANGUAGE_C_VALUE,
-            "label": "C",
-            "comment": review_comments.IELTS_ACADEMIC_BAD
+            "value": LANGUAGE_BM_VALUE,
+            "label": "B",
+            "comment": review_comments.IELTS_ACADEMIC_6
         },
         {
             "start": 6,
+            "end": 5.5,
+            "value": LANGUAGE_C_VALUE,
+            "label": "C",
+            "comment": review_comments.IELTS_ACADEMIC_VERY__BAD
+        },
+        {
+            "start": 5.5,
             "end": None,
             "value": LANGUAGE_D_VALUE,
             "label": "D",
-            "comment": review_comments.IELTS_ACADEMIC_VERY_BAD
+            "comment": review_comments.IELTS_ACADEMIC_BELOW_5H
         },
     ],
     "work_experience_comments": [
