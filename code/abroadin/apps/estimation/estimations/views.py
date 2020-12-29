@@ -14,7 +14,7 @@ from abroadin.apps.users.customAuth.permissions import UserEmailIsVerified
 
 class FormComments(CAPIView):
     lookup_url_kwarg = 'form_id'
-    permission_classes = [CompletedForm, UserEmailIsVerified]
+    permission_classes = [CompletedForm]
 
     def get_form_obj(self, form_id):
         try:
@@ -32,7 +32,7 @@ class FormComments(CAPIView):
 
 class AdmissionRankingChance(CAPIView):
     lookup_url_kwarg = 'form_id'
-    permission_classes = [CompletedForm, UserEmailIsVerified]
+    permission_classes = [CompletedForm]
 
     def get_form_obj(self, form_id):
         try:
@@ -57,7 +57,7 @@ class AdmissionRankingChance(CAPIView):
 
 class WantToApplyChance(CAPIView):
     lookup_url_kwarg = 'form_id'
-    permission_classes = [CompletedForm, UserEmailIsVerified]
+    permission_classes = [CompletedForm]
 
     def get_form_obj(self, form_id):
         try:
