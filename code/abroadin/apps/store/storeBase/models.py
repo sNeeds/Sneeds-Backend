@@ -31,27 +31,11 @@ class ProductQuerySet(models.QuerySet):
         return result_qs
 
     def get_webinar_products(self):
-        # from abroadin.apps.store.basicProducts.models import WebinarProduct
-        # result_qs = WebinarProduct.objects.none()
-        # for i in self.all():
-        #     try:
-        #         webinar_product = i.webinarproduct
-        #         result_qs |= WebinarProduct.objects.filter(pk=webinar_product.id)
-        #     except WebinarProduct.DoesNotExist:
-        #         pass
-        # return result_qs
+
         return None
 
     def get_class_products(self):
-        # from abroadin.apps.store.basicProducts.models import ClassProduct
-        # result_qs = ClassProduct.objects.none()
-        # for i in self.all():
-        #     try:
-        #         class_product = i.classproduct
-        #         result_qs |= ClassProduct.objects.filter(pk=class_product.id)
-        #     except ClassProduct.DoesNotExist:
-        #         pass
-        # return result_qs
+
         return None
 
     def get_store_packages(self):
@@ -175,6 +159,12 @@ class Product(models.Model):
     active = models.BooleanField(default=True)
 
     objects = ProductQuerySet.as_manager()
+
+    def title(self):
+        raise NotImplementedError("Subclasses should rewrite title")
+
+    def subtitle(self):
+        raise NotImplementedError("Subclasses should rewrite subtitle")
 
 
 class TimeSlotSale(Product):
