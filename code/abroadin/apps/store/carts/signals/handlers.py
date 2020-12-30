@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.db.models.signals import m2m_changed
 
-from abroadin.apps.store.carts.models import Cart
+from ..models import Cart
 
 
 def m2m_changed_cart_receiver(sender, instance, action, *args, **kwargs):

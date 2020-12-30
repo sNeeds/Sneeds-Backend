@@ -5,7 +5,7 @@ from rest_framework import status
 from abroadin.apps.estimation.form.models import (
     StudentDetailedInfo,
     UniversityThrough, WantToApply, GradeChoices)
-from abroadin.apps.estimation.tests.apis import EstimationBaseTest
+from abroadin.apps.estimation.tests.base import EstimationBaseTest
 
 from .test_base import EstimationsAppAPITests
 from abroadin.apps.estimation.form.tests.apis.form_completion.base import BaseTests as FormCompletionBaseTests

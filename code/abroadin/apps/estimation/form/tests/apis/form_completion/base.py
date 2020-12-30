@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.settings import api_settings
 from django.contrib.auth import get_user_model
 
-from abroadin.apps.estimation.tests.apis import EstimationBaseTest
+from abroadin.apps.estimation.tests.base import EstimationBaseTest
 from abroadin.apps.estimation.form.models import \
     (StudentDetailedInfo,
      WantToApply,
