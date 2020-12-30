@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 
 from ..base import CartBaseTests
 
@@ -34,3 +35,17 @@ class CartModelTest(CartBaseTests):
         self.a_cart1.refresh_from_db()
         self.assertEqual(self.a_cart1.subtotal, 10)
 
+    def test_products_deactived(self):
+        self.assertEqual(self.a_cart1.subtotal, 30)
+        self.assertEqual(self.a_cart1.products.count(), 2)
+
+        self.a_product_2.active = False
+        self.a_product_2.save()
+        self.a_cart1.refresh_from_db()
+        self.assertEqual(self.a_cart1.products.count(), 1)
+        self.assertEqual(self.a_cart1.subtotal, 10)
+
+    def test_products_add_deactive(self):
+        self.a_product_1.active = False
+        self.a_product_1.save()
+        self.assertRaises(ValidationError, self.a_cart1.products.add, self.a_product_1)
