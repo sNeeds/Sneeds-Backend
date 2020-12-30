@@ -51,12 +51,13 @@ class Cart(models.Model):
         return self.products.exists()
 
     def update_price(self):
-        subtotal = self.products.aggregate(subtotal=Sum('price'))['subtotal']
+        subtotal = self.products.aggregate(subtotal=Sum('price'))['subtotal'] or 0
         self.subtotal = subtotal
         self.total = subtotal
 
     def save(self, *args, **kwargs):
-        self.update_price()
+        if self.id:  # m2m can be used after object creation and ID set
+            self.update_price()
         super().save(*args, **kwargs)
 
     def update_products(self):
