@@ -26,12 +26,13 @@ class CartManager(models.QuerySet):
         qs = self._chain()
         for obj in qs:
             obj.update_price()
+            obj.save()
         return qs
 
 
 class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name="cart")
-    products = models.ManyToManyField(Product, blank=True)
+    products = models.ManyToManyField(Product, blank=True, related_name="carts")
 
     subtotal = models.IntegerField(default=0, editable=False)
     total = models.IntegerField(default=0, editable=False)
@@ -56,8 +57,6 @@ class Cart(models.Model):
         self.total = subtotal
 
     def save(self, *args, **kwargs):
-        if self.id:  # m2m can be used after object creation and ID set
-            self.update_price()
         super().save(*args, **kwargs)
 
     def update_products(self):
