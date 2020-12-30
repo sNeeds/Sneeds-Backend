@@ -2,8 +2,10 @@ from django.contrib import admin
 from .models import TimeSlotSale,  Product, SoldTimeSlotSalePaymentInfo
 from ..orders.models import Order
 
-admin.site.register(Product)
 
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    readonly_fields = ["real_type", ]
 
 @admin.register(TimeSlotSale)
 class TimeSlotSaleAdmin(admin.ModelAdmin):

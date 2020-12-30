@@ -1,9 +1,11 @@
+from django.contrib.contenttypes.models import ContentType
 from django.db import models, transaction
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 from abroadin.apps.users.consultants.models import ConsultantProfile
+from base.models.abstracts import InheritanceCastModel
 
 User = get_user_model()
 
@@ -154,17 +156,17 @@ class TimeSlotSaleManager(models.QuerySet):
         return sold_time_slot_sales_qs
 
 
-class Product(models.Model):
+class Product(InheritanceCastModel):
     price = models.PositiveIntegerField(blank=True)
     active = models.BooleanField(default=True)
 
     objects = ProductQuerySet.as_manager()
 
     def title(self):
-        raise NotImplementedError("Subclasses should rewrite title")
+        return f"Product {self.id}"
 
     def subtitle(self):
-        raise NotImplementedError("Subclasses should rewrite subtitle")
+        return None
 
 
 class TimeSlotSale(Product):

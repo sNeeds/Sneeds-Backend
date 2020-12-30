@@ -2,10 +2,12 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from .models import Cart
+from ..storeBase.serializers import ProductSerializer
 
 
 class CartSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name="cart:cart-detail", lookup_field='id', read_only=True)
+    products = ProductSerializer(many=True)
 
     class Meta:
         model = Cart

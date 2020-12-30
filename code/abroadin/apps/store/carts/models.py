@@ -56,9 +56,6 @@ class Cart(models.Model):
         self.subtotal = subtotal
         self.total = subtotal
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-
     def update_products(self):
         products_qs = self.products.all()
 
