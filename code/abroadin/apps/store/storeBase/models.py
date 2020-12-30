@@ -83,10 +83,7 @@ class ProductQuerySet(models.QuerySet):
         return result_qs
 
     def are_all_active(self):
-        for p in self._chain():
-            if not p.active:
-                return False
-        return True
+        return not self.filter(active=False).exists()
 
 
 class SoldProductQuerySet(models.QuerySet):
