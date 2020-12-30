@@ -1,6 +1,7 @@
 from django.db import models, transaction
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.db.models import Sum, Count
 
 from abroadin.apps.store.storeBase.models import TimeSlotSale, SoldTimeSlotSale, Product
 
@@ -29,15 +30,19 @@ class CartManager(models.QuerySet):
 
 
 class Cart(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="cart")
+    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name="cart")
     products = models.ManyToManyField(Product, blank=True)
-    subtotal = models.IntegerField(default=0, blank=True, editable=False)
-    total = models.IntegerField(default=0, blank=True, editable=False)
+
+    subtotal = models.IntegerField(default=0, editable=False)
+    total = models.IntegerField(default=0, editable=False)
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     objects = CartManager.as_manager()
+
+    class Meta:
+        ordering = ["-id"]
 
     def is_total_non_zero(self):
         return self.total
@@ -46,15 +51,13 @@ class Cart(models.Model):
         return self.products.exists()
 
     def update_price(self):
-        products_qs = self.products.all()
-        subtotal = 0
-        for product in products_qs:
-            subtotal += product.price
-
+        subtotal = self.products.aggregate(subtotal=Sum('price'))['subtotal']
         self.subtotal = subtotal
         self.total = subtotal
 
-        self.save()
+    def save(self, *args, **kwargs):
+        self.update_price()
+        super().save(*args, **kwargs)
 
     def update_products(self):
         products_qs = self.products.all()
@@ -62,10 +65,8 @@ class Cart(models.Model):
         for product in products_qs:
             if not product.active:
                 self.products.remove(product)
+
         self.save()
 
     def __str__(self):
         return "User {} cart | pk: {}".format(self.user, str(self.pk))
-
-    class Meta:
-        ordering = ["-id"]
