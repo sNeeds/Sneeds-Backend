@@ -4,13 +4,16 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 
-
 from abroadin.apps.data.account.models import University, Major, Country
 from abroadin.apps.data.applydata.models import Publication, Education, LanguageCertificate
 
 User = get_user_model()
 
 
+# No underline is used for methods outside of the class definition,
+# If multiple classes use this method why use _ and if one class uses why not in class?
+
+# get_or_create could be a better name
 def _get_other_country_id():
     """
     Returns a country which is named 'Other'
@@ -25,6 +28,10 @@ def _get_other_country_id():
     ).id
 
 
+# No underline is used for methods outside of the class definition,
+# If multiple classes use this method why use _ and if one class uses why not in class?
+
+# get_or_create could be a better name
 def _get_other_university_id():
     """
     Returns a university which is named 'Other'
@@ -40,7 +47,10 @@ def _get_other_university_id():
         rank=20000,
     ).id
 
+# No underline is used for methods outside of the class definition,
+# If multiple classes use this method why use _ and if one class uses why not in class?
 
+# get_or_create could be a better name
 def _get_other_major_id():
     """
         Returns a major which is named 'Other'
@@ -58,10 +68,11 @@ class ApplyProfile(models.Model):
     name = models.CharField(
         max_length=255,
     )
+
     academic_gap = models.PositiveSmallIntegerField(
         help_text='In months',
         default=0,
-    )
+    )  # Could be gap
 
     publications = GenericRelation(
         Publication, related_query_name='apply_profile'
@@ -77,7 +88,6 @@ class ApplyProfile(models.Model):
 
 
 class Admission(models.Model):
-
     class ScholarshipsUnitChoices(models.TextChoices):
         DOLLAR_MONTH = '$/M', _("$/M")
         DOLLAR_YEAR = '$/Y', _("$/Y")
@@ -94,15 +104,15 @@ class Admission(models.Model):
 
     origin_university = models.ForeignKey(
         University,
-        on_delete=models.SET(_get_other_university_id),
+        on_delete=models.SET(_get_other_university_id),  # Great but change to Protect
         related_name='admission_origin_universities',
         related_query_name='admission_origin_university',
     )
 
     destination_university = models.ForeignKey(
         University,
-        on_delete=models.SET(_get_other_university_id),
-        related_name='admission_goal_universities',
+        on_delete=models.SET(_get_other_university_id),  # Great but change to Protect
+        related_name='admission_goal_universities',  # goal to destination, also weired name, do we need?
         related_query_name='admission_goal_university',
     )
 

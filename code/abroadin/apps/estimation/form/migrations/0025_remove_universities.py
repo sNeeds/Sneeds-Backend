@@ -13,9 +13,9 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
+    # Change to form
     dependencies = [
-        ('account', '0024_delete_redundant_objects_with_applydata'),
+        ('form', '0024_delete_redundant_objects_with_applydata'),
     ]
 
     operations = [

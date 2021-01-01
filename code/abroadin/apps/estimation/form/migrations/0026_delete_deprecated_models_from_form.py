@@ -56,8 +56,9 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
+    #Change to form
     dependencies = [
-        ('account', '0025_remove_universities'),
+        ('form', '0025_remove_universities'),
     ]
 
     operations = [
