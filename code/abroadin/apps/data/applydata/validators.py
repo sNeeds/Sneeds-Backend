@@ -27,3 +27,7 @@ def validate_toefl_section_score(value):
     if value % 1 != 0:
         raise ValidationError(_("TOEFL section score should be integer."))
     return value
+
+
+def generic_fk_unique_together_validator(fields, query_set, content_types):
+    query_set.filter()

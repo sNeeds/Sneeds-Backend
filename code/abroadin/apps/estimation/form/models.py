@@ -29,6 +29,8 @@ from abroadin.apps.data.account.models import \
      User,
      BasicFormField)
 
+from abroadin.apps.data.applydata import models as ad_models
+
 from abroadin.apps.data.account.validators import validate_resume_file_size, ten_factor_validator
 from abroadin.apps.estimation.form.decorators import regular_certificate_or_none, set_variable
 from abroadin.apps.estimation.form.validators import \
@@ -1493,3 +1495,12 @@ class DuolingoCertificate(LanguageCertificate):
     @classmethod
     def get_store_label_rank(cls, label):
         return float(label)
+
+
+class WantToApplyTransferSemesterGrade(models.Model):
+    want_to_apply = models.ForeignKey(WantToApply,
+                                      on_delete=models.CASCADE)
+    form_semester_years = models.ManyToManyField(SemesterYear)
+    apply_data_semester_years = models.ManyToManyField(ad_models.SemesterYear)
+    form_grades = models.ManyToManyField(Grade)
+    apply_data_grades = models.ManyToManyField(ad_models.Grade)

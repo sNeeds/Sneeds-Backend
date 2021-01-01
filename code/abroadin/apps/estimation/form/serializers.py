@@ -10,50 +10,21 @@ from abroadin.apps.data.account import models
 from abroadin.apps.data.account.models import BasicFormField
 from abroadin.apps.data.account.serializers import CountrySerializer, UniversitySerializer, MajorSerializer
 
+from abroadin.apps.data.applydata import serializers as ad_serializers
+
 from .models import SemesterYear, WantToApply, StudentDetailedInfo, UniversityThrough, Publication, Grade
 
 LanguageCertificateType = abroadin.apps.estimation.form.models.LanguageCertificate.LanguageCertificateType
 
-
-class GradeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Grade
-        fields = ["id", "name"]
-
-
-class SemesterYearSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SemesterYear
-        fields = ['id', 'year', 'semester']
-
-
-class SemesterYearCustomPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
-    def get_choices(self, cutoff=None):
-        """
-        This method is overridden.
-        Issue was:
-        https://stackoverflow.com/questions/50973569/django-rest-framework-relatedfield-cant-return-a-dict-object
-        """
-        queryset = self.get_queryset()
-        if queryset is None:
-            # Ensure that field.choices returns something sensible
-            # even when accessed with a read-only field.
-            return {}
-
-        if cutoff is not None:
-            queryset = queryset[:cutoff]
-
-        return OrderedDict([
-            (
-                item.pk,
-                self.display_value(item)
-            )
-            for item in queryset
-        ])
-
-    def to_representation(self, value):
-        obj = SemesterYear.objects.get(pk=value.pk)
-        return SemesterYearSerializer(obj).data
+RELATED_CLASSES = [
+    {
+        'model_class': StudentDetailedInfo,
+        'hyperlink_view_name': 'estimation.form:student-detailed-info-detail',
+        'hyperlink_lookup_field': 'object_id',
+        'hyperlink_lookup_url_kwarg': 'form-id',
+        'hyperlink_format': None
+    }
+]
 
 
 class BasicFormFieldSerializer(serializers.ModelSerializer):
@@ -62,12 +33,22 @@ class BasicFormFieldSerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 
+class SemesterYearSerializer(ad_serializers.SemesterYearSerializer):
+    class Meta(ad_serializers.SemesterYearSerializer.Meta):
+        pass
+
+
+class GradeSerializer(ad_serializers.GradeSerializer):
+    class Meta(ad_serializers.GradeSerializer):
+        pass
+
+
 class WantToApplySerializer(serializers.ModelSerializer):
     countries = CountrySerializer(many=True)
     universities = UniversitySerializer(many=True)
     majors = MajorSerializer(many=True)
-    semester_years = SemesterYearSerializer(many=True)
-    grades = GradeSerializer(many=True)
+    semester_years = ad_serializers.SemesterYearSerializer(many=True)
+    grades = ad_serializers.GradeSerializer(many=True)
 
     class Meta:
         model = WantToApply
@@ -149,31 +130,21 @@ class WantToApplyRequestSerializer(serializers.ModelSerializer):
         return attrs
 
 
-class PublicationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = abroadin.apps.estimation.form.models.Publication
-        fields = [
-            'id', 'student_detailed_info', 'title', 'publish_year', 'which_author', 'type', 'journal_reputation',
-        ]
+class PublicationSerializer(ad_serializers.PublicationSerializer):
+    related_classes = RELATED_CLASSES
+
+    class Meta(ad_serializers.PublicationSerializer.Meta):
+        pass
 
     def create(self, validated_data):
         raise ValidationError(_("Creating object through this serializer is not allowed"))
 
 
-class PublicationRequestSerializer(serializers.ModelSerializer):
-    student_detailed_info = serializers.PrimaryKeyRelatedField(
-        queryset=abroadin.apps.estimation.form.models.StudentDetailedInfo.objects.all(),
-        pk_field=serializers.UUIDField(label='id'),
-        allow_null=False,
-        allow_empty=False,
-        required=True,
-    )
+class PublicationRequestSerializer(ad_serializers.PublicationRequestSerializer):
+    related_classes = RELATED_CLASSES
 
-    class Meta:
-        model = abroadin.apps.estimation.form.models.Publication
-        fields = [
-            'id', 'student_detailed_info', 'title', 'publish_year', 'which_author', 'type', 'journal_reputation',
-        ]
+    class Meta(ad_serializers.PublicationRequestSerializer.Meta):
+        pass
 
     def validate(self, attrs):
         request = self.context.get("request")
@@ -189,49 +160,21 @@ class PublicationRequestSerializer(serializers.ModelSerializer):
         return attrs
 
 
-class UniversityThroughSerializer(serializers.ModelSerializer):
-    university = UniversitySerializer()
-    major = MajorSerializer()
+class UniversityThroughSerializer(ad_serializers.EducationSerializer):
+    related_classes = RELATED_CLASSES
 
-    class Meta:
-        model = abroadin.apps.estimation.form.models.UniversityThrough
-        fields = [
-            'id', 'university', 'student_detailed_info', 'grade', 'major', 'graduate_in', 'thesis_title', 'gpa',
-        ]
+    class Meta(ad_serializers.EducationSerializer.Meta):
+        pass
 
     def create(self, validated_data):
         raise ValidationError(_("Creating object through this serializer is not allowed"))
 
 
-class UniversityThroughRequestSerializer(serializers.ModelSerializer):
-    university = serializers.PrimaryKeyRelatedField(
-        queryset=models.University.objects.all(),
-        pk_field=serializers.IntegerField(label='id'),
-        allow_null=False,
-        allow_empty=False,
-        required=True,
-    )
+class UniversityThroughRequestSerializer(ad_serializers.EducationRequestSerializer):
+    related_classes = RELATED_CLASSES
 
-    student_detailed_info = serializers.PrimaryKeyRelatedField(
-        queryset=abroadin.apps.estimation.form.models.StudentDetailedInfo.objects.all(),
-        pk_field=serializers.UUIDField(label='id'),
-        allow_null=False,
-        allow_empty=False,
-        required=True,
-    )
-    major = serializers.PrimaryKeyRelatedField(
-        queryset=models.Major.objects.all(),
-        pk_field=serializers.IntegerField(label='id'),
-        allow_null=False,
-        allow_empty=False,
-        required=True,
-    )
-
-    class Meta:
-        model = abroadin.apps.estimation.form.models.UniversityThrough
-        fields = [
-            'id', 'university', 'student_detailed_info', 'grade', 'major', 'graduate_in', 'thesis_title', 'gpa',
-        ]
+    class Meta(ad_serializers.EducationRequestSerializer.Meta):
+        pass
 
     def validate(self, attrs):
         request = self.context.get("request")
@@ -247,18 +190,11 @@ class UniversityThroughRequestSerializer(serializers.ModelSerializer):
         return attrs
 
 
-class LanguageCertificateSerializer(serializers.ModelSerializer):
-    student_detailed_info = serializers.PrimaryKeyRelatedField(
-        queryset=abroadin.apps.estimation.form.models.StudentDetailedInfo.objects.all(),
-        pk_field=serializers.UUIDField(label='id'),
-        allow_null=False,
-        allow_empty=False,
-        required=True,
-    )
+class LanguageCertificateSerializer(ad_serializers.LanguageCertificateSerializer):
+    related_classes = RELATED_CLASSES
 
-    class Meta:
-        model = abroadin.apps.estimation.form.models.LanguageCertificate
-        fields = '__all__'
+    class Meta(ad_serializers.LanguageCertificateSerializer.Meta):
+        pass
 
     def validate(self, attrs):
         request = self.context.get("request")
@@ -273,157 +209,49 @@ class LanguageCertificateSerializer(serializers.ModelSerializer):
                     {'student_detailed_info': _("User can't set student_detailed_info of another user.")})
         else:
             raise ValidationError(_("Can't validate data.Can't get request user."))
-        return attrs
+        return super().validate(attrs)
 
 
-class RegularLanguageCertificateSerializer(LanguageCertificateSerializer):
-    class Meta:
-        model = abroadin.apps.estimation.form.models.RegularLanguageCertificate
-        fields = '__all__'
+class RegularLanguageCertificateSerializer(LanguageCertificateSerializer, ad_serializers.RegularLanguageCertificateSerializer):
+    related_classes = RELATED_CLASSES
 
-    def validate_certificate_type(self, value):
-        if value not in [LanguageCertificateType.IELTS_ACADEMIC, LanguageCertificateType.IELTS_GENERAL,
-                         LanguageCertificateType.TOEFL]:
-            raise ValidationError(_("Value is not in allowed certificate types."))
-        return value
+    class Meta(ad_serializers.RegularLanguageCertificateSerializer.Meta):
+        pass
 
 
-class RegularLanguageCertificateCelerySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = abroadin.apps.estimation.form.models.RegularLanguageCertificate
-        validators = []
-        exclude = ['student_detailed_info']
-
-    default_validators = []
-
-    def validate(self, attrs):
-        return attrs
+class GMATCertificateSerializer(LanguageCertificateSerializer, ad_serializers.GMATCertificateSerializer):
+    class Meta(ad_serializers.GMATCertificateSerializer):
+        pass
 
 
-class GMATCertificateSerializer(LanguageCertificateSerializer):
-    class Meta:
-        model = abroadin.apps.estimation.form.models.GMATCertificate
-        fields = '__all__'
-
-    def validate_certificate_type(self, value):
-        if value not in [LanguageCertificateType.GMAT]:
-            raise ValidationError(_("Value is not in allowed certificate types."))
-        return value
+class GREGeneralCertificateSerializer(LanguageCertificateSerializer, ad_serializers.GREGeneralCertificateSerializer):
+    class Meta(ad_serializers.GREGeneralCertificateSerializer.Meta):
+        pass
 
 
-class GMATCertificateCelerySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = abroadin.apps.estimation.form.models.GMATCertificate
-        validators = []
-        exclude = ['student_detailed_info']
-
-    default_validators = []
-
-    def validate(self, attrs):
-        return attrs
+class GRESubjectCertificateSerializer(LanguageCertificateSerializer, ad_serializers.GRESubjectCertificateSerializer):
+    class Meta(ad_serializers.GRESubjectCertificateSerializer.Meta):
+        pass
 
 
-class GREGeneralCertificateSerializer(LanguageCertificateSerializer):
-    class Meta:
-        model = abroadin.apps.estimation.form.models.GREGeneralCertificate
-        fields = '__all__'
-
-    def validate_certificate_type(self, value):
-        if value not in [LanguageCertificateType.GRE_GENERAL]:
-            raise ValidationError(_("Value is not in allowed certificate types."))
-        return value
+class GREBiologyCertificateSerializer(LanguageCertificateSerializer, ad_serializers.GREBiologyCertificateSerializer):
+    class Meta(ad_serializers.GREBiologyCertificateSerializer.Meta):
+        pass
 
 
-class GREGeneralCertificateCelerySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = abroadin.apps.estimation.form.models.GREGeneralCertificate
-        validators = []
-        exclude = ['student_detailed_info']
-
-    default_validators = []
-
-    def validate(self, attrs):
-        return attrs
+class GREPhysicsCertificateSerializer(LanguageCertificateSerializer, ad_serializers.GREPhysicsCertificateSerializer):
+    class Meta(ad_serializers.GREPhysicsCertificateSerializer.Meta):
+        pass
 
 
-class GRESubjectCertificateSerializer(LanguageCertificateSerializer):
-    class Meta:
-        model = abroadin.apps.estimation.form.models.GRESubjectCertificate
-        fields = '__all__'
-
-    def validate_certificate_type(self, value):
-        if value not in [LanguageCertificateType.GRE_CHEMISTRY, LanguageCertificateType.GRE_LITERATURE,
-                         LanguageCertificateType.GRE_MATHEMATICS]:
-            raise ValidationError(_("Value is not in allowed certificate types."))
-        return value
+class GREPsychologyCertificateSerializer(LanguageCertificateSerializer, ad_serializers.GREPsychologyCertificateSerializer):
+    class Meta(ad_serializers.GREPsychologyCertificateSerializer):
+        pass
 
 
-class GRESubjectCertificateCelerySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = abroadin.apps.estimation.form.models.GRESubjectCertificate
-        validators = []
-        exclude = ['student_detailed_info']
-
-    default_validators = []
-
-    def validate(self, attrs):
-        return attrs
-
-
-class GREBiologyCertificateSerializer(LanguageCertificateSerializer):
-    class Meta:
-        model = abroadin.apps.estimation.form.models.GREBiologyCertificate
-        fields = '__all__'
-
-    def validate_certificate_type(self, value):
-        if value not in [LanguageCertificateType.GRE_BIOLOGY]:
-            raise ValidationError(_("Value is not in allowed certificate types."))
-        return value
-
-
-class GREPhysicsCertificateSerializer(LanguageCertificateSerializer):
-    class Meta:
-        model = abroadin.apps.estimation.form.models.GREPhysicsCertificate
-        fields = '__all__'
-
-    def validate_certificate_type(self, value):
-        if value not in [LanguageCertificateType.GRE_PHYSICS]:
-            raise ValidationError(_("Value is not in allowed certificate types."))
-        return value
-
-
-class GREPsychologyCertificateSerializer(LanguageCertificateSerializer):
-    class Meta:
-        model = abroadin.apps.estimation.form.models.GREPsychologyCertificate
-        fields = '__all__'
-
-    def validate_certificate_type(self, value):
-        if value not in [LanguageCertificateType.GRE_PSYCHOLOGY]:
-            raise ValidationError(_("Value is not in allowed certificate types."))
-        return value
-
-
-class DuolingoCertificateSerializer(LanguageCertificateSerializer):
-    class Meta:
-        model = abroadin.apps.estimation.form.models.DuolingoCertificate
-        fields = '__all__'
-
-    def validate_certificate_type(self, value):
-        if value not in [LanguageCertificateType.DUOLINGO]:
-            raise ValidationError(_("Value is not in allowed certificate types."))
-        return value
-
-
-class DuolingoCertificateCelerySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = abroadin.apps.estimation.form.models.DuolingoCertificate
-        validators = []
-        exclude = ['student_detailed_info']
-
-    default_validators = []
-
-    def validate(self, attrs):
-        return attrs
+class DuolingoCertificateSerializer(LanguageCertificateSerializer, ad_serializers.DuolingoCertificateSerializer):
+    class Meta(ad_serializers.DuolingoCertificateSerializer.Meta):
+        pass
 
 
 class StudentDetailedInfoBaseSerializer(serializers.ModelSerializer):

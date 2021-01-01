@@ -78,6 +78,7 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
         many=True,
     )
 
+    # TODO change this to a more simple class without writing function
     language_certificates = serializers.SerializerMethodField(
         method_name='get_language_certificates',
     )

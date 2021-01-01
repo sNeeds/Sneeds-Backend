@@ -6,7 +6,6 @@ from django.utils.translation import gettext_lazy as _
 
 
 from abroadin.apps.data.account.models import University, Major, Country
-# from abroadin.apps.data.applydata.models import Education, Publication, LanguageCertificate
 from abroadin.apps.data.applydata.models import Publication, Education, LanguageCertificate
 
 User = get_user_model()

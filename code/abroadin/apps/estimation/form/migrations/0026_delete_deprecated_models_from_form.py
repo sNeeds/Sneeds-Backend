@@ -1,0 +1,52 @@
+from django.db import migrations, models
+import django.db.models.deletion
+
+
+class Migration(migrations.Migration):
+    initial = True
+
+    dependencies = [
+        ('account', '0025_remove_universities'),
+    ]
+
+    operations = [
+        migrations.DeleteModel(
+            name='SemesterYear'
+        ),
+        migrations.DeleteModel(
+            name='Grade'
+        ),
+        migrations.DeleteModel(
+            name='Publication'
+        ),
+        migrations.DeleteModel(
+            name='UniversityThrough'
+        ),
+        migrations.DeleteModel(
+            name='RegularLanguageCertificate'
+        ),
+        migrations.DeleteModel(
+            name='GMATCertificate'
+        ),
+        migrations.DeleteModel(
+            name='GREGeneralCertificate'
+        ),
+        migrations.DeleteModel(
+            name='GREBiologyCertificate'
+        ),
+        migrations.DeleteModel(
+            name='GREPhysicsCertificate'
+        ),
+        migrations.DeleteModel(
+            name='GREPsychologyCertificate'
+        ),
+        migrations.DeleteModel(
+            name='DuolingoCertificate'
+        ),
+        migrations.DeleteModel(
+            name='GRESubjectCertificate'
+        ),
+        migrations.DeleteModel(
+            name='LanguageCertificate'
+        ),
+    ]

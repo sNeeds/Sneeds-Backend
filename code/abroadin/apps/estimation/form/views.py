@@ -1,19 +1,16 @@
+from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 
 from drf_yasg.utils import swagger_auto_schema
 
-from django.contrib.contenttypes.models import ContentType
-from django.core.exceptions import ValidationError
-
-from rest_framework import permissions, status, exceptions
-from rest_framework.decorators import api_view
+from rest_framework import permissions
 from rest_framework.response import Response
 
 from abroadin.base.api import generics
 from abroadin.base.api.enum_views import EnumViewList
+from abroadin.base.api.viewsets import CAPIView
 from abroadin.base.api.permissions import permission_class_factory
 
-from abroadin.base.api.viewsets import CAPIView
 
 from .models import (
     SemesterYear,
