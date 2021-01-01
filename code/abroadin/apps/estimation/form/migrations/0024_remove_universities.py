@@ -8,14 +8,13 @@
 # ##    ##  ##      ##  ##     ##        #       ╚█████╔╝██║░░██║██║░░██║██║██████╔╝░░░██║░░░██║░╚═╝░██║██║░░██║██████╔╝
 
 
-from django.db import migrations, models
-import django.db.models.deletion
+from django.db import migrations
 
 
 class Migration(migrations.Migration):
     # Change to form
     dependencies = [
-        ('form', '0024_delete_redundant_objects_with_applydata'),
+        ('form', '0023_delete_redundant_objects_with_applydata'),
     ]
 
     operations = [

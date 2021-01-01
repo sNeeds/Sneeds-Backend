@@ -96,7 +96,7 @@ def education_reverse_func(apps, schema_editor):
             student_detailed_info=obj.content_object,
             university=obj.university,
             grade=obj.grade,
-            major=obj.grade,
+            major=obj.major,
             graduate_in=obj.graduate_in,
             thesis_title=obj.thesis_title,
             gpa=obj.gpa,
@@ -271,7 +271,7 @@ def gre_physics_lc_reverse_func(apps, schema_editor):
 def gre_psychology_lc_forwards_func(apps, schema_editor):
     # We get the model from the versioned app registry;
     # if we directly import it, it'll be the wrong version
-    FormGREPsychologyCertificate = apps.get_model("form", "grepsychologcertificate")
+    FormGREPsychologyCertificate = apps.get_model("form", "grepsychologycertificate")
     FormGREPsychologyCertificate.objects.all().delete()
 
 
@@ -280,8 +280,8 @@ def gre_psychology_lc_reverse_func(apps, schema_editor):
     # so reverse_func() should delete them.
     # We get the model from the versioned app registry;
     # if we directly import it, it'll be the wrong version
-    FormGREPsychologyCertificate = apps.get_model("form", "grepsychologcertificate")
-    ApplyDataGREPsychologyCertificate = apps.get_model("applydata", "grepsychologcertificate")
+    FormGREPsychologyCertificate = apps.get_model("form", "grepsychologycertificate")
+    ApplyDataGREPsychologyCertificate = apps.get_model("applydata", "grepsychologycertificate")
     for obj in ApplyDataGREPsychologyCertificate.objects.all():
         FormGREPsychologyCertificate.objects.create(
             student_detailed_info=obj.content_object,
@@ -351,7 +351,7 @@ def reverse_func(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('form', '0023_delete_temp_wanttoapplytransfer'),
+        ('form', '0022_delete_temp_wanttoapplytransfer'),
     ]
 
     operations = [

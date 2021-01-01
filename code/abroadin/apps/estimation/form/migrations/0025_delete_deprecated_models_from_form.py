@@ -50,15 +50,14 @@
 #                      ¶¶¶¶¶¶¶¶¶
 
 
-from django.db import migrations, models
-import django.db.models.deletion
+from django.db import migrations
 
 
 class Migration(migrations.Migration):
 
     #Change to form
     dependencies = [
-        ('form', '0025_remove_universities'),
+        ('form', '0024_remove_universities'),
     ]
 
     operations = [

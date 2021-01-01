@@ -43,14 +43,13 @@
 #          ▐▓▓▓▓▌  ▐▓▓▓▓▓▌
 #         ▄████▀    ▀████▄
 
-from django.db import migrations, models
-import django.db.models.deletion
+from django.db import migrations
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('form', '0022_set_new_grade_and_semesteryear_to_related_objects'),
+        ('form', '0021_alter_wanttoapply_grade_semester_to_use_new_fields'),
     ]
 
     operations = [

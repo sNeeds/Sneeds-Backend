@@ -44,15 +44,34 @@ CACHED_APPLYDATA_SEMESTER_YEARS = {
 
 }
 
-def _get_new_semester_years(apps, schema_editor, old_ones:iter):
+
+def _get_apply_data_semester_years(apps, schema_editor, form_ones: iter):
     ApplyDataSemesterYear = apps.get_model("applydata", "semesteryear")
-    new_ones = []
-    for old_one in old_ones:
-        identifier = str(old_one.year)+'_||_'+old_one.semester
+    applydata_ones = []
+    for old_one in form_ones:
+        identifier = str(old_one.year) + '_||_' + old_one.semester
         if identifier not in CACHED_APPLYDATA_SEMESTER_YEARS:
             obj = ApplyDataSemesterYear.objects.get(semester=old_one.semester, year=old_one.year)
             CACHED_APPLYDATA_SEMESTER_YEARS[identifier] = obj
-        new_ones.append(CACHED_APPLYDATA_SEMESTER_YEARS[identifier])
+        applydata_ones.append(CACHED_APPLYDATA_SEMESTER_YEARS[identifier])
+    return applydata_ones
+
+
+CACHED_APPLYDATA_GRADES = {
+
+}
+
+
+def _get_apply_data_grades(apps, schema_editor, form_ones: iter):
+    ApplyDataGrade = apps.get_model("applydata", "grade")
+    applydata_ones = []
+    for old_one in form_ones:
+        identifier = str(old_one.name) + '_||_'
+        if identifier not in CACHED_APPLYDATA_GRADES:
+            obj = ApplyDataGrade.objects.get(name=old_one.name)
+            CACHED_APPLYDATA_GRADES[identifier] = obj
+        applydata_ones.append(CACHED_APPLYDATA_GRADES[identifier])
+    return applydata_ones
 
 
 def forwards_func(apps, schema_editor):
@@ -64,8 +83,17 @@ def forwards_func(apps, schema_editor):
         mid_obj = FormWantToApplyTransferSemesterGrade.objects.create(
             want_to_apply=obj,
         )
-        mid_obj.form_semester_years.set([obj.semester_years])
-        mid_obj.form_grades.set([obj.grades])
+        mid_obj.form_semester_years.set(list(obj.semester_years))
+        mid_obj.form_grades.set(list(obj.grades))
+        mid_obj.apply_data_semester_years.set(_get_apply_data_semester_years(apps, schema_editor, obj.semester_years))
+        mid_obj.apply_data_grades.set(_get_apply_data_grades(apps, schema_editor, obj.grades))
+
+
+def reverse_func(apps, schema_editor):
+    # We get the model from the versioned app registry;
+    # if we directly import it, it'll be the wrong version
+    FormWantToApplyTransferSemesterGrade = apps.get_model("form", "wanttoapplytransfersemestergrade")
+    FormWantToApplyTransferSemesterGrade.objects.all().delete()
 
 
 class Migration(migrations.Migration):
@@ -76,6 +104,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(
-            code=forwards_func,
+            code=forwards_func, reverse_code=reverse_func,
         ),
     ]

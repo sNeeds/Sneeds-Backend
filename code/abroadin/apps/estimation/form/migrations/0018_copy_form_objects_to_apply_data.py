@@ -2,11 +2,10 @@
 
 
 # ##    ##      ##      ####   ####   ##   ##    ░█████╗░██╗░░██╗██████╗░██╗░██████╗████████╗███╗░░░███╗░█████╗░░██████╗
-# ##    ##     ####     ## ##  ## ##   ## ##     ██╔══██╗██║░░██║██╔══██╗██║██╔════╝╚══██╔══╝████╗░████║██╔══██╗██╔════╝
-# ########    ## # #    ####   ####     ###      ██║░░╚═╝███████║██████╔╝██║╚█████╗░░░░██║░░░██╔████╔██║███████║╚█████╗░
-# ##    ##   ##    ##   ##     ##        #       ██║░░██╗██╔══██║██╔══██╗██║░╚═══██╗░░░██║░░░██║╚██╔╝██║██╔══██║░╚═══██╗
+# ##    ##     ####     ## ##  ## ##   ## ##     ██╔  ██╗██║░░██║██╔══██╗██║██╔════╝╚══██╔══╝████╗░████║██╔══██╗██╔════╝
+# ########    ## # #    ####   ####     ###      ██║     ███████║██████╔╝██║╚█████╗░░░░██║░░░██╔████╔██║███████║╚█████╗░
+# ##    ##   ##    ##   ##     ##        #       ██║  ██╗██╔══██║██╔══██╗██║░╚═══██╗░░░██║░░░██║╚██╔╝██║██╔══██║░╚═══██╗
 # ##    ##  ##      ##  ##     ##        #       ╚█████╔╝██║░░██║██║░░██║██║██████╔╝░░░██║░░░██║░╚═╝░██║██║░░██║██████╔╝
-
 
 from django.db import migrations
 
@@ -181,8 +180,8 @@ def gre_physics_lc_forwards_func(apps, schema_editor):
 def gre_psychology_lc_forwards_func(apps, schema_editor):
     # We get the model from the versioned app registry;
     # if we directly import it, it'll be the wrong version
-    FormGREPsychologyCertificate = apps.get_model("form", "grepsychologcertificate")
-    ApplyDataGREPsychologyCertificate = apps.get_model("applydata", "grepsychologcertificate")
+    FormGREPsychologyCertificate = apps.get_model("form", "grepsychologycertificate")
+    ApplyDataGREPsychologyCertificate = apps.get_model("applydata", "grepsychologycertificate")
     for obj in FormGREPsychologyCertificate.objects.all():
         ApplyDataGREPsychologyCertificate.objects.create(
             content_object=obj.student_detailed_info,
