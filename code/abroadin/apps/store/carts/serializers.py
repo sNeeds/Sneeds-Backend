@@ -1,13 +1,27 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+from rest_framework.fields import IntegerField
+from rest_framework.relations import PrimaryKeyRelatedField
 
 from .models import Cart
+from ..storeBase.models import Product
 from ..storeBase.serializers import ProductSerializer
+
+
+class ProductsPrimaryKeyRelatedField(PrimaryKeyRelatedField):
+    def to_internal_value(self, data):
+        print("to internal:", data)
+        super().to_internal_value(data)
+
+    def to_representation(self, value):
+        print("Got repre1")
+        return 123
 
 
 class CartSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name="cart:cart-detail", lookup_field='id', read_only=True)
-    products = ProductSerializer(many=True)
+    products = ProductsPrimaryKeyRelatedField(pk_field=IntegerField(), queryset=Product.objects.all(), many=True,
+                                              required=False)
 
     class Meta:
         model = Cart
