@@ -28,52 +28,23 @@
 #  ▒░░░░░░░░░░░░░░░░░░▒
 
 from django.db import migrations, models
-import django.db.models.deletion
-
-
-def forwards_func(apps, schema_editor):
-    # We get the model from the versioned app registry;
-    # if we directly import it, it'll be the wrong version
-    FormWantToApplyTransferSemesterGrade = apps.get_model("form", "wanttoapplytransfersemestergrade")
-    for obj in FormWantToApplyTransferSemesterGrade.objects.all():
-        obj.want_to_apply.semester_years.set(obj.apply_data_semester_years)
-        obj.want_to_apply.grades.set(obj.apply_data_grades)
-
-
-def reverse_func(apps, schema_editor):
-    FormWantToApplyTransferSemesterGrade = apps.get_model("form", "wanttoapplytransfersemestergrade")
-    for obj in FormWantToApplyTransferSemesterGrade.objects.all():
-        obj.want_to_apply.semester_years.set(obj.form_semester_years)
-        obj.want_to_apply.grades.set(obj.form_grades)
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('form', '0020_store_wanttoapply_grade_and_semester_in_middle_model'),
+        ('form', '0022_wanttoapply_remove_grade_semester_related_to_form_models'),
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='wanttoapply',
-            name='grades',
-        ),
         migrations.AddField(
             model_name='wanttoapply',
             name='grades',
             field=models.ManyToManyField(to='applydata.Grade'),
-        ),
-
-        migrations.RemoveField(
-            model_name='wanttoapply',
-            name='semester_years',
         ),
         migrations.AddField(
             model_name='wanttoapply',
             name='semester_years',
             field=models.ManyToManyField(to='applydata.SemesterYear'),
         ),
-        migrations.RunPython(
-            code=forwards_func, reverse_code=reverse_func,
-        )
     ]

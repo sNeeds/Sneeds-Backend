@@ -13,6 +13,7 @@ from abroadin.apps.data.account.serializers import CountrySerializer, University
 from abroadin.apps.data.applydata import serializers as ad_serializers
 
 from .models import SemesterYear, WantToApply, StudentDetailedInfo, UniversityThrough, Publication, Grade
+from ...data.applydata.models import Education
 
 LanguageCertificateType = abroadin.apps.estimation.form.models.LanguageCertificate.LanguageCertificateType
 
@@ -311,10 +312,12 @@ class StudentDetailedInfoBaseSerializer(serializers.ModelSerializer):
                                      DuolingoCertificateSerializer)
 
     def get_universities(self, obj):
-        qs = UniversityThrough.objects.filter(student_detailed_info_id=obj.id)
+        # TODO
+        qs = Education.objects.filter(student_detailed_info__id=obj.id)
         return UniversityThroughSerializer(qs, many=True, context=self.context).data
 
     def get_publications(self, obj):
+        # TODO
         qs = Publication.objects.filter(student_detailed_info__id=obj.id)
         return PublicationSerializer(qs, many=True, context=True).data
 
@@ -326,6 +329,7 @@ class StudentDetailedInfoBaseSerializer(serializers.ModelSerializer):
 
     # Custom method
     def get_certificates(self, obj, model_class, serializer_class):
+        # TODO
         qs = model_class.objects.filter(student_detailed_info_id=obj.id)
         return serializer_class(qs, many=True, context=self.context).data
 

@@ -55,9 +55,8 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    #Change to form
     dependencies = [
-        ('form', '0024_remove_universities'),
+        ('form', '0028_remove_universities'),
     ]
 
     operations = [

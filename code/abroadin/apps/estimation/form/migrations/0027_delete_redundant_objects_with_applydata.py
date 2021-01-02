@@ -351,7 +351,7 @@ def reverse_func(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('form', '0022_delete_temp_wanttoapplytransfer'),
+        ('form', '0026_delete_temp_wanttoapplytransfer'),
     ]
 
     operations = [

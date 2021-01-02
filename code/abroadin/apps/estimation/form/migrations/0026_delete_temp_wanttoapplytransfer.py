@@ -49,7 +49,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('form', '0021_alter_wanttoapply_grade_semester_to_use_new_fields'),
+        ('form', '0025_store_wanttoapply_grade_and_semester_in_middle_model_from _apply_data_models'),
     ]
 
     operations = [

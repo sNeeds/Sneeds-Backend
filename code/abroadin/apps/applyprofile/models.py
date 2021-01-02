@@ -72,7 +72,7 @@ class ApplyProfile(models.Model):
     academic_gap = models.PositiveSmallIntegerField(
         help_text='In months',
         default=0,
-    )  # Could be gap
+    )
 
     publications = GenericRelation(
         Publication, related_query_name='apply_profile'
@@ -112,8 +112,8 @@ class Admission(models.Model):
     destination_university = models.ForeignKey(
         University,
         on_delete=models.SET(_get_other_university_id),  # Great but change to Protect
-        related_name='admission_goal_universities',  # goal to destination, also weired name, do we need?
-        related_query_name='admission_goal_university',
+        related_name='admission_destination_universities',  # goal to destination, also weired name, do we need?
+        related_query_name='admission_destination_university',
     )
 
     major = models.ForeignKey(

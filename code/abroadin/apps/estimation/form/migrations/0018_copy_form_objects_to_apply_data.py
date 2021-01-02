@@ -10,6 +10,11 @@
 from django.db import migrations
 
 
+def _get_obj_content_type(apps, schema_editor, obj):
+    ContentType = apps.get_model("contenttypes", "contenttype")
+    return ContentType.objects.get_for_model(model=obj.__class__)
+
+
 def semester_year_forwards_func(apps, schema_editor):
     # We get the model from the versioned app registry;
     # if we directly import it, it'll be the wrong version
@@ -40,7 +45,8 @@ def publication_forwards_func(apps, schema_editor):
     ApplyDataPublication = apps.get_model("applydata", "publication")
     for obj in FormPublication.objects.all():
         ApplyDataPublication.objects.create(
-            content_object=obj.student_detailed_info,
+            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info),
+            object_id=obj.student_detailed_info.id,
             title=obj.title,
             publish_year=obj.publish_year,
             which_author=obj.which_author,
@@ -57,7 +63,8 @@ def education_forwards_func(apps, schema_editor):
     ApplyDataEducation = apps.get_model("applydata", "education")
     for obj in FormUniversityThrough.objects.all():
         ApplyDataEducation.objects.create(
-            content_object=obj.student_detailed_info,
+            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info),
+            object_id=obj.student_detailed_info.id,
             university=obj.university,
             grade=obj.grade,
             major=obj.major,
@@ -75,7 +82,8 @@ def regular_lc_forwards_func(apps, schema_editor):
     ApplyDataRegularLanguageCertificate = apps.get_model("applydata", "regularlanguagecertificate")
     for obj in FormRegularLanguageCertificate.objects.all():
         ApplyDataRegularLanguageCertificate.objects.create(
-            content_object=obj.student_detailed_info,
+            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info),
+            object_id=obj.student_detailed_info.id,
             certificate_type=obj.certificate_type,
             is_mock=obj.is_mock,
             speaking=obj.speaking,
@@ -93,7 +101,8 @@ def gmat_lc_forwards_func(apps, schema_editor):
     ApplyDataGMATCertificate = apps.get_model("applydata", "gmatcertificate")
     for obj in FormGMATCertificate.objects.all():
         ApplyDataGMATCertificate.objects.create(
-            content_object=obj.student_detailed_info,
+            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info),
+            object_id=obj.student_detailed_info.id,
             certificate_type=obj.certificate_type,
             is_mock=obj.is_mock,
             analytical_writing_assessment=obj.analytical_writing_assessment,
@@ -110,7 +119,8 @@ def gre_general_lc_forwards_func(apps, schema_editor):
     ApplyDataGREGeneralCertificate = apps.get_model("applydata", "gregeneralcertificate")
     for obj in FormGREGeneralCertificate.objects.all():
         ApplyDataGREGeneralCertificate.objects.create(
-            content_object=obj.student_detailed_info,
+            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info),
+            object_id=obj.student_detailed_info.id,
             certificate_type=obj.certificate_type,
             is_mock=obj.is_mock,
             quantitative=obj.quantitative,
@@ -127,7 +137,8 @@ def gre_subject_lc_forwards_func(apps, schema_editor):
     for obj in FormGRESubjectCertificate.objects.filter(certificate_type__in=['GRE Chemistry', 'GRE Mathematics',
                                                                               'GRE Literature']):
         ApplyDataGRESubjectCertificate.objects.create(
-            content_object=obj.student_detailed_info,
+            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info),
+            object_id=obj.student_detailed_info.id,
             certificate_type=obj.certificate_type,
             is_mock=obj.is_mock,
             quantitative=obj.quantitative,
@@ -144,7 +155,8 @@ def gre_biology_lc_forwards_func(apps, schema_editor):
     ApplyDataGREBiologyCertificate = apps.get_model("applydata", "grebiologycertificate")
     for obj in FormGREBiologyCertificate.objects.all():
         ApplyDataGREBiologyCertificate.objects.create(
-            content_object=obj.student_detailed_info,
+            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info),
+            object_id=obj.student_detailed_info.id,
             certificate_type=obj.certificate_type,
             is_mock=obj.is_mock,
             quantitative=obj.quantitative,
@@ -164,7 +176,8 @@ def gre_physics_lc_forwards_func(apps, schema_editor):
     ApplyDataGREPhysicsCertificate = apps.get_model("applydata", "grephysicscertificate")
     for obj in FormGREPhysicsCertificate.objects.all():
         ApplyDataGREPhysicsCertificate.objects.create(
-            content_object=obj.student_detailed_info,
+            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info),
+            object_id=obj.student_detailed_info.id,
             certificate_type=obj.certificate_type,
             is_mock=obj.is_mock,
             quantitative=obj.quantitative,
@@ -184,7 +197,8 @@ def gre_psychology_lc_forwards_func(apps, schema_editor):
     ApplyDataGREPsychologyCertificate = apps.get_model("applydata", "grepsychologycertificate")
     for obj in FormGREPsychologyCertificate.objects.all():
         ApplyDataGREPsychologyCertificate.objects.create(
-            content_object=obj.student_detailed_info,
+            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info),
+            object_id=obj.student_detailed_info.id,
             certificate_type=obj.certificate_type,
             is_mock=obj.is_mock,
             quantitative=obj.quantitative,
@@ -207,7 +221,8 @@ def duolingo_lc_forwards_func(apps, schema_editor):
     ApplyDataDuolingoCertificate = apps.get_model("applydata", "duolingocertificate")
     for obj in FormDuolingoCertificate.objects.all():
         ApplyDataDuolingoCertificate.objects.create(
-            content_object=obj.student_detailed_info,
+            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info),
+            object_id=obj.student_detailed_info.id,
             certificate_type=obj.certificate_type,
             is_mock=obj.is_mock,
             overall=obj.overall,
@@ -225,7 +240,8 @@ def forwards_func(apps, schema_editor):
     ApplyData = apps.get_model("applydata", "")
     for obj in Form.objects.all():
         ApplyData.objects.create(
-            content_object=obj.student_detailed_info,
+            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info),
+            object_id=obj.student_detailed_info.id,
             certificate_type=obj.certificate_type,
             is_mock=obj.is_mock,
         )
@@ -234,7 +250,6 @@ def forwards_func(apps, schema_editor):
 class Migration(migrations.Migration):
     dependencies = [
         ('form', '0017_auto_20201222_1050'),
-        ('account', '0009_auto_20201222_1050'),
         ('applydata',
          '0002_duolingocertificate_gmatcertificate_grebiologycertificate_gregeneralcertificate_grephysicscertificat')
     ]

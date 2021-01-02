@@ -69,7 +69,14 @@ def _get_apply_data_grades(apps, schema_editor, form_ones: iter):
     return applydata_ones
 
 
-def forwards_func(apps, schema_editor):
+def forward_func(apps, schema_editor):
+    # We get the model from the versioned app registry;
+    # if we directly import it, it'll be the wrong version
+    FormWantToApplyTransferSemesterGrade = apps.get_model("form", "wanttoapplytransfersemestergrade")
+    FormWantToApplyTransferSemesterGrade.objects.all().delete()
+
+
+def reverse_func(apps, schema_editor):
     # We get the model from the versioned app registry;
     # if we directly import it, it'll be the wrong version
     FormWantToApply = apps.get_model("form", "wanttoapply")
@@ -85,21 +92,14 @@ def forwards_func(apps, schema_editor):
         mid_obj.apply_data_grades.set(_get_apply_data_grades(apps, schema_editor, obj.grades.all()))
 
 
-def reverse_func(apps, schema_editor):
-    # We get the model from the versioned app registry;
-    # if we directly import it, it'll be the wrong version
-    FormWantToApplyTransferSemesterGrade = apps.get_model("form", "wanttoapplytransfersemestergrade")
-    FormWantToApplyTransferSemesterGrade.objects.all().delete()
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('form', '0019_create_temp_wanttoapplytransfer'),
+        ('form', '0024_only_apply__wanttoapply_grade_semester_set_value_from_apply_data_models'),
     ]
 
     operations = [
         migrations.RunPython(
-            code=forwards_func, reverse_code=reverse_func,
+            code=forward_func, reverse_code=reverse_func,
         ),
     ]

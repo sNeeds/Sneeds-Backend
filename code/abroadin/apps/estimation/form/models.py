@@ -2,6 +2,7 @@ import decimal
 import uuid
 from math import floor
 
+from django.contrib.contenttypes.fields import GenericRelation
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator, FileExtensionValidator
 from django.db import models
@@ -10,6 +11,7 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework.settings import api_settings
 from rest_framework.exceptions import ValidationError as DRFValidationError
 
+from abroadin.apps.data.applydata.models import Education, LanguageCertificate
 from abroadin.apps.estimation.estimations import values
 from abroadin.apps.estimation.estimations.classes import ValueRange
 from abroadin.apps.estimation.estimations.values import VALUES_WITH_ATTRS, LANGUAGE_B_VALUE
@@ -110,11 +112,13 @@ class WantToApply(models.Model):
 
     universities = models.ManyToManyField(University, blank=True)
 
-    grades = models.ManyToManyField(Grade, blank=True)
+    # grades = models.ManyToManyField(Grade, blank=True)
+    grades = models.ManyToManyField(ad_models.Grade, blank=True)
 
     majors = models.ManyToManyField(Major, blank=True)
 
-    semester_years = models.ManyToManyField(SemesterYear, blank=True)
+    # semester_years = models.ManyToManyField(SemesterYear, blank=True)
+    semester_years = models.ManyToManyField(ad_models.SemesterYear, blank=True)
 
 
 class Publication(models.Model):
@@ -339,9 +343,16 @@ class StudentDetailedInfoBase(models.Model):
         editable=False
     )
 
-    universities = models.ManyToManyField(
-        University,
-        through='UniversityThrough'
+    publications = GenericRelation(
+        Publication, related_query_name='student_detailed_info_base'
+    )
+
+    educations = GenericRelation(
+        Education, related_query_name='student_detailed_info_base'
+    )
+
+    language_certificates = GenericRelation(
+        LanguageCertificate, related_query_name='student_detailed_info_base'
     )
 
     resume = models.FileField(
@@ -419,9 +430,9 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         {'function_name': "_has_gender",
          'information': {'section': 'personal', 'model': 'StudentDetailedInfo', 'fields': ['gender'], 'id': 3},
          },
-        {'function_name': "_has_university_through",
-         'information': {'section': 'academic_degree', 'model': 'UniversityThrough', 'fields': [], 'id': 4},
-         },
+        # {'function_name': "_has_university_through",
+        #  'information': {'section': 'academic_degree', 'model': 'UniversityThrough', 'fields': [], 'id': 4},
+        #  },
         {'function_name': "_has_want_to_apply",
          'information': {'section': 'apply_destination', 'model': 'WantToApply',
                          'fields': ['countries', 'grades', 'semester_years'], 'id': 5},

@@ -36,10 +36,13 @@
 #               1¶¶111¶¶¶1
 
 
-from django.db import migrations
 
+from django.db import migrations, models
+import django.db.models.deletion
 
-CACHED_APPLYDATA_SEMESTER_YEARS = {}
+CACHED_APPLYDATA_SEMESTER_YEARS = {
+
+}
 
 
 def _get_apply_data_semester_years(apps, schema_editor, form_ones: iter):
@@ -48,13 +51,15 @@ def _get_apply_data_semester_years(apps, schema_editor, form_ones: iter):
     for old_one in form_ones:
         identifier = str(old_one.year) + '_||_' + old_one.semester
         if identifier not in CACHED_APPLYDATA_SEMESTER_YEARS:
-            obj = ApplyDataSemesterYear.objects.filter(semester=old_one.semester, year=old_one.year).first()
+            obj = ApplyDataSemesterYear.objects.get(semester=old_one.semester, year=old_one.year)
             CACHED_APPLYDATA_SEMESTER_YEARS[identifier] = obj
         applydata_ones.append(CACHED_APPLYDATA_SEMESTER_YEARS[identifier])
     return applydata_ones
 
 
-CACHED_APPLYDATA_GRADES = {}
+CACHED_APPLYDATA_GRADES = {
+
+}
 
 
 def _get_apply_data_grades(apps, schema_editor, form_ones: iter):
@@ -74,7 +79,6 @@ def forwards_func(apps, schema_editor):
     # if we directly import it, it'll be the wrong version
     FormWantToApply = apps.get_model("form", "wanttoapply")
     FormWantToApplyTransferSemesterGrade = apps.get_model("form", "wanttoapplytransfersemestergrade")
-    FormWantToApplyTransferSemesterGrade.objects.all().delete()
     for obj in FormWantToApply.objects.all():
         mid_obj = FormWantToApplyTransferSemesterGrade.objects.create(
             want_to_apply=obj,
@@ -95,7 +99,7 @@ def reverse_func(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('form', '0019_create_temp_wanttoapplytransfer'),
+        ('form', '0020_store_wanttoapply_grade_and_semester_in_middle_model'),
     ]
 
     operations = [
