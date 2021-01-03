@@ -14,7 +14,6 @@ from abroadin.apps.users.customAuth.serializers import SafeUserDataSerializer
 
 
 class ProductSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Product
         fields = ['id', 'title', 'subtitle', 'price', 'active']

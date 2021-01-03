@@ -8,27 +8,17 @@ from ..storeBase.models import Product
 from ..storeBase.serializers import ProductSerializer
 
 
-class ProductsPrimaryKeyRelatedField(PrimaryKeyRelatedField):
-    def to_internal_value(self, data):
-        print("to internal:", data)
-        super().to_internal_value(data)
-
-    def to_representation(self, value):
-        print("Got repre1")
-        return 123
-
-
 class CartSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name="cart:cart-detail", lookup_field='id', read_only=True)
-    products = ProductsPrimaryKeyRelatedField(pk_field=IntegerField(), queryset=Product.objects.all(), many=True,
-                                              required=False)
+    products_detail = ProductSerializer(source='products', many=True, read_only=True)
 
     class Meta:
         model = Cart
-        fields = ['id', 'url', 'user', 'products', 'subtotal', 'total', ]
+        fields = ['id', 'url', 'user', 'products', 'products_detail', 'subtotal', 'total', ]
         extra_kwargs = {
             'id': {'read_only': True},
             'user': {'read_only': True},
+            'products_detail': {'read_only': True},
         }
 
     def create(self, validated_data):
