@@ -10,7 +10,7 @@ class InheritanceCastModel(models.Model):
     parent instances to their child types.
 
     """
-    real_type = models.ForeignKey(ContentType, on_delete=models.PROTECT, editable=False)
+    real_type = models.ForeignKey(ContentType, null=True, on_delete=models.PROTECT, editable=False)
 
     def save(self, *args, **kwargs):
         if self._state.adding:
