@@ -104,8 +104,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         help_text=_('Designates whether the user wants to get marketing emails or news.'),
     )
 
-    # date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
-
     objects = CustomUserManager()
 
     EMAIL_FIELD = 'email'
@@ -195,6 +193,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         for (key, value) in kwargs.items():
             setattr(instance, key, value)
         instance.save()
+
 
 class StudentProfile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, primary_key=True)

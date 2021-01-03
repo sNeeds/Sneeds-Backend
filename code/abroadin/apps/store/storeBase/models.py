@@ -149,10 +149,10 @@ class TimeSlotSale(Product):
     objects = TimeSlotSaleManager.as_manager()
 
     def title(self):
-        return f"Ali {self.id}"
+        return f"Consulting time {self.id}"
 
     def subtitle(self):
-        return None
+        return "60 min time"
 
     def get_consultant_username(self):
         return self.consultant.user.username
