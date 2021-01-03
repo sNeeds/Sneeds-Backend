@@ -49,11 +49,9 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('form', '0025_store_wanttoapply_grade_and_semester_in_middle_model_from _apply_data_models'),
+        ('form', '0025_only_unapply__store_wanttoapply_grade_semester_in_middle_model '),
     ]
 
     operations = [
-        migrations.DeleteModel(
-            name='WantToApplyTransferSemesterGrade'
-        )
+
     ]

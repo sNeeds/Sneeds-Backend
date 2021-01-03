@@ -13,4 +13,13 @@ admin.site.register(models.GRESubjectCertificate)
 admin.site.register(models.GREPsychologyCertificate)
 admin.site.register(models.GREPhysicsCertificate)
 admin.site.register(models.GREBiologyCertificate)
-admin.site.register(models.Publication)
+
+
+@admin.register(models.Publication)
+class PublicationAdmin(admin.ModelAdmin):
+    list_display = ['id', 'title', 'value']
+    readonly_fields = ['value']
+
+    def delete_queryset(self, request, queryset):
+        for obj in queryset:
+            obj.delete()

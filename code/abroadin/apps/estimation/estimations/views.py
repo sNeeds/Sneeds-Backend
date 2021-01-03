@@ -73,7 +73,7 @@ class WantToApplyChance(CAPIView):
 
         try:
             admission_chance = AdmissionChance(form)
-            want_to_apply = WantToApply.objects.get(student_detailed_info=form)
+            want_to_apply = WantToApply.objects.get(student_detailed_info__id=form.id)
 
             for university in want_to_apply.universities.all().order_by('rank'):
                 values_and_labels = {}

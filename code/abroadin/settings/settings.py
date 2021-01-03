@@ -33,7 +33,6 @@ INSTALLED_APPS = [
     'abroadin.apps.store.basicProducts',
     'abroadin.apps.estimation.form',
     'abroadin.apps.estimation.estimations',
-    'abroadin.apps.estimation.similarApply',
     'abroadin.apps.estimation.analyze',
     'abroadin.apps.data.account',
     'abroadin.apps.analytics.events',

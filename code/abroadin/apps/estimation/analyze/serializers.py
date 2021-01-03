@@ -108,23 +108,23 @@ class GradePointAverageChartSerializer(CommonChartSerializer):
 
         self._data['title'] = chart.title
 
-        self._data['label_range'] = form_models.UniversityThrough.GPA_VIEW_LABEL_RANGE
+        self._data['label_range'] = form_models.Education.GPA_VIEW_LABEL_RANGE
 
         self._data['chart_items'] = self.get_chart_items(items_qs)
 
         self._data['user_positions'] = \
             get_store_to_view_labels(user_store_based_positions,
-                                     form_models.UniversityThrough.convert_gpa_store_to_view_label)
+                                     form_models.Education.convert_gpa_store_to_view_label)
 
         self._data['data_number'] = data_number
 
         self._data['user_status'] = get_user_status(user_store_based_positions,
                                                     items_qs,
-                                                    form_models.UniversityThrough.compare_gpa_labels)
+                                                    form_models.Education.compare_gpa_labels)
 
     def get_chart_items(self, qs):
         return get_converted_chart_items(qs,
-                                         form_models.UniversityThrough.convert_gpa_store_to_view_label
+                                         form_models.Education.convert_gpa_store_to_view_label
                                          )
 
     def get_user_positions(self, obj):
@@ -132,7 +132,7 @@ class GradePointAverageChartSerializer(CommonChartSerializer):
         if sdi_id is not None:
             try:
                 sdi = form_models.StudentDetailedInfo.objects.get(id=sdi_id)
-                return form_models.UniversityThrough.get_gpa_user_store_based_positions(sdi)
+                return form_models.Education.get_gpa_user_store_based_positions(sdi)
             except form_models.StudentDetailedInfo.DoesNotExist:
                 return None
         return None

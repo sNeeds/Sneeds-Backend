@@ -4,7 +4,7 @@ from rest_framework import status
 
 from abroadin.apps.estimation.tests.apis import EstimationBaseTest
 from abroadin.apps.estimation.form.models import StudentDetailedInfo, Grade, WantToApply, SemesterYear, \
-    UniversityThrough, GradeChoices, Publication, RegularLanguageCertificate, LanguageCertificate
+    Education, GradeChoices, Publication, RegularLanguageCertificate, LanguageCertificate
 from abroadin.apps.data.account.models import Country, University, Major
 from abroadin.apps.estimation.similarApply.models import AppliedStudentDetailedInfo, AppliedTo
 
@@ -20,7 +20,7 @@ class SimilarApplyAppBaseTests(EstimationBaseTest):
             user=self.user1,
         )
 
-        self.app_form_1_university_through_1 = UniversityThrough.objects.create(
+        self.app_form_1_university_through_1 = Education.objects.create(
             student_detailed_info=self.app_form_1,
             university=self.university1,
             grade=GradeChoices.BACHELOR,
@@ -30,7 +30,7 @@ class SimilarApplyAppBaseTests(EstimationBaseTest):
             gpa=17
         )
 
-        self.app_form_1_university_through_2 = UniversityThrough.objects.create(
+        self.app_form_1_university_through_2 = Education.objects.create(
             student_detailed_info=self.app_form_1,
             university=self.university2,
             grade=GradeChoices.MASTER,

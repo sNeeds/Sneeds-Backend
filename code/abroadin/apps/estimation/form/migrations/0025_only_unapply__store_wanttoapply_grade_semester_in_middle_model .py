@@ -39,34 +39,34 @@
 from django.db import migrations
 
 
-CACHED_APPLYDATA_SEMESTER_YEARS = {}
+CACHED_FORM_SEMESTER_YEARS = {}
 
 
-def _get_apply_data_semester_years(apps, schema_editor, form_ones: iter):
-    ApplyDataSemesterYear = apps.get_model("applydata", "semesteryear")
-    applydata_ones = []
-    for old_one in form_ones:
+def _get_form_semester_years(apps, schema_editor, applydata_ones: iter):
+    FormSemesterYear = apps.get_model("form", "semesteryear")
+    form_ones = []
+    for old_one in applydata_ones:
         identifier = str(old_one.year) + '_||_' + old_one.semester
-        if identifier not in CACHED_APPLYDATA_SEMESTER_YEARS:
-            obj = ApplyDataSemesterYear.objects.filter(semester=old_one.semester, year=old_one.year).first()
-            CACHED_APPLYDATA_SEMESTER_YEARS[identifier] = obj
-        applydata_ones.append(CACHED_APPLYDATA_SEMESTER_YEARS[identifier])
-    return applydata_ones
+        if identifier not in CACHED_FORM_SEMESTER_YEARS:
+            obj = FormSemesterYear.objects.filter(semester=old_one.semester, year=old_one.year).first()
+            CACHED_FORM_SEMESTER_YEARS[identifier] = obj
+        form_ones.append(CACHED_FORM_SEMESTER_YEARS[identifier])
+    return form_ones
 
 
-CACHED_APPLYDATA_GRADES = {}
+CACHED_FORM_GRADES = {}
 
 
-def _get_apply_data_grades(apps, schema_editor, form_ones: iter):
-    ApplyDataGrade = apps.get_model("applydata", "grade")
-    applydata_ones = []
-    for old_one in form_ones:
+def _get_apply_data_grades(apps, schema_editor, applydata_ones: iter):
+    FormGrade = apps.get_model("form", "grade")
+    form_ones = []
+    for old_one in applydata_ones:
         identifier = str(old_one.name) + '_||_'
-        if identifier not in CACHED_APPLYDATA_GRADES:
-            obj = ApplyDataGrade.objects.get(name=old_one.name)
-            CACHED_APPLYDATA_GRADES[identifier] = obj
-        applydata_ones.append(CACHED_APPLYDATA_GRADES[identifier])
-    return applydata_ones
+        if identifier not in CACHED_FORM_GRADES:
+            obj = FormGrade.objects.get(name=old_one.name)
+            CACHED_FORM_GRADES[identifier] = obj
+        form_ones.append(CACHED_FORM_GRADES[identifier])
+    return form_ones
 
 
 def forward_func(apps, schema_editor):
@@ -86,10 +86,10 @@ def reverse_func(apps, schema_editor):
         mid_obj = FormWantToApplyTransferSemesterGrade.objects.create(
             want_to_apply=obj,
         )
-        mid_obj.form_semester_years.set(list(obj.semester_years.all()))
-        mid_obj.form_grades.set(list(obj.grades.all()))
-        mid_obj.apply_data_semester_years.set(_get_apply_data_semester_years(apps, schema_editor, obj.semester_years.all()))
-        mid_obj.apply_data_grades.set(_get_apply_data_grades(apps, schema_editor, obj.grades.all()))
+        mid_obj.apply_data_semester_years.set([sy for sy in obj.semester_years.all()])
+        mid_obj.apply_data_grades.set([grade for grade in obj.grades.all()])
+        mid_obj.form_semester_years.set(_get_form_semester_years(apps, schema_editor, obj.semester_years.all()))
+        mid_obj.form_grades.set(_get_apply_data_grades(apps, schema_editor, obj.grades.all()))
 
 
 class Migration(migrations.Migration):

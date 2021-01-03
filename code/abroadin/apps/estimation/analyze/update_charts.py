@@ -5,6 +5,7 @@ from django.db.models import Sum, F
 from django.db import transaction
 
 from abroadin.apps.estimation.form import models as form_models
+from abroadin.apps.data.applydata import models as ad_models
 from abroadin.apps.estimation.form import managers as form_managers
 from abroadin.apps.estimation.analyze.models import Chart, ChartItemData
 from abroadin.apps.estimation.form.serializers import StudentDetailedInfoCelerySerializer
@@ -73,7 +74,7 @@ def update_publication_count_chart(instance, db_instance, is_delete=False):
     """
     try:
         sdi = instance.student_detailed_info.studentdetailedinfo
-        publications_count = form_models.Publication.objects.filter(student_detailed_info_id=sdi.id).count()
+        publications_count = form_models.Publication.objects.filter(student_detailed_info__id=sdi.id).count()
         data = serialize('json', [instance])
         db_data = None if db_instance is None else serialize('json', [db_instance])
 
@@ -359,24 +360,24 @@ def prepare_update_gpa_chart(instance, db_instance, is_delete=False):
     old_label = None
     new_label = None
     if is_delete:
-        qs = form_models.UniversityThrough.objects.filter(student_detailed_info=instance.student_detailed_info). \
+        qs = ad_models.Education.objects.filter(student_detailed_info__id=instance.student_detailed_info.id). \
             order_by('-graduate_in')
         last_grade = qs.first()
         # We check that the instance is the last education is being removed from sdi educations set
         if last_grade == instance:
-            old_label = form_models.UniversityThrough.get_gpa__store_label(last_grade)
+            old_label = form_models.Education.get_gpa__store_label(last_grade)
             # now we look for last grade after instance
             new_last_grade = qs.exclude(pk=instance.pk).first()
             if new_last_grade is not None:
-                new_label = form_models.UniversityThrough.get_gpa__store_label(new_last_grade)
+                new_label = form_models.Education.get_gpa__store_label(new_last_grade)
             else:
                 new_label = None
         else:
             old_label = None
     else:
         if db_instance is not None:
-            qs = form_models.UniversityThrough.objects.filter(
-                student_detailed_info=instance.student_detailed_info
+            qs = form_models.Education.objects.filter(
+                student_detailed_info__id=instance.student_detailed_info.id
             ).order_by('-graduate_in')
 
             are_labels_updated = False
@@ -388,35 +389,35 @@ def prepare_update_gpa_chart(instance, db_instance, is_delete=False):
                 # we check that the instance graduate has changed and is not going to be the last grade any more
                 if instance.graduate_in < last_grade.graduate_in \
                         and next_last_grade is not None and instance.graduate_in < next_last_grade.graduate_in:
-                    old_label = form_models.UniversityThrough.get_gpa__store_label(last_grade)
-                    new_label = form_models.UniversityThrough.get_gpa__store_label(next_last_grade)
+                    old_label = form_models.Education.get_gpa__store_label(last_grade)
+                    new_label = form_models.Education.get_gpa__store_label(next_last_grade)
                     are_labels_updated = True
 
                 # We check gpa changes. If we do not enter the previous if statement it means the instance still is
                 # last grade.We check that by is_chart_updated flag.
                 if instance.gpa != db_instance.gpa and not are_labels_updated:
-                    old_label = form_models.UniversityThrough.get_gpa__store_label(db_instance)
-                    new_label = form_models.UniversityThrough.get_gpa__store_label(instance)
+                    old_label = form_models.Education.get_gpa__store_label(db_instance)
+                    new_label = form_models.Education.get_gpa__store_label(instance)
 
             # The instance was not last grade education but maybe it become last grade by increasing graduate_in value!
             elif instance.graduate_in > last_grade.graduate_in:
-                old_label = form_models.UniversityThrough.get_gpa__store_label(last_grade)
-                new_label = form_models.UniversityThrough.get_gpa__store_label(instance)
+                old_label = form_models.Education.get_gpa__store_label(last_grade)
+                new_label = form_models.Education.get_gpa__store_label(instance)
 
         # Save has been called in order to create an entry
         else:
-            qs = form_models.UniversityThrough.objects.filter(
-                student_detailed_info=instance.student_detailed_info
+            qs = form_models.Education.objects.filter(
+                student_detailed_info__id=instance.student_detailed_info.id
             ).order_by('-graduate_in')
 
             last_grade = qs.first()
 
             if last_grade is None:
-                new_label = form_models.UniversityThrough.get_gpa__store_label(instance)
+                new_label = form_models.Education.get_gpa__store_label(instance)
 
             elif instance.graduate_in > last_grade.graduate_in:
-                old_label = form_models.UniversityThrough.get_gpa__store_label(last_grade)
-                new_label = form_models.UniversityThrough.get_gpa__store_label(instance)
+                old_label = form_models.Education.get_gpa__store_label(last_grade)
+                new_label = form_models.Education.get_gpa__store_label(instance)
 
     return new_label, old_label
 

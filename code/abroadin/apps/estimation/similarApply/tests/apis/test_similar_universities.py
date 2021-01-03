@@ -8,7 +8,7 @@ from abroadin.apps.estimation.form.models import (
     Grade,
     WantToApply,
     SemesterYear,
-    UniversityThrough,
+    Education,
     GradeChoices,
     Publication,
     RegularLanguageCertificate,
@@ -120,7 +120,7 @@ class SimilarUniversitiesUserEmailVerifiedTests(SimilarApplyAppAPITests):
             homepage_url="http://aryakhaligh.ir/",
         )
 
-        self.sdi_2_university_through_1 = UniversityThrough.objects.create(
+        self.sdi_2_university_through_1 = Education.objects.create(
             student_detailed_info=self.completed_sdi_2,
             university=self.university1,
             grade=GradeChoices.BACHELOR,

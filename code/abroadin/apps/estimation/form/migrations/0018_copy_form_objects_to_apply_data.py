@@ -45,7 +45,7 @@ def publication_forwards_func(apps, schema_editor):
     ApplyDataPublication = apps.get_model("applydata", "publication")
     for obj in FormPublication.objects.all():
         ApplyDataPublication.objects.create(
-            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info),
+            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info.studentdetailedinfo),
             object_id=obj.student_detailed_info.id,
             title=obj.title,
             publish_year=obj.publish_year,
@@ -63,7 +63,7 @@ def education_forwards_func(apps, schema_editor):
     ApplyDataEducation = apps.get_model("applydata", "education")
     for obj in FormUniversityThrough.objects.all():
         ApplyDataEducation.objects.create(
-            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info),
+            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info.studentdetailedinfo),
             object_id=obj.student_detailed_info.id,
             university=obj.university,
             grade=obj.grade,
@@ -82,7 +82,7 @@ def regular_lc_forwards_func(apps, schema_editor):
     ApplyDataRegularLanguageCertificate = apps.get_model("applydata", "regularlanguagecertificate")
     for obj in FormRegularLanguageCertificate.objects.all():
         ApplyDataRegularLanguageCertificate.objects.create(
-            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info),
+            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info.studentdetailedinfo),
             object_id=obj.student_detailed_info.id,
             certificate_type=obj.certificate_type,
             is_mock=obj.is_mock,
@@ -101,7 +101,7 @@ def gmat_lc_forwards_func(apps, schema_editor):
     ApplyDataGMATCertificate = apps.get_model("applydata", "gmatcertificate")
     for obj in FormGMATCertificate.objects.all():
         ApplyDataGMATCertificate.objects.create(
-            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info),
+            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info.studentdetailedinfo),
             object_id=obj.student_detailed_info.id,
             certificate_type=obj.certificate_type,
             is_mock=obj.is_mock,
@@ -119,7 +119,7 @@ def gre_general_lc_forwards_func(apps, schema_editor):
     ApplyDataGREGeneralCertificate = apps.get_model("applydata", "gregeneralcertificate")
     for obj in FormGREGeneralCertificate.objects.all():
         ApplyDataGREGeneralCertificate.objects.create(
-            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info),
+            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info.studentdetailedinfo),
             object_id=obj.student_detailed_info.id,
             certificate_type=obj.certificate_type,
             is_mock=obj.is_mock,
@@ -137,7 +137,7 @@ def gre_subject_lc_forwards_func(apps, schema_editor):
     for obj in FormGRESubjectCertificate.objects.filter(certificate_type__in=['GRE Chemistry', 'GRE Mathematics',
                                                                               'GRE Literature']):
         ApplyDataGRESubjectCertificate.objects.create(
-            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info),
+            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info.studentdetailedinfo),
             object_id=obj.student_detailed_info.id,
             certificate_type=obj.certificate_type,
             is_mock=obj.is_mock,
@@ -155,7 +155,7 @@ def gre_biology_lc_forwards_func(apps, schema_editor):
     ApplyDataGREBiologyCertificate = apps.get_model("applydata", "grebiologycertificate")
     for obj in FormGREBiologyCertificate.objects.all():
         ApplyDataGREBiologyCertificate.objects.create(
-            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info),
+            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info.studentdetailedinfo),
             object_id=obj.student_detailed_info.id,
             certificate_type=obj.certificate_type,
             is_mock=obj.is_mock,
@@ -176,7 +176,7 @@ def gre_physics_lc_forwards_func(apps, schema_editor):
     ApplyDataGREPhysicsCertificate = apps.get_model("applydata", "grephysicscertificate")
     for obj in FormGREPhysicsCertificate.objects.all():
         ApplyDataGREPhysicsCertificate.objects.create(
-            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info),
+            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info.studentdetailedinfo),
             object_id=obj.student_detailed_info.id,
             certificate_type=obj.certificate_type,
             is_mock=obj.is_mock,
@@ -197,7 +197,7 @@ def gre_psychology_lc_forwards_func(apps, schema_editor):
     ApplyDataGREPsychologyCertificate = apps.get_model("applydata", "grepsychologycertificate")
     for obj in FormGREPsychologyCertificate.objects.all():
         ApplyDataGREPsychologyCertificate.objects.create(
-            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info),
+            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info.studentdetailedinfo),
             object_id=obj.student_detailed_info.id,
             certificate_type=obj.certificate_type,
             is_mock=obj.is_mock,
@@ -221,7 +221,7 @@ def duolingo_lc_forwards_func(apps, schema_editor):
     ApplyDataDuolingoCertificate = apps.get_model("applydata", "duolingocertificate")
     for obj in FormDuolingoCertificate.objects.all():
         ApplyDataDuolingoCertificate.objects.create(
-            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info),
+            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info.studentdetailedinfo),
             object_id=obj.student_detailed_info.id,
             certificate_type=obj.certificate_type,
             is_mock=obj.is_mock,
@@ -240,11 +240,15 @@ def forwards_func(apps, schema_editor):
     ApplyData = apps.get_model("applydata", "")
     for obj in Form.objects.all():
         ApplyData.objects.create(
-            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info),
+            content_type=_get_obj_content_type(apps, schema_editor, obj.student_detailed_info.studentdetailedinfo),
             object_id=obj.student_detailed_info.id,
             certificate_type=obj.certificate_type,
             is_mock=obj.is_mock,
         )
+
+
+def fake_reverse(apps, schema_editor):
+    pass
 
 
 class Migration(migrations.Migration):
@@ -256,39 +260,39 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(
-            code=semester_year_forwards_func,
+            code=semester_year_forwards_func, reverse_code=fake_reverse,
         ),
         migrations.RunPython(
-            code=grade_forwards_func
+            code=grade_forwards_func, reverse_code=fake_reverse,
         ),
         migrations.RunPython(
-            code=publication_forwards_func
+            code=publication_forwards_func, reverse_code=fake_reverse,
         ),
         migrations.RunPython(
-            code=education_forwards_func
+            code=education_forwards_func, reverse_code=fake_reverse,
         ),
         migrations.RunPython(
-            code=regular_lc_forwards_func
+            code=regular_lc_forwards_func, reverse_code=fake_reverse,
         ),
         migrations.RunPython(
-            code=gmat_lc_forwards_func
+            code=gmat_lc_forwards_func, reverse_code=fake_reverse,
         ),
         migrations.RunPython(
-            code=gre_general_lc_forwards_func
+            code=gre_general_lc_forwards_func, reverse_code=fake_reverse,
         ),
         migrations.RunPython(
-            code=gre_subject_lc_forwards_func
+            code=gre_subject_lc_forwards_func, reverse_code=fake_reverse,
         ),
         migrations.RunPython(
-            code=gre_biology_lc_forwards_func
+            code=gre_biology_lc_forwards_func, reverse_code=fake_reverse,
         ),
         migrations.RunPython(
-            code=gre_physics_lc_forwards_func
+            code=gre_physics_lc_forwards_func, reverse_code=fake_reverse,
         ),
         migrations.RunPython(
-            code=gre_psychology_lc_forwards_func
+            code=gre_psychology_lc_forwards_func, reverse_code=fake_reverse,
         ),
         migrations.RunPython(
-            code=duolingo_lc_forwards_func
+            code=duolingo_lc_forwards_func, reverse_code=fake_reverse,
         ),
     ]

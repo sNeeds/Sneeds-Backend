@@ -65,9 +65,9 @@ urlpatterns = [
     path('want-to-applies/<int:id>/', views.WantToApplyDetailAPIView.as_view(),
          name="want-to-apply-detail"),
 
-    path('university-throughs/', views.UniversityThroughListAPIView.as_view(),
+    path('university-throughs/', views.EducationListAPIView.as_view(),
          name="university-through-list"),
-    path('university-throughs/<int:id>/', views.UniversityThroughDetailAPIView.as_view(),
+    path('university-throughs/<int:id>/', views.EducationDetailAPIView.as_view(),
          name="university-through-detail"),
 
     path('choices/grades/', views.GradesListAPIView.as_view()),

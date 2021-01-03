@@ -11,12 +11,7 @@ from abroadin.base.api.enum_views import EnumViewList
 from abroadin.base.api.viewsets import CAPIView
 from abroadin.base.api.permissions import permission_class_factory
 
-
-from .models import (
-    SemesterYear,
-    StudentDetailedInfo,
-    GradeChoices,
-    BasicFormField,
+from abroadin.apps.data.applydata.models import (
     LanguageCertificate,
     RegularLanguageCertificate,
     GMATCertificate,
@@ -26,10 +21,16 @@ from .models import (
     GREPhysicsCertificate,
     GREPsychologyCertificate,
     DuolingoCertificate,
+    Education,
+)
+
+from .models import (
+    SemesterYear,
+    StudentDetailedInfo,
     WantToApply,
     Publication,
-    UniversityThrough,
-    Grade
+    Grade,
+    BasicFormField,
 )
 from .serializers import (
     SemesterYearSerializer,
@@ -49,15 +50,15 @@ from .serializers import (
     WantToApplyRequestSerializer,
     PublicationSerializer,
     PublicationRequestSerializer,
-    UniversityThroughSerializer,
-    UniversityThroughRequestSerializer,
+    EducationSerializer,
+    EducationRequestSerializer,
     GradeSerializer
 )
 from .permissions import (
     IsLanguageCertificateOwnerOrDetailedInfoWithoutUser,
     IsWantToApplyOwnerOrDetailedInfoWithoutUser,
     IsPublicationOwnerOrDetailedInfoWithoutUser,
-    IsUniversityThroughOwnerOrDetailedInfoWithoutUser,
+    IsEducationOwnerOrDetailedInfoWithoutUser,
     OnlyOneFormPermission,
     SameUserOrNone, UserAlreadyHasForm,
 )
@@ -182,7 +183,7 @@ class LanguageCertificateListCreateAPIView(generics.CListCreateAPIView):
     def get_queryset(self):
         user = self.request.user
         sdi_id = self.request.query_params.get('student-detailed-info', None)
-        qs = self.queryset.filter(student_detailed_info=sdi_id)
+        qs = self.queryset.filter(student_detailed_info__id=sdi_id)
         # qs = student_detailed_info_many_to_one_qs(user, sdi_id, self.model_class)
         return qs
 
@@ -318,7 +319,7 @@ class WantToApplyListAPIView(generics.CListCreateAPIView):
 
     def get_queryset(self):
         sdi_id = self.request.query_params.get('student-detailed-info', None)
-        qs = WantToApply.objects.filter(student_detailed_info_id=sdi_id)
+        qs = WantToApply.objects.filter(student_detailed_info__id=sdi_id)
         return qs
 
     @swagger_auto_schema(
@@ -360,7 +361,7 @@ class PublicationListCreateAPIView(generics.CListCreateAPIView):
         user = self.request.user
         sdi_id = self.request.query_params.get('student-detailed-info', None)
         # qs = student_detailed_info_many_to_one_qs(user, sdi_id, Publication)
-        qs = Publication.objects.filter(student_detailed_info_id=sdi_id)
+        qs = Publication.objects.filter(student_detailed_info__id=sdi_id)
         return qs
 
     @swagger_auto_schema(
@@ -378,14 +379,14 @@ class PublicationRetrieveDestroyAPIView(generics.CRetrieveDestroyAPIView):
     permission_classes = [IsPublicationOwnerOrDetailedInfoWithoutUser]
 
 
-class UniversityThroughListAPIView(generics.CListCreateAPIView):
-    queryset = UniversityThrough.objects.all()
-    serializer_class = UniversityThroughSerializer
-    request_serializer_class = UniversityThroughRequestSerializer
+class EducationListAPIView(generics.CListCreateAPIView):
+    queryset = Education.objects.all()
+    serializer_class = EducationSerializer
+    request_serializer_class = EducationRequestSerializer
 
     def get_queryset(self):
         sdi_id = self.request.query_params.get('student-detailed-info', None)
-        qs = UniversityThrough.objects.filter(student_detailed_info__id=sdi_id)
+        qs = Education.objects.filter(student_detailed_info__id=sdi_id)
         return qs
 
     @swagger_auto_schema(
@@ -396,11 +397,11 @@ class UniversityThroughListAPIView(generics.CListCreateAPIView):
         return super().post(request, *args, **kwargs)
 
 
-class UniversityThroughDetailAPIView(generics.CRetrieveDestroyAPIView):
+class EducationDetailAPIView(generics.CRetrieveDestroyAPIView):
     lookup_field = 'id'
-    queryset = UniversityThrough.objects.all()
-    serializer_class = UniversityThroughSerializer
-    permission_classes = [IsUniversityThroughOwnerOrDetailedInfoWithoutUser]
+    queryset = Education.objects.all()
+    serializer_class = EducationSerializer
+    permission_classes = [IsEducationOwnerOrDetailedInfoWithoutUser]
 
 
 class GradesListAPIView(generics.CListAPIView):

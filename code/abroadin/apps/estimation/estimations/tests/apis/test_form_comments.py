@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import status
 
-from abroadin.apps.estimation.form.models import WantToApply, StudentDetailedInfo, UniversityThrough, GradeChoices
+from abroadin.apps.estimation.form.models import WantToApply, StudentDetailedInfo, Education, GradeChoices
 from abroadin.apps.estimation.tests.apis import EstimationBaseTest
 from .test_base import EstimationsAppAPITests
 from abroadin.apps.estimation.form.tests.apis.form_completion.base import BaseTests as FormCompletionBaseTests
@@ -53,7 +53,7 @@ class FormCommentsUserEmailVerifiedTests(EstimationBaseTest):
             homepage_url="http://aryakhaligh.ir/",
         )
 
-        self.sdi_1_university_through_1 = UniversityThrough.objects.create(
+        self.sdi_1_university_through_1 = Education.objects.create(
             student_detailed_info=self.completed_sdi_1,
             university=self.university1,
             grade=GradeChoices.BACHELOR,

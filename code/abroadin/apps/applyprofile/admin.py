@@ -20,42 +20,42 @@ class EducationInline(GenericTabularInline):
     extra = 1
 
 
-class RegularLanguageCertificateTypeInline(GenericTabularInline):
+class RegularLanguageCertificateInline(GenericTabularInline):
     model = RegularLanguageCertificate
     extra = 1
 
 
-class GMATCertificateTypeInline(GenericTabularInline):
+class GMATCertificateInline(GenericTabularInline):
     model = GMATCertificate
     extra = 1
 
 
-class GREGeneralCertificateTypeInline(GenericTabularInline):
+class GREGeneralCertificateInline(GenericTabularInline):
     model = GREGeneralCertificate
     extra = 1
 
 
-class GRESubjectCertificateTypeInline(GenericTabularInline):
+class GRESubjectCertificateInline(GenericTabularInline):
     model = GRESubjectCertificate
     extra = 1
 
 
-class GREBiologyCertificateTypeInline(GenericTabularInline):
+class GREBiologyCertificateInline(GenericTabularInline):
     model = GREBiologyCertificate
     extra = 1
 
 
-class GREPhysicsCertificateTypeInline(GenericTabularInline):
+class GREPhysicsCertificateInline(GenericTabularInline):
     model = GREPhysicsCertificate
     extra = 1
 
 
-class GREPsychologyCertificateTypeInline(GenericTabularInline):
+class GREPsychologyCertificateInline(GenericTabularInline):
     model = GREPsychologyCertificate
     extra = 1
 
 
-class DuolingoCertificateTypeInline(GenericTabularInline):
+class DuolingoCertificateInline(GenericTabularInline):
     model = DuolingoCertificate
     extra = 1
 
@@ -73,12 +73,12 @@ class ApplyProfileAdmin(admin.ModelAdmin):
         EducationInline,
         PublicationInline,
 
-        RegularLanguageCertificateTypeInline,
-        GMATCertificateTypeInline,
-        GREGeneralCertificateTypeInline,
-        GRESubjectCertificateTypeInline,
-        GREBiologyCertificateTypeInline,
-        GREPhysicsCertificateTypeInline,
-        GREPsychologyCertificateTypeInline,
-        DuolingoCertificateTypeInline,
+        RegularLanguageCertificateInline,
+        GMATCertificateInline,
+        GREGeneralCertificateInline,
+        GRESubjectCertificateInline,
+        GREBiologyCertificateInline,
+        GREPhysicsCertificateInline,
+        GREPsychologyCertificateInline,
+        DuolingoCertificateInline,
     ]

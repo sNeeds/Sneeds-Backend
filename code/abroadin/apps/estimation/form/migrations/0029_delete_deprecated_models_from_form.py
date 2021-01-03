@@ -99,4 +99,7 @@ class Migration(migrations.Migration):
         migrations.DeleteModel(
             name='LanguageCertificate'
         ),
+        migrations.DeleteModel(
+            name='WantToApplyTransferSemesterGrade'
+        )
     ]

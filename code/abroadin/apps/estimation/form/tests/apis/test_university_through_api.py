@@ -4,13 +4,13 @@ from django.urls import reverse
 from rest_framework import status
 
 from abroadin.apps.estimation.form.models import StudentDetailedInfo, Grade, WantToApply, SemesterYear, GradeChoices, \
-    UniversityThrough
+    Education
 from abroadin.apps.estimation.form.tests.apis.test_base import FormAPITests
 
 User = get_user_model()
 
 
-class UniversityThroughAPITest(FormAPITests):
+class EducationAPITest(FormAPITests):
 
     def setUp(self):
         super().setUp()
@@ -27,7 +27,7 @@ class UniversityThroughAPITest(FormAPITests):
             "gpa": 16.5,
         }
 
-        self.local_university_through = UniversityThrough.objects.create(
+        self.local_university_through = Education.objects.create(
             student_detailed_info=self.local_student_detailed_info,
             university=self.university1,
             grade=GradeChoices.MASTER,
@@ -111,7 +111,7 @@ class UniversityThroughAPITest(FormAPITests):
         self._university_through_detail(
             "delete", None, status.HTTP_204_NO_CONTENT, reverse_args=self.local_university_through.id
         )
-        self.assertEqual(UniversityThrough.objects.filter(id=self.local_university_through.id).count(), 0)
+        self.assertEqual(Education.objects.filter(id=self.local_university_through.id).count(), 0)
 
     def test_university_through_detail_delete_200_2(self):
         self.local_university_through.student_detailed_info.user = self.user1
@@ -119,4 +119,4 @@ class UniversityThroughAPITest(FormAPITests):
         self._university_through_detail(
             "delete", self.user1, status.HTTP_204_NO_CONTENT, reverse_args=self.local_university_through.id
         )
-        self.assertEqual(UniversityThrough.objects.filter(id=self.local_university_through.id).count(), 0)
+        self.assertEqual(Education.objects.filter(id=self.local_university_through.id).count(), 0)

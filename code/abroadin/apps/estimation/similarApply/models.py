@@ -1,7 +1,8 @@
 from django.db import models
 
 from abroadin.apps.data.account.models import Country, University, Major
-from abroadin.apps.estimation.form.models import SemesterYear, StudentDetailedInfoBase, GradeChoices
+from abroadin.apps.data.applydata.models import GradeChoices, SemesterYear
+from abroadin.apps.estimation.form.models import StudentDetailedInfoBase
 from abroadin.apps.estimation.similarApply.managers import AppliedStudentDetailedInfoQuerySetManager
 
 

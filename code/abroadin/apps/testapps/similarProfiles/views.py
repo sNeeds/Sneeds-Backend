@@ -1,10 +1,11 @@
 from django.shortcuts import render
 from rest_framework.response import Response
 
+from abroadin.apps.data.applydata.models import GradeChoices
 from abroadin.base.api.viewsets import CAPIView
 from abroadin.apps.testapps.similarProfiles.profiles import Profile
 from abroadin.apps.data.account.models import University, Major, Country
-from abroadin.apps.estimation.form.models import GradeChoices, StudentDetailedInfo
+from abroadin.apps.estimation.form.models import StudentDetailedInfo
 from abroadin.apps.estimation.estimations.chances import AdmissionChance
 from abroadin.apps.data.account.serializers import UniversitySerializer
 

@@ -6,7 +6,6 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('similarApply', '0003_auto_20201013_1839'),
         ('form', '0008_auto_20201022_2040'),
     ]
 

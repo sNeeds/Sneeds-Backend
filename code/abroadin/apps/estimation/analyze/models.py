@@ -73,7 +73,7 @@ class ChartItemData(models.Model):
 
     def set_rank(self):
         if self.chart.title == Chart.ChartTitle.GRADE_POINT_AVERAGE:
-            self.label_rank = form_models.UniversityThrough.get_gpa__store_label_rank(self.label)
+            self.label_rank = form_models.Education.get_gpa__store_label_rank(self.label)
 
         if self.chart.title == Chart.ChartTitle.PUBLICATIONS_COUNT:
             self.label_rank = form_models.Publication.get_publications_count__store_label_rank(self.label)

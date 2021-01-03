@@ -1,18 +1,20 @@
 from collections import OrderedDict
 
+from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 import abroadin.apps
-import abroadin.apps.estimation.form.models
+import abroadin.apps.data.applydata.models
 from abroadin.apps.data.account import models
 from abroadin.apps.data.account.models import BasicFormField
 from abroadin.apps.data.account.serializers import CountrySerializer, UniversitySerializer, MajorSerializer
 
 from abroadin.apps.data.applydata import serializers as ad_serializers
 
-from .models import SemesterYear, WantToApply, StudentDetailedInfo, UniversityThrough, Publication, Grade
+from .models import SemesterYear, WantToApply, StudentDetailedInfo, Publication, Grade
+
 from ...data.applydata.models import Education
 
 LanguageCertificateType = abroadin.apps.estimation.form.models.LanguageCertificate.LanguageCertificateType
@@ -22,7 +24,7 @@ RELATED_CLASSES = [
         'model_class': StudentDetailedInfo,
         'hyperlink_view_name': 'estimation.form:student-detailed-info-detail',
         'hyperlink_lookup_field': 'object_id',
-        'hyperlink_lookup_url_kwarg': 'form-id',
+        'hyperlink_lookup_url_kwarg': 'id',
         'hyperlink_format': None
     }
 ]
@@ -112,7 +114,7 @@ class WantToApplyRequestSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         student_detailed_info = validated_data.get("student_detailed_info")
-        sdi_want_to_applies_qs = WantToApply.objects.filter(student_detailed_info=student_detailed_info)
+        sdi_want_to_applies_qs = WantToApply.objects.filter(student_detailed_info__id=student_detailed_info.id)
         if sdi_want_to_applies_qs.exists():
             raise ValidationError(_("Student detailed info form already has a want to apply object assigned to it."))
         return super().create(validated_data)
@@ -161,7 +163,7 @@ class PublicationRequestSerializer(ad_serializers.PublicationRequestSerializer):
         return attrs
 
 
-class UniversityThroughSerializer(ad_serializers.EducationSerializer):
+class EducationSerializer(ad_serializers.EducationSerializer):
     related_classes = RELATED_CLASSES
 
     class Meta(ad_serializers.EducationSerializer.Meta):
@@ -171,7 +173,7 @@ class UniversityThroughSerializer(ad_serializers.EducationSerializer):
         raise ValidationError(_("Creating object through this serializer is not allowed"))
 
 
-class UniversityThroughRequestSerializer(ad_serializers.EducationRequestSerializer):
+class EducationRequestSerializer(ad_serializers.EducationRequestSerializer):
     related_classes = RELATED_CLASSES
 
     class Meta(ad_serializers.EducationRequestSerializer.Meta):
@@ -213,7 +215,8 @@ class LanguageCertificateSerializer(ad_serializers.LanguageCertificateSerializer
         return super().validate(attrs)
 
 
-class RegularLanguageCertificateSerializer(LanguageCertificateSerializer, ad_serializers.RegularLanguageCertificateSerializer):
+class RegularLanguageCertificateSerializer(LanguageCertificateSerializer,
+                                           ad_serializers.RegularLanguageCertificateSerializer):
     related_classes = RELATED_CLASSES
 
     class Meta(ad_serializers.RegularLanguageCertificateSerializer.Meta):
@@ -245,7 +248,8 @@ class GREPhysicsCertificateSerializer(LanguageCertificateSerializer, ad_serializ
         pass
 
 
-class GREPsychologyCertificateSerializer(LanguageCertificateSerializer, ad_serializers.GREPsychologyCertificateSerializer):
+class GREPsychologyCertificateSerializer(LanguageCertificateSerializer,
+                                         ad_serializers.GREPsychologyCertificateSerializer):
     class Meta(ad_serializers.GREPsychologyCertificateSerializer):
         pass
 
@@ -280,45 +284,56 @@ class StudentDetailedInfoBaseSerializer(serializers.ModelSerializer):
         ]
 
     def get_regular_certificates(self, obj):
-        return self.get_certificates(obj, abroadin.apps.estimation.form.models.RegularLanguageCertificate,
+        return self.get_certificates(obj, abroadin.apps.data.applydata.models.RegularLanguageCertificate,
                                      RegularLanguageCertificateSerializer)
 
     def get_gmat_certificates(self, obj):
-        return self.get_certificates(obj, abroadin.apps.estimation.form.models.GMATCertificate,
+        return self.get_certificates(obj, abroadin.apps.data.applydata.models.GMATCertificate,
                                      GMATCertificateSerializer)
 
     def get_gre_general_certificates(self, obj):
-        return self.get_certificates(obj, abroadin.apps.estimation.form.models.GREGeneralCertificate,
+        return self.get_certificates(obj, abroadin.apps.data.applydata.models.GREGeneralCertificate,
                                      GREGeneralCertificateSerializer)
 
     def get_gre_subject_certificates(self, obj):
-        return self.get_certificates(obj, abroadin.apps.estimation.form.models.GRESubjectCertificate,
+        return self.get_certificates(obj, abroadin.apps.data.applydata.models.GRESubjectCertificate,
                                      GRESubjectCertificateSerializer)
 
     def get_gre_biology_certificates(self, obj):
-        return self.get_certificates(obj, abroadin.apps.estimation.form.models.GREBiologyCertificate,
+        return self.get_certificates(obj, abroadin.apps.data.applydata.models.GREBiologyCertificate,
                                      GREBiologyCertificateSerializer)
 
     def get_gre_physics_certificates(self, obj):
-        return self.get_certificates(obj, abroadin.apps.estimation.form.models.GREPhysicsCertificate,
+        return self.get_certificates(obj, abroadin.apps.data.applydata.models.GREPhysicsCertificate,
                                      GREPhysicsCertificateSerializer)
 
     def get_gre_psychology_certificates(self, obj):
-        return self.get_certificates(obj, abroadin.apps.estimation.form.models.GREPsychologyCertificate,
+        return self.get_certificates(obj, abroadin.apps.data.applydata.models.GREPsychologyCertificate,
                                      GREPsychologyCertificateSerializer)
 
     def get_duolingo_certificates(self, obj):
-        return self.get_certificates(obj, abroadin.apps.estimation.form.models.DuolingoCertificate,
+        return self.get_certificates(obj, abroadin.apps.data.applydata.models.DuolingoCertificate,
                                      DuolingoCertificateSerializer)
 
     def get_universities(self, obj):
+        # return 'a'
         # TODO
-        qs = Education.objects.filter(student_detailed_info__id=obj.id)
-        return UniversityThroughSerializer(qs, many=True, context=self.context).data
+        # print(type(obj.id))
+        qs = Education.objects.filter(
+            content_type=ContentType.objects.get_for_model(obj.__class__),
+            object_id=str(obj.id),
+            # student_detailed_info__id=obj.id
+        )
+        return EducationSerializer(qs, many=True, context=self.context).data
 
     def get_publications(self, obj):
+        # return 'a'
         # TODO
-        qs = Publication.objects.filter(student_detailed_info__id=obj.id)
+        qs = Publication.objects.filter(
+            content_type=ContentType.objects.get_for_model(obj.__class__),
+            object_id=str(obj.id),
+            # student_detailed_info__id=obj.id
+        )
         return PublicationSerializer(qs, many=True, context=True).data
 
     def create(self, validated_data):
@@ -329,8 +344,9 @@ class StudentDetailedInfoBaseSerializer(serializers.ModelSerializer):
 
     # Custom method
     def get_certificates(self, obj, model_class, serializer_class):
+        return 'a'
         # TODO
-        qs = model_class.objects.filter(student_detailed_info_id=obj.id)
+        qs = model_class.objects.filter(student_detailed_info__id=obj.id)
         return serializer_class(qs, many=True, context=self.context).data
 
 
@@ -350,7 +366,7 @@ class StudentDetailedInfoSerializer(StudentDetailedInfoBaseSerializer):
         ]
 
     def get_want_to_applies(self, obj):
-        qs = WantToApply.objects.filter(student_detailed_info_id=obj.id)
+        qs = WantToApply.objects.filter(student_detailed_info__id=obj.id)
         return WantToApplySerializer(qs, many=True, context=self.context).data
 
 

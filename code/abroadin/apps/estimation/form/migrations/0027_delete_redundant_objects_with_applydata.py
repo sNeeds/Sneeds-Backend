@@ -9,8 +9,11 @@
 
 from django.db import migrations
 
+from django.contrib.contenttypes .models import ContentType
+
 
 def semester_year_forwards_func(apps, schema_editor):
+    print("1")
     # We get the model from the versioned app registry;
     # if we directly import it, it'll be the wrong version
     FormSemesterYear = apps.get_model("form", "semesteryear")
@@ -18,6 +21,7 @@ def semester_year_forwards_func(apps, schema_editor):
 
 
 def semester_year_reverse_func(apps, schema_editor):
+    print("2")
     # forwards_func() creates two Country instances,
     # so reverse_func() should delete them.
     # We get the model from the versioned app registry;
@@ -32,6 +36,7 @@ def semester_year_reverse_func(apps, schema_editor):
 
 
 def grade_forwards_func(apps, schema_editor):
+    print("3")
     # We get the model from the versioned app registry;
     # if we directly import it, it'll be the wrong version
     FormGrade = apps.get_model("form", "grade")
@@ -39,6 +44,7 @@ def grade_forwards_func(apps, schema_editor):
 
 
 def grade_reverse_func(apps, schema_editor):
+    print("4")
     # forwards_func() creates two Country instances,
     # so reverse_func() should delete them.
     # We get the model from the versioned app registry;
@@ -52,6 +58,7 @@ def grade_reverse_func(apps, schema_editor):
 
 
 def publication_forwards_func(apps, schema_editor):
+    print("5")
     # We get the model from the versioned app registry;
     # if we directly import it, it'll be the wrong version
     FormPublication = apps.get_model("form", "publication")
@@ -59,6 +66,7 @@ def publication_forwards_func(apps, schema_editor):
 
 
 def publication_reverse_func(apps, schema_editor):
+    print("6")
     # forwards_func() creates two Country instances,
     # so reverse_func() should delete them.
     # We get the model from the versioned app registry;
@@ -67,7 +75,7 @@ def publication_reverse_func(apps, schema_editor):
     ApplyDataPublication = apps.get_model("applydata", "publication")
     for obj in ApplyDataPublication.objects.all():
         FormPublication.objects.create(
-            student_detailed_info=obj.content_object,
+            student_detailed_info=apps.get_model(obj.content_type.app_label, obj.content_type.model).objects.get(pk=obj.object_id),
             title=obj.title,
             publish_year=obj.publish_year,
             which_author=obj.which_author,
@@ -78,6 +86,7 @@ def publication_reverse_func(apps, schema_editor):
 
 
 def education_forwards_func(apps, schema_editor):
+    print("7")
     # We get the model from the versioned app registry;
     # if we directly import it, it'll be the wrong version
     FormUniversityThrough = apps.get_model("form", "universitythrough")
@@ -85,6 +94,7 @@ def education_forwards_func(apps, schema_editor):
 
 
 def education_reverse_func(apps, schema_editor):
+    print("8")
     # forwards_func() creates two Country instances,
     # so reverse_func() should delete them.
     # We get the model from the versioned app registry;
@@ -93,7 +103,7 @@ def education_reverse_func(apps, schema_editor):
     ApplyDataEducation = apps.get_model("applydata", "education")
     for obj in ApplyDataEducation.objects.all():
         FormUniversityThrough.objects.create(
-            student_detailed_info=obj.content_object,
+            student_detailed_info=apps.get_model(obj.content_type.app_label, obj.content_type.model).objects.get(pk=obj.object_id),
             university=obj.university,
             grade=obj.grade,
             major=obj.major,
@@ -105,6 +115,7 @@ def education_reverse_func(apps, schema_editor):
 
 
 def regular_lc_forwards_func(apps, schema_editor):
+    print("9")
     # We get the model from the versioned app registry;
     # if we directly import it, it'll be the wrong version
     FormRegularLanguageCertificate = apps.get_model("form", "regularlanguagecertificate")
@@ -112,6 +123,7 @@ def regular_lc_forwards_func(apps, schema_editor):
 
 
 def regular_lc_reverse_func(apps, schema_editor):
+    print("10")
     # forwards_func() creates two Country instances,
     # so reverse_func() should delete them.
     # We get the model from the versioned app registry;
@@ -120,7 +132,7 @@ def regular_lc_reverse_func(apps, schema_editor):
     ApplyDataRegularLanguageCertificate = apps.get_model("applydata", "regularlanguagecertificate")
     for obj in ApplyDataRegularLanguageCertificate.objects.all():
         FormRegularLanguageCertificate.objects.create(
-            student_detailed_info=obj.content_object,
+            student_detailed_info=apps.get_model(obj.content_type.app_label, obj.content_type.model).objects.get(pk=obj.object_id),
             certificate_type=obj.certificate_type,
             is_mock=obj.is_mock,
             speaking=obj.speaking,
@@ -132,6 +144,7 @@ def regular_lc_reverse_func(apps, schema_editor):
 
 
 def gmat_lc_forwards_func(apps, schema_editor):
+    print("11")
     # We get the model from the versioned app registry;
     # if we directly import it, it'll be the wrong version
     FormGMATCertificate = apps.get_model("form", "gmatcertificate")
@@ -139,6 +152,7 @@ def gmat_lc_forwards_func(apps, schema_editor):
 
 
 def gmat_lc_reverse_func(apps, schema_editor):
+    print("12")
     # forwards_func() creates two Country instances,
     # so reverse_func() should delete them.
     # We get the model from the versioned app registry;
@@ -147,7 +161,7 @@ def gmat_lc_reverse_func(apps, schema_editor):
     ApplyDataGMATCertificate = apps.get_model("applydata", "gmatcertificate")
     for obj in ApplyDataGMATCertificate.objects.all():
         FormGMATCertificate.objects.create(
-            student_detailed_info=obj.content_object,
+            student_detailed_info=apps.get_model(obj.content_type.app_label, obj.content_type.model).objects.get(pk=obj.object_id),
             certificate_type=obj.certificate_type,
             is_mock=obj.is_mock,
             analytical_writing_assessment=obj.analytical_writing_assessment,
@@ -158,6 +172,7 @@ def gmat_lc_reverse_func(apps, schema_editor):
 
 
 def gre_general_lc_forwards_func(apps, schema_editor):
+    print("13")
     # We get the model from the versioned app registry;
     # if we directly import it, it'll be the wrong version
     FormGREGeneralCertificate = apps.get_model("form", "gregeneralcertificate")
@@ -165,6 +180,7 @@ def gre_general_lc_forwards_func(apps, schema_editor):
 
 
 def gre_general_lc_reverse_func(apps, schema_editor):
+    print("14")
     # forwards_func() creates two Country instances,
     # so reverse_func() should delete them.
     # We get the model from the versioned app registry;
@@ -173,7 +189,7 @@ def gre_general_lc_reverse_func(apps, schema_editor):
     ApplyDataGREGeneralCertificate = apps.get_model("applydata", "gregeneralcertificate")
     for obj in ApplyDataGREGeneralCertificate.objects.all():
         FormGREGeneralCertificate.objects.create(
-            student_detailed_info=obj.content_object,
+            student_detailed_info=apps.get_model(obj.content_type.app_label, obj.content_type.model).objects.get(pk=obj.object_id),
             certificate_type=obj.certificate_type,
             is_mock=obj.is_mock,
             quantitative=obj.quantitative,
@@ -183,6 +199,7 @@ def gre_general_lc_reverse_func(apps, schema_editor):
 
 
 def gre_subject_lc_forwards_func(apps, schema_editor):
+    print("15")
     # We get the model from the versioned app registry;
     # if we directly import it, it'll be the wrong version
     FormGRESubjectCertificate = apps.get_model("form", "gresubjectcertificate")
@@ -191,6 +208,7 @@ def gre_subject_lc_forwards_func(apps, schema_editor):
 
 
 def gre_subject_lc_reverse_func(apps, schema_editor):
+    print("16")
     # forwards_func() creates two Country instances,
     # so reverse_func() should delete them.
     # We get the model from the versioned app registry;
@@ -200,7 +218,7 @@ def gre_subject_lc_reverse_func(apps, schema_editor):
     for obj in ApplyDataGRESubjectCertificate.objects.filter(certificate_type__in=['GRE Chemistry', 'GRE Mathematics',
                                                                                    'GRE Literature']):
         FormGRESubjectCertificate.objects.create(
-            student_detailed_info=obj.content_object,
+            student_detailed_info=apps.get_model(obj.content_type.app_label, obj.content_type.model).objects.get(pk=obj.object_id),
             certificate_type=obj.certificate_type,
             is_mock=obj.is_mock,
             quantitative=obj.quantitative,
@@ -211,6 +229,7 @@ def gre_subject_lc_reverse_func(apps, schema_editor):
 
 
 def gre_biology_lc_forwards_func(apps, schema_editor):
+    print("17")
     # We get the model from the versioned app registry;
     # if we directly import it, it'll be the wrong version
     FormGREBiologyCertificate = apps.get_model("form", "grebiologycertificate")
@@ -218,6 +237,7 @@ def gre_biology_lc_forwards_func(apps, schema_editor):
 
 
 def gre_biology_lc_reverse_func(apps, schema_editor):
+    print("18")
     # forwards_func() creates two Country instances,
     # so reverse_func() should delete them.
     # We get the model from the versioned app registry;
@@ -226,7 +246,7 @@ def gre_biology_lc_reverse_func(apps, schema_editor):
     ApplyDataGREBiologyCertificate = apps.get_model("applydata", "grebiologycertificate")
     for obj in ApplyDataGREBiologyCertificate.objects.all():
         FormGREBiologyCertificate.objects.create(
-            student_detailed_info=obj.content_object,
+            student_detailed_info=apps.get_model(obj.content_type.app_label, obj.content_type.model).objects.get(pk=obj.object_id),
             certificate_type=obj.certificate_type,
             is_mock=obj.is_mock,
             quantitative=obj.quantitative,
@@ -240,6 +260,7 @@ def gre_biology_lc_reverse_func(apps, schema_editor):
 
 
 def gre_physics_lc_forwards_func(apps, schema_editor):
+    print("19")
     # We get the model from the versioned app registry;
     # if we directly import it, it'll be the wrong version
     FormGREPhysicsCertificate = apps.get_model("form", "grephysicscertificate")
@@ -247,6 +268,7 @@ def gre_physics_lc_forwards_func(apps, schema_editor):
 
 
 def gre_physics_lc_reverse_func(apps, schema_editor):
+    print("20")
     # forwards_func() creates two Country instances,
     # so reverse_func() should delete them.
     # We get the model from the versioned app registry;
@@ -255,7 +277,7 @@ def gre_physics_lc_reverse_func(apps, schema_editor):
     ApplyDataGREPhysicsCertificate = apps.get_model("applydata", "grephysicscertificate")
     for obj in ApplyDataGREPhysicsCertificate.objects.all():
         FormGREPhysicsCertificate.objects.create(
-            student_detailed_info=obj.content_object,
+            student_detailed_info=apps.get_model(obj.content_type.app_label, obj.content_type.model).objects.get(pk=obj.object_id),
             certificate_type=obj.certificate_type,
             is_mock=obj.is_mock,
             quantitative=obj.quantitative,
@@ -269,6 +291,7 @@ def gre_physics_lc_reverse_func(apps, schema_editor):
 
 
 def gre_psychology_lc_forwards_func(apps, schema_editor):
+    print("21")
     # We get the model from the versioned app registry;
     # if we directly import it, it'll be the wrong version
     FormGREPsychologyCertificate = apps.get_model("form", "grepsychologycertificate")
@@ -276,6 +299,7 @@ def gre_psychology_lc_forwards_func(apps, schema_editor):
 
 
 def gre_psychology_lc_reverse_func(apps, schema_editor):
+    print("22")
     # forwards_func() creates two Country instances,
     # so reverse_func() should delete them.
     # We get the model from the versioned app registry;
@@ -284,7 +308,7 @@ def gre_psychology_lc_reverse_func(apps, schema_editor):
     ApplyDataGREPsychologyCertificate = apps.get_model("applydata", "grepsychologycertificate")
     for obj in ApplyDataGREPsychologyCertificate.objects.all():
         FormGREPsychologyCertificate.objects.create(
-            student_detailed_info=obj.content_object,
+            student_detailed_info=apps.get_model(obj.content_type.app_label, obj.content_type.model).objects.get(pk=obj.object_id),
             certificate_type=obj.certificate_type,
             is_mock=obj.is_mock,
             quantitative=obj.quantitative,
@@ -296,11 +320,12 @@ def gre_psychology_lc_reverse_func(apps, schema_editor):
             social=obj.social,
             developmental=obj.developmental,
             clinical=obj.clinical,
-            measurement_or_methodology=obj.measurement_or_methodolog
+            measurement_or_methodology=obj.measurement_or_methodology
         )
 
 
 def duolingo_lc_forwards_func(apps, schema_editor):
+    print("23")
     # We get the model from the versioned app registry;
     # if we directly import it, it'll be the wrong version
     FormDuolingoCertificate = apps.get_model("form", "duolingocertificate")
@@ -308,6 +333,7 @@ def duolingo_lc_forwards_func(apps, schema_editor):
 
 
 def duolingo_lc_reverse_func(apps, schema_editor):
+    print("24")
     # forwards_func() creates two Country instances,
     # so reverse_func() should delete them.
     # We get the model from the versioned app registry;
@@ -315,8 +341,9 @@ def duolingo_lc_reverse_func(apps, schema_editor):
     FormDuolingoCertificate = apps.get_model("form", "duolingocertificate")
     ApplyDataDuolingoCertificate = apps.get_model("applydata", "duolingocertificate")
     for obj in ApplyDataDuolingoCertificate.objects.all():
+        
         FormDuolingoCertificate.objects.create(
-            student_detailed_info=obj.content_object,
+            student_detailed_info=apps.get_model(obj.content_type.app_label, obj.content_type.model).objects.get(pk=obj.object_id),
             certificate_type=obj.certificate_type,
             is_mock=obj.is_mock,
             overall=obj.overall,
@@ -328,6 +355,7 @@ def duolingo_lc_reverse_func(apps, schema_editor):
 
 
 def forwards_func(apps, schema_editor):
+    print("25")
     # We get the model from the versioned app registry;
     # if we directly import it, it'll be the wrong version
     Form = apps.get_model("form", "")
@@ -335,6 +363,7 @@ def forwards_func(apps, schema_editor):
 
 
 def reverse_func(apps, schema_editor):
+    print("26")
     # forwards_func() creates two Country instances,
     # so reverse_func() should delete them.
     # We get the model from the versioned app registry;
@@ -343,7 +372,7 @@ def reverse_func(apps, schema_editor):
     ApplyData = apps.get_model("applydata", "")
     for obj in ApplyData.objects.all():
         Form.objects.create(
-            student_detailed_info=obj.content_object,
+            apps.get_model(obj.content_type.app_label, obj.content_type.model).objects.get(pk=obj.object_id),
             certificate_type=obj.certificate_type,
             is_mock=obj.is_mock,
         )

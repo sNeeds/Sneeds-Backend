@@ -1,8 +1,7 @@
+from abroadin.apps.data.applydata.models import LanguageCertificate, Education, GradeChoices, Publication
 from abroadin.apps.estimation.estimations.classes import ValueRange
 from abroadin.apps.estimation.estimations.review_comments import *
 from abroadin.apps.estimation.estimations.values import VALUES_WITH_ATTRS
-from abroadin.apps.estimation.form.models import LanguageCertificate, RegularLanguageCertificate, UniversityThrough, \
-    GradeChoices, Publication
 
 
 class ReviewAgeAndAcademicBreakMixin:
@@ -66,7 +65,7 @@ class ReviewLanguageMixin:
         }
 
         form = self.student_detailed_form
-        language_certificates = LanguageCertificate.objects.filter(student_detailed_info=form)
+        language_certificates = LanguageCertificate.objects.filter(student_detailed_info__id=form.id)
 
         for certificate_title in certificate_titles:
             if certificate_title not in TYPE_WITH_LABEL.keys():
@@ -124,8 +123,8 @@ class ReviewLanguageMixin:
 
 class ReviewUniversityMixin:
     def review_universities(self):
-        university_through = UniversityThrough.objects.filter(
-            student_detailed_info=self.student_detailed_form
+        university_through = Education.objects.filter(
+            student_detailed_info__id=self.student_detailed_form.id
         )
 
         self._set_grade()
@@ -272,7 +271,7 @@ class ReviewPublicationMixin:
             "total_value": None,
             "total_value_label": None
         }
-        publications_qs = Publication.objects.filter(student_detailed_info=self.student_detailed_form)
+        publications_qs = Publication.objects.filter(student_detailed_info__id=self.student_detailed_form.id)
 
         excellent_publications = publications_qs.filter(value__gte=0.7)
         great_publications = publications_qs.filter(value__gte=0.6, value__lt=0.7)

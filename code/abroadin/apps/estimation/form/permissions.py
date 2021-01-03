@@ -72,7 +72,7 @@ class IsWantToApplyOwnerOrDetailedInfoWithoutUser(SDIThirdModelsPermission):
     pass
 
 
-class IsUniversityThroughOwnerOrDetailedInfoWithoutUser(SDIThirdModelsPermission):
+class IsEducationOwnerOrDetailedInfoWithoutUser(SDIThirdModelsPermission):
     pass
 
 

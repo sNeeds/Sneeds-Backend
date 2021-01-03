@@ -33,6 +33,8 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('applydata',
+         '0002_duolingocertificate_gmatcertificate_grebiologycertificate_gregeneralcertificate_grephysicscertificat'),
         ('form', '0022_wanttoapply_remove_grade_semester_related_to_form_models'),
     ]
 
@@ -40,11 +42,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='wanttoapply',
             name='grades',
-            field=models.ManyToManyField(to='applydata.Grade'),
+            field=models.ManyToManyField(blank=True, to='applydata.Grade'),
         ),
         migrations.AddField(
             model_name='wanttoapply',
             name='semester_years',
-            field=models.ManyToManyField(to='applydata.SemesterYear'),
+            field=models.ManyToManyField(blank=True, to='applydata.SemesterYear'),
         ),
     ]
