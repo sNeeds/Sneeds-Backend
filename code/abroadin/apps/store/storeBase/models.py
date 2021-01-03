@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 from abroadin.apps.users.consultants.models import ConsultantProfile
-from base.models.abstracts import InheritanceCastModel
+from abroadin.base.models.abstracts import InheritanceCastModel
 
 User = get_user_model()
 
