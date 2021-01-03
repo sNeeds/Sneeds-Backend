@@ -4,13 +4,12 @@ from rest_framework.fields import IntegerField
 from rest_framework.relations import PrimaryKeyRelatedField
 
 from .models import Cart
-from ..storeBase.models import Product
 from ..storeBase.serializers import ProductSerializer
 
 
 class CartSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(view_name="cart:cart-detail", lookup_field='id', read_only=True)
-    products_detail = ProductSerializer(source='products', many=True, read_only=True)
+    products_detail = serializers.SerializerMethodField()
 
     class Meta:
         model = Cart
@@ -33,3 +32,6 @@ class CartSerializer(serializers.ModelSerializer):
             raise ValidationError("No products in cart")
 
         return products
+
+    def get_products_detail(self, obj):
+        return ProductSerializer(obj.products.all().cast_subclasses(), many=True).data

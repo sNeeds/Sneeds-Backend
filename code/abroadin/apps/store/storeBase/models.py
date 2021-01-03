@@ -1,3 +1,5 @@
+from itertools import chain
+
 from django.contrib.contenttypes.models import ContentType
 from django.db import models, transaction
 from django.contrib.auth import get_user_model
@@ -12,64 +14,31 @@ User = get_user_model()
 
 class ProductQuerySet(models.QuerySet):
     def get_time_slot_sales(self):
-        result_qs = TimeSlotSale.objects.none()
-        for i in self.all():
-            try:
-                time_slot_sale = i.timeslotsale
-                result_qs |= TimeSlotSale.objects.filter(pk=time_slot_sale.id)
-            except TimeSlotSale.DoesNotExist:
-                pass
-        return result_qs
+        pass
 
     def get_basic_products(self):
-        from abroadin.apps.store.basicProducts.models import BasicProduct
-        result_qs = BasicProduct.objects.none()
-        for i in self.all():
-            try:
-                basic_product = i.basicproduct
-                result_qs |= BasicProduct.objects.filter(pk=basic_product.id)
-            except BasicProduct.DoesNotExist:
-                pass
-        return result_qs
+        pass
 
     def get_webinar_products(self):
-
-        return None
+        pass
 
     def get_class_products(self):
-
-        return None
+        pass
 
     def get_store_packages(self):
-        from abroadin.apps.store.storePackages.models import StorePackage
-
-        result_qs = StorePackage.objects.none()
-        for i in self.all():
-            try:
-                store_package = i.storepackage
-                result_qs |= StorePackage.objects.filter(pk=store_package.id)
-            except StorePackage.DoesNotExist:
-                pass
-
-        return result_qs
+        pass
 
     def get_sold_store_unpaid_package_phases(self):
-        from abroadin.apps.store.storePackages.models import SoldStoreUnpaidPackagePhase
-
-        result_qs = SoldStoreUnpaidPackagePhase.objects.none()
-        for i in self.all():
-            try:
-                sold_store_unpaid_package_phase = i.soldstoreunpaidpackagephase
-                result_qs |= SoldStoreUnpaidPackagePhase.objects.filter(
-                    pk=sold_store_unpaid_package_phase.id
-                )
-            except SoldStoreUnpaidPackagePhase.DoesNotExist:
-                pass
-
-        return result_qs
+        pass
 
     def are_all_active(self):
         return not self.filter(active=False).exists()
+
+    def cast_subclasses(self):
+        objs_chain = []
+        for obj in self.all():
+            objs_chain = chain(objs_chain, [obj.cast()])
+        return objs_chain
 
 
 class SoldProductQuerySet(models.QuerySet):
