@@ -4,12 +4,15 @@ from django.db import migrations, models
 
 
 def create_new_id(apps, schema_editor):
+    print('for base')
     StudentDetailedInfoBase = apps.get_model('form', 'studentdetailedinfobase')
     id = 1
     for sdib in StudentDetailedInfoBase.objects.all():
         sdib.new_id = id
         sdib.save()
         id += 1
+    for sdib in StudentDetailedInfoBase.objects.all():
+        print(sdib.new_id)
 
 
 class Migration(migrations.Migration):
@@ -22,12 +25,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='studentdetailedinfobase',
             name='new_id',
-            field=models.IntegerField(auto_created=True, default=1, serialize=False, null=True, verbose_name='NEW_ID',),
+            field=models.IntegerField(default=1, serialize=False, null=True, verbose_name='NEW_ID', editable=False),
         ),
         migrations.RunPython(create_new_id, reverse_code=migrations.RunPython.noop),
         migrations.AlterField(
             model_name='studentdetailedinfobase',
             name='new_id',
-            field=models.IntegerField(auto_created=True, default=1, serialize=False, unique=True, verbose_name='NEW_ID', ),
+            field=models.IntegerField(default=1, serialize=False, unique=True, verbose_name='NEW_ID', editable=False),
         )
     ]
