@@ -1,3 +1,4 @@
+from rest_framework.exceptions import APIException
 from zeep import Client
 
 from django.conf import settings
@@ -21,6 +22,14 @@ from abroadin.utils.custom.custom_permissions import IsConsultantPermission
 ZARINPAL_MERCHANT = settings.ZARINPAL_MERCHANT
 
 
+class ZeroPriceHasProductException(Exception):
+    pass
+
+
+class CartEmptyException(Exception):
+    pass
+
+
 class SendRequest(CAPIView):
     """
     POST:
@@ -30,48 +39,61 @@ class SendRequest(CAPIView):
     """
     permission_classes = [permissions.IsAuthenticated, ]
 
+    def _post_pay_request(self, client, cart):
+        result = client.service.PaymentRequest(
+            ZARINPAL_MERCHANT,
+            int(cart.total),
+            "پرداخت ابرادین",
+            cart.user.email,
+            cart.user.phone_number,
+            FRONTEND_URL + "user/payment/accept/",
+        )
+        return result
+
+    def get_user(self, request):
+        return request.user
+
+    def get_cart(self, cart_id):
+        cart = Cart.objects.get(id=cart_id)
+        return cart
+
+    def check_result_ok(self, result):
+        return result.Status == 100
+
+    def create_payment_object(self, user, cart, authority):
+        PayPayment.objects.create(user=user, cart=cart, authority=authority)
+
+    def send_pay_request(self, client, cart):
+        is_zero_price_acceptable = cart.is_total_zero() and cart.has_product()
+
+        if not cart.has_product():
+            raise CartEmptyException
+        elif is_zero_price_acceptable:
+            raise ZeroPriceHasProductException
+
+        result = self._post_pay_request(client, cart)
+
+        if not self.check_result_ok(result):
+            raise APIException({})
+
+        return result.Authority
+
     def post(self, request, *args, **kwargs):
+        data = request.data
         client = Client('https://sandbox.zarinpal.com/pg/services/WebGate/wsdl')
 
-        user = request.user
+        user = self.get_user(request)
+        cart = self.get_cart(data.get('cartid'))
 
         try:
-            cart_id = request.data.get("cartid")
-            if cart_id is None:
-                return Response({"detail": "cartid field is empty."}, 400)
+            authority = self.send_pay_request(client, cart)
+            self.create_payment_object(user, cart, authority)
+            return Response({"redirect": 'https://sandbox.zarinpal.com/pg/StartPay/' + str(authority)})
+        except ZeroPriceHasProductException:
+            pass
+        except CartEmptyException:
 
-            cart = Cart.objects.get(id=cart_id)
-
-        except Cart.DoesNotExist:
-            return Response({"detail": "No cart exists."}, 400)
-
-        if not cart.user == user:
-            return Response({"detail": "This user is not cart's owner."}, 400)
-
-        if cart.is_acceptable_with_zero_price():
-            order = Order.objects.sell_cart_create_order(cart)
-            return Response({"detail": "Success", "ReflD": "00000000", "order": order.id}, status=200)
-
-        if cart.is_acceptable_for_pay():
-
-            result = client.service.PaymentRequest(
-                ZARINPAL_MERCHANT,
-                int(cart.total),
-                "پرداخت اسنیدز",
-                cart.user.email,
-                cart.user.phone_number,
-                FRONTEND_URL + "user/payment/accept/",
-            )
-
-            if result.Status != 100:
-                return Response({"detail": 'Error code: ' + str(result.Status)}, 400)
-
-            PayPayment.objects.create(user=user, cart=cart, authority=result.Authority)
-
-            return Response({"redirect": 'https://sandbox.zarinpal.com/pg/StartPay/' + str(result.Authority)})
-
-        if not cart.is_acceptable_for_pay() and not cart.is_acceptable_with_zero_price():
-            return Response({"detail": "Can not pay, The price is 0 but no products are included."}, 400)
+        except APIException:
 
 
 class Verify(CAPIView):
@@ -138,4 +160,3 @@ class VerifyTest(CAPIView):
             return Response("No cart found!")
 
         return Response()
-

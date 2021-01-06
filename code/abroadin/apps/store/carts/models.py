@@ -45,8 +45,8 @@ class Cart(models.Model):
     class Meta:
         ordering = ["-id"]
 
-    def is_total_non_zero(self):
-        return self.total
+    def is_total_zero(self):
+        return self.total == 0
 
     def has_product(self):
         return self.products.exists()
