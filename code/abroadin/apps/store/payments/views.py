@@ -78,6 +78,18 @@ class SendRequest(CAPIView):
     def sell_cart(self, cart):
         return Order.objects.sell_cart_create_order(cart)
 
+    def zero_price_has_product_response(self, order_id):
+        return Response({"detail": "Success", "ReflD": "00000000", "order": order_id}, 200)
+
+    def cart_empty_response(self):
+        return Response({"detail": "Can not pay, The price is 0 but no products are included."}, 400)
+
+    def payment_request_ok_response(self, result):
+        return Response({"redirect": 'https://sandbox.zarinpal.com/pg/StartPay/' + str(result.Authority)}, 200)
+
+    def payment_request_not_ok_response(self, result):
+        return Response({"detail": 'Error code: ' + str(result.Status)}, 400)
+
     def post(self, request, *args, **kwargs):
         data = request.data
         client = Client('https://sandbox.zarinpal.com/pg/services/WebGate/wsdl')
@@ -90,14 +102,18 @@ class SendRequest(CAPIView):
             result_ok = self.check_result_ok(result)
             if result_ok:
                 self.create_payment_object(user, cart, result.Authority)
-                return Response({"redirect": 'https://sandbox.zarinpal.com/pg/StartPay/' + str(result.Authority)}, 200)
+                response = self.payment_request_ok_response(result)
             else:
-                return Response({"detail": 'Error code: ' + str(result.Status)}, 400)
+                response = self.payment_request_not_ok_response(result)
         except ZeroPriceHasProductException:
             order = self.sell_cart(cart)
-            return Response({"detail": "Success", "ReflD": "00000000", "order": order.id}, 200)
+            response = self.zero_price_has_product_response(order_id=order.id)
         except CartEmptyException:
-            return Response({"detail": "Can not pay, The price is 0 but no products are included."}, 400)
+            response = self.cart_empty_response()
+        except Exception as e:
+            raise e
+
+        return response
 
 
 class Verify(CAPIView):
