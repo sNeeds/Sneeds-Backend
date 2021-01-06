@@ -241,7 +241,7 @@ class DiscountTests(CustomAPITestCase):
         response = client.post(url, post_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        url = reverse("cart:cart-detail", args=(temp_cart.id,))
+        url = reverse("carts:cart-detail", args=(temp_cart.id,))
         response = client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get("total"), 160)
@@ -269,7 +269,7 @@ class DiscountTests(CustomAPITestCase):
         response = client.post(url, post_data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-        url = reverse("cart:cart-detail", args=(temp_cart.id,))
+        url = reverse("carts:cart-detail", args=(temp_cart.id,))
         response = client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get("total"), 160)

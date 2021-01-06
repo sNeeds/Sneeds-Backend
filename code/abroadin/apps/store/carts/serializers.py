@@ -8,7 +8,7 @@ from ..storeBase.serializers import ProductSerializer
 
 
 class CartSerializer(serializers.ModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name="cart:cart-detail", lookup_field='id', read_only=True)
+    url = serializers.HyperlinkedIdentityField(view_name="carts:cart-detail", lookup_field='id', read_only=True)
     products_detail = serializers.SerializerMethodField()
 
     class Meta:
