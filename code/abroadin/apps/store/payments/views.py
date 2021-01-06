@@ -31,7 +31,7 @@ class SendRequest(CAPIView):
     permission_classes = [permissions.IsAuthenticated, ]
 
     def post(self, request, *args, **kwargs):
-        client = Client('https://www.zarinpal.com/pg/services/WebGate/wsdl')
+        client = Client('https://sandbox.zarinpal.com/pg/services/WebGate/wsdl')
 
         user = request.user
 
@@ -68,7 +68,7 @@ class SendRequest(CAPIView):
 
             PayPayment.objects.create(user=user, cart=cart, authority=result.Authority)
 
-            return Response({"redirect": 'https://www.zarinpal.com/pg/StartPay/' + str(result.Authority)})
+            return Response({"redirect": 'https://sandbox.zarinpal.com/pg/StartPay/' + str(result.Authority)})
 
         if not cart.is_acceptable_for_pay() and not cart.is_acceptable_with_zero_price():
             return Response({"detail": "Can not pay, The price is 0 but no products are included."}, 400)
@@ -86,7 +86,7 @@ class Verify(CAPIView):
     permission_classes = [permissions.IsAuthenticated, ]
 
     def post(self, request):
-        client = Client('https://www.zarinpal.com/pg/services/WebGate/wsdl')
+        client = Client('https://sandbox.zarinpal.com/pg/services/WebGate/wsdl')
 
         data = request.data
         if data.get('status') == 'OK':
@@ -139,20 +139,3 @@ class VerifyTest(CAPIView):
 
         return Response()
 
-
-class ConsultantDepositInfoListAPIView(CListAPIView):
-    serializer_class = ConsultantDepositInfoSerializer
-    permission_classes = [permissions.IsAuthenticated, IsConsultantPermission]
-
-    def get_queryset(self):
-        user = self.request.user
-        consultant_profile = ConsultantProfile.objects.get(user=user)
-        qs = ConsultantDepositInfo.objects.filter(consultant=consultant_profile)
-        return qs
-
-
-class ConsultantDepositInfoDetailAPIView(generics.CRetrieveAPIView):
-    lookup_field = 'consultant_deposit_info_id'
-    queryset = qs = ConsultantDepositInfo.objects.all()
-    serializer_class = ConsultantDepositInfoSerializer
-    permission_classes = [permissions.IsAuthenticated, IsConsultantPermission, ConsultantDepositInfoOwner]
