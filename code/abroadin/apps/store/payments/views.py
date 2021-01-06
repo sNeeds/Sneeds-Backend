@@ -73,10 +73,10 @@ class SendRequest(CAPIView):
 
         result = self._post_pay_request(client, cart)
 
-        if not self.check_result_ok(result):
-            raise APIException({})
+        return result
 
-        return result.Authority
+    def sell_cart(self, cart):
+        return Order.objects.sell_cart_create_order(cart)
 
     def post(self, request, *args, **kwargs):
         data = request.data
@@ -86,14 +86,18 @@ class SendRequest(CAPIView):
         cart = self.get_cart(data.get('cartid'))
 
         try:
-            authority = self.send_pay_request(client, cart)
-            self.create_payment_object(user, cart, authority)
-            return Response({"redirect": 'https://sandbox.zarinpal.com/pg/StartPay/' + str(authority)})
+            result = self.send_pay_request(client, cart)
+            result_ok = self.check_result_ok(result)
+            if result_ok:
+                self.create_payment_object(user, cart, result.Authority)
+                return Response({"redirect": 'https://sandbox.zarinpal.com/pg/StartPay/' + str(result.Authority)}, 200)
+            else:
+                return Response({"detail": 'Error code: ' + str(result.Status)}, 400)
         except ZeroPriceHasProductException:
-            pass
+            order = self.sell_cart(cart)
+            return Response({"detail": "Success", "ReflD": "00000000", "order": order.id}, 200)
         except CartEmptyException:
-
-        except APIException:
+            return Response({"detail": "Can not pay, The price is 0 but no products are included."}, 400)
 
 
 class Verify(CAPIView):
