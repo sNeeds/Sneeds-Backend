@@ -30,11 +30,16 @@ from abroadin.base.python.classes import BooleanList
 
 
 class WantToApply(models.Model):
-    student_detailed_info = models.OneToOneField(
-        'StudentDetailedInfo',
-        on_delete=models.CASCADE,
-        related_name="want_to_apply"
+    # student_detailed_info = models.OneToOneField(
+    #     'StudentDetailedInfo',
+    #     on_delete=models.CASCADE,
+    #     related_name="want_to_apply"
+    # )
+    student_detailed_info_old = models.UUIDField(
     )
+
+    s = models.ForeignKey()
+
     countries = models.ManyToManyField(Country, blank=True)
 
     universities = models.ManyToManyField(University, blank=True)
@@ -53,6 +58,8 @@ class StudentDetailedInfoBase(models.Model):
         default=uuid.uuid4,
         editable=False
     )
+
+    new_id = models.IntegerField(auto_created=True, unique=True, serialize=False, verbose_name='NEW_ID', default=1)
 
     publications_to_base = GenericRelation(
         Publication, related_query_name='student_detailed_info_base'
@@ -142,6 +149,11 @@ class StudentDetailedInfoBase(models.Model):
 
 
 class StudentDetailedInfo(StudentDetailedInfoBase):
+    # studentdetailedinfobase_ptr_newid = models.IntegerField(auto_created=True, unique=True, serialize=False, verbose_name='NEW_ID', default=1)
+    # studentdetailedinfobase_ptr_id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)
+
+    local_new_id = models.IntegerField(auto_created=True, default=1, serialize=False, primary_key=True,),
+
     class PaymentAffordabilityChoices(models.TextChoices):
         LOW = 'Low', 'Low'
         AVERAGE = 'Average', 'Average'

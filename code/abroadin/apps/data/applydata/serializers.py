@@ -144,17 +144,17 @@ class PublicationRequestSerializer(serializers.ModelSerializer):
             content_type: ContentType = attrs.get("content_type")
             if content_type.model_class() == StudentDetailedInfo:
                 try:
-                    student_detailed_info = StudentDetailedInfo.objects.get(
-                        pk=attrs.get(Publication.content_object.fk_field))
-                    if student_detailed_info.user is not None and student_detailed_info.user != request_user:
+                    sdi = StudentDetailedInfo.objects.get(pk=attrs.get(Publication.content_object.fk_field))
+                    if sdi.user is not None and sdi.user != request_user:
                         raise ValidationError(_("User can't set student_detailed_info of another user."))
-                    if student_detailed_info.user is None and request_user.is_authenticated:
+                    if sdi.user is None and request_user.is_authenticated:
                         raise ValidationError(_("User can't set student_detailed_info of another user."))
                 except StudentDetailedInfo.DoesNotExist:
-                    pass
+                    ValidationError({Publication.content_object.fk_field: _("There is no object with this id")})
+                return attrs
+            raise ValidationError({'content_type': _("Invalid or forbidden content_type")})
         else:
             raise ValidationError(_("Can't validate data.Can't get request user."))
-        return attrs
 
 
 class EducationSerializer(serializers.ModelSerializer):

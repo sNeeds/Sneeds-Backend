@@ -4,6 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+from rest_framework.request import Request
 
 import abroadin.apps
 import abroadin.apps.data.applydata.models
@@ -150,17 +151,23 @@ class PublicationRequestSerializer(ad_serializers.PublicationRequestSerializer):
         pass
 
     def validate(self, attrs):
-        request = self.context.get("request")
+        request: Request = self.context.get("request")
         if request and hasattr(request, "user"):
             request_user = request.user
-            student_detailed_info = attrs.get("student_detailed_info")
-            if student_detailed_info.user is not None and student_detailed_info.user != request_user:
-                raise ValidationError(_("User can't set student_detailed_info of another user."))
-            if student_detailed_info.user is None and request_user.is_authenticated:
-                raise ValidationError(_("User can't set student_detailed_info of another user."))
+            content_type: ContentType = attrs.get("content_type")
+            if content_type.model_class() == StudentDetailedInfo:
+                try:
+                    sdi = StudentDetailedInfo.objects.get(pk=attrs.get(Publication.content_object.fk_field))
+                    if sdi.user is not None and sdi.user != request_user:
+                        raise ValidationError(_("User can't set student_detailed_info of another user."))
+                    if sdi.user is None and request_user.is_authenticated:
+                        raise ValidationError(_("User can't set student_detailed_info of another user."))
+                except StudentDetailedInfo.DoesNotExist:
+                    ValidationError({Publication.content_object.fk_field: _("There is no object with this id")})
+                return super().validate(attrs)
+            raise ValidationError({'content_type': _("Invalid or forbidden content_type")})
         else:
             raise ValidationError(_("Can't validate data.Can't get request user."))
-        return attrs
 
 
 class EducationSerializer(ad_serializers.EducationSerializer):
@@ -180,17 +187,23 @@ class EducationRequestSerializer(ad_serializers.EducationRequestSerializer):
         pass
 
     def validate(self, attrs):
-        request = self.context.get("request")
+        request: Request = self.context.get("request")
         if request and hasattr(request, "user"):
             request_user = request.user
-            student_detailed_info = attrs.get("student_detailed_info")
-            if student_detailed_info.user is not None and student_detailed_info.user != request_user:
-                raise ValidationError(_("User can't set student_detailed_info of another user."))
-            if student_detailed_info.user is None and request_user.is_authenticated:
-                raise ValidationError(_("User can't set student_detailed_info of another user."))
+            content_type: ContentType = attrs.get("content_type")
+            if content_type.model_class() == StudentDetailedInfo:
+                try:
+                    sdi = StudentDetailedInfo.objects.get(pk=attrs.get(Education.content_object.fk_field))
+                    if sdi.user is not None and sdi.user != request_user:
+                        raise ValidationError(_("User can't set student_detailed_info of another user."))
+                    if sdi.user is None and request_user.is_authenticated:
+                        raise ValidationError(_("User can't set student_detailed_info of another user."))
+                except StudentDetailedInfo.DoesNotExist:
+                    ValidationError({Education.content_object.fk_field: _("There is no object with this id")})
+                return super().validate(attrs)
+            raise ValidationError({'content_type': _("Invalid or forbidden content_type")})
         else:
             raise ValidationError(_("Can't validate data.Can't get request user."))
-        return attrs
 
 
 class LanguageCertificateSerializer(ad_serializers.LanguageCertificateSerializer):
@@ -200,18 +213,6 @@ class LanguageCertificateSerializer(ad_serializers.LanguageCertificateSerializer
         pass
 
     def validate(self, attrs):
-        request = self.context.get("request")
-        if request and hasattr(request, "user"):
-            request_user = request.user
-            student_detailed_info = attrs.get("student_detailed_info")
-            if student_detailed_info.user is not None and student_detailed_info.user != request_user:
-                raise ValidationError(
-                    {'student_detailed_info': _("User can't set student_detailed_info of another user.")})
-            if student_detailed_info.user is None and request_user.is_authenticated:
-                raise ValidationError(
-                    {'student_detailed_info': _("User can't set student_detailed_info of another user.")})
-        else:
-            raise ValidationError(_("Can't validate data.Can't get request user."))
         return super().validate(attrs)
 
 
@@ -221,6 +222,25 @@ class RegularLanguageCertificateSerializer(LanguageCertificateSerializer,
 
     class Meta(ad_serializers.RegularLanguageCertificateSerializer.Meta):
         pass
+
+    def validate(self, attrs):
+        request: Request = self.context.get("request")
+        if request and hasattr(request, "user"):
+            request_user = request.user
+            content_type: ContentType = attrs.get("content_type")
+            if content_type.model_class() == StudentDetailedInfo:
+                try:
+                    sdi = StudentDetailedInfo.objects.get(pk=attrs.get(RegularLanguageCertificate.content_object.fk_field))
+                    if sdi.user is not None and sdi.user != request_user:
+                        raise ValidationError(_("User can't set student_detailed_info of another user."))
+                    if sdi.user is None and request_user.is_authenticated:
+                        raise ValidationError(_("User can't set student_detailed_info of another user."))
+                except StudentDetailedInfo.DoesNotExist:
+                    ValidationError({Publication.content_object.fk_field: _("There is no object with this id")})
+                return super().validate(attrs)
+            raise ValidationError({'content_type': _("Invalid or forbidden content_type")})
+        else:
+            raise ValidationError(_("Can't validate data.Can't get request user."))
 
 
 class GMATCertificateSerializer(LanguageCertificateSerializer, ad_serializers.GMATCertificateSerializer):
