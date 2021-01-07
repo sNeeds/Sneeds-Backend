@@ -233,7 +233,7 @@ class Publication(models.Model):
         ContentType, on_delete=models.CASCADE
     )
     object_id = models.CharField(
-        max_length=255,
+        max_length=40,
     )
     content_object = GenericForeignKey(
         'content_type', 'object_id',
@@ -451,7 +451,7 @@ class LanguageCertificate(models.Model):
         ContentType, on_delete=models.CASCADE
     )
     object_id = models.CharField(
-        max_length=255,
+        max_length=40,
     )
     content_object = GenericForeignKey(
         'content_type', 'object_id',

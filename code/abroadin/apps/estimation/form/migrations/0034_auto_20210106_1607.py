@@ -3,10 +3,12 @@
 from django.db import migrations, models
 
 
+# Here in first operation inheritance is removed
+
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('form', '0031_studentdetailedinfo_local_new_id'),
+        ('form', '0033_auto_20210106_1630'),
     ]
 
     operations = [

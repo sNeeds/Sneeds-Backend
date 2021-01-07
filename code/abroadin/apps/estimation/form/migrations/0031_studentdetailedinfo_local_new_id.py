@@ -2,6 +2,8 @@
 
 from django.db import migrations, models
 
+# Before disable inheritance
+
 
 def create_new_id(apps, schema_editor):
     print('for child')

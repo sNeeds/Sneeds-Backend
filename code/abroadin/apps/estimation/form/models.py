@@ -28,12 +28,14 @@ from abroadin.apps.data.applydata import models as ad_models
 from abroadin.apps.data.account.validators import validate_resume_file_size
 from abroadin.base.python.classes import BooleanList
 
+import django.db.models.deletion
+
 
 class WantToApply(models.Model):
     student_detailed_info = models.OneToOneField(
         'StudentDetailedInfo',
         on_delete=models.CASCADE,
-        related_name="want_to_apply"
+        related_name="want_to_apply",
     )
     student_detailed_info_old = models.UUIDField(
     )
@@ -54,7 +56,7 @@ class WantToApply(models.Model):
 class StudentDetailedInfoBase(models.Model):
     old_id = models.UUIDField()
 
-    id = models.IntegerField(auto_created=True, primary_key=True, serialize=False, verbose_name='NEW_ID', default=1)
+    # id = models.IntegerField(auto_created=True, primary_key=True, serialize=False, verbose_name='NEW_ID', default=1)
 
     publications_to_base = GenericRelation(
         Publication, related_query_name='student_detailed_info_base'
@@ -143,7 +145,7 @@ class StudentDetailedInfoBase(models.Model):
         return LanguageCertificate.objects.filter(student_detailed_info__id=self.id).brief_str()
 
 
-class StudentDetailedInfo(models.Model):
+class StudentDetailedInfo(StudentDetailedInfoBase):
     # studentdetailedinfobase_ptr_newid = models.IntegerField(auto_created=True, unique=True, serialize=False, verbose_name='NEW_ID', default=1)
     # studentdetailedinfobase_ptr_id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)
 
@@ -151,7 +153,8 @@ class StudentDetailedInfo(models.Model):
     #     StudentDetailedInfoBase, on_delete=models.CASCADE, primary_key=True,
     # )
     # local_new_id = models.ForeignKey(StudentDetailedInfoBase, to_field='new_id', on_delete=models.CASCADE, unique=True),
-    local_new_id = models.IntegerField(auto_created=True, primary_key=True, serialize=False, verbose_name='LOCAL_NEW_ID', default=1)
+    # local_new_id = models.ForeignKey(StudentDetailedInfoBase, primary_key=True, serialize=False, default=1)
+    # studentdetailedinfobase_ptr = models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='form.studentdetailedinfobase')
 
     class PaymentAffordabilityChoices(models.TextChoices):
         LOW = 'Low', 'Low'
