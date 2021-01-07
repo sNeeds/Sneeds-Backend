@@ -1,16 +1,19 @@
-# from django.contrib import admin
-# from django.contrib.contenttypes.admin import GenericTabularInline
+from django.contrib import admin
+from django.contrib.contenttypes.admin import GenericTabularInline
+
+
 #
 # from rangefilter.filter import DateTimeRangeFilter
 #
 # from abroadin.apps.data.applydata import models as ad_models
-# from . import models
+from . import models
 #
 # from abroadin.apps.data.applydata.models import LanguageCertificate
 #
 # LanguageCertificateType = LanguageCertificate.LanguageCertificateType
 #
-# admin.site.register(models.WantToApply)
+admin.site.register(models.WantToApply)
+admin.site.register(models.StudentDetailedInfo)
 #
 #
 # class EducationInline(GenericTabularInline):

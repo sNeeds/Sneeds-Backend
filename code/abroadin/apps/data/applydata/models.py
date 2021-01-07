@@ -125,7 +125,7 @@ class Education(models.Model):
     objects = EducationQuerySetManager.as_manager()
 
     class Meta:
-        unique_together = ['grade']
+        pass
 
     GPA_STORE_LABEL_RANGE = 0.25
     GPA_VIEW_LABEL_RANGE = 1

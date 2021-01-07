@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('applydata', '0002_duolingocertificate_gmatcertificate_grebiologycertificate_gregeneralcertificate_grephysicscertificat'),
+        ('applydata', '0003_auto_20210108_0005'),
         ('form', '0042_auto_20210107_1224'),
     ]
 

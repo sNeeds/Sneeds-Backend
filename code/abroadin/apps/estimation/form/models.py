@@ -37,8 +37,8 @@ class WantToApply(models.Model):
         on_delete=models.CASCADE,
         related_name="want_to_apply",
     )
-    student_detailed_info_old = models.UUIDField(
-    )
+    # student_detailed_info_old = models.UUIDField(
+    # )
 
     # s = models.ForeignKey()
 
@@ -54,7 +54,7 @@ class WantToApply(models.Model):
 
 
 class StudentDetailedInfoBase(models.Model):
-    old_id = models.UUIDField()
+    # old_id = models.UUIDField()
 
     # id = models.IntegerField(auto_created=True, primary_key=True, serialize=False, verbose_name='NEW_ID', default=1)
 
@@ -145,7 +145,7 @@ class StudentDetailedInfoBase(models.Model):
         return LanguageCertificate.objects.filter(student_detailed_info__id=self.id).brief_str()
 
 
-class StudentDetailedInfo(StudentDetailedInfoBase):
+class StudentDetailedInfo(models.Model):
     # studentdetailedinfobase_ptr_newid = models.IntegerField(auto_created=True, unique=True, serialize=False, verbose_name='NEW_ID', default=1)
     # studentdetailedinfobase_ptr_id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)
 

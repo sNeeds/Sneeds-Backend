@@ -9,7 +9,9 @@ def create_new_id(apps, schema_editor):
     print('for child')
     StudentDetailedInfo = apps.get_model('form', 'studentdetailedinfo')
     for sdi in StudentDetailedInfo.objects.all():
-        sdi.local_new_id = sdi.new_id
+        id = sdi.new_id
+        assert id is not None and isinstance(id, int)
+        sdi.local_new_id = id
         sdi.save()
     for sdi in StudentDetailedInfo.objects.all():
         print(sdi.local_new_id)

@@ -274,8 +274,7 @@ def fake_reverse(apps, schema_editor):
 class Migration(migrations.Migration):
     dependencies = [
         ('form', '0017_auto_20201222_1050'),
-        ('applydata',
-         '0002_duolingocertificate_gmatcertificate_grebiologycertificate_gregeneralcertificate_grephysicscertificat'),
+        ('applydata', '0003_auto_20210108_0005'),
         ('similarApply', '0006_auto_20210107_2304')
     ]
 
