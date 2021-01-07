@@ -30,6 +30,7 @@ from .models import (
     Publication,
     Education,
     Grade,)
+# from .permissions import IsLanguageCertificateOwnerOrDetailedInfoWithoutUser
 from .serializers import (
     SemesterYearSerializer,
     LanguageCertificateSerializer,
@@ -51,8 +52,6 @@ from .serializers import (
 #     IsWantToApplyOwnerOrDetailedInfoWithoutUser,
 #     IsPublicationOwnerOrDetailedInfoWithoutUser,
 #     IsEducationOwnerOrDetailedInfoWithoutUser,
-#     OnlyOneFormPermission,
-#     SameUserOrNone, UserAlreadyHasForm,
 # )
 
 
@@ -89,12 +88,12 @@ class LanguageCertificateListCreateAPIView(generics.CListCreateAPIView):
     queryset = model_class.objects.all()
     serializer_class = LanguageCertificateSerializer
 
-    # def get_queryset(self):
-    #     user = self.request.user
-    #     sdi_id = self.request.query_params.get('student-detailed-info', None)
-    #     qs = self.queryset.filter(student_detailed_info=sdi_id)
-    #     # qs = student_detailed_info_many_to_one_qs(user, sdi_id, self.model_class)
-    #     return qs
+    def get_queryset(self):
+        user = self.request.user
+        sdi_id = self.request.query_params.get('student-detailed-info', None)
+        qs = self.queryset.filter(student_detailed_info=sdi_id)
+        # qs = student_detailed_info_many_to_one_qs(user, sdi_id, self.model_class)
+        return qs
 
 
 class LanguageCertificateRetrieveDestroyAPIView(generics.CRetrieveDestroyAPIView):

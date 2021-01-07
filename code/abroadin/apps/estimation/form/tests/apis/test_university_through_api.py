@@ -53,10 +53,13 @@ class EducationAPITest(FormAPITests):
         self.assertEqual(len(data), 1)
 
     def test_university_through_list_get_200_2(self):
+        # TODO Change coed to be consistence with new form structure
         self.local_university_through.student_detailed_info.user = self.local_user
+        # TODO Change coed to be consistence with new form structure
         self.local_university_through.student_detailed_info.save()
         data = self._university_through_list(
             "get", self.local_user, status.HTTP_200_OK,
+            # TODO Change coed to be consistence with new form structure
             data={"student-detailed-info": self.local_university_through.student_detailed_info.id}
         )
         self.assertEqual(len(data), 1)
@@ -65,6 +68,7 @@ class EducationAPITest(FormAPITests):
         self._university_through_list("post", None, status.HTTP_201_CREATED, data=self.university_through_payload)
         data = self._university_through_list(
             "get", None, status.HTTP_200_OK,
+            # TODO Change coed to be consistence with new form structure
             data={"student-detailed-info": self.local_university_through.student_detailed_info.id}
         )
         self.assertEqual(len(data), 2)
@@ -101,7 +105,9 @@ class EducationAPITest(FormAPITests):
         self._university_through_detail("get", None, status.HTTP_200_OK, reverse_args=self.local_university_through.id)
 
     def test_university_through_detail_get_200_2(self):
+        # TODO Change coed to be consistence with new form structure
         self.local_university_through.student_detailed_info.user = self.user1
+        # TODO Change coed to be consistence with new form structure
         self.local_university_through.student_detailed_info.save()
         self._university_through_detail(
             "get", self.user1, status.HTTP_200_OK, reverse_args=self.local_university_through.id
@@ -114,7 +120,9 @@ class EducationAPITest(FormAPITests):
         self.assertEqual(Education.objects.filter(id=self.local_university_through.id).count(), 0)
 
     def test_university_through_detail_delete_200_2(self):
+        # TODO Change coed to be consistence with new form structure
         self.local_university_through.student_detailed_info.user = self.user1
+        # TODO Change coed to be consistence with new form structure
         self.local_university_through.student_detailed_info.save()
         self._university_through_detail(
             "delete", self.user1, status.HTTP_204_NO_CONTENT, reverse_args=self.local_university_through.id

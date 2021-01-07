@@ -51,10 +51,13 @@ class PublicationAPITest(FormAPITests):
         self.assertEqual(len(data), 1)
 
     def test_publication_list_get_200_2(self):
+        # TODO Change coed to be consistence with new form structure
         self.local_publication.student_detailed_info.user = self.local_user
+        # TODO Change coed to be consistence with new form structure
         self.local_publication.student_detailed_info.save()
         data = self._publication_list(
             "get", self.local_user, status.HTTP_200_OK,
+            # TODO Change coed to be consistence with new form structure
             data={"student-detailed-info": self.local_publication.student_detailed_info.id}
         )
         self.assertEqual(len(data), 1)
@@ -68,10 +71,13 @@ class PublicationAPITest(FormAPITests):
         self.assertEqual(len(data), 0)
 
     def test_publication_list_get_200_4(self):
+        # TODO Change coed to be consistence with new form structure
         self.local_publication.student_detailed_info.user = self.local_user
+        # TODO Change coed to be consistence with new form structure
         self.local_publication.student_detailed_info.save()
         data = self._publication_list(
             "get", None, status.HTTP_200_OK,
+            # TODO Change coed to be consistence with new form structure
             data={"student-detailed-info": self.local_publication.student_detailed_info.id}
         )
         self.assertEqual(len(data), 1)
@@ -126,7 +132,9 @@ class PublicationAPITest(FormAPITests):
         self.assertEqual(len(data), 7)
 
     def test_publication_detail_get_200_2(self):
+        # TODO Change coed to be consistence with new form structure
         self.local_publication.student_detailed_info.user = self.local_user
+        # TODO Change coed to be consistence with new form structure
         self.local_publication.student_detailed_info.save()
         data = self._publication_detail(
             "get", self.local_user, status.HTTP_200_OK, reverse_args=self.local_publication.id
@@ -134,7 +142,9 @@ class PublicationAPITest(FormAPITests):
         self.assertEqual(len(data), 7)
 
     def test_publication_detail_get_403_1(self):
+        # TODO Change coed to be consistence with new form structure
         self.local_publication.student_detailed_info.user = self.local_user
+        # TODO Change coed to be consistence with new form structure
         self.local_publication.student_detailed_info.save()
         data = self._publication_detail(
             "get", None, status.HTTP_401_UNAUTHORIZED, reverse_args=self.local_publication.id
@@ -158,7 +168,9 @@ class PublicationAPITest(FormAPITests):
         )
 
     def test_publication_detail_put_405_3(self):
+        # TODO Change coed to be consistence with new form structure
         self.local_publication.student_detailed_info.user = self.local_user
+        # TODO Change coed to be consistence with new form structure
         self.local_publication.student_detailed_info.save()
         data = self._publication_detail(
             "put", None, status.HTTP_405_METHOD_NOT_ALLOWED, reverse_args=self.local_publication.id,
@@ -166,7 +178,9 @@ class PublicationAPITest(FormAPITests):
         )
 
     def test_publication_detail_put_405_4(self):
+        # TODO Change coed to be consistence with new form structure
         self.local_publication.student_detailed_info.user = self.local_user
+        # TODO Change coed to be consistence with new form structure
         self.local_publication.student_detailed_info.save()
         data = self._publication_detail(
             "put", self.local_user, status.HTTP_405_METHOD_NOT_ALLOWED, reverse_args=self.local_publication.id,
@@ -186,7 +200,9 @@ class PublicationAPITest(FormAPITests):
         )
 
     def test_publication_detail_patch_405_3(self):
+        # TODO Change coed to be consistence with new form structure
         self.local_publication.student_detailed_info.user = self.local_user
+        # TODO Change coed to be consistence with new form structure
         self.local_publication.student_detailed_info.save()
         data = self._publication_detail(
             "patch", None, status.HTTP_405_METHOD_NOT_ALLOWED, reverse_args=self.local_publication.id,
@@ -194,7 +210,9 @@ class PublicationAPITest(FormAPITests):
         )
 
     def test_publication_detail_patch_405_4(self):
+        # TODO Change coed to be consistence with new form structure
         self.local_publication.student_detailed_info.user = self.local_user
+        # TODO Change coed to be consistence with new form structure
         self.local_publication.student_detailed_info.save()
         data = self._publication_detail(
             "patch", self.local_user, status.HTTP_405_METHOD_NOT_ALLOWED, reverse_args=self.local_publication.id,
@@ -208,7 +226,9 @@ class PublicationAPITest(FormAPITests):
         self.assertEqual(Publication.objects.filter(id=self.local_publication.id).count(), 0)
 
     def test_publication_detail_delete_204_2(self):
+        # TODO Change coed to be consistence with new form structure
         self.local_publication.student_detailed_info.user = self.local_user
+        # TODO Change coed to be consistence with new form structure
         self.local_publication.student_detailed_info.save()
         data = self._publication_detail(
             "delete", self.local_user, status.HTTP_204_NO_CONTENT, reverse_args=self.local_publication.id
@@ -216,7 +236,9 @@ class PublicationAPITest(FormAPITests):
         self.assertEqual(Publication.objects.filter(id=self.local_publication.id).count(), 0)
 
     def test_publication_detail_delete_401_1(self):
+        # TODO Change coed to be consistence with new form structure
         self.local_publication.student_detailed_info.user = self.local_user
+        # TODO Change coed to be consistence with new form structure
         self.local_publication.student_detailed_info.save()
         data = self._publication_detail(
             "delete", None, status.HTTP_401_UNAUTHORIZED, reverse_args=self.local_publication.id

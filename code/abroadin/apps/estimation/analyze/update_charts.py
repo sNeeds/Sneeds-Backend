@@ -73,6 +73,7 @@ def update_publication_count_chart(instance, db_instance, is_delete=False):
         this function should be called in post delete state
     """
     try:
+        # TODO Change coed to be consistence with new form structure
         sdi = instance.student_detailed_info.studentdetailedinfo
         publications_count = form_models.Publication.objects.filter(student_detailed_info__id=sdi.id).count()
         data = serialize('json', [instance])
@@ -151,6 +152,7 @@ def update_publications_score_chart(instance, db_instance, is_delete=False):
     this function should be called in post delete state
     """
     try:
+        # TODO Change coed to be consistence with new form structure
         instance.student_detailed_info.studentdetailedinfo
     except StudentDetailedInfo.DoesNotExist:
         return
@@ -165,6 +167,7 @@ def prepare_publications_score_chart_data(instance, db_instance, is_delete=False
         this function should be called in post delete state
     """
     if is_delete:
+        # TODO Change coed to be consistence with new form structure
         remained_publications = instance.student_detailed_info.studentdetailedinfo.publication_set.all() \
             .order_by('-value')
         new_publications_score = remained_publications.total_value()
@@ -181,8 +184,9 @@ def prepare_publications_score_chart_data(instance, db_instance, is_delete=False
     else:
         # Save has been called in order to update an entry
         if db_instance is not None:
+            # TODO Change coed to be consistence with new form structure
             old_publications_score = instance.student_detailed_info.studentdetailedinfo.publication_set.total_value()
-
+            # TODO Change coed to be consistence with new form structure
             except_instance_publications = instance.student_detailed_info.studentdetailedinfo.publication_set.exclude(
                 pk=instance.pk).order_by('-value')
 
@@ -197,6 +201,7 @@ def prepare_publications_score_chart_data(instance, db_instance, is_delete=False
 
         # Save has been called in order to create an entry
         else:
+            # TODO Change coed to be consistence with new form structure
             old_publications = instance.student_detailed_info.studentdetailedinfo.publication_set.all().order_by(
                 '-value')
             old_publications_score = old_publications.total_value()
@@ -283,9 +288,11 @@ def update_charts_sdi_deletion(instance, db_instance, is_delete=False):
     data = form_serializers.StudentDetailedInfoCelerySerializer(instance).data
     db_data = None
 
+    # TODO Change coed to be consistence with new form structure
     publications_count = instance.publication_set.count()
     update_publications_count_chart_sdi_deletion.delay(publications_count, data, db_data, is_delete)
 
+    # TODO Change coed to be consistence with new form structure
     publications_score = instance.publication_set.total_value()
     update_publications_score_chart_sdi_deletion.delay(publications_score, data, db_data, is_delete)
 
@@ -360,6 +367,7 @@ def prepare_update_gpa_chart(instance, db_instance, is_delete=False):
     old_label = None
     new_label = None
     if is_delete:
+        # TODO Change coed to be consistence with new form structure
         qs = ad_models.Education.objects.filter(student_detailed_info__id=instance.student_detailed_info.id). \
             order_by('-graduate_in')
         last_grade = qs.first()
@@ -376,6 +384,7 @@ def prepare_update_gpa_chart(instance, db_instance, is_delete=False):
             old_label = None
     else:
         if db_instance is not None:
+            # TODO Change coed to be consistence with new form structure
             qs = form_models.Education.objects.filter(
                 student_detailed_info__id=instance.student_detailed_info.id
             ).order_by('-graduate_in')
@@ -406,6 +415,7 @@ def prepare_update_gpa_chart(instance, db_instance, is_delete=False):
 
         # Save has been called in order to create an entry
         else:
+            # TODO Change coed to be consistence with new form structure
             qs = form_models.Education.objects.filter(
                 student_detailed_info__id=instance.student_detailed_info.id
             ).order_by('-graduate_in')

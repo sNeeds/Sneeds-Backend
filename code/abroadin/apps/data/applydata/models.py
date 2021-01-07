@@ -275,6 +275,7 @@ class Publication(models.Model):
     # Publications Count methods
     ############################
     def get_count_chart__store_label(self):
+        # TODO Change coed to be consistence with new form structure
         return str(self.content_object.publication_set.count())
 
     @classmethod

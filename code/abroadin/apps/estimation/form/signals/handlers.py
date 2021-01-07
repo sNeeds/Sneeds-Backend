@@ -22,6 +22,7 @@ def pre_save_university_through(sender, instance, *args, **kwargs):
 
 
 def post_save_language_certificate(sender, instance, *args, **kwargs):
+    # TODO Change coed to be consistence with new form structure
     instance.student_detailed_info.save()
 
 
