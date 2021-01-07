@@ -6,16 +6,30 @@ from django.db import migrations
 
 
 def forwards_func(apps, schema_editor, model_name):
+    print(model_name)
     # We get the model from the versioned app registry;
     # if we directly import it, it'll be the wrong version
     sdi_content_type = ContentType.objects.get(app_label='form', model='studentdetailedinfo')
-    ApplyData = apps.get_model("applydata", model_name)
+    sdib_content_type = ContentType.objects.get(app_label='form', model='studentdetailedinfobase')
+    ApplyDataModel = apps.get_model("applydata", model_name)
     StudentDetailedInfoBase = apps.get_model('form', 'studentdetailedinfobase')
     StudentDetailedInfo = apps.get_model('form', 'studentdetailedinfo')
-    for obj in ApplyData.objects.filter(content_type__id=sdi_content_type.id):
-        new_id = StudentDetailedInfoBase.objects.get(old_id=uuid.UUID(obj.object_id)).id
-        obj.object_id = str(new_id)
-        obj.save()
+    for obj in ApplyDataModel.objects.filter(content_type__id=sdi_content_type.id):
+        try:
+            uuid_id = uuid.UUID(obj.object_id)
+            new_id = StudentDetailedInfoBase.objects.get(old_id=uuid_id).id
+            obj.object_id = str(new_id)
+            obj.save()
+        except ValueError:
+            pass
+    for obj in ApplyDataModel.objects.filter(content_type__id=sdib_content_type.id):
+        try:
+            uuid_id = uuid.UUID(obj.object_id)
+            new_id = StudentDetailedInfoBase.objects.get(old_id=uuid_id).id
+            obj.object_id = str(new_id)
+            obj.save()
+        except ValueError:
+            pass
 
 
 def reverse_func(apps, schema_editor, model_name):
@@ -40,7 +54,7 @@ def func_decorator(func, model_name):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('form', '0038_wanttoapply_student_detailed_info'),
+        ('form', '0038_wanttoapply_student_detailed_info3'),
     ]
 
     operations = [
@@ -48,6 +62,8 @@ class Migration(migrations.Migration):
             code=func_decorator(forwards_func, 'publication'), reverse_code=func_decorator(reverse_func, 'publication')),
         migrations.RunPython(
             code=func_decorator(forwards_func, 'education'), reverse_code=func_decorator(reverse_func, 'education')),
+        migrations.RunPython(
+            code=func_decorator(forwards_func, 'languagecertificate'), reverse_code=func_decorator(reverse_func, 'languagecertificate')),
         migrations.RunPython(
             code=func_decorator(forwards_func, 'regularlanguagecertificate'), reverse_code=func_decorator(reverse_func, 'regularlanguagecertificate')),
         migrations.RunPython(

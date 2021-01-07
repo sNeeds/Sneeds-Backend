@@ -145,7 +145,7 @@ class StudentDetailedInfoBase(models.Model):
         return LanguageCertificate.objects.filter(student_detailed_info__id=self.id).brief_str()
 
 
-class StudentDetailedInfo(models.Model):
+class StudentDetailedInfo(StudentDetailedInfoBase):
     # studentdetailedinfobase_ptr_newid = models.IntegerField(auto_created=True, unique=True, serialize=False, verbose_name='NEW_ID', default=1)
     # studentdetailedinfobase_ptr_id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)
 

@@ -9,11 +9,15 @@ def set_sdi(apps, schema_editor):
     StudentDetailedInfoBase = apps.get_model('form', 'studentdetailedinfobase')
     StudentDetailedInfo = apps.get_model('form', 'studentdetailedinfo')
     WantToApply = apps.get_model('form', 'wanttoapply')
+    previous_id = -1
     for wta in WantToApply.objects.all():
-        new_id = StudentDetailedInfoBase.objects.get(old_id=wta.student_detailed_info_old).id
-        sdi = StudentDetailedInfo.objects.get(local_new_id=new_id)
-        wta.student_detailed_info = sdi
+        sdib = StudentDetailedInfoBase.objects.get(old_id=wta.student_detailed_info_old)
+        sdib_id = sdib.id
+        assert (sdib_id is not None and isinstance(sdib_id, int) and sdib_id != previous_id)
+        # sdi = StudentDetailedInfo.objects.get(local_new_id=sdib_id)
+        wta.student_detailed_info_id = sdib_id
         wta.save()
+        previous_id = sdib_id
     # for sdib in StudentDetailedInfoBase.objects.all():
     #     print(sdib.new_id)
 
@@ -29,11 +33,5 @@ class Migration(migrations.Migration):
             model_name='wanttoapply',
             name='student_detailed_info',
             field=models.OneToOneField(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='want_to_apply', to='form.studentdetailedinfo'),
-        ),
-        migrations.RunPython(code=set_sdi, reverse_code=migrations.RunPython.noop),
-        migrations.AlterField(
-            model_name='wanttoapply',
-            name='student_detailed_info',
-            field=models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='want_to_apply', to='form.studentdetailedinfo'),
         ),
     ]

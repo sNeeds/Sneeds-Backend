@@ -11,8 +11,8 @@ def create_new_id(apps, schema_editor):
         sdib.new_id = id
         sdib.save()
         id += 1
-    for sdib in StudentDetailedInfoBase.objects.all():
-        print(sdib.new_id)
+    # for sdib in StudentDetailedInfoBase.objects.all():
+    #     print(sdib.new_id)
 
 
 class Migration(migrations.Migration):
