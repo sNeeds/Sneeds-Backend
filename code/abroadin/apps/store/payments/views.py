@@ -164,19 +164,3 @@ class Verify(CAPIView):
             return Response({"detail": "Transaction failed or canceled by user"}, status=400)
 
 
-class VerifyTest(CAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get(self, request, *args, **kwargs):
-        user = request.user
-        if not user.is_superuser:
-            return Response("Not superuser!")
-
-        id = kwargs.get("cartid")
-        try:
-            cart = Cart.objects.get(id=id)
-            Order.objects.sell_cart_create_order(cart)
-        except Cart.DoesNotExist:
-            return Response("No cart found!")
-
-        return Response()
