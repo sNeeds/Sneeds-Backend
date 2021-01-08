@@ -1,4 +1,3 @@
-from rest_framework.exceptions import APIException
 from zeep import Client
 
 from django.conf import settings
@@ -6,18 +5,11 @@ from django.conf import settings
 from rest_framework import permissions
 from rest_framework.response import Response
 
-from abroadin.base.api import generics
-from abroadin.apps.store.orders.models import Order
-from abroadin.base.api.generics import CListAPIView
-from abroadin.base.api.viewsets import CAPIView
-from .serializers import ConsultantDepositInfoSerializer
-from .permissions import ConsultantDepositInfoOwner
-from .models import ConsultantDepositInfo
-from abroadin.apps.users.consultants.models import ConsultantProfile
 from .models import PayPayment
+from abroadin.base.api.viewsets import CAPIView
+from abroadin.apps.store.orders.models import Order
 from abroadin.apps.store.carts.models import Cart
 from abroadin.settings.config.variables import FRONTEND_URL
-from abroadin.utils.custom.custom_permissions import IsConsultantPermission
 
 ZARINPAL_MERCHANT = settings.ZARINPAL_MERCHANT
 
@@ -82,13 +74,13 @@ class SendRequest(CAPIView):
         return Response({"detail": "Success", "ReflD": "00000000", "order": order_id}, 201)
 
     def cart_empty_response(self):
-        return Response({"detail": "Cart is empty."}, 400)
+        return Response({"detail": "Cart is empty"}, 400)
 
     def payment_request_ok_response(self, result):
         return Response({"redirect": 'https://sandbox.zarinpal.com/pg/StartPay/' + str(result.Authority)}, 201)
 
     def payment_request_not_ok_response(self, result):
-        return Response({"detail": 'Error code: ' + str(result.Status)}, 400)
+        return Response({"detail": 'Zarinpal error', 'code': str(result.Status)}, 400)
 
     def post(self, request, *args, **kwargs):
         data = request.data
@@ -162,5 +154,3 @@ class Verify(CAPIView):
 
         else:
             return Response({"detail": "Transaction failed or canceled by user"}, status=400)
-
-
