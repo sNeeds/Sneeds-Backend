@@ -18,7 +18,7 @@ def forwards_func(apps, schema_editor, model_name):
         try:
             uuid_id = uuid.UUID(obj.object_id)
             new_id = StudentDetailedInfoBase.objects.get(old_id=uuid_id).id
-            obj.object_id = str(new_id)
+            obj.object_id = new_id
             obj.save()
         except ValueError:
             pass
@@ -26,7 +26,7 @@ def forwards_func(apps, schema_editor, model_name):
         try:
             uuid_id = uuid.UUID(obj.object_id)
             new_id = StudentDetailedInfoBase.objects.get(old_id=uuid_id).id
-            obj.object_id = str(new_id)
+            obj.object_id = new_id
             obj.save()
         except ValueError:
             pass
@@ -40,9 +40,13 @@ def reverse_func(apps, schema_editor, model_name):
     StudentDetailedInfoBase = apps.get_model('form', 'studentdetailedinfobase')
     StudentDetailedInfo = apps.get_model('form', 'studentdetailedinfo')
     for obj in ApplyData.objects.filter(content_type__id=sdi_content_type.id):
-        old_id = StudentDetailedInfoBase.objects.get(id=int(obj.object_id)).old_id
-        obj.object_id = str(old_id)
-        obj.save()
+        try:
+            int(obj.object_id)
+            old_id = StudentDetailedInfoBase.objects.get(id=obj.object_id).old_id
+            obj.object_id = old_id
+            obj.save()
+        except ValueError:
+            pass
 
 
 def func_decorator(func, model_name):

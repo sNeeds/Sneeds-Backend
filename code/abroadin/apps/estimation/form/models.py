@@ -37,8 +37,9 @@ class WantToApply(models.Model):
         on_delete=models.CASCADE,
         related_name="want_to_apply",
     )
-    # student_detailed_info_old = models.UUIDField(
-    # )
+    student_detailed_info_old = models.UUIDField(
+        null=True,
+    )
 
     # s = models.ForeignKey()
 
@@ -54,7 +55,7 @@ class WantToApply(models.Model):
 
 
 class StudentDetailedInfoBase(models.Model):
-    # old_id = models.UUIDField()
+    old_id = models.UUIDField(null=True)
 
     # id = models.IntegerField(auto_created=True, primary_key=True, serialize=False, verbose_name='NEW_ID', default=1)
 
@@ -133,7 +134,7 @@ class StudentDetailedInfoBase(models.Model):
         return found
 
     def last_university_through(self):
-        qs = Education.objects.filter(student_detailed_info__id=self.id)
+        qs = Education.objects.filter(student_detailed_info__id=str(self.id))
         ordered_qs = qs.order_by_grade()
 
         if ordered_qs.exists():
@@ -525,6 +526,8 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         return float(label)
 
     def save(self, *args, **kwargs):
-        self.value = self._compute_value()
-        self.rank = self._compute_rank()
+        # self.value = self._compute_value()
+        # self.rank = self._compute_rank()
+        self.value = 0.8
+        self.rank = 20
         super().save(*args, **kwargs)
