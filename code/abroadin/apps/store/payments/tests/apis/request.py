@@ -47,7 +47,7 @@ class PaymentAPIRequestTests(PaymentAPIBaseTest):
             Zarinpal rejects under 1000Toman prices
             """
             product = Product.objects.create(price=1)
-            cart = Cart.objects.create(user = user)
+            cart = Cart.objects.create(user=user)
             cart.products.add(product)
             return cart
 
@@ -57,3 +57,10 @@ class PaymentAPIRequestTests(PaymentAPIBaseTest):
         f_cart = create_low_price_cart_for_zarinpal(self.user1)
         data = self.create_payment(self.user1, f_cart, status.HTTP_400_BAD_REQUEST)
         check_zarinpal_error(data)
+
+    def test_create_401(self):
+        self.create_payment(None, self.a_cart1, status.HTTP_401_UNAUTHORIZED)
+
+        self.create_payment(self.user2, self.a_cart1, status.HTTP_401_UNAUTHORIZED)
+
+
