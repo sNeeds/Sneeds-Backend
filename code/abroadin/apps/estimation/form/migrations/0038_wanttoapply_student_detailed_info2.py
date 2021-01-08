@@ -14,7 +14,6 @@ def set_sdi(apps, schema_editor):
         sdib = StudentDetailedInfoBase.objects.get(old_id=wta.student_detailed_info_old)
         sdib_id = sdib.id
         assert (sdib_id is not None and isinstance(sdib_id, int) and sdib_id != previous_id)
-        # sdi = StudentDetailedInfo.objects.get(local_new_id=sdib_id)
         wta.student_detailed_info_id = sdib_id
         wta.save()
         previous_id = sdib_id

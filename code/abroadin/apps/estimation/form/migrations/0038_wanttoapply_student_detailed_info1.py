@@ -4,24 +4,6 @@ from django.db import migrations, models
 import django.db.models.deletion
 
 
-def set_sdi(apps, schema_editor):
-    print('for base')
-    StudentDetailedInfoBase = apps.get_model('form', 'studentdetailedinfobase')
-    StudentDetailedInfo = apps.get_model('form', 'studentdetailedinfo')
-    WantToApply = apps.get_model('form', 'wanttoapply')
-    previous_id = -1
-    for wta in WantToApply.objects.all():
-        sdib = StudentDetailedInfoBase.objects.get(old_id=wta.student_detailed_info_old)
-        sdib_id = sdib.id
-        assert (sdib_id is not None and isinstance(sdib_id, int) and sdib_id != previous_id)
-        # sdi = StudentDetailedInfo.objects.get(local_new_id=sdib_id)
-        wta.student_detailed_info_id = sdib_id
-        wta.save()
-        previous_id = sdib_id
-    # for sdib in StudentDetailedInfoBase.objects.all():
-    #     print(sdib.new_id)
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
