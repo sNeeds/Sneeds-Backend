@@ -14,9 +14,9 @@ from abroadin.apps.data.account.serializers import CountrySerializer, University
 
 from abroadin.apps.data.applydata import serializers as ad_serializers
 
-from .models import SemesterYear, WantToApply, StudentDetailedInfo, Publication, Grade
+from .models import WantToApply, StudentDetailedInfo, SDI_CT
 
-from ...data.applydata.models import Education
+from abroadin.apps.data.applydata.models import Education, RegularLanguageCertificate, Publication
 
 LanguageCertificateType = abroadin.apps.estimation.form.models.LanguageCertificate.LanguageCertificateType
 
@@ -157,7 +157,7 @@ class PublicationRequestSerializer(ad_serializers.PublicationRequestSerializer):
             content_type: ContentType = attrs.get("content_type")
             if content_type.model_class() == StudentDetailedInfo:
                 try:
-                    sdi = StudentDetailedInfo.objects.get(pk=attrs.get(Publication.content_object.fk_field))
+                    sdi = StudentDetailedInfo.objects.get(pk=attrs.get('object_id'))
                     if sdi.user is not None and sdi.user != request_user:
                         raise ValidationError(_("User can't set student_detailed_info of another user."))
                     if sdi.user is None and request_user.is_authenticated:
@@ -193,7 +193,7 @@ class EducationRequestSerializer(ad_serializers.EducationRequestSerializer):
             content_type: ContentType = attrs.get("content_type")
             if content_type.model_class() == StudentDetailedInfo:
                 try:
-                    sdi = StudentDetailedInfo.objects.get(pk=attrs.get(Education.content_object.fk_field))
+                    sdi = StudentDetailedInfo.objects.get(pk=attrs.get('object_id'))
                     if sdi.user is not None and sdi.user != request_user:
                         raise ValidationError(_("User can't set student_detailed_info of another user."))
                     if sdi.user is None and request_user.is_authenticated:
@@ -230,7 +230,7 @@ class RegularLanguageCertificateSerializer(LanguageCertificateSerializer,
             content_type: ContentType = attrs.get("content_type")
             if content_type.model_class() == StudentDetailedInfo:
                 try:
-                    sdi = StudentDetailedInfo.objects.get(pk=attrs.get(RegularLanguageCertificate.content_object.fk_field))
+                    sdi = StudentDetailedInfo.objects.get(pk=attrs.get('object_id'))
                     if sdi.user is not None and sdi.user != request_user:
                         raise ValidationError(_("User can't set student_detailed_info of another user."))
                     if sdi.user is None and request_user.is_authenticated:
@@ -336,23 +336,14 @@ class StudentDetailedInfoBaseSerializer(serializers.ModelSerializer):
                                      DuolingoCertificateSerializer)
 
     def get_universities(self, obj):
-        # return 'a'
-        # TODO
-        # print(type(obj.id))
         qs = Education.objects.filter(
-            content_type=ContentType.objects.get_for_model(obj.__class__),
-            object_id=str(obj.id),
-            # student_detailed_info__id=obj.id
+            content_type=SDI_CT, object_id=obj.id
         )
         return EducationSerializer(qs, many=True, context=self.context).data
 
     def get_publications(self, obj):
-        # return 'a'
-        # TODO
         qs = Publication.objects.filter(
-            content_type=ContentType.objects.get_for_model(obj.__class__),
-            object_id=str(obj.id),
-            # student_detailed_info__id=obj.id
+            content_type=SDI_CT, object_id=obj.id
         )
         return PublicationSerializer(qs, many=True, context=True).data
 
@@ -364,9 +355,7 @@ class StudentDetailedInfoBaseSerializer(serializers.ModelSerializer):
 
     # Custom method
     def get_certificates(self, obj, model_class, serializer_class):
-        return 'a'
-        # TODO
-        qs = model_class.objects.filter(student_detailed_info__id=obj.id)
+        qs = model_class.objects.filter(content_type=SDI_CT, object_id=obj.id)
         return serializer_class(qs, many=True, context=self.context).data
 
 

@@ -11,6 +11,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('account', '0009_auto_20201222_1050'),
+        ('applydata', '0004_auto_20210107_1216')
     ]
 
     operations = [

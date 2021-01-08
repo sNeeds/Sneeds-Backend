@@ -13,11 +13,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='studentdetailedinfobase',
             name='old_id',
-            field=models.UUIDField(null=True),
+            field=models.UUIDField(null=True, blank=True),
         ),
         migrations.AlterField(
             model_name='wanttoapply',
             name='student_detailed_info_old',
-            field=models.UUIDField(null=True),
+            field=models.UUIDField(null=True, blank=True),
         ),
     ]

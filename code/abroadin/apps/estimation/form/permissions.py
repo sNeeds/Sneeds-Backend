@@ -6,7 +6,7 @@ from rest_framework.exceptions import NotFound
 from rest_framework.exceptions import ValidationError
 from rest_framework.settings import api_settings
 
-from abroadin.apps.estimation.form.models import StudentDetailedInfo, StudentDetailedInfoBase
+from abroadin.apps.estimation.form.models import StudentDetailedInfo, StudentDetailedInfoBase, SDI_CT
 
 
 class OnlyOneFormPermission(permissions.BasePermission):
@@ -130,10 +130,9 @@ class SDIThirdModelsWithGFPermission(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         user = request.user
-        sdi_content_type = ContentType.objects.get_for_model(StudentDetailedInfo)
         # sdib_content_type = ContentType.objects.get_for_model(StudentDetailedInfoBase)
 
-        if obj.content_type in [sdi_content_type]:
+        if obj.content_type in [SDI_CT]:
             if user and user.is_authenticated:
                 return obj.content_object.user == user
             if not user.is_authenticated:

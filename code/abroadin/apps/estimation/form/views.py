@@ -31,7 +31,7 @@ from .models import (
     Publication,
     Grade,
     BasicFormField,
-)
+    SDI_CT)
 from .serializers import (
     SemesterYearSerializer,
     BasicFormFieldSerializer,
@@ -183,8 +183,7 @@ class LanguageCertificateListCreateAPIView(generics.CListCreateAPIView):
     def get_queryset(self):
         user = self.request.user
         sdi_id = self.request.query_params.get('student-detailed-info', None)
-        qs = self.queryset.filter(student_detailed_info__id=sdi_id)
-        # qs = student_detailed_info_many_to_one_qs(user, sdi_id, self.model_class)
+        qs = self.queryset.filter(content_type=SDI_CT, object_id=sdi_id)
         return qs
 
 
@@ -360,8 +359,7 @@ class PublicationListCreateAPIView(generics.CListCreateAPIView):
     def get_queryset(self):
         user = self.request.user
         sdi_id = self.request.query_params.get('student-detailed-info', None)
-        # qs = student_detailed_info_many_to_one_qs(user, sdi_id, Publication)
-        qs = Publication.objects.filter(student_detailed_info__id=sdi_id)
+        qs = self.queryset.filter(content_type=SDI_CT, object_id=sdi_id)
         return qs
 
     @swagger_auto_schema(
@@ -386,7 +384,7 @@ class EducationListAPIView(generics.CListCreateAPIView):
 
     def get_queryset(self):
         sdi_id = self.request.query_params.get('student-detailed-info', None)
-        qs = Education.objects.filter(student_detailed_info__id=sdi_id)
+        qs = self.queryset.filter(content_type=SDI_CT, object_id=sdi_id)
         return qs
 
     @swagger_auto_schema(

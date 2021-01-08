@@ -53,6 +53,7 @@ from .serializers import (
 #     IsPublicationOwnerOrDetailedInfoWithoutUser,
 #     IsEducationOwnerOrDetailedInfoWithoutUser,
 # )
+from ...estimation.form.models import SDI_CT
 
 
 class SemesterYearListAPIView(generics.CListAPIView):
@@ -91,7 +92,7 @@ class LanguageCertificateListCreateAPIView(generics.CListCreateAPIView):
     def get_queryset(self):
         user = self.request.user
         sdi_id = self.request.query_params.get('student-detailed-info', None)
-        qs = self.queryset.filter(student_detailed_info=sdi_id)
+        qs = self.queryset.filter(content_type=SDI_CT, object_id=sdi_id)
         # qs = student_detailed_info_many_to_one_qs(user, sdi_id, self.model_class)
         return qs
 
@@ -226,12 +227,11 @@ class PublicationListCreateAPIView(generics.CListCreateAPIView):
     serializer_class = PublicationSerializer
     request_serializer_class = PublicationRequestSerializer
 
-    # def get_queryset(self):
-    #     user = self.request.user
-    #     sdi_id = self.request.query_params.get('student-detailed-info', None)
-    #     # qs = student_detailed_info_many_to_one_qs(user, sdi_id, Publication)
-    #     qs = Publication.objects.filter(student_detailed_info_id=sdi_id)
-    #     return qs
+    def get_queryset(self):
+        user = self.request.user
+        sdi_id = self.request.query_params.get('student-detailed-info', None)
+        qs = self.queryset.filter(content_type=SDI_CT, object_id=sdi_id)
+        return qs
 
     @swagger_auto_schema(
         request_body=request_serializer_class,

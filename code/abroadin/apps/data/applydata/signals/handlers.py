@@ -1,5 +1,6 @@
 from django.db.models.signals import pre_save, pre_delete, post_save, post_delete, m2m_changed
 
+from abroadin.apps.estimation.form.models import SDI_CT
 from ..models import (
     Publication,
     LanguageCertificate,
@@ -19,22 +20,20 @@ def pre_save_education(sender, instance, *args, **kwargs):
 
 
 def post_save_language_certificate(sender, instance, *args, **kwargs):
-    # instance.student_detailed_info.save()
+    if instance.content_type == SDI_CT:
+        instance.content_object.save()
     pass
 
 
-def post_save_student_detailed_info(sender, instance, *args, **kwargs):
-    # update_student_detailed_info_ranks()
-    pass
-
-
-def post_save_university_through(sender, instance, *args, **kwargs):
-    # instance.student_detailed_info.save()
+def post_save_education(sender, instance, *args, **kwargs):
+    if instance.content_type == SDI_CT:
+        instance.content_object.save()
     pass
 
 
 def post_save_publication(sender, instance, *args, **kwargs):
-    # instance.student_detailed_info.save()
+    if instance.content_type == SDI_CT:
+        instance.content_object.save()
     pass
 
 
@@ -43,18 +42,20 @@ def pre_delete_publication(sender, instance, *args, **kwargs):
 
 
 def post_delete_publication(sender, instance, *args, **kwargs):
-    # instance.student_detailed_info.save()
+    if instance.content_type == SDI_CT:
+        instance.content_object.save()
     pass
 
 
-def post_delete_university_through(sender, instance, *args, **kwargs):
-    # instance.student_detailed_info.save()
+def post_delete_education(sender, instance, *args, **kwargs):
+    if instance.content_type == SDI_CT:
+        instance.content_object.save()
     pass
 
 
 def post_delete_language_certificate(sender, instance, *args, **kwargs):
-    # instance.student_detailed_info.save()
-    pass
+    if instance.content_type == SDI_CT:
+        instance.content_object.save()
 
 
 # Signal is not fired when subclasses were updated.
@@ -76,9 +77,9 @@ pre_save.connect(pre_save_education, sender=Education)
 
 post_save.connect(post_save_language_certificate, sender=LanguageCertificate)
 post_save.connect(post_save_publication, sender=Publication)
-post_save.connect(post_save_university_through, sender=Education)
+post_save.connect(post_save_education, sender=Education)
 
 pre_delete.connect(pre_delete_publication, sender=Publication)
 
 post_delete.connect(post_delete_publication, sender=Publication)
-post_delete.connect(post_delete_university_through, sender=Education)
+post_delete.connect(post_delete_education, sender=Education)

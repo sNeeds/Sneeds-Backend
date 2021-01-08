@@ -3,6 +3,7 @@ import uuid
 from math import floor
 
 from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.contenttypes.models import ContentType
 from django.core.validators import MinValueValidator, MaxValueValidator, FileExtensionValidator
 from django.db import models
 
@@ -31,6 +32,10 @@ from abroadin.base.python.classes import BooleanList
 import django.db.models.deletion
 
 
+# StudentDetailedInfo_CONTENT_TYPE
+SDI_CT = ContentType.objects.get(app_label='form', model='studentdetailedinfo')
+
+
 class WantToApply(models.Model):
     student_detailed_info = models.OneToOneField(
         'StudentDetailedInfo',
@@ -38,7 +43,7 @@ class WantToApply(models.Model):
         related_name="want_to_apply",
     )
     student_detailed_info_old = models.UUIDField(
-        null=True,
+        null=True, blank=True,
     )
 
     # s = models.ForeignKey()
@@ -55,7 +60,7 @@ class WantToApply(models.Model):
 
 
 class StudentDetailedInfoBase(models.Model):
-    old_id = models.UUIDField(null=True)
+    old_id = models.UUIDField(null=True, blank=True)
 
     # id = models.IntegerField(auto_created=True, primary_key=True, serialize=False, verbose_name='NEW_ID', default=1)
 
@@ -134,7 +139,8 @@ class StudentDetailedInfoBase(models.Model):
         return found
 
     def last_university_through(self):
-        qs = Education.objects.filter(student_detailed_info__id=str(self.id))
+
+        qs = Education.objects.filter(content_type=SDI_CT, object_id=self.id)
         ordered_qs = qs.order_by_grade()
 
         if ordered_qs.exists():
@@ -143,7 +149,7 @@ class StudentDetailedInfoBase(models.Model):
         return None
 
     def language_certificates_str(self):
-        return LanguageCertificate.objects.filter(student_detailed_info__id=self.id).brief_str()
+        return LanguageCertificate.objects.filter(content_type=SDI_CT, object_id=self.id).brief_str()
 
 
 class StudentDetailedInfo(StudentDetailedInfoBase):
@@ -314,10 +320,10 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
 
     def _compute_value(self):
         publications = Publication.objects.filter(
-            student_detailed_info__id=self.id
+            content_type=SDI_CT, object_id=self.id
         )
         languages = LanguageCertificate.objects.filter(
-            student_detailed_info__id=self.id
+            content_type=SDI_CT, object_id=self.id
         )
 
         total_value = 0
@@ -379,7 +385,7 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         return False
 
     def _has_university_through(self):
-        if self.universities.all().exists():
+        if self.educations.all().exists():
             return True
         return False
 
@@ -403,7 +409,7 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         return completed
 
     def university_through_qs(self):
-        return Education.objects.filter(student_detailed_info__id=self.id)
+        return Education.objects.filter(content_type=SDI_CT, object_id=self.id)
 
     @property
     def is_complete(self):
@@ -431,7 +437,7 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
     def get_related_majors(self):
         related_major_ids = []
         university_through_qs = Education.objects.filter(
-            student_detailed_info__id=self.id
+            content_type=SDI_CT, object_id=self.id
         )
         related_major_ids += list(university_through_qs.values_list('major__id', flat=True).distinct())
         try:

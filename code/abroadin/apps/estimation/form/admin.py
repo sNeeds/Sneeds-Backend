@@ -101,7 +101,7 @@ class StudentDetailedInfoBaseAdmin(admin.ModelAdmin):
 @admin.register(models.StudentDetailedInfo)
 class StudentDetailedInfoAdmin(StudentDetailedInfoBaseAdmin):
     inlines = [
-                  # WantToApplyInline
+                  WantToApplyInline
               ] + StudentDetailedInfoBaseAdmin.inlines
     list_filter = (
         ('updated', DateTimeRangeFilter),
