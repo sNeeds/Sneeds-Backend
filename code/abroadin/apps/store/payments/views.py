@@ -79,13 +79,13 @@ class SendRequest(CAPIView):
         return Order.objects.sell_cart_create_order(cart)
 
     def zero_price_has_product_response(self, order_id):
-        return Response({"detail": "Success", "ReflD": "00000000", "order": order_id}, 200)
+        return Response({"detail": "Success", "ReflD": "00000000", "order": order_id}, 201)
 
     def cart_empty_response(self):
-        return Response({"detail": "Can not pay, The price is 0 but no products are included."}, 400)
+        return Response({"detail": "Cart is empty."}, 400)
 
     def payment_request_ok_response(self, result):
-        return Response({"redirect": 'https://sandbox.zarinpal.com/pg/StartPay/' + str(result.Authority)}, 200)
+        return Response({"redirect": 'https://sandbox.zarinpal.com/pg/StartPay/' + str(result.Authority)}, 201)
 
     def payment_request_not_ok_response(self, result):
         return Response({"detail": 'Error code: ' + str(result.Status)}, 400)

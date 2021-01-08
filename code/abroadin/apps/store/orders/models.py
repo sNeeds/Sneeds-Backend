@@ -20,60 +20,16 @@ ORDER_STATUS_CHOICES = (
 
 
 class OrderManager(models.QuerySet):
-    # TODO Don't we save the price of product that is applied in factor after using discount ?? certainly it defers from
-    # TODO primary price
     @transaction.atomic
     def sell_cart_create_order(self, cart):
-        cart_products = cart.products.all()
-        time_slot_sales_qs = cart_products.get_time_slot_sales()
-        store_packages_qs = cart_products.get_store_packages()
-        sold_store_unpaid_package_phases_qs = cart_products.get_sold_store_unpaid_package_phases()
-        class_products_qs = cart_products.get_class_products()
-        webinar_products_qs = cart_products.get_webinar_products()
-
-        try:
-            used_discount = CartDiscount.objects.get(cart=cart).discount
-        except CartDiscount.DoesNotExist:
-            used_discount = None
-
-        try:
-            time_slot_sales_number_discount_number = TimeSlotSaleNumberDiscount.objects.get(
-                number=cart.get_time_slot_sales_count()
-            ).discount
-        except TimeSlotSaleNumberDiscount.DoesNotExist:
-            time_slot_sales_number_discount_number = 0
-
-        sold_time_slot_sales_qs = time_slot_sales_qs.set_time_slot_sold(sold_to=cart.user)
-        # This is not SoldProduct
-        sold_store_packages_qs = store_packages_qs.sell_and_get_sold_package(sold_to=cart.user)
-        # This is SoldProduct
-        sold_store_paid_package_phase_qs = SoldStorePaidPackagePhase.objects.filter(
-            sold_store_package__in=list(sold_store_packages_qs)
-        )
-        # sold_class_products_qs = class_products_qs.add_class_product_sold(sold_to=cart.user)
-        # sold_webinar_products_qs = webinar_products_qs.add_webinar_product_sold(sold_to=cart.user)
-        sold_store_paid_package_phases_qs = sold_store_unpaid_package_phases_qs.sell_and_get_paid_phases()
-
         order = Order.objects.create(
             user=cart.user,
             status='paid',
             total=cart.total,
             subtotal=cart.subtotal,
-            used_discount=used_discount,
-            time_slot_sales_number_discount=time_slot_sales_number_discount_number
         )
 
-        order.sold_products.add(*list(sold_time_slot_sales_qs))
-        order.sold_products.add(*list(sold_store_paid_package_phase_qs))
-        # order.sold_products.add(*list(sold_class_products_qs))
-        # order.sold_products.add(*list(sold_webinar_products_qs))
-        order.sold_products.add(*list(sold_store_paid_package_phases_qs))
-
-        order.save()
-
         cart.delete()
-        if used_discount:
-            used_discount.update_decrease_use_limit()
 
         return order
 

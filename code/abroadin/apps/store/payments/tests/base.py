@@ -12,12 +12,12 @@ class PaymentBaseTests(StoreBaseTest):
         super().setUp()
 
         self.a_product_1 = Product.objects.create(price=0, active=True)
-        self.a_product_2 = Product.objects.create(price=10, active=True)
+        self.a_product_2 = Product.objects.create(price=10000, active=True)
 
         self.a_cart1 = Cart.objects.create(user=self.user1)
         self.a_cart1.products.add(self.a_product_1, self.a_product_2)
 
         self.a_cart2 = Cart.objects.create(user=self.user1)
+        self.a_cart2.products.add(self.a_product_1)
 
         self.a_cart3 = Cart.objects.create(user=self.user1)
-        self.a_cart3.products.add(self.a_product_1)
