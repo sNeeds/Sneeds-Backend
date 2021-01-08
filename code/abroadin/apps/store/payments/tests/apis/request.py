@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import status
 
 from abroadin.apps.store.storeBase.models import Product
+from abroadin.apps.store.carts.models import Cart
 from .base import PaymentAPIBaseTest
 
 User = get_user_model()
@@ -15,7 +16,7 @@ class PaymentAPIRequestTests(PaymentAPIBaseTest):
         return self._endpoint_test_method('payment:request', *args, **kwargs)
 
     def create_payment(self, user, cart, status):
-        data = self._test_request("post", user, status.HTTP_201_CREATED, data={"cartid": cart.id})
+        data = self._test_request("post", user, status, data={"cartid": cart.id})
         return data
 
     def test_create_201(self):
@@ -41,8 +42,18 @@ class PaymentAPIRequestTests(PaymentAPIBaseTest):
             self.assertEqual(data.get("detail"), "Zarinpal error")
             self.assertNotEqual(data.get("code"), None)
 
+        def create_low_price_cart_for_zarinpal(user):
+            """
+            Zarinpal rejects under 1000Toman prices
+            """
+            product = Product.objects.create(price=1)
+            cart = Cart.objects.create(user = user)
+            cart.products.add(product)
+            return cart
+
         data = self.create_payment(self.user1, self.a_cart3, status.HTTP_400_BAD_REQUEST)
         check_empty_cart_response(data)
 
-        data = self.create_payment(self.user1, self.a_cart2, status.HTTP_400_BAD_REQUEST)
+        f_cart = create_low_price_cart_for_zarinpal(self.user1)
+        data = self.create_payment(self.user1, f_cart, status.HTTP_400_BAD_REQUEST)
         check_zarinpal_error(data)
