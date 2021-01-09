@@ -7,13 +7,18 @@ app_name = "estimation.form"
 urlpatterns = [
     path('student-detailed-info/', views.StudentDetailedInfoListCreateAPIView.as_view(),
          name='student-detailed-info-list'),
-    path('student-detailed-info/<uuid:id>/', views.StudentDetailedInfoRetrieveUpdateAPIView.as_view(),
+    path('student-detailed-info/<int:id>/', views.StudentDetailedInfoRetrieveUpdateAPIView.as_view(),
          name='student-detailed-info-detail'),
     path('user-student-detailed-info/<int:user_id>/', views.UserStudentDetailedInfoRetrieveAPIView.as_view(),
          name='user-student-detailed-info-detail'),
 
     path('basic-form-fields/', views.BasicFormFieldListAPIView.as_view(),
          name="basic-form-fields-list"),
+
+    path('want-to-applies/', views.WantToApplyListAPIView.as_view(),
+         name="want-to-apply-list"),
+    path('want-to-applies/<int:id>/', views.WantToApplyDetailAPIView.as_view(),
+         name="want-to-apply-detail"),
 
     path('regular-certificates/', views.RegularLanguageCertificateListCreateAPIView.as_view(),
          name="regular-certificate-list"),
@@ -59,16 +64,6 @@ urlpatterns = [
          name="publication-list"),
     path('publications/<int:id>/', views.PublicationRetrieveDestroyAPIView.as_view(),
          name="publication-detail"),
-
-    path('want-to-applies/', views.WantToApplyListAPIView.as_view(),
-         name="want-to-apply-list"),
-    path('want-to-applies/<int:id>/', views.WantToApplyDetailAPIView.as_view(),
-         name="want-to-apply-detail"),
-
-    path('university-throughs/', views.EducationListAPIView.as_view(),
-         name="university-through-list"),
-    path('university-throughs/<int:id>/', views.EducationDetailAPIView.as_view(),
-         name="university-through-detail"),
 
     path('choices/grades/', views.GradesListAPIView.as_view()),
 

@@ -30,7 +30,7 @@ from .models import (
     Publication,
     Education,
     Grade,)
-# from .permissions import IsLanguageCertificateOwnerOrDetailedInfoWithoutUser
+
 from .serializers import (
     SemesterYearSerializer,
     LanguageCertificateSerializer,
@@ -47,12 +47,7 @@ from .serializers import (
     EducationSerializer,
     EducationRequestSerializer,
     GradeSerializer,)
-# from .permissions import (
-#     IsLanguageCertificateOwnerOrDetailedInfoWithoutUser,
-#     IsWantToApplyOwnerOrDetailedInfoWithoutUser,
-#     IsPublicationOwnerOrDetailedInfoWithoutUser,
-#     IsEducationOwnerOrDetailedInfoWithoutUser,
-# )
+
 from ...estimation.form.models import SDI_CT
 
 
@@ -86,23 +81,23 @@ class SemesterYearListAPIView(generics.CListAPIView):
 
 class LanguageCertificateListCreateAPIView(generics.CListCreateAPIView):
     model_class = LanguageCertificate
-    queryset = model_class.objects.all()
+    # queryset = model_class.objects.all()
+    queryset = None
     serializer_class = LanguageCertificateSerializer
 
     def get_queryset(self):
         user = self.request.user
         sdi_id = self.request.query_params.get('student-detailed-info', None)
         qs = self.queryset.filter(content_type=SDI_CT, object_id=sdi_id)
-        # qs = student_detailed_info_many_to_one_qs(user, sdi_id, self.model_class)
         return qs
 
 
 class LanguageCertificateRetrieveDestroyAPIView(generics.CRetrieveDestroyAPIView):
     lookup_field = 'id'
     model_class = LanguageCertificate
-    queryset = model_class.objects.all()
+    # queryset = model_class.objects.all()
+    queryset = None
     serializer_class = GMATCertificateSerializer
-    # permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
 class RegularLanguageCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
@@ -116,7 +111,6 @@ class RegularLanguageCertificateRetrieveDestroyAPIView(LanguageCertificateRetrie
     model_class = RegularLanguageCertificate
     queryset = model_class.objects.all()
     serializer_class = RegularLanguageCertificateSerializer
-    # permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
 class GMATCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
@@ -130,7 +124,6 @@ class GMATCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestroyAP
     model_class = GMATCertificate
     queryset = model_class.objects.all()
     serializer_class = GMATCertificateSerializer
-    # permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
 class GREGeneralCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
@@ -144,7 +137,6 @@ class GREGeneralCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDes
     model_class = GREGeneralCertificate
     queryset = model_class.objects.all()
     serializer_class = GREGeneralCertificateSerializer
-    # permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
 class GRESubjectCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
@@ -163,7 +155,6 @@ class GRESubjectCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDes
     model_class = GRESubjectCertificate
     queryset = model_class.objects.all()
     serializer_class = GRESubjectCertificateSerializer
-    # permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
 class GREBiologyCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
@@ -177,7 +168,6 @@ class GREBiologyCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDes
     model_class = GREBiologyCertificate
     queryset = model_class.objects.all()
     serializer_class = GREBiologyCertificateSerializer
-    # permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
 class GREPhysicsCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
@@ -191,7 +181,6 @@ class GREPhysicsCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDes
     model_class = GREPhysicsCertificate
     queryset = model_class.objects.all()
     serializer_class = GREPhysicsCertificateSerializer
-    # permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
 class GREPsychologyCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
@@ -205,7 +194,6 @@ class GREPsychologyCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieve
     model_class = GREPsychologyCertificate
     queryset = model_class.objects.all()
     serializer_class = GREPsychologyCertificateSerializer
-    # permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
 class DuolingoCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
@@ -219,11 +207,10 @@ class DuolingoCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestr
     model_class = DuolingoCertificate
     queryset = model_class.objects.all()
     serializer_class = DuolingoCertificateSerializer
-    # permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
 class PublicationListCreateAPIView(generics.CListCreateAPIView):
-    queryset = Publication.objects.all()
+    queryset = None
     serializer_class = PublicationSerializer
     request_serializer_class = PublicationRequestSerializer
 
@@ -243,13 +230,12 @@ class PublicationListCreateAPIView(generics.CListCreateAPIView):
 
 class PublicationRetrieveDestroyAPIView(generics.CRetrieveDestroyAPIView):
     lookup_field = 'id'
-    queryset = Publication.objects.all()
+    queryset = None
     serializer_class = PublicationSerializer
-    # permission_classes = [IsPublicationOwnerOrDetailedInfoWithoutUser]
 
 
 class EducationListAPIView(generics.CListCreateAPIView):
-    queryset = Education.objects.all()
+    queryset = None
     serializer_class = EducationSerializer
     request_serializer_class = EducationRequestSerializer
 
@@ -268,9 +254,8 @@ class EducationListAPIView(generics.CListCreateAPIView):
 
 class EducationDetailAPIView(generics.CRetrieveDestroyAPIView):
     lookup_field = 'id'
-    queryset = Education.objects.all()
+    queryset = None
     serializer_class = EducationSerializer
-    # permission_classes = [IsEducationOwnerOrDetailedInfoWithoutUser]
 
 
 class GradesListAPIView(generics.CListAPIView):
@@ -280,6 +265,18 @@ class GradesListAPIView(generics.CListAPIView):
 
 class LanguageCertificateTypeListAPIView(EnumViewList):
     enum_class = LanguageCertificate.LanguageCertificateType
+
+
+class WhichAuthorChoicesListAPIView(EnumViewList):
+    enum_class = Publication.WhichAuthorChoices
+
+
+class PublicationChoicesListAPIView(EnumViewList):
+    enum_class = Publication.PublicationChoices
+
+
+class JournalReputationChoicesListAPIView(EnumViewList):
+    enum_class = Publication.JournalReputationChoices
 
 
 class Akbar(CAPIView):

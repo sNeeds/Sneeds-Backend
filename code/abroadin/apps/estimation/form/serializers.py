@@ -16,7 +16,7 @@ from abroadin.apps.data.applydata import serializers as ad_serializers
 
 from .models import WantToApply, StudentDetailedInfo, SDI_CT
 
-from abroadin.apps.data.applydata.models import Education, RegularLanguageCertificate, Publication
+from abroadin.apps.data.applydata import models as ad_models
 
 LanguageCertificateType = abroadin.apps.estimation.form.models.LanguageCertificate.LanguageCertificateType
 
@@ -163,7 +163,7 @@ class PublicationRequestSerializer(ad_serializers.PublicationRequestSerializer):
                     if sdi.user is None and request_user.is_authenticated:
                         raise ValidationError(_("User can't set student_detailed_info of another user."))
                 except StudentDetailedInfo.DoesNotExist:
-                    ValidationError({Publication.content_object.fk_field: _("There is no object with this id")})
+                    ValidationError({'object_id': _("There is no object with this id")})
                 return super().validate(attrs)
             raise ValidationError({'content_type': _("Invalid or forbidden content_type")})
         else:
@@ -199,7 +199,7 @@ class EducationRequestSerializer(ad_serializers.EducationRequestSerializer):
                     if sdi.user is None and request_user.is_authenticated:
                         raise ValidationError(_("User can't set student_detailed_info of another user."))
                 except StudentDetailedInfo.DoesNotExist:
-                    ValidationError({Education.content_object.fk_field: _("There is no object with this id")})
+                    ValidationError({'object_id': _("There is no object with this id")})
                 return super().validate(attrs)
             raise ValidationError({'content_type': _("Invalid or forbidden content_type")})
         else:
@@ -236,7 +236,7 @@ class RegularLanguageCertificateSerializer(LanguageCertificateSerializer,
                     if sdi.user is None and request_user.is_authenticated:
                         raise ValidationError(_("User can't set student_detailed_info of another user."))
                 except StudentDetailedInfo.DoesNotExist:
-                    ValidationError({Publication.content_object.fk_field: _("There is no object with this id")})
+                    ValidationError({'object_id': _("There is no object with this id")})
                 return super().validate(attrs)
             raise ValidationError({'content_type': _("Invalid or forbidden content_type")})
         else:
@@ -304,45 +304,37 @@ class StudentDetailedInfoBaseSerializer(serializers.ModelSerializer):
         ]
 
     def get_regular_certificates(self, obj):
-        return self.get_certificates(obj, abroadin.apps.data.applydata.models.RegularLanguageCertificate,
-                                     RegularLanguageCertificateSerializer)
+        return self.get_certificates(obj, ad_models.RegularLanguageCertificate, RegularLanguageCertificateSerializer)
 
     def get_gmat_certificates(self, obj):
-        return self.get_certificates(obj, abroadin.apps.data.applydata.models.GMATCertificate,
-                                     GMATCertificateSerializer)
+        return self.get_certificates(obj, ad_models.GMATCertificate, GMATCertificateSerializer)
 
     def get_gre_general_certificates(self, obj):
-        return self.get_certificates(obj, abroadin.apps.data.applydata.models.GREGeneralCertificate,
-                                     GREGeneralCertificateSerializer)
+        return self.get_certificates(obj, ad_models.GREGeneralCertificate, GREGeneralCertificateSerializer)
 
     def get_gre_subject_certificates(self, obj):
-        return self.get_certificates(obj, abroadin.apps.data.applydata.models.GRESubjectCertificate,
-                                     GRESubjectCertificateSerializer)
+        return self.get_certificates(obj, ad_models.GRESubjectCertificate, GRESubjectCertificateSerializer)
 
     def get_gre_biology_certificates(self, obj):
-        return self.get_certificates(obj, abroadin.apps.data.applydata.models.GREBiologyCertificate,
-                                     GREBiologyCertificateSerializer)
+        return self.get_certificates(obj, ad_models.GREBiologyCertificate, GREBiologyCertificateSerializer)
 
     def get_gre_physics_certificates(self, obj):
-        return self.get_certificates(obj, abroadin.apps.data.applydata.models.GREPhysicsCertificate,
-                                     GREPhysicsCertificateSerializer)
+        return self.get_certificates(obj, ad_models.GREPhysicsCertificate, GREPhysicsCertificateSerializer)
 
     def get_gre_psychology_certificates(self, obj):
-        return self.get_certificates(obj, abroadin.apps.data.applydata.models.GREPsychologyCertificate,
-                                     GREPsychologyCertificateSerializer)
+        return self.get_certificates(obj, ad_models.GREPsychologyCertificate, GREPsychologyCertificateSerializer)
 
     def get_duolingo_certificates(self, obj):
-        return self.get_certificates(obj, abroadin.apps.data.applydata.models.DuolingoCertificate,
-                                     DuolingoCertificateSerializer)
+        return self.get_certificates(obj, ad_models.DuolingoCertificate, DuolingoCertificateSerializer)
 
     def get_universities(self, obj):
-        qs = Education.objects.filter(
+        qs = ad_models.Education.objects.filter(
             content_type=SDI_CT, object_id=obj.id
         )
         return EducationSerializer(qs, many=True, context=self.context).data
 
     def get_publications(self, obj):
-        qs = Publication.objects.filter(
+        qs = ad_models.Publication.objects.filter(
             content_type=SDI_CT, object_id=obj.id
         )
         return PublicationSerializer(qs, many=True, context=True).data

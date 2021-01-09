@@ -15,22 +15,6 @@ def pre_save_publication(sender, instance, *args, **kwargs):
     instance.value = compute_publication_value(instance)
 
 
-def pre_save_education(sender, instance, *args, **kwargs):
-    instance.value = instance.compute_value()
-
-
-def post_save_language_certificate(sender, instance, *args, **kwargs):
-    if instance.content_type == SDI_CT:
-        instance.content_object.save()
-    pass
-
-
-def post_save_education(sender, instance, *args, **kwargs):
-    if instance.content_type == SDI_CT:
-        instance.content_object.save()
-    pass
-
-
 def post_save_publication(sender, instance, *args, **kwargs):
     if instance.content_type == SDI_CT:
         instance.content_object.save()
@@ -42,19 +26,37 @@ def pre_delete_publication(sender, instance, *args, **kwargs):
 
 
 def post_delete_publication(sender, instance, *args, **kwargs):
-    if instance.content_type == SDI_CT:
+    # Because of generic fk and cascade deletion
+    if instance.content_type == SDI_CT and instance.content_object:
         instance.content_object.save()
     pass
+
+
+def pre_save_education(sender, instance, *args, **kwargs):
+    instance.value = instance.compute_value()
+
+
+def post_save_education(sender, instance, *args, **kwargs):
+    # Because of generic fk and cascade deletion
+    if instance.content_type == SDI_CT and instance.content_object:
+        instance.content_object.save()
 
 
 def post_delete_education(sender, instance, *args, **kwargs):
-    if instance.content_type == SDI_CT:
+    # Because of generic fk and cascade deletion
+    if instance.content_type == SDI_CT and instance.content_object:
         instance.content_object.save()
-    pass
+
+
+def post_save_language_certificate(sender, instance, *args, **kwargs):
+    # Because of generic fk and cascade deletion
+    if instance.content_type == SDI_CT and instance.content_object:
+        instance.content_object.save()
 
 
 def post_delete_language_certificate(sender, instance, *args, **kwargs):
-    if instance.content_type == SDI_CT:
+    # Because of generic fk and cascade deletion
+    if instance.content_type == SDI_CT and instance.content_object:
         instance.content_object.save()
 
 

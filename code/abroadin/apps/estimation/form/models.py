@@ -29,7 +29,6 @@ from abroadin.apps.data.applydata import models as ad_models
 from abroadin.apps.data.account.validators import validate_resume_file_size
 from abroadin.base.python.classes import BooleanList
 
-import django.db.models.deletion
 
 
 # StudentDetailedInfo_CONTENT_TYPE
@@ -46,7 +45,6 @@ class WantToApply(models.Model):
         null=True, blank=True,
     )
 
-    # s = models.ForeignKey()
 
     countries = models.ManyToManyField(Country, blank=True)
 
@@ -61,8 +59,6 @@ class WantToApply(models.Model):
 
 class StudentDetailedInfoBase(models.Model):
     old_id = models.UUIDField(null=True, blank=True)
-
-    # id = models.IntegerField(auto_created=True, primary_key=True, serialize=False, verbose_name='NEW_ID', default=1)
 
     publications_to_base = GenericRelation(
         Publication, related_query_name='student_detailed_info_base'
@@ -106,6 +102,7 @@ class StudentDetailedInfoBase(models.Model):
             FileExtensionValidator(allowed_extensions=['pdf']), validate_resume_file_size
         ]
     )
+
     related_work_experience = models.PositiveIntegerField(
         null=True,
         blank=True,

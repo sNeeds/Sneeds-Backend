@@ -198,6 +198,8 @@ class EducationRequestSerializer(serializers.ModelSerializer):
     content_type = GenericContentTypeRelatedField()
     content_url = GenericContentObjectRelatedURL()
 
+# from abroadin.apps.estimation.form.models import StudentDetailedInfoBase
+# sdi = StudentDetailedInfoBase.objects.get(pk=712)
     class Meta:
         model = Education
         fields = [

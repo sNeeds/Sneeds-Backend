@@ -57,4 +57,13 @@ urlpatterns = [
 
     path('choices/language-certificate-choices/', views.LanguageCertificateTypeListAPIView.as_view(),
          name="language-certificate-choices-list"),
+
+    path('choices/which-author-choices/', views.WhichAuthorChoicesListAPIView.as_view(),
+         name="which-author-choices-list"),
+
+    path('choices/publication-choices/', views.PublicationChoicesListAPIView.as_view(),
+         name="publication-choices-list"),
+
+    path('choices/journal-reputation-choices/', views.JournalReputationChoicesListAPIView.as_view(),
+         name="journal-reputation-choices-list"),
 ]

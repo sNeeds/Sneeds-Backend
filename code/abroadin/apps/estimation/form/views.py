@@ -11,27 +11,15 @@ from abroadin.base.api.enum_views import EnumViewList
 from abroadin.base.api.viewsets import CAPIView
 from abroadin.base.api.permissions import permission_class_factory
 
-from abroadin.apps.data.applydata.models import (
-    LanguageCertificate,
-    RegularLanguageCertificate,
-    GMATCertificate,
-    GREGeneralCertificate,
-    GRESubjectCertificate,
-    GREBiologyCertificate,
-    GREPhysicsCertificate,
-    GREPsychologyCertificate,
-    DuolingoCertificate,
-    Education,
-)
+from abroadin.apps.data.applydata import models as ad_models
+from abroadin.apps.data.applydata import views as ad_views
 
 from .models import (
-    SemesterYear,
     StudentDetailedInfo,
     WantToApply,
-    Publication,
-    Grade,
     BasicFormField,
     SDI_CT)
+
 from .serializers import (
     SemesterYearSerializer,
     BasicFormFieldSerializer,
@@ -149,7 +137,7 @@ class UserStudentDetailedInfoRetrieveAPIView(generics.CRetrieveAPIView):
 
 class SemesterYearListAPIView(generics.CListAPIView):
     THIS_YEAR = timezone.now().year
-    queryset = SemesterYear.objects.all().filter(year__gte=THIS_YEAR)
+    queryset = ad_models.SemesterYear.objects.all().filter(year__gte=THIS_YEAR)
     serializer_class = SemesterYearSerializer
 
 
@@ -176,7 +164,7 @@ class BasicFormFieldListAPIView(generics.CListAPIView):
 
 
 class LanguageCertificateListCreateAPIView(generics.CListCreateAPIView):
-    model_class = LanguageCertificate
+    model_class = ad_models.LanguageCertificate
     queryset = model_class.objects.all()
     serializer_class = LanguageCertificateSerializer
 
@@ -189,60 +177,60 @@ class LanguageCertificateListCreateAPIView(generics.CListCreateAPIView):
 
 class LanguageCertificateRetrieveDestroyAPIView(generics.CRetrieveDestroyAPIView):
     lookup_field = 'id'
-    model_class = LanguageCertificate
+    model_class = ad_models.LanguageCertificate
     queryset = model_class.objects.all()
     serializer_class = GMATCertificateSerializer
     permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
 class RegularLanguageCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
-    model_class = RegularLanguageCertificate
+    model_class = ad_models.RegularLanguageCertificate
     queryset = model_class.objects.all()
     serializer_class = RegularLanguageCertificateSerializer
 
 
 class RegularLanguageCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestroyAPIView):
     lookup_field = 'id'
-    model_class = RegularLanguageCertificate
+    model_class = ad_models.RegularLanguageCertificate
     queryset = model_class.objects.all()
     serializer_class = RegularLanguageCertificateSerializer
     permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
 class GMATCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
-    model_class = GMATCertificate
+    model_class = ad_models.GMATCertificate
     queryset = model_class.objects.all()
     serializer_class = GMATCertificateSerializer
 
 
 class GMATCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestroyAPIView):
     lookup_field = 'id'
-    model_class = GMATCertificate
+    model_class = ad_models.GMATCertificate
     queryset = model_class.objects.all()
     serializer_class = GMATCertificateSerializer
     permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
 class GREGeneralCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
-    model_class = GREGeneralCertificate
+    model_class = ad_models.GREGeneralCertificate
     queryset = model_class.objects.all()
     serializer_class = GREGeneralCertificateSerializer
 
 
 class GREGeneralCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestroyAPIView):
     lookup_field = 'id'
-    model_class = GREGeneralCertificate
+    model_class = ad_models.GREGeneralCertificate
     queryset = model_class.objects.all()
     serializer_class = GREGeneralCertificateSerializer
     permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
 class GRESubjectCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
-    model_class = GRESubjectCertificate
+    model_class = ad_models.GRESubjectCertificate
     separate_sub_certificates = [
-        LanguageCertificate.LanguageCertificateType.GRE_PSYCHOLOGY,
-        LanguageCertificate.LanguageCertificateType.GRE_BIOLOGY,
-        LanguageCertificate.LanguageCertificateType.GRE_PHYSICS,
+        ad_models.LanguageCertificate.LanguageCertificateType.GRE_PSYCHOLOGY,
+        ad_models.LanguageCertificate.LanguageCertificateType.GRE_BIOLOGY,
+        ad_models.LanguageCertificate.LanguageCertificateType.GRE_PHYSICS,
     ]
     queryset = model_class.objects.all().exclude(certificate_type__in=separate_sub_certificates)
     serializer_class = GRESubjectCertificateSerializer
@@ -250,63 +238,63 @@ class GRESubjectCertificateListCreateAPIView(LanguageCertificateListCreateAPIVie
 
 class GRESubjectCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestroyAPIView):
     lookup_field = 'id'
-    model_class = GRESubjectCertificate
+    model_class = ad_models.GRESubjectCertificate
     queryset = model_class.objects.all()
     serializer_class = GRESubjectCertificateSerializer
     permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
 class GREBiologyCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
-    model_class = GREBiologyCertificate
+    model_class = ad_models.GREBiologyCertificate
     queryset = model_class.objects.all()
     serializer_class = GREBiologyCertificateSerializer
 
 
 class GREBiologyCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestroyAPIView):
     lookup_field = 'id'
-    model_class = GREBiologyCertificate
+    model_class = ad_models.GREBiologyCertificate
     queryset = model_class.objects.all()
     serializer_class = GREBiologyCertificateSerializer
     permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
 class GREPhysicsCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
-    model_class = GREPhysicsCertificate
+    model_class = ad_models.GREPhysicsCertificate
     queryset = model_class.objects.all()
     serializer_class = GREPhysicsCertificateSerializer
 
 
 class GREPhysicsCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestroyAPIView):
     lookup_field = 'id'
-    model_class = GREPhysicsCertificate
+    model_class = ad_models.GREPhysicsCertificate
     queryset = model_class.objects.all()
     serializer_class = GREPhysicsCertificateSerializer
     permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
 class GREPsychologyCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
-    model_class = GREPsychologyCertificate
+    model_class = ad_models.GREPsychologyCertificate
     queryset = model_class.objects.all()
     serializer_class = GREPsychologyCertificateSerializer
 
 
 class GREPsychologyCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestroyAPIView):
     lookup_field = 'id'
-    model_class = GREPsychologyCertificate
+    model_class = ad_models.GREPsychologyCertificate
     queryset = model_class.objects.all()
     serializer_class = GREPsychologyCertificateSerializer
     permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
 class DuolingoCertificateListCreateAPIView(LanguageCertificateListCreateAPIView):
-    model_class = DuolingoCertificate
+    model_class = ad_models.DuolingoCertificate
     queryset = model_class.objects.all()
     serializer_class = DuolingoCertificateSerializer
 
 
 class DuolingoCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestroyAPIView):
     lookup_field = 'id'
-    model_class = DuolingoCertificate
+    model_class = ad_models.DuolingoCertificate
     queryset = model_class.objects.all()
     serializer_class = DuolingoCertificateSerializer
     permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
@@ -352,7 +340,7 @@ class WantToApplyDetailAPIView(generics.CRetrieveUpdateDestroyAPIView):
 
 
 class PublicationListCreateAPIView(generics.CListCreateAPIView):
-    queryset = Publication.objects.all()
+    queryset = ad_models.Publication.objects.all()
     serializer_class = PublicationSerializer
     request_serializer_class = PublicationRequestSerializer
 
@@ -372,13 +360,13 @@ class PublicationListCreateAPIView(generics.CListCreateAPIView):
 
 class PublicationRetrieveDestroyAPIView(generics.CRetrieveDestroyAPIView):
     lookup_field = 'id'
-    queryset = Publication.objects.all()
+    queryset = ad_models.Publication.objects.all()
     serializer_class = PublicationSerializer
     permission_classes = [IsPublicationOwnerOrDetailedInfoWithoutUser]
 
 
 class EducationListAPIView(generics.CListCreateAPIView):
-    queryset = Education.objects.all()
+    queryset = ad_models.Education.objects.all()
     serializer_class = EducationSerializer
     request_serializer_class = EducationRequestSerializer
 
@@ -397,26 +385,26 @@ class EducationListAPIView(generics.CListCreateAPIView):
 
 class EducationDetailAPIView(generics.CRetrieveDestroyAPIView):
     lookup_field = 'id'
-    queryset = Education.objects.all()
+    queryset = ad_models.Education.objects.all()
     serializer_class = EducationSerializer
     permission_classes = [IsEducationOwnerOrDetailedInfoWithoutUser]
 
 
 class GradesListAPIView(generics.CListAPIView):
-    queryset = Grade.objects.all()
+    queryset = ad_models.Grade.objects.all()
     serializer_class = GradeSerializer
 
 
 class WhichAuthorChoicesListAPIView(EnumViewList):
-    enum_class = Publication.WhichAuthorChoices
+    enum_class = ad_models.Publication.WhichAuthorChoices
 
 
 class PublicationChoicesListAPIView(EnumViewList):
-    enum_class = Publication.PublicationChoices
+    enum_class = ad_models.Publication.PublicationChoices
 
 
 class JournalReputationChoicesListAPIView(EnumViewList):
-    enum_class = Publication.JournalReputationChoices
+    enum_class = ad_models.Publication.JournalReputationChoices
 
 
 class PaymentAffordabilityChoicesListAPIView(EnumViewList):
@@ -428,7 +416,7 @@ class GenderChoicesListAPIView(EnumViewList):
 
 
 class LanguageCertificateTypeListAPIView(EnumViewList):
-    enum_class = LanguageCertificate.LanguageCertificateType
+    enum_class = ad_models.LanguageCertificate.LanguageCertificateType
 
 
 class Akbar(CAPIView):
