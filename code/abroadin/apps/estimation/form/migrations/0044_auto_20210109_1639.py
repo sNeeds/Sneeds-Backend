@@ -80,5 +80,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(code=update_resume_file_field, reverse_code=migrations.RunPython.noop)
+        migrations.RunPython(code=update_resume_file_field, reverse_code=reverse_update_resume_file_field)
     ]
