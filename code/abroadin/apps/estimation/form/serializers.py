@@ -337,7 +337,7 @@ class StudentDetailedInfoBaseSerializer(serializers.ModelSerializer):
         qs = ad_models.Publication.objects.filter(
             content_type=SDI_CT, object_id=obj.id
         )
-        return PublicationSerializer(qs, many=True, context=True).data
+        return PublicationSerializer(qs, many=True, context=self.context).data
 
     def create(self, validated_data):
         raise ValidationError(_("Create object through this serializer is not allowed"))
