@@ -1,9 +1,9 @@
 from rest_framework.permissions import BasePermission
 
 
-class ConsultantDepositInfoOwner(BasePermission):
-    def has_object_permission(self, request, view, obj):
-        if obj.consultant.user == request.user:
-            return True
+class CartOwnerPermission(BasePermission):
+    def has_permission(self, request, view):
+        user = view.get_user()
+        cart = view.get_cart()
 
-        return False
+        return cart.user == user

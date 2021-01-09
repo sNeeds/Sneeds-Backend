@@ -1,4 +1,3 @@
-from rest_framework.exceptions import APIException
 from zeep import Client
 
 from django.conf import settings
@@ -6,18 +5,12 @@ from django.conf import settings
 from rest_framework import permissions
 from rest_framework.response import Response
 
-from abroadin.base.api import generics
-from abroadin.apps.store.orders.models import Order
-from abroadin.base.api.generics import CListAPIView
-from abroadin.base.api.viewsets import CAPIView
-from .serializers import ConsultantDepositInfoSerializer
-from .permissions import ConsultantDepositInfoOwner
-from .models import ConsultantDepositInfo
-from abroadin.apps.users.consultants.models import ConsultantProfile
 from .models import PayPayment
+from abroadin.base.api.viewsets import CAPIView
+from abroadin.apps.store.orders.models import Order
 from abroadin.apps.store.carts.models import Cart
 from abroadin.settings.config.variables import FRONTEND_URL
-from abroadin.utils.custom.custom_permissions import IsConsultantPermission
+from .permissions import CartOwnerPermission
 
 ZARINPAL_MERCHANT = settings.ZARINPAL_MERCHANT
 
@@ -37,7 +30,7 @@ class SendRequest(CAPIView):
         "cartid":12
     }
     """
-    permission_classes = [permissions.IsAuthenticated, ]
+    permission_classes = [permissions.IsAuthenticated, CartOwnerPermission]
 
     def _post_pay_request(self, client, cart):
         result = client.service.PaymentRequest(
@@ -50,11 +43,12 @@ class SendRequest(CAPIView):
         )
         return result
 
-    def get_user(self, request):
-        return request.user
+    def get_user(self):
+        return self.request.user
 
-    def get_cart(self, cart_id):
-        cart = Cart.objects.get(id=cart_id)
+    def get_cart(self):
+        data = self.request.data
+        cart = Cart.objects.get(id=data.get('cartid'))
         return cart
 
     def check_result_ok(self, result):
@@ -78,24 +72,26 @@ class SendRequest(CAPIView):
     def sell_cart(self, cart):
         return Order.objects.sell_cart_create_order(cart)
 
+    def is_user_cart_owner_permission(self, user, cart):
+        return cart.user == user
+
     def zero_price_has_product_response(self, order_id):
-        return Response({"detail": "Success", "ReflD": "00000000", "order": order_id}, 200)
+        return Response({"detail": "Success", "ReflD": "00000000", "order": order_id}, 201)
 
     def cart_empty_response(self):
-        return Response({"detail": "Can not pay, The price is 0 but no products are included."}, 400)
+        return Response({"detail": "Cart is empty"}, 400)
 
     def payment_request_ok_response(self, result):
-        return Response({"redirect": 'https://sandbox.zarinpal.com/pg/StartPay/' + str(result.Authority)}, 200)
+        return Response({"redirect": 'https://sandbox.zarinpal.com/pg/StartPay/' + str(result.Authority)}, 201)
 
     def payment_request_not_ok_response(self, result):
-        return Response({"detail": 'Error code: ' + str(result.Status)}, 400)
+        return Response({"detail": 'Zarinpal error', 'code': str(result.Status)}, 400)
 
     def post(self, request, *args, **kwargs):
-        data = request.data
         client = Client('https://sandbox.zarinpal.com/pg/services/WebGate/wsdl')
 
-        user = self.get_user(request)
-        cart = self.get_cart(data.get('cartid'))
+        user = self.get_user()
+        cart = self.get_cart()
 
         try:
             result = self.send_pay_request(client, cart)
@@ -162,21 +158,3 @@ class Verify(CAPIView):
 
         else:
             return Response({"detail": "Transaction failed or canceled by user"}, status=400)
-
-
-class VerifyTest(CAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get(self, request, *args, **kwargs):
-        user = request.user
-        if not user.is_superuser:
-            return Response("Not superuser!")
-
-        id = kwargs.get("cartid")
-        try:
-            cart = Cart.objects.get(id=id)
-            Order.objects.sell_cart_create_order(cart)
-        except Cart.DoesNotExist:
-            return Response("No cart found!")
-
-        return Response()
