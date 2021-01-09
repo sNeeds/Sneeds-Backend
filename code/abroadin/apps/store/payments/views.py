@@ -1,3 +1,4 @@
+from rest_framework.exceptions import APIException
 from zeep import Client
 
 from django.conf import settings
@@ -6,11 +7,12 @@ from rest_framework import permissions
 from rest_framework.response import Response
 
 from .models import PayPayment
+from .permissions import CartOwnerPermission
+from abroadin.base.api.permissions import permission_class_factory
 from abroadin.base.api.viewsets import CAPIView
 from abroadin.apps.store.orders.models import Order
 from abroadin.apps.store.carts.models import Cart
 from abroadin.settings.config.variables import FRONTEND_URL
-from .permissions import CartOwnerPermission
 
 ZARINPAL_MERCHANT = settings.ZARINPAL_MERCHANT
 
@@ -30,7 +32,10 @@ class SendRequest(CAPIView):
         "cartid":12
     }
     """
-    permission_classes = [permissions.IsAuthenticated, CartOwnerPermission]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        permission_class_factory(CartOwnerPermission, apply_on=['POST'])
+    ]
 
     def _post_pay_request(self, client, cart):
         result = client.service.PaymentRequest(
@@ -46,10 +51,22 @@ class SendRequest(CAPIView):
     def get_user(self):
         return self.request.user
 
-    def get_cart(self):
-        data = self.request.data
-        cart = Cart.objects.get(id=data.get('cartid'))
+    def _get_cart_or_raise_exception(self, cart_id):
+        try:
+            cart = Cart.objects.get(id=cart_id)
+        except Cart.DoesNotExist:
+            raise APIException(detail={"detail": "Cart does not exist"}, code=400)
         return cart
+
+    def get_cart_or_none(self):
+        data = self.request.data
+        cart_id = data.get('cartid')
+
+        if cart_id:
+            cart = self._get_cart_or_raise_exception(cart_id)
+            return cart
+
+        return None
 
     def check_result_ok(self, result):
         return result.Status == 100
