@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='product',
             name='real_type',
-            field=models.ForeignKey(default=None, null = True, editable=False, on_delete=django.db.models.deletion.PROTECT, to='contenttypes.contenttype'),
+            field=models.ForeignKey(default=None, editable=False, on_delete=django.db.models.deletion.PROTECT, to='contenttypes.contenttype'),
             preserve_default=False,
         ),
     ]
