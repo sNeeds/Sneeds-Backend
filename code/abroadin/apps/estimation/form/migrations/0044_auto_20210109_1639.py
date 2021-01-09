@@ -43,11 +43,23 @@ def update_resume_file_field(apps, schema_editor):
             print('no file in old path:', old_upper_dir_path)
 
 
+############################################################################################
+
+
+def for_reverse_old_file_upper_dir_relative_path(obj):
+    return "account/files/form/{}".format(obj.old_id)
+
+
+def for_reverse_old_file_upper_dir_absolute_path(obj):
+    return '/'.join(
+        settings.BASE_DIR.split('/')[:-1] + [settings.MEDIA_ROOT, for_reverse_old_file_upper_dir_relative_path(obj)])
+
+
 def reverse_update_resume_file_field(apps, schema_editor):
     StudentDetailedInfoBase = apps.get_model('form', 'studentdetailedinfobase')
 
     for obj in StudentDetailedInfoBase.objects.all():
-        old_upper_dir_path = old_file_upper_dir_absolute_path(obj)
+        old_upper_dir_path = for_reverse_old_file_upper_dir_absolute_path(obj)
         if not old_upper_dir_path:
             continue
         new_upper_dir_path = new_file_upper_dir_absolute_path(obj)
