@@ -61,6 +61,5 @@ class PaymentAPIRequestTests(PaymentAPIBaseTest):
     def test_create_401(self):
         self.create_payment(None, self.a_cart1, status.HTTP_401_UNAUTHORIZED)
 
-        self.create_payment(self.user2, self.a_cart1, status.HTTP_401_UNAUTHORIZED)
-
-
+    def test_create_403(self):
+        self.create_payment(self.user2, self.a_cart1, status.HTTP_403_FORBIDDEN)

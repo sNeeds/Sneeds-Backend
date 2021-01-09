@@ -30,7 +30,7 @@ class SendRequest(CAPIView):
         "cartid":12
     }
     """
-    permission_classes = [permissions.IsAuthenticated, CartOwner]
+    permission_classes = [permissions.IsAuthenticated, CartOwnerPermission]
 
     def _post_pay_request(self, client, cart):
         result = client.service.PaymentRequest(
