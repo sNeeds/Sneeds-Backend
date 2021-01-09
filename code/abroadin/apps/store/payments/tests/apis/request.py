@@ -51,12 +51,22 @@ class PaymentAPIRequestTests(PaymentAPIBaseTest):
             cart.products.add(product)
             return cart
 
+        def create_wrong_cart_id():
+            data = self._test_request("post", None, status.HTTP_400_BAD_REQUEST, data={"cartid": -1})
+            return data
+
+        def check_wrong_id_response(data):
+            self.assertEqual(data.get("detail"), "Cart does not exist")
+
         data = self.create_payment(self.user1, self.a_cart3, status.HTTP_400_BAD_REQUEST)
         check_empty_cart_response(data)
 
         f_cart = create_low_price_cart_for_zarinpal(self.user1)
         data = self.create_payment(self.user1, f_cart, status.HTTP_400_BAD_REQUEST)
         check_zarinpal_error(data)
+
+        data = create_wrong_cart_id()
+        check_wrong_id_response(data)
 
     def test_create_401(self):
         self.create_payment(None, self.a_cart1, status.HTTP_401_UNAUTHORIZED)

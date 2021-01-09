@@ -108,7 +108,7 @@ class SendRequest(CAPIView):
         client = Client('https://sandbox.zarinpal.com/pg/services/WebGate/wsdl')
 
         user = self.get_user()
-        cart = self.get_cart()
+        cart = self.get_cart_or_none()
 
         try:
             result = self.send_pay_request(client, cart)

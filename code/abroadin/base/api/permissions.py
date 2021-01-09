@@ -3,8 +3,6 @@ def permission_class_factory(cls: object, apply_on: list):
 
     def decorator(original_func, method_in: list):
         def wrapper(self, request, *args, **kwargs):
-            print("\nrequest.method", request.method)
-            print("method_in", method_in)
 
             if request.method in method_in:
                 return original_func(self, request, *args, **kwargs)
