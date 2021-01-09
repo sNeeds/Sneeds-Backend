@@ -1,10 +1,10 @@
-from rest_framework.exceptions import APIException
 from zeep import Client
 
 from django.conf import settings
 
 from rest_framework import permissions
 from rest_framework.response import Response
+from rest_framework.exceptions import NotFound
 
 from .models import PayPayment
 from .permissions import CartOwnerPermission
@@ -55,7 +55,7 @@ class SendRequest(CAPIView):
         try:
             cart = Cart.objects.get(id=cart_id)
         except Cart.DoesNotExist:
-            raise APIException(detail={"detail": "Cart does not exist"}, code=400)
+            raise NotFound(detail={"detail": "Cart does not exist"}, code=400)
         return cart
 
     def get_cart_or_none(self):
