@@ -12,7 +12,6 @@ from abroadin.base.api.permissions import permission_class_factory
 from abroadin.base.api.viewsets import CAPIView
 from abroadin.apps.store.orders.models import Order
 from abroadin.apps.store.carts.models import Cart
-from abroadin.settings.config.variables import FRONTEND_URL
 
 ZARINPAL_MERCHANT = settings.ZARINPAL_MERCHANT
 
@@ -177,7 +176,8 @@ class Verify(CAPIView):
         authority = self.get_authority()
         payment = self.get_payment(user, authority)
 
-        result = client.service.PaymentVerification(ZARINPAL_MERCHANT, authority, int(payment.cart.total))
+        total = int(payment.cart.total)
+        result = client.service.PaymentVerification(ZARINPAL_MERCHANT, authority, total)
 
         if result.Status == 100:
             order = self.sell_cart(payment.cart)
