@@ -44,7 +44,7 @@ class SendRequest(CAPIView):
             "پرداخت ابرادین",
             cart.user.email,
             cart.user.phone_number,
-            "http://127.0.0.1:8000/" + "user/payment/accept/",
+            FRONTEND_URL + "user/payment/accept/",
         )
         return result
 
