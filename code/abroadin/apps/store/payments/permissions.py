@@ -1,9 +1,13 @@
 from rest_framework.permissions import BasePermission
 
 
-class ConsultantDepositInfoOwner(BasePermission):
-    def has_object_permission(self, request, view, obj):
-        if obj.consultant.user == request.user:
-            return True
+class CartOwnerPermission(BasePermission):
+    def has_permission(self, request, view):
+        user = view.get_user()
+        cart = view.get_cart_or_none()
 
-        return False
+        if cart:
+            return cart.user == user
+
+        # For DRF view because requests to endpoint without data
+        return True
