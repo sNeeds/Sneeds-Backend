@@ -9,12 +9,11 @@ from abroadin.apps.data.account.serializers import UniversitySerializer
 from abroadin.apps.data.account.models import University, Country
 from abroadin.apps.estimation.estimations.chances import AdmissionChance
 from abroadin.apps.estimation.form.permissions import CompletedForm
-from abroadin.apps.users.customAuth.permissions import UserEmailIsVerified
 
 
 class SimilarUniversitiesListView(CAPIView):
     lookup_url_kwarg = 'form_id'
-    permission_classes = [CompletedForm, UserEmailIsVerified]
+    permission_classes = [CompletedForm]
 
     def get_form_obj(self, form_id):
         try:
@@ -140,39 +139,3 @@ class SimilarUniversitiesListView(CAPIView):
         ]
 
         return Response(data)
-        # For later use
-
-        # related_applied_tos = AppliedTo.objects.none()
-        #
-        # try:
-        #     # Want to apply is 1 to 1 with form
-        #     want_to_apply = WantToApply.objects.get(student_detailed_info__id=form.id)
-        #
-        #     # Same university destination
-        #     want_to_apply_universities_list = want_to_apply.universities.all().list()
-        #     related_applied_tos |= AppliedTo.objects.filter(university__in=want_to_apply_universities_list)
-        #
-        #     # Same country destination
-        #     want_to_apply_countries_list = want_to_apply.countries.all().list()
-        #     related_applied_tos |= AppliedTo.objects.filter(university__country__in=want_to_apply_countries_list)
-        #
-        #     # Filter only AppliedTos which specified in want to apply grades
-        #     want_to_apply_grades = want_to_apply.grades.all()
-        #     if want_to_apply_grades:  # list exists
-        #         related_applied_tos = related_applied_tos.filter(
-        #             grade__in=want_to_apply_grades.values_list('name', flat=True)
-        #         )
-        #
-        #     related_applied_tos = related_applied_tos.filter(accepted=True)
-        #     related_applied_tos = related_applied_tos.distinct()
-        #
-        # data = AppliedToExtendedSerializer(
-        #         related_applied_tos,
-        #         context={'request': request},
-        #         many=True
-        #     ).data
-        #
-        #     return Response(data)
-        #
-        # except WantToApply.DoesNotExist:
-        #     return Response([])

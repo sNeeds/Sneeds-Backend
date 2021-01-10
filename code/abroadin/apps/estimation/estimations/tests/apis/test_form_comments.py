@@ -2,8 +2,9 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import status
 
-from abroadin.apps.estimation.form.models import WantToApply, StudentDetailedInfo, Education, GradeChoices
-from abroadin.apps.estimation.tests.apis import EstimationBaseTest
+from abroadin.apps.estimation.form.models import Education, GradeChoices
+from abroadin.apps.estimation.form.models import WantToApply, StudentDetailedInfo
+from abroadin.apps.estimation.tests.base import EstimationBaseTest
 from .test_base import EstimationsAppAPITests
 from abroadin.apps.estimation.form.tests.apis.form_completion.base import BaseTests as FormCompletionBaseTests
 

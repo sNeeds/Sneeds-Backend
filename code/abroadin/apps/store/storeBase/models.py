@@ -1,92 +1,44 @@
+from itertools import chain
+
+from django.contrib.contenttypes.models import ContentType
 from django.db import models, transaction
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 from abroadin.apps.users.consultants.models import ConsultantProfile
+from abroadin.base.models.abstracts import InheritanceCastModel
 
 User = get_user_model()
 
 
 class ProductQuerySet(models.QuerySet):
     def get_time_slot_sales(self):
-        result_qs = TimeSlotSale.objects.none()
-        for i in self.all():
-            try:
-                time_slot_sale = i.timeslotsale
-                result_qs |= TimeSlotSale.objects.filter(pk=time_slot_sale.id)
-            except TimeSlotSale.DoesNotExist:
-                pass
-        return result_qs
+        pass
 
     def get_basic_products(self):
-        from abroadin.apps.store.basicProducts.models import BasicProduct
-        result_qs = BasicProduct.objects.none()
-        for i in self.all():
-            try:
-                basic_product = i.basicproduct
-                result_qs |= BasicProduct.objects.filter(pk=basic_product.id)
-            except BasicProduct.DoesNotExist:
-                pass
-        return result_qs
+        pass
 
     def get_webinar_products(self):
-        # from abroadin.apps.store.basicProducts.models import WebinarProduct
-        # result_qs = WebinarProduct.objects.none()
-        # for i in self.all():
-        #     try:
-        #         webinar_product = i.webinarproduct
-        #         result_qs |= WebinarProduct.objects.filter(pk=webinar_product.id)
-        #     except WebinarProduct.DoesNotExist:
-        #         pass
-        # return result_qs
-        return None
+        pass
 
     def get_class_products(self):
-        # from abroadin.apps.store.basicProducts.models import ClassProduct
-        # result_qs = ClassProduct.objects.none()
-        # for i in self.all():
-        #     try:
-        #         class_product = i.classproduct
-        #         result_qs |= ClassProduct.objects.filter(pk=class_product.id)
-        #     except ClassProduct.DoesNotExist:
-        #         pass
-        # return result_qs
-        return None
+        pass
 
     def get_store_packages(self):
-        from abroadin.apps.store.storePackages.models import StorePackage
-
-        result_qs = StorePackage.objects.none()
-        for i in self.all():
-            try:
-                store_package = i.storepackage
-                result_qs |= StorePackage.objects.filter(pk=store_package.id)
-            except StorePackage.DoesNotExist:
-                pass
-
-        return result_qs
+        pass
 
     def get_sold_store_unpaid_package_phases(self):
-        from abroadin.apps.store.storePackages.models import SoldStoreUnpaidPackagePhase
-
-        result_qs = SoldStoreUnpaidPackagePhase.objects.none()
-        for i in self.all():
-            try:
-                sold_store_unpaid_package_phase = i.soldstoreunpaidpackagephase
-                result_qs |= SoldStoreUnpaidPackagePhase.objects.filter(
-                    pk=sold_store_unpaid_package_phase.id
-                )
-            except SoldStoreUnpaidPackagePhase.DoesNotExist:
-                pass
-
-        return result_qs
+        pass
 
     def are_all_active(self):
-        for p in self._chain():
-            if not p.active:
-                return False
-        return True
+        return not self.filter(active=False).exists()
+
+    def cast_subclasses(self):
+        objs_chain = []
+        for obj in self.all():
+            objs_chain = chain(objs_chain, [obj.cast()])
+        return objs_chain
 
 
 class SoldProductQuerySet(models.QuerySet):
@@ -173,11 +125,17 @@ class TimeSlotSaleManager(models.QuerySet):
         return sold_time_slot_sales_qs
 
 
-class Product(models.Model):
+class Product(InheritanceCastModel):
     price = models.PositiveIntegerField(blank=True)
     active = models.BooleanField(default=True)
 
     objects = ProductQuerySet.as_manager()
+
+    def title(self):
+        return f"Product {self.id}"
+
+    def subtitle(self):
+        return None
 
 
 class TimeSlotSale(Product):
@@ -189,6 +147,12 @@ class TimeSlotSale(Product):
     end_time = models.DateTimeField()
 
     objects = TimeSlotSaleManager.as_manager()
+
+    def title(self):
+        return f"Consulting time {self.id}"
+
+    def subtitle(self):
+        return "60 min time"
 
     def get_consultant_username(self):
         return self.consultant.user.username

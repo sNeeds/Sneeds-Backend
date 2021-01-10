@@ -108,6 +108,7 @@ class StudentDetailedInfoAdmin(StudentDetailedInfoBaseAdmin):
         ('created', DateTimeRangeFilter),
     )
     list_display = ['id', 'user', 'value', 'rank', 'updated', 'created', 'is_complete']
+    search_fields = ['id', 'user__email']
 
     def is_complete(self, instance):
         return instance.is_complete

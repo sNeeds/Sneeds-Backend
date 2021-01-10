@@ -6,11 +6,17 @@ from django.utils import timezone
 
 from rest_framework import serializers
 
-from .models import TimeSlotSale, SoldTimeSlotSale
+from .models import TimeSlotSale, SoldTimeSlotSale, Product
 from abroadin.apps.users.consultants.models import ConsultantProfile
 from abroadin.apps.users.consultants.serializers import ShortConsultantProfileSerializer, \
     VeryShortConsultantProfileSerializer
 from abroadin.apps.users.customAuth.serializers import SafeUserDataSerializer
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ['id', 'title', 'subtitle', 'price', 'active']
 
 
 class TimeSlotSaleSerializer(serializers.ModelSerializer):

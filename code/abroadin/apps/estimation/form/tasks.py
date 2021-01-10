@@ -1,22 +1,30 @@
-import time
-
 from celery import shared_task
-from django.db.models import F
-
-from django.conf import settings
-from django.utils import timezone
+from django.db.models import F, Count, Q, OuterRef, Subquery, Value, Case, When, IntegerField
 
 from .models import StudentDetailedInfo
 
 
-# TODO: Change logic
 @shared_task
 def update_student_detailed_info_ranks():
-    student_detailed_info_qs = StudentDetailedInfo.objects.all().order_by("-value")
+    ranked_sdi = StudentDetailedInfo.objects.filter(
+        value__gt=OuterRef('value')
+    ).annotate(
+        none=Value(None)
+    ).values(
+        'none'
+    ).annotate(
+        count=Count("*")
+    ).values('count').order_by('value')
 
-    for r, obj in enumerate(student_detailed_info_qs):
-        StudentDetailedInfo.objects.filter(id=obj.id).update(rank=r + 1)
-
+    StudentDetailedInfo.objects.annotate(
+        new_rank=Subquery(ranked_sdi)
+    ).update(
+        rank=Case(
+            When(new_rank=0, then=Value(1)),
+            default='new_rank',
+            output_field=IntegerField(),
+        )
+    )
 
 @shared_task
 def add_one_to_rank_with_values_greater_than_this(value, exclude_id):

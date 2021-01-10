@@ -2,7 +2,7 @@ from rest_framework import status
 
 from abroadin.apps.estimation.form.models import WantToApply, GradeChoices, UniversityThrough, StudentDetailedInfo
 from abroadin.apps.estimation.form.tests.apis.form_completion.base import BaseTests as FormCompletionBaseTests
-from abroadin.apps.estimation.tests.apis import EstimationBaseTest
+from abroadin.apps.estimation.tests.base import EstimationBaseTest
 
 
 class EndpointMethodMixin:
