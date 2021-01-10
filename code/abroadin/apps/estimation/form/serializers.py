@@ -191,6 +191,8 @@ class EducationRequestSerializer(ad_serializers.EducationRequestSerializer):
     def validate(self, attrs):
         # print('start validate', time.perf_counter())
 
+        self.grade_unique_validator(attrs.get('grade'), attrs.get('object_id'))
+
         request: Request = self.context.get("request")
         if request and hasattr(request, "user"):
             request_user = request.user
@@ -211,8 +213,13 @@ class EducationRequestSerializer(ad_serializers.EducationRequestSerializer):
             raise ValidationError(_("Can't validate data.Can't get request user."))
 
     def create(self, validated_data):
-        print('start create', time.perf_counter())
+        # print('start create', time.perf_counter())
         return super().create(validated_data)
+
+    def grade_unique_validator(self, grade, object_id):
+        qs = ad_models.Education.objects.filter(content_type=SDI_CT, object_id=object_id, grade=grade)
+        if qs.exists():
+            raise ValidationError({'grade': _("An education with this grade already exists.")})
 
 
 class LanguageCertificateSerializer(ad_serializers.LanguageCertificateSerializer):
