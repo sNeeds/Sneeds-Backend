@@ -13,7 +13,7 @@ class PaymentAPIRequestTests(PaymentAPIBaseTest):
         super().setUp()
 
     def _test_request(self, *args, **kwargs):
-        return self._endpoint_test_method('payment:request', *args, **kwargs)
+        return self._endpoint_test_method('payment:verify', *args, **kwargs)
 
     def create_payment(self, user, cart, status):
         data = self._test_request("post", user, status, data={"cartid": cart.id})

@@ -4,13 +4,15 @@ from django.conf import settings
 
 from rest_framework import permissions
 from rest_framework.response import Response
+from rest_framework.exceptions import NotFound
 
 from .models import PayPayment
+from .permissions import CartOwnerPermission
+from abroadin.base.api.permissions import permission_class_factory
 from abroadin.base.api.viewsets import CAPIView
 from abroadin.apps.store.orders.models import Order
 from abroadin.apps.store.carts.models import Cart
 from abroadin.settings.config.variables import FRONTEND_URL
-from .permissions import CartOwnerPermission
 
 ZARINPAL_MERCHANT = settings.ZARINPAL_MERCHANT
 
@@ -30,7 +32,10 @@ class SendRequest(CAPIView):
         "cartid":12
     }
     """
-    permission_classes = [permissions.IsAuthenticated, CartOwnerPermission]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        permission_class_factory(CartOwnerPermission, apply_on=['POST'])
+    ]
 
     def _post_pay_request(self, client, cart):
         result = client.service.PaymentRequest(
@@ -46,10 +51,22 @@ class SendRequest(CAPIView):
     def get_user(self):
         return self.request.user
 
-    def get_cart(self):
-        data = self.request.data
-        cart = Cart.objects.get(id=data.get('cartid'))
+    def _get_cart_or_raise_exception(self, cart_id):
+        try:
+            cart = Cart.objects.get(id=cart_id)
+        except Cart.DoesNotExist:
+            raise NotFound(detail={"detail": "Cart does not exist"})
         return cart
+
+    def get_cart_or_none(self):
+        data = self.request.data
+        cart_id = data.get('cartid')
+
+        if cart_id:
+            cart = self._get_cart_or_raise_exception(cart_id)
+            return cart
+
+        return None
 
     def check_result_ok(self, result):
         return result.Status == 100
@@ -91,7 +108,7 @@ class SendRequest(CAPIView):
         client = Client('https://sandbox.zarinpal.com/pg/services/WebGate/wsdl')
 
         user = self.get_user()
-        cart = self.get_cart()
+        cart = self.get_cart_or_none()
 
         try:
             result = self.send_pay_request(client, cart)
@@ -123,34 +140,47 @@ class Verify(CAPIView):
     """
     permission_classes = [permissions.IsAuthenticated, ]
 
+    def get_data(self):
+        return self.request.data
+
+    def get_user(self):
+        return self.request.user
+
+    def is_status_ok(self):
+        data = self.get_data()
+        return data.get('status') == 'OK'
+
+    def get_authority(self):
+        return self.get_data().get('authority')
+
+    def get_payment(self, user, authority):
+        try:
+            payment = PayPayment.objects.get(user=user, authority=authority)
+
+        except PayPayment.DoesNotExist:
+            raise NotFound({"detail": "PayPayment does not exists."})
+
+        return payment
+
+    def sell_cart(self, cart):
+        return Order.objects.sell_cart_create_order(cart)
+
+    def order_created_response(self, ref_id, order):
+        return Response({"detail": "Success", "ReflD": str(ref_id), "order": order.id}, status=200)
+
     def post(self, request):
         client = Client('https://sandbox.zarinpal.com/pg/services/WebGate/wsdl')
 
-        data = request.data
-        if data.get('status') == 'OK':
-            user = request.user
-            authority = data.get('authority', None)
-
-            try:
-                payment = PayPayment.objects.get(
-                    user=user,
-                    authority=authority
-                )
-
-            except PayPayment.DoesNotExist:
-                return Response({"detail": "PayPayment does not exists."}, status=400)
+        if self.is_status_ok():
+            user = self.get_user()
+            authority = self.get_authority()
+            payment = self.get_payment(user, authority)
 
             result = client.service.PaymentVerification(ZARINPAL_MERCHANT, authority, int(payment.cart.total))
 
             if result.Status == 100:
-                order = Order.objects.sell_cart_create_order(payment.cart)
-                # TODO RefID does not save in relative order or in payment ???
-                return Response(
-                    {"detail": "Success",
-                     "ReflD": str(result.RefID),
-                     "order": order.id},
-                    status=200
-                )
+                order = self.sell_cart(payment.cart)
+                response = self.order_created_response(result.RefID, order)
             elif result.Status == 101:
                 return Response({"detail": "Transaction submitted", "status": str(result.Status)}, status=200)
             else:
