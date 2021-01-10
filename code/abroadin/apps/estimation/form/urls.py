@@ -65,6 +65,11 @@ urlpatterns = [
     path('publications/<int:id>/', views.PublicationRetrieveDestroyAPIView.as_view(),
          name="publication-detail"),
 
+    path('educations/', views.EducationListAPIView.as_view(),
+         name="education-list"),
+    path('educations/<int:id>/', views.EducationDetailAPIView.as_view(),
+         name="education-detail"),
+
     path('choices/grades/', views.GradesListAPIView.as_view()),
 
     path('choices/apply-semester-years/', views.SemesterYearListAPIView.as_view(),

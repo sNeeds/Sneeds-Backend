@@ -115,8 +115,10 @@ class GenericContentTypeRelatedField(serializers.RelatedField):
         assert self.related_classes is not None, _("related_classes may not be None.")
         assert isinstance(self.related_classes, list), _("related classes should be an object of list")
 
-        self.allowed_content_types = self.perform_allowed_content_types()
-        self.queryset = self.perform_query_set()
+        if self.allowed_content_types is None:
+            self.allowed_content_types = self.perform_allowed_content_types()
+        if len(self.queryset) == 0:
+            self.queryset = self.perform_query_set()
 
     def to_internal_value(self, data):
         if data not in self.allowed_content_types:
@@ -133,6 +135,7 @@ class GenericContentTypeRelatedField(serializers.RelatedField):
         return ret
 
     def perform_query_set(self):
+        # print('perform query set')
         query_set = ContentType.objects.none()
         for module in self.related_classes:
             content_type = ContentType.objects.get_for_model(model=module['model_class'])
@@ -140,6 +143,7 @@ class GenericContentTypeRelatedField(serializers.RelatedField):
         return query_set
 
     def perform_allowed_content_types(self):
+        # print('perform allowed content type')
         return [_get_content_type_identifier(ContentType.objects.get_for_model(module['model_class']))
                 for module in self.related_classes]
 

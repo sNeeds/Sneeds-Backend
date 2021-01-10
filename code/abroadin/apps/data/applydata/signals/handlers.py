@@ -1,3 +1,5 @@
+import time
+
 from django.db.models.signals import pre_save, pre_delete, post_save, post_delete, m2m_changed
 
 from abroadin.apps.estimation.form.models import SDI_CT
@@ -38,8 +40,11 @@ def pre_save_education(sender, instance, *args, **kwargs):
 
 def post_save_education(sender, instance, *args, **kwargs):
     # Because of generic fk and cascade deletion
+    # print('start signal', time.perf_counter())
     if instance.content_type == SDI_CT and instance.content_object:
         instance.content_object.save()
+    # print('finish signal', time.perf_counter())
+    pass
 
 
 def post_delete_education(sender, instance, *args, **kwargs):

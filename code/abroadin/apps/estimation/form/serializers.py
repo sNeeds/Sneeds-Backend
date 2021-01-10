@@ -1,3 +1,4 @@
+import time
 from collections import OrderedDict
 
 from django.contrib.contenttypes.models import ContentType
@@ -9,10 +10,11 @@ from rest_framework.request import Request
 import abroadin.apps
 import abroadin.apps.data.applydata.models
 from abroadin.apps.data.account import models
-from abroadin.apps.data.account.models import BasicFormField
+from abroadin.apps.data.account.models import BasicFormField, University, Major
 from abroadin.apps.data.account.serializers import CountrySerializer, UniversitySerializer, MajorSerializer
 
 from abroadin.apps.data.applydata import serializers as ad_serializers
+from abroadin.base.api.fields import GenericContentObjectRelatedURL, GenericContentTypeRelatedField
 
 from .models import WantToApply, StudentDetailedInfo, SDI_CT
 
@@ -43,7 +45,7 @@ class SemesterYearSerializer(ad_serializers.SemesterYearSerializer):
 
 
 class GradeSerializer(ad_serializers.GradeSerializer):
-    class Meta(ad_serializers.GradeSerializer):
+    class Meta(ad_serializers.GradeSerializer.Meta):
         pass
 
 
@@ -187,6 +189,8 @@ class EducationRequestSerializer(ad_serializers.EducationRequestSerializer):
         pass
 
     def validate(self, attrs):
+        # print('start validate', time.perf_counter())
+
         request: Request = self.context.get("request")
         if request and hasattr(request, "user"):
             request_user = request.user
@@ -200,10 +204,15 @@ class EducationRequestSerializer(ad_serializers.EducationRequestSerializer):
                         raise ValidationError(_("User can't set student_detailed_info of another user."))
                 except StudentDetailedInfo.DoesNotExist:
                     ValidationError({'object_id': _("There is no object with this id")})
+
                 return super().validate(attrs)
             raise ValidationError({'content_type': _("Invalid or forbidden content_type")})
         else:
             raise ValidationError(_("Can't validate data.Can't get request user."))
+
+    def create(self, validated_data):
+        print('start create', time.perf_counter())
+        return super().create(validated_data)
 
 
 class LanguageCertificateSerializer(ad_serializers.LanguageCertificateSerializer):
@@ -244,7 +253,7 @@ class RegularLanguageCertificateSerializer(LanguageCertificateSerializer,
 
 
 class GMATCertificateSerializer(LanguageCertificateSerializer, ad_serializers.GMATCertificateSerializer):
-    class Meta(ad_serializers.GMATCertificateSerializer):
+    class Meta(ad_serializers.GMATCertificateSerializer.Meta):
         pass
 
 
@@ -270,7 +279,7 @@ class GREPhysicsCertificateSerializer(LanguageCertificateSerializer, ad_serializ
 
 class GREPsychologyCertificateSerializer(LanguageCertificateSerializer,
                                          ad_serializers.GREPsychologyCertificateSerializer):
-    class Meta(ad_serializers.GREPsychologyCertificateSerializer):
+    class Meta(ad_serializers.GREPsychologyCertificateSerializer.Meta):
         pass
 
 
@@ -289,18 +298,24 @@ class StudentDetailedInfoBaseSerializer(serializers.ModelSerializer):
     gre_psychology_certificates = serializers.SerializerMethodField()
     duolingo_certificates = serializers.SerializerMethodField()
 
-    universities = serializers.SerializerMethodField()
+    # TODO change this to a more simple class without writing function
+    language_certificates = serializers.SerializerMethodField(
+        method_name='get_language_certificates',
+    )
+
+    educations = serializers.SerializerMethodField()
     publications = serializers.SerializerMethodField()
 
     class Meta:
         model = StudentDetailedInfo
         fields = [
-            'id', 'universities', 'publications',
+            'id', 'educations', 'publications',
             'regular_certificates', 'gmat_certificates', 'gre_general_certificates', 'gre_subject_certificates',
             'gre_biology_certificates', 'gre_physics_certificates', 'gre_psychology_certificates',
             'duolingo_certificates',
             'resume', 'related_work_experience', 'academic_break', 'olympiad',
             'created', 'updated',
+            'language_certificates',
         ]
 
     def get_regular_certificates(self, obj):
@@ -327,7 +342,7 @@ class StudentDetailedInfoBaseSerializer(serializers.ModelSerializer):
     def get_duolingo_certificates(self, obj):
         return self.get_certificates(obj, ad_models.DuolingoCertificate, DuolingoCertificateSerializer)
 
-    def get_universities(self, obj):
+    def get_educations(self, obj):
         qs = ad_models.Education.objects.filter(
             content_type=SDI_CT, object_id=obj.id
         )
@@ -349,6 +364,10 @@ class StudentDetailedInfoBaseSerializer(serializers.ModelSerializer):
     def get_certificates(self, obj, model_class, serializer_class):
         qs = model_class.objects.filter(content_type=SDI_CT, object_id=obj.id)
         return serializer_class(qs, many=True, context=self.context).data
+
+    def get_language_certificates(self, obj):
+        return ad_serializers.serialize_language_certificates(obj.language_certificates.all(), self,
+                                                              RELATED_CLASSES)
 
 
 class StudentDetailedInfoSerializer(StudentDetailedInfoBaseSerializer):

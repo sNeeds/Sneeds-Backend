@@ -45,11 +45,11 @@ def generic_hyperlinked_related_method(parent_serializer, related_classes: list,
                 serializer = _create_hyperlinked_field(parent_serializer, related_class, object_id_field)
                 MODEL_CLASS_HYPERLINKED_FIELDS[key] = serializer
 
-            print(serializer)
-            print(obj)
+            # print(serializer)
+            # print(obj)
 
             d = serializer.to_representation(obj)
-            print('d', d)
+            # print('d', d)
             return d
     raise AssertionError("Wrong object or content type.")
 

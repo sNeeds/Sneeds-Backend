@@ -159,8 +159,6 @@ class PublicationRequestSerializer(serializers.ModelSerializer):
 
 class EducationSerializer(serializers.ModelSerializer):
     related_classes = []
-    university = UniversitySerializer()
-    major = MajorSerializer()
 
     content_type = GenericContentTypeRelatedField()
     content_url = GenericContentObjectRelatedURL()
@@ -196,15 +194,14 @@ class EducationRequestSerializer(serializers.ModelSerializer):
     )
 
     content_type = GenericContentTypeRelatedField()
-    content_url = GenericContentObjectRelatedURL()
+    # content_url = GenericContentObjectRelatedURL()
 
-# from abroadin.apps.estimation.form.models import StudentDetailedInfoBase
-# sdi = StudentDetailedInfoBase.objects.get(pk=712)
     class Meta:
         model = Education
         fields = [
             'id', 'university', 'content_object', 'grade', 'major', 'graduate_in', 'thesis_title', 'gpa',
             'content_type', 'object_id',
+            # 'content_url',
         ]
 
     # def validate(self, attrs):
@@ -225,7 +222,7 @@ class LanguageCertificateSerializer(serializers.ModelSerializer):
     related_classes = []
 
     content_type = GenericContentTypeRelatedField()
-    content_url = GenericContentObjectRelatedURL()
+    # content_url = GenericContentObjectRelatedURL()
 
     class Meta:
         model = LanguageCertificate
@@ -416,6 +413,7 @@ def serialize_language_certificates(queryset, parent_serializer, related_classes
     parameter: queryset is a queryset of parent LanguageCertificate objects
     """
     ret = {}
+    ret2 = []
 
     for obj in queryset:
         if obj.certificate_type in [LCType.TOEFL, LCType.IELTS_GENERAL, LCType.IELTS_ACADEMIC]:
@@ -424,7 +422,7 @@ def serialize_language_certificates(queryset, parent_serializer, related_classes
                                                               context=parent_serializer.context)
 
         elif obj.certificate_type in [LCType.GMAT]:
-            serializer = GMATCertificateSerializer(obj.gmatertificate,
+            serializer = GMATCertificateSerializer(obj.gmatcertificate,
                                                    many=False,
                                                    context=parent_serializer.context)
 
@@ -454,10 +452,11 @@ def serialize_language_certificates(queryset, parent_serializer, related_classes
                                                             context=parent_serializer.context)
 
         elif obj.certificate_type in [LCType.DUOLINGO]:
-            serializer = DuolingoCertificateSerializer(obj.dulingocertificate,
+            serializer = DuolingoCertificateSerializer(obj.duolingocertificate,
                                                        many=False,
                                                        context=parent_serializer.context)
 
         serializer.related_classes = related_classes
         ret[obj.certificate_type] = serializer.data
-    return ret
+        ret2.append(serializer.data)
+    return ret2

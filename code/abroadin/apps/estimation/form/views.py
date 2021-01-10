@@ -372,6 +372,8 @@ class EducationListAPIView(generics.CListCreateAPIView):
 
     def get_queryset(self):
         sdi_id = self.request.query_params.get('student-detailed-info', None)
+        if not sdi_id:
+            return self.queryset.none()
         qs = self.queryset.filter(content_type=SDI_CT, object_id=sdi_id)
         return qs
 
