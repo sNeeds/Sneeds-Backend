@@ -6,6 +6,7 @@ from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound
 
+from abroadin.settings.config.variables import FRONTEND_URL
 from .models import PayPayment
 from .permissions import CartOwnerPermission
 from abroadin.base.api.permissions import permission_class_factory
@@ -43,7 +44,7 @@ class SendRequest(CAPIView):
             "پرداخت ابرادین",
             cart.user.email,
             cart.user.phone_number,
-            "http://127.0.0.1:8000/" + "user/payment/accept/",
+            FRONTEND_URL + + "user/payment/accept/",
         )
         return result
 
