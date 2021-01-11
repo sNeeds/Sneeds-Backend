@@ -4,7 +4,7 @@ from django.conf import settings
 
 from rest_framework import permissions
 from rest_framework.response import Response
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import NotFound, ValidationError
 
 from abroadin.settings.config.variables import FRONTEND_URL
 from .models import PayPayment
@@ -156,9 +156,17 @@ class Verify(CAPIView):
             raise NotFound({"detail": "PayPayment does not exists."})
         return payment
 
+    def _validate_status(self, status):
+        if status is None:
+            raise ValidationError({"status": "Status field required"})
+        elif status not in ["OK", "NOK"]:
+            raise ValidationError({"status": "Wrong status value, value should be OK or NOK"})
+
     def is_status_ok(self):
         data = self.get_data()
-        return data.get('status') == 'OK'
+        status = data.get('status')
+        self._validate_status(status)
+        return status == 'OK'
 
     def sell_cart(self, cart):
         return Order.objects.sell_cart_create_order(cart)
@@ -191,7 +199,8 @@ class Verify(CAPIView):
     def post(self, request):
         client = Client('https://sandbox.zarinpal.com/pg/services/WebGate/wsdl')
 
-        if self.is_status_ok():
+        status_ok = self.is_status_ok()
+        if status_ok:
             response = self.transaction_ok_handler(client)
         else:
             response = self.transaction_nok_response()

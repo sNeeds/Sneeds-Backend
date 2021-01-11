@@ -12,12 +12,8 @@ class PaymentAPIRequestTests(PaymentAPIBaseTest):
     def setUp(self):
         super().setUp()
 
-    def _test_request(self, *args, **kwargs):
+    def _test_verify(self, *args, **kwargs):
         return self._endpoint_test_method('payment:verify', *args, **kwargs)
-
-    def check_payment(self, user, cart, status):
-        data = self._test_request("post", user, status, data={"cartid": cart.id})
-        return data
 
     def test_create_201(self):
         def check_non_zero_price_cart_response(data):
