@@ -10,6 +10,8 @@ User = get_user_model()
 
 class PaymentAPIRequestTests(PaymentAPIBaseTest):
     def setUp(self):
+        self.wrong_authority = "000000000000000000000000000000295398"
+
         super().setUp()
 
     def _test_verify(self, *args, **kwargs):
@@ -24,13 +26,24 @@ class PaymentAPIRequestTests(PaymentAPIBaseTest):
             data = self._test_verify("post", user, status.HTTP_400_BAD_REQUEST)
             return data
 
-        def empty_json_data_check(data):
-            # self.assertEqual()
-            print(data)
+        def check_empty_post_body_response(data):
+            self.assertEqual(data.get("status"), "This field is required.")
+            self.assertEqual(data.get("authority"), "This field is required.")
+
+        def post_status_nok(user):
+            data = self._test_verify(
+                "post", user, status=status.HTTP_400_BAD_REQUEST,
+                data={"statius": "NOK", "authority": self.wrong_authority})
+            return data
+
+        def check_nok_response(data):
+            self.assertEqual(data.get("detail", "Transaction failed or canceled by user"))
 
         data = empty_json_body_request(self.user1)
-        empty_json_data_check(data)
+        check_empty_post_body_response(data)
 
+        data = post_status_nok(self.user1)
+        check_nok_response(data)
 
     def test_create_401(self):
         self.create_payment(None, self.a_cart1, status.HTTP_401_UNAUTHORIZED)
