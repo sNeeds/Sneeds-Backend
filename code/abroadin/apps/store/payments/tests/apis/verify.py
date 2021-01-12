@@ -24,16 +24,6 @@ class PaymentAPIRequestTests(PaymentAPIBaseTest):
         return data
 
     def test_create_400(self):
-        def empty_json_body_request(user):
-            data = self._test_verify("post", user, status.HTTP_400_BAD_REQUEST)
-            return data
-
-        def check_empty_post_body_response(data):
-            print("***", data)
-            print("***", data.get("authority"))
-            self.assertEqual(data.get("status"), "This field is required.")
-            self.assertEqual(data.get("authority"), "This field is required.")
-
         def post_status_nok(user):
             self.post_verify(
                 user, self.wrong_authority, "NOK", status.HTTP_400_BAD_REQUEST
@@ -52,9 +42,6 @@ class PaymentAPIRequestTests(PaymentAPIBaseTest):
         def check_transaction_verification__failed_response(data):
             self.assertEqual(data.get("detail"), "Transaction verification failed")
             self.assertNotEqual(data.get("status"), None)
-
-        data = empty_json_body_request(self.user1)
-        check_empty_post_body_response(data)
 
         data = post_status_nok(self.user1)
         check_nok_response(data)
