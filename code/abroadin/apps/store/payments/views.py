@@ -151,7 +151,7 @@ class Verify(CAPIView):
         try:
             payment = PayPayment.objects.get(user=user, authority=authority)
         except PayPayment.DoesNotExist:
-            raise NotFound({"detail": "PayPayment does not exists."})
+            raise NotFound({"detail": "No paypayment with this user and authority exists"})
         return payment
 
     def is_status_ok(self, status):
@@ -171,7 +171,7 @@ class Verify(CAPIView):
             order = self.sell_cart(payment.cart)
             response = self.order_created_response(result.RefID, order)
         else:
-            response = self.transaction_failed_response(result.Status)
+            response = self.transaction_verification_failed_response(result.Status)
 
         return response
 
@@ -196,8 +196,8 @@ class Verify(CAPIView):
     def order_created_response(self, ref_id, order):
         return Response({"detail": "Success", "ReflD": str(ref_id), "order": order.id}, status=200)
 
-    def transaction_failed_response(self, status):
-        return Response({"detail": "Transaction failed", "status": str(status)}, status=400)
+    def transaction_verification_failed_response(self, status):
+        return Response({"detail": "Transaction verification failed", "status": str(status)}, status=400)
 
     def transaction_nok_response(self):
         return Response({"detail": "Transaction failed or canceled by user"}, status=400)
