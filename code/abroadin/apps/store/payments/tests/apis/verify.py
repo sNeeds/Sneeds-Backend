@@ -9,9 +9,10 @@ User = get_user_model()
 
 class PaymentAPIRequestTests(PaymentAPIBaseTest):
     def setUp(self):
-        self.wrong_authority = "000000000000000000000000000000295398"
-
         super().setUp()
+
+        self.wrong_authority = "000000000000000000000000000000295398"
+        self.t_paypayment_1 = PayPayment(user=self.user1, cart=self.a_cart1, authority=self.wrong_authority)
 
     def _test_verify(self, *args, **kwargs):
         return self._endpoint_test_method('payment:verify', *args, **kwargs)
@@ -26,6 +27,8 @@ class PaymentAPIRequestTests(PaymentAPIBaseTest):
             return data
 
         def check_empty_post_body_response(data):
+            print("***" , data)
+            print("***" , data.get("authority"))
             self.assertEqual(data.get("status"), "This field is required.")
             self.assertEqual(data.get("authority"), "This field is required.")
 
@@ -48,9 +51,6 @@ class PaymentAPIRequestTests(PaymentAPIBaseTest):
             self.assertEqual(data.get("detail"), "Transaction verification failed")
             self.assertNotEqual(data.get("status"), None)
 
-        def create_pay_payment_obj(user, cart, authority):
-            obj = PayPayment.objects.create(user=user, cart=cart, authority=authority)
-            return obj
 
         data = empty_json_body_request(self.user1)
         check_empty_post_body_response(data)
@@ -58,28 +58,29 @@ class PaymentAPIRequestTests(PaymentAPIBaseTest):
         data = post_status_nok(self.user1)
         check_nok_response(data)
 
-        paypayment = create_pay_payment_obj(self.user1, self.a_cart1, self.wrong_authority)
         data = post_transaction_verification_failed(self.user1)
         check_transaction_verification__failed_response(data)
-        paypayment.delete()
 
     def test_create_401(self):
         self.post_verify(
             None, self.wrong_authority, "OK", status.HTTP_401_UNAUTHORIZED
         )
 
-    # def test_create_403(self):
-    #     self.create_payment(self.user2, self.a_cart1, status.HTTP_403_FORBIDDEN)
+    def test_create_403(self):
+        self.post_verify(
+            self.user1, self.wrong_authority, "OK", status.HTTP_403_FORBIDDEN
+        )
 
     def test_create_404(self):
-        def post_no_paypayment_exist(user):
+        def post_no_paypayment_exist(user, authority):
             data = self._test_verify(
-                "post", user, status=status.HTTP_400_BAD_REQUEST,
-                data={"detail":})
+                "post", user, status.HTTP_404_NOT_FOUND,
+                data={"status": "OK", "authority": authority})
             return data
 
         def check_post_no_paypayment_exist_response(data):
             self.assertEqual(data.get("detail"), "No paypayment with this user and authority exists")
 
-        data = post_no_paypayment_exist(self.user1)
+        wrong_authority = "000000000000000000000000000000000001"
+        data = post_no_paypayment_exist(self.user1, wrong_authority)
         check_post_no_paypayment_exist_response(data)

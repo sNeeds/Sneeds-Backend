@@ -147,9 +147,9 @@ class Verify(CAPIView):
     def get_user(self):
         return self.request.user
 
-    def get_payment(self, user, authority):
+    def get_payment(self, authority):
         try:
-            payment = PayPayment.objects.get(user=user, authority=authority)
+            payment = PayPayment.objects.get( authority=authority)
         except PayPayment.DoesNotExist:
             raise NotFound({"detail": "No paypayment with this user and authority exists"})
         return payment
@@ -161,8 +161,7 @@ class Verify(CAPIView):
         return Order.objects.sell_cart_create_order(cart)
 
     def transaction_ok_handler(self, client, authority):
-        user = self.get_user()
-        payment = self.get_payment(user, authority)
+        payment = self.get_payment(authority)
 
         total = int(payment.cart.total)
         result = client.service.PaymentVerification(ZARINPAL_MERCHANT, authority, total)
