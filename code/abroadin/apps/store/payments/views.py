@@ -146,6 +146,12 @@ class Verify(CAPIView):
     def get_user(self):
         return self.request.user
 
+    def _validate_authority(self):
+        data = self.get_data()
+        authority = data.get('authority')
+        if authority is None:
+            raise ValidationError({"status": "Authority field required"})
+
     def get_authority(self):
         return self.get_data().get('authority')
 
