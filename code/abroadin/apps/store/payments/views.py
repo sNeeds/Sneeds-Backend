@@ -13,6 +13,7 @@ from abroadin.base.api.permissions import permission_class_factory
 from abroadin.base.api.viewsets import CAPIView
 from abroadin.apps.store.orders.models import Order
 from abroadin.apps.store.carts.models import Cart
+from .serializers import PaymentVerifySerializer
 
 ZARINPAL_MERCHANT = settings.ZARINPAL_MERCHANT
 
@@ -146,15 +147,6 @@ class Verify(CAPIView):
     def get_user(self):
         return self.request.user
 
-    def _validate_authority(self):
-        data = self.get_data()
-        authority = data.get('authority')
-        if authority is None:
-            raise ValidationError({"status": "Authority field required"})
-
-    def get_authority(self):
-        return self.get_data().get('authority')
-
     def get_payment(self, user, authority):
         try:
             payment = PayPayment.objects.get(user=user, authority=authority)
@@ -203,12 +195,17 @@ class Verify(CAPIView):
         return response
 
     def post(self, request):
-        client = Client('https://sandbox.zarinpal.com/pg/services/WebGate/wsdl')
+        data = self.get_data()
+        serializer = PaymentVerifySerializer(data=data)
 
-        status_ok = self.is_status_ok()
-        if status_ok:
-            response = self.transaction_ok_handler(client)
-        else:
-            response = self.transaction_nok_response()
+        serializer.is_valid(raise_exception=True)
 
-        return response
+        #     client = Client('https://sandbox.zarinpal.com/pg/services/WebGate/wsdl')
+        #
+        #     status_ok = self.is_status_ok()
+        #     if status_ok:
+        #         response = self.transaction_ok_handler(client)
+        #     else:
+        #         response = self.transaction_nok_response()
+
+        return Response({})

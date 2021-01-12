@@ -15,44 +15,22 @@ class PaymentAPIRequestTests(PaymentAPIBaseTest):
     def _test_verify(self, *args, **kwargs):
         return self._endpoint_test_method('payment:verify', *args, **kwargs)
 
-    def test_create_201(self):
-        def check_non_zero_price_cart_response(data):
-            self.assertNotEqual(data.get("redirect"), None)
-
-        def check_zero_price_cart_response(data):
-            self.assertEqual(data.get("detail"), "Success")
-            self.assertEqual(data.get("ReflD"), "00000000")
-            self.assertNotEqual(data.get("order"), None)
-
-        data = self.create_payment(self.user1, self.a_cart1, status.HTTP_201_CREATED)
-        check_non_zero_price_cart_response(data)
-
-        data = self.create_payment(self.user1, self.a_cart2, status.HTTP_201_CREATED)
-        check_zero_price_cart_response(data)
+    def post_verify(self, user, status, authority, payment_status):
+        data = self._test_verify("post", user, status, data={"authority": authority, "status": payment_status})
+        return data
 
     def test_create_400(self):
-        def check_empty_cart_response(data):
-            self.assertEqual(data.get("detail"), "Cart is empty")
+        def empty_json_body_request(user):
+            data = self._test_verify("post", user, status.HTTP_400_BAD_REQUEST)
+            return data
 
-        def check_zarinpal_error(data):
-            self.assertEqual(data.get("detail"), "Zarinpal error")
-            self.assertNotEqual(data.get("code"), None)
+        def empty_json_data_check(data):
+            # self.assertEqual()
+            print(data)
 
-        def create_low_price_cart_for_zarinpal(user):
-            """
-            Zarinpal rejects under 1000Toman prices
-            """
-            product = Product.objects.create(price=1)
-            cart = Cart.objects.create(user=user)
-            cart.products.add(product)
-            return cart
+        data = empty_json_body_request(self.user1)
+        empty_json_data_check(data)
 
-        data = self.create_payment(self.user1, self.a_cart3, status.HTTP_400_BAD_REQUEST)
-        check_empty_cart_response(data)
-
-        f_cart = create_low_price_cart_for_zarinpal(self.user1)
-        data = self.create_payment(self.user1, f_cart, status.HTTP_400_BAD_REQUEST)
-        check_zarinpal_error(data)
 
     def test_create_401(self):
         self.create_payment(None, self.a_cart1, status.HTTP_401_UNAUTHORIZED)
