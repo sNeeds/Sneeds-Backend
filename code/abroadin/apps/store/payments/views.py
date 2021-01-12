@@ -8,7 +8,7 @@ from rest_framework.exceptions import NotFound, ValidationError
 
 from abroadin.settings.config.variables import FRONTEND_URL
 from .models import PayPayment
-from .permissions import CartOwnerPermission
+from .permissions import CartOwnerPermission, PayPaymentOwnerPermission
 from abroadin.base.api.permissions import permission_class_factory
 from abroadin.base.api.viewsets import CAPIView
 from abroadin.apps.store.orders.models import Order
@@ -139,7 +139,10 @@ class Verify(CAPIView):
     }
 
     """
-    permission_classes = [permissions.IsAuthenticated, ]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        permission_class_factory(PayPaymentOwnerPermission, apply_on=['POST'])
+    ]
 
     def get_data(self):
         return self.request.data
@@ -149,10 +152,20 @@ class Verify(CAPIView):
 
     def get_payment(self, authority):
         try:
-            payment = PayPayment.objects.get( authority=authority)
+            payment = PayPayment.objects.get(authority=authority)
         except PayPayment.DoesNotExist:
             raise NotFound({"detail": "No paypayment with this user and authority exists"})
         return payment
+
+    def get_payment_or_none(self):
+        data = self.get_data()
+        authority = data.get('authority')
+
+        if authority:
+            payment = self.get_payment(authority)
+            return payment
+
+        return None
 
     def is_status_ok(self, status):
         return status == 'OK'
