@@ -154,33 +154,14 @@ class Verify(CAPIView):
             raise NotFound({"detail": "PayPayment does not exists."})
         return payment
 
-    def _validate_status(self, status):
-        if status is None:
-            raise ValidationError({"status": "Status field required"})
-        elif status not in ["OK", "NOK"]:
-            raise ValidationError({"status": "Wrong status value, value should be OK or NOK"})
-
-    def is_status_ok(self):
-        data = self.get_data()
-        status = data.get('status')
-        self._validate_status(status)
+    def is_status_ok(self, status):
         return status == 'OK'
 
     def sell_cart(self, cart):
         return Order.objects.sell_cart_create_order(cart)
 
-    def order_created_response(self, ref_id, order):
-        return Response({"detail": "Success", "ReflD": str(ref_id), "order": order.id}, status=200)
-
-    def transaction_failed_response(self, status):
-        return Response({"detail": "Transaction failed", "status": str(status)}, status=400)
-
-    def transaction_nok_response(self):
-        return Response({"detail": "Transaction failed or canceled by user"}, status=400)
-
-    def transaction_ok_handler(self, client):
+    def transaction_ok_handler(self, client, authority):
         user = self.get_user()
-        authority = self.get_authority()
         payment = self.get_payment(user, authority)
 
         total = int(payment.cart.total)
@@ -200,12 +181,23 @@ class Verify(CAPIView):
 
         serializer.is_valid(raise_exception=True)
 
-        #     client = Client('https://sandbox.zarinpal.com/pg/services/WebGate/wsdl')
-        #
-        #     status_ok = self.is_status_ok()
-        #     if status_ok:
-        #         response = self.transaction_ok_handler(client)
-        #     else:
-        #         response = self.transaction_nok_response()
+        status = serializer.validated_data["status"]
+        authority = serializer.validated_data["authority"]
 
-        return Response({})
+        status_ok = self.is_status_ok(status)
+        if status_ok:
+            client = Client('https://sandbox.zarinpal.com/pg/services/WebGate/wsdl')
+            response = self.transaction_ok_handler(client, authority)
+        else:
+            response = self.transaction_nok_response()
+
+        return response
+
+    def order_created_response(self, ref_id, order):
+        return Response({"detail": "Success", "ReflD": str(ref_id), "order": order.id}, status=200)
+
+    def transaction_failed_response(self, status):
+        return Response({"detail": "Transaction failed", "status": str(status)}, status=400)
+
+    def transaction_nok_response(self):
+        return Response({"detail": "Transaction failed or canceled by user"}, status=400)
