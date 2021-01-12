@@ -25,7 +25,7 @@ class PaymentAPIRequestTests(PaymentAPIBaseTest):
 
     def test_create_400(self):
         def post_status_nok(user):
-            self.post_verify(
+            data = self.post_verify(
                 user, self.wrong_authority, "NOK", status.HTTP_400_BAD_REQUEST
             )
             return data
@@ -34,7 +34,7 @@ class PaymentAPIRequestTests(PaymentAPIBaseTest):
             self.assertEqual(data.get("detail"), "Transaction failed or canceled by user")
 
         def post_transaction_verification_failed(user):
-            self.post_verify(
+            data = self.post_verify(
                 user, self.wrong_authority, "OK", status.HTTP_400_BAD_REQUEST
             )
             return data
