@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 
 from .managers import CountryQuerySetManager, UniversityQuerySetManager
-from ...estimation.estimations import values
+from abroadin.apps.data.applydata import values
 
 User = get_user_model()
 

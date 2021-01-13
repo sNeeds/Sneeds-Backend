@@ -4,11 +4,11 @@ from django.utils import timezone
 
 from .variables import FORM_WITHOUT_USER_LIVE_PERIOD_DAYS
 
-    def get_grade_or_none(self, grade):
-        try:
-            return self.all().get(grade=grade)
-        except self.model.DoesNotExist:
-            return None
+def get_grade_or_none(self, grade):
+    try:
+        return self.all().get(grade=grade)
+    except self.model.DoesNotExist:
+        return None
 
 
 class StudentDetailedInfoManager(models.QuerySet):

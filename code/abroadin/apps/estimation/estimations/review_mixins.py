@@ -1,7 +1,7 @@
 from abroadin.apps.data.applydata.models import LanguageCertificate, Education, GradeChoices, Publication
 from abroadin.apps.estimation.estimations.classes import ValueRange
 from abroadin.apps.estimation.estimations.review_comments import *
-from abroadin.apps.estimation.estimations.values import VALUES_WITH_ATTRS
+from abroadin.apps.data.applydata.values import VALUES_WITH_ATTRS
 
 
 class ReviewAgeAndAcademicBreakMixin:

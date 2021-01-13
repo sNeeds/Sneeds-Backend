@@ -10,9 +10,8 @@ from django.db import models
 from rest_framework.settings import api_settings
 from rest_framework.exceptions import ValidationError as DRFValidationError
 
-from abroadin.apps.data.applydata.models import Education, LanguageCertificate, Publication, Grade, SemesterYear,\
-    GradeChoices
-from abroadin.apps.estimation.estimations.values import VALUES_WITH_ATTRS, LANGUAGE_B_VALUE
+from abroadin.apps.data.applydata.models import Education, LanguageCertificate, Publication, Grade, SemesterYear
+from abroadin.apps.data.applydata.values import LANGUAGE_B_VALUE
 from abroadin.apps.estimation.form.variables import MISSING_LABEL, REWARDED_LABEL
 from abroadin.apps.estimation.form.managers import StudentDetailedInfoManager
 
@@ -29,8 +28,6 @@ from abroadin.apps.data.applydata import models as ad_models
 from abroadin.apps.data.account.validators import validate_resume_file_size
 from abroadin.base.python.classes import BooleanList
 
-
-
 # StudentDetailedInfo_CONTENT_TYPE
 SDI_CT = ContentType.objects.get(app_label='form', model='studentdetailedinfo')
 
@@ -44,7 +41,6 @@ class WantToApply(models.Model):
     student_detailed_info_old = models.UUIDField(
         null=True, blank=True,
     )
-
 
     countries = models.ManyToManyField(Country, blank=True)
 
