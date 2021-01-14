@@ -19,8 +19,10 @@ class CountryQuerySetManager(GetListManagerMixin, models.QuerySet):
 class MajorManager(models.QuerySet):
     def top_nth_parents(self, nth):
         parent_majors = self.none()
-        for obj in self._chain():
-            parent_majors |= self.filter(id=obj.top_nth_parent(nth).id)
+        for major in self.all():
+            major_model = self.model
+            top_nth_parent = major.top_nth_parent(nth)
+            parent_majors |= major_model.objects.filter(id=top_nth_parent.id)
 
         parent_majors.distinct()
         return parent_majors

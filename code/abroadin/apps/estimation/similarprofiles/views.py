@@ -20,14 +20,21 @@ class ProfilesListAPIView(CListAPIView):
     def get_queryset(self):
         form = self.get_form()
 
-        last_grade = form.get_last_university_grade()
+        want_to_apply = form.get_want_to_apply_or_none()
         education_qs = form.education_qs()
-        major_ids = education_qs.get_majors_id_list()
-        majors_qs = Major.objects.id_to_qs(major_ids)
-        major_top_three_parents = majors_qs.top_nth_parents(3)
+        last_grade = form.get_last_university_grade()
+
+        education_major_ids = education_qs.get_majors_id_list()
+        education_majors_qs = Major.objects.id_to_qs(education_major_ids)
+        education_major_top_three_parents = education_majors_qs.top_nth_parents(2)
+
+        want_to_apply_majors_qs = want_to_apply.majors.all()
+
+        form_related_majors = education_major_top_three_parents | want_to_apply_majors_qs
+
 
         print(last_grade)
-        print(major_top_three_parents)
+        print(education_major_top_three_parents)
 
         print(self.kwargs)
         # return Response({})
