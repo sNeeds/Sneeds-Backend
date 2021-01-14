@@ -49,6 +49,19 @@ class WantToApply(models.Model):
 
     semester_years = models.ManyToManyField(SemesterYear, blank=True)
 
+    @property
+    def is_complete(self):
+        check_fields = ['countries', 'grades', 'semester_years']
+        if not self:
+            return False
+        completed = True
+        non_complete_fields = []
+        for field in check_fields:
+            if not getattr(self, field).exists():
+                non_complete_fields.append(field)
+                completed = False
+        return completed
+
 
 class StudentDetailedInfoBase(models.Model):
     old_id = models.UUIDField(null=True, blank=True)
@@ -135,7 +148,6 @@ class StudentDetailedInfoBase(models.Model):
 
         if ordered_qs.exists():
             return ordered_qs.last()
-
         return None
 
     def language_certificates_str(self):
@@ -143,15 +155,6 @@ class StudentDetailedInfoBase(models.Model):
 
 
 class StudentDetailedInfo(StudentDetailedInfoBase):
-    # studentdetailedinfobase_ptr_newid = models.IntegerField(auto_created=True, unique=True, serialize=False, verbose_name='NEW_ID', default=1)
-    # studentdetailedinfobase_ptr_id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)
-
-    # studentdetailedinfobase_ptr = models.ForeignKey(
-    #     StudentDetailedInfoBase, on_delete=models.CASCADE, primary_key=True,
-    # )
-    # local_new_id = models.ForeignKey(StudentDetailedInfoBase, to_field='new_id', on_delete=models.CASCADE, unique=True),
-    # local_new_id = models.ForeignKey(StudentDetailedInfoBase, primary_key=True, serialize=False, default=1)
-    # studentdetailedinfobase_ptr = models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='form.studentdetailedinfobase')
 
     class PaymentAffordabilityChoices(models.TextChoices):
         LOW = 'Low', 'Low'
@@ -174,10 +177,10 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         {'function_name': "_has_gender",
          'information': {'section': 'personal', 'model': 'StudentDetailedInfo', 'fields': ['gender'], 'id': 3},
          },
-        # {'function_name': "_has_university_through",
-        #  'information': {'section': 'academic_degree', 'model': 'Education', 'fields': [], 'id': 4},
-        #  },
-        {'function_name': "_has_want_to_apply",
+        {'function_name': "_has_education",
+         'information': {'section': 'academic_degree', 'model': 'Education', 'fields': [], 'id': 4},
+         },
+        {'function_name': "_has_completed_want_to_apply",
          'information': {'section': 'apply_destination', 'model': 'WantToApply',
                          'fields': ['countries', 'grades', 'semester_years'], 'id': 5},
          },
@@ -372,7 +375,7 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
             return True
         return False
 
-    def _has_university_through(self):
+    def _has_education(self):
         if self.educations.all().exists():
             return True
         return False
@@ -383,18 +386,11 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         except WantToApply.DoesNotExist:
             return None
 
-    def _has_want_to_apply(self):
-        check_fields = ['countries', 'grades', 'semester_years']
+    def _has_completed_want_to_apply(self):
         want_to_apply = self.get_want_to_apply_or_none()
         if not want_to_apply:
             return False
-        completed = True
-        non_complete_fields = []
-        for field in check_fields:
-            if not getattr(want_to_apply, field).exists():
-                non_complete_fields.append(field)
-                completed = False
-        return completed
+        return want_to_apply.is_complete
 
     def education_qs(self):
         return Education.objects.filter(content_type=SDI_CT, object_id=self.id)
@@ -520,8 +516,8 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         return float(label)
 
     def save(self, *args, **kwargs):
-        # self.value = self._compute_value()
-        # self.rank = self._compute_rank()
-        self.value = 0.8
-        self.rank = 20
+        self.value = self._compute_value()
+        self.rank = self._compute_rank()
+        # self.value = 0.8
+        # self.rank = 20
         super().save(*args, **kwargs)
