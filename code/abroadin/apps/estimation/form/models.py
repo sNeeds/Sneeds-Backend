@@ -518,6 +518,4 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
     def save(self, *args, **kwargs):
         self.value = self._compute_value()
         self.rank = self._compute_rank()
-        # self.value = 0.8
-        # self.rank = 20
         super().save(*args, **kwargs)

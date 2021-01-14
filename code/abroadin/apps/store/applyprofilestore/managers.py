@@ -2,11 +2,14 @@ from django.db.models import QuerySet
 
 from abroadin.apps.applyprofile.models import ApplyProfile
 
+from .validators import validate_apply_profiles
+
 
 class ApplyProfileGroupManager(QuerySet):
 
-    def create_by_ap_ids(self, **kwargs):
-        apply_profile_ids = kwargs.pop('apply_profile_ids')
+    def create_by_apply_profiles(self, **kwargs):
+        apply_profiles = kwargs.pop('apply_profiles')
+        apply_profiles = validate_apply_profiles(apply_profiles)
         obj = self.create(**kwargs)
-        apply_profiles = list(ApplyProfile.objects.filter(id__in=apply_profile_ids))
         obj.apply_profiles.set(apply_profiles)
+        return obj
