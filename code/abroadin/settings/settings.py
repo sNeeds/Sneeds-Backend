@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'abroadin.apps.testapps.similarProfiles',
     'abroadin.apps.data.applydata',
     'abroadin.apps.applyprofile',
-    'abroadin.apps.estimation.similarApply',
+    'abroadin.apps.estimation.similarprofiles',
 
     'django.contrib.auth',
     'django.contrib.admin',
