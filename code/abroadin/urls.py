@@ -29,8 +29,8 @@ urlpatterns = [
                   path('data/', include('abroadin.apps.data.urls')),
                   path('store/', include('abroadin.apps.store.urls')),
                   path('analyze/', include('abroadin.apps.estimation.urls')),
-                  # path('analytics/', include('abroadin.apps.analytics.urls')),
-                  # path('apply-profile/', include('abroadin.apps.applyprofile.urls')),
-                  # path('test/', include('abroadin.apps.testapps.urls')),
+                  path('analytics/', include('abroadin.apps.analytics.urls')),
+                  path('apply-profile/', include('abroadin.apps.applyprofile.urls')),
+                  path('test/', include('abroadin.apps.testapps.urls')),
 
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

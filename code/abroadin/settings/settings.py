@@ -34,11 +34,11 @@ INSTALLED_APPS = [
     'abroadin.apps.estimation.form',
     'abroadin.apps.estimation.estimations',
     'abroadin.apps.estimation.analyze',
+    'abroadin.apps.estimation.similarprofiles',
     'abroadin.apps.data.account',
     'abroadin.apps.analytics.events',
     'abroadin.apps.data.applydata',
     'abroadin.apps.applyprofile',
-    'abroadin.apps.estimation.similarprofiles',
 
     'django.contrib.auth',
     'django.contrib.admin',
