@@ -25,6 +25,10 @@ class MajorManager(models.QuerySet):
         parent_majors.distinct()
         return parent_majors
 
+    def id_to_qs(self, ids):
+        qs = self.filter(id__in=ids)
+        return qs
+
 
 class UniversityQuerySetManager(GetListManagerMixin, models.QuerySet):
     pass
