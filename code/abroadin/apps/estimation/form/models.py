@@ -1,5 +1,3 @@
-import decimal
-import uuid
 from math import floor
 
 from django.contrib.contenttypes.fields import GenericRelation
@@ -26,7 +24,6 @@ from abroadin.apps.data.account.models import \
 from abroadin.apps.data.applydata import models as ad_models
 
 from abroadin.apps.data.account.validators import validate_resume_file_size
-from abroadin.base.python.classes import BooleanList
 
 # StudentDetailedInfo_CONTENT_TYPE
 SDI_CT = ContentType.objects.get(app_label='form', model='studentdetailedinfo')
@@ -361,8 +358,6 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         return value
 
     def _has_age(self):
-        res = BooleanList()
-        # return True
         if self.age is not None:
             return True
         return False
@@ -401,7 +396,7 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
                 completed = False
         return completed
 
-    def university_through_qs(self):
+    def education_qs(self):
         return Education.objects.filter(content_type=SDI_CT, object_id=self.id)
 
     @property
@@ -429,10 +424,10 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
 
     def get_related_majors(self):
         related_major_ids = []
-        university_through_qs = Education.objects.filter(
+        education_qs = Education.objects.filter(
             content_type=SDI_CT, object_id=self.id
         )
-        related_major_ids += list(university_through_qs.values_list('major__id', flat=True).distinct())
+        related_major_ids += list(education_qs.values_list('major__id', flat=True).distinct())
         try:
             want_to_apply = WantToApply.objects.get(student_detailed_info__id=self.id)
             related_major_ids += list(want_to_apply.majors.all().values_list('id', flat=True).distinct())

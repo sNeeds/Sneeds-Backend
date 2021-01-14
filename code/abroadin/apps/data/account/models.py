@@ -94,8 +94,7 @@ class Major(models.Model):
         try:
             return parents_list[nth - 1]
         except IndexError:
-            return None
+            return self
 
     def __str__(self):
-        self.name = self.name
         return self.name

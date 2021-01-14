@@ -19,6 +19,8 @@ class ProfilesListAPIView(CListAPIView):
     def get_queryset(self):
         form = self.get_form()
 
+        last_grade = form.get_last_university_grade()
+        education_qs = form.education_qs()
 
         print(self.kwargs)
         # return Response({})
