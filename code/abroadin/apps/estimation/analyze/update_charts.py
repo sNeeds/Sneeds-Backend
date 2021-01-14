@@ -6,10 +6,11 @@ from django.db import transaction
 
 from abroadin.apps.estimation.form import models as form_models
 from abroadin.apps.data.applydata import models as ad_models
-from abroadin.apps.estimation.form import managers as form_managers
+from abroadin.apps.data.applydata import managers as ad_managers
 from abroadin.apps.estimation.analyze.models import Chart, ChartItemData
 from abroadin.apps.estimation.form.serializers import StudentDetailedInfoCelerySerializer
 from abroadin.apps.estimation.form import serializers as form_serializers
+from abroadin.apps.data.applydata import serializers as ad_serializers
 from abroadin.apps.estimation.form.models import StudentDetailedInfo
 
 LanguageCertificateType = form_models.LanguageCertificate.LanguageCertificateType
@@ -176,7 +177,7 @@ def prepare_publications_score_chart_data(instance, db_instance, is_delete=False
         old_publications_list.append(instance)
         old_publications_list.sort(key=lambda x: x.value, reverse=True)
 
-        old_publications_score = form_managers.PublicationQuerySetManager.calculate_value(old_publications_list)
+        old_publications_score = ad_managers.PublicationQuerySetManager.calculate_value(old_publications_list)
 
         old_label = form_models.Publication.get_publications_score__store_label(old_publications_score)
         new_label = form_models.Publication.get_publications_score__store_label(new_publications_score)
@@ -194,7 +195,7 @@ def prepare_publications_score_chart_data(instance, db_instance, is_delete=False
             new_publications_list.append(instance)
             new_publications_list.sort(key=lambda x: x.value, reverse=True)
 
-            new_publications_score = form_managers.PublicationQuerySetManager.calculate_value(new_publications_list)
+            new_publications_score = ad_managers.PublicationQuerySetManager.calculate_value(new_publications_list)
 
             old_label = form_models.Publication.get_publications_score__store_label(old_publications_score)
             new_label = form_models.Publication.get_publications_score__store_label(new_publications_score)
@@ -210,7 +211,7 @@ def prepare_publications_score_chart_data(instance, db_instance, is_delete=False
             new_publications_list.append(instance)
             new_publications_list.sort(key=lambda x: x.value, reverse=True)
 
-            new_publications_score = form_managers.PublicationQuerySetManager.calculate_value(new_publications_list)
+            new_publications_score = ad_managers.PublicationQuerySetManager.calculate_value(new_publications_list)
 
             old_label = form_models.Publication.get_publications_score__store_label(old_publications_score)
             new_label = form_models.Publication.get_publications_score__store_label(new_publications_score)
@@ -318,7 +319,7 @@ def update_publications_score_chart_sdi_deletion(publications_score, data, db_da
 
     if is_delete:
 
-        label = form_models.Publication.get_publications_score__store_label(publications_score)
+        label = ad_models.Publication.get_publications_score__store_label(publications_score)
 
         with transaction.atomic():
             obj, created = ChartItemData.objects.get_or_create(chart=chart, label=label,
@@ -373,11 +374,11 @@ def prepare_update_gpa_chart(instance, db_instance, is_delete=False):
         last_grade = qs.first()
         # We check that the instance is the last education is being removed from sdi educations set
         if last_grade == instance:
-            old_label = form_models.Education.get_gpa__store_label(last_grade)
+            old_label = ad_models.Education.get_gpa__store_label(last_grade)
             # now we look for last grade after instance
             new_last_grade = qs.exclude(pk=instance.pk).first()
             if new_last_grade is not None:
-                new_label = form_models.Education.get_gpa__store_label(new_last_grade)
+                new_label = ad_models.Education.get_gpa__store_label(new_last_grade)
             else:
                 new_label = None
         else:
@@ -398,8 +399,8 @@ def prepare_update_gpa_chart(instance, db_instance, is_delete=False):
                 # we check that the instance graduate has changed and is not going to be the last grade any more
                 if instance.graduate_in < last_grade.graduate_in \
                         and next_last_grade is not None and instance.graduate_in < next_last_grade.graduate_in:
-                    old_label = form_models.Education.get_gpa__store_label(last_grade)
-                    new_label = form_models.Education.get_gpa__store_label(next_last_grade)
+                    old_label = ad_models.Education.get_gpa__store_label(last_grade)
+                    new_label = ad_models.Education.get_gpa__store_label(next_last_grade)
                     are_labels_updated = True
 
                 # We check gpa changes. If we do not enter the previous if statement it means the instance still is
@@ -410,24 +411,24 @@ def prepare_update_gpa_chart(instance, db_instance, is_delete=False):
 
             # The instance was not last grade education but maybe it become last grade by increasing graduate_in value!
             elif instance.graduate_in > last_grade.graduate_in:
-                old_label = form_models.Education.get_gpa__store_label(last_grade)
-                new_label = form_models.Education.get_gpa__store_label(instance)
+                old_label = ad_models.Education.get_gpa__store_label(last_grade)
+                new_label = ad_models.Education.get_gpa__store_label(instance)
 
         # Save has been called in order to create an entry
         else:
             # TODO Change coed to be consistence with new form structure
-            qs = form_models.Education.objects.filter(
+            qs = ad_models.Education.objects.filter(
                 student_detailed_info__id=instance.student_detailed_info.id
             ).order_by('-graduate_in')
 
             last_grade = qs.first()
 
             if last_grade is None:
-                new_label = form_models.Education.get_gpa__store_label(instance)
+                new_label = ad_models.Education.get_gpa__store_label(instance)
 
             elif instance.graduate_in > last_grade.graduate_in:
-                old_label = form_models.Education.get_gpa__store_label(last_grade)
-                new_label = form_models.Education.get_gpa__store_label(instance)
+                old_label = ad_models.Education.get_gpa__store_label(last_grade)
+                new_label = ad_models.Education.get_gpa__store_label(instance)
 
     return new_label, old_label
 
@@ -436,26 +437,26 @@ def serialize_language_certificate(instance) -> dict:
     if instance.certificate_type == LanguageCertificateType.IELTS_GENERAL or \
             instance.certificate_type == LanguageCertificateType.IELTS_ACADEMIC or \
             instance.certificate_type == LanguageCertificateType.TOEFL:
-        return form_serializers.RegularLanguageCertificateCelerySerializer(instance).data
+        return ad_serializers.RegularLanguageCertificateCelerySerializer(instance).data
 
     elif instance.certificate_type == LanguageCertificateType.GMAT:
-        return form_serializers.GMATCertificateCelerySerializer(instance).data
+        return ad_serializers.GMATCertificateCelerySerializer(instance).data
 
     elif instance.certificate_type == LanguageCertificateType.GRE_GENERAL:
-        return form_serializers.GREGeneralCertificateCelerySerializer(instance).data
+        return ad_serializers.GREGeneralCertificateCelerySerializer(instance).data
 
     elif instance.certificate_type == LanguageCertificateType.GRE_MATHEMATICS or \
             instance.certificate_type == LanguageCertificateType.GRE_CHEMISTRY or \
             instance.certificate_type == LanguageCertificateType.GRE_LITERATURE:
-        return form_serializers.GRESubjectCertificateCelerySerializer(instance).data
+        return ad_serializers.GRESubjectCertificateCelerySerializer(instance).data
 
     elif instance.certificate_type == LanguageCertificateType.GRE_PHYSICS or \
             instance.certificate_type == LanguageCertificateType.GRE_BIOLOGY or \
             instance.certificate_type == LanguageCertificateType.GRE_PSYCHOLOGY:
-        return form_serializers.GRESubjectCertificateCelerySerializer(instance).data
+        return ad_serializers.GRESubjectCertificateCelerySerializer(instance).data
 
     elif instance.certificate_type == LanguageCertificateType.DUOLINGO:
-        return form_serializers.DuolingoCertificateCelerySerializer(instance).data
+        return ad_serializers.DuolingoCertificateCelerySerializer(instance).data
 
     raise Exception("Program should not reach here.")
 
@@ -469,32 +470,32 @@ def deserialize_language_certificate(data: dict):
     if certificate_type == LanguageCertificateType.IELTS_GENERAL or \
             certificate_type == LanguageCertificateType.IELTS_ACADEMIC or \
             certificate_type == LanguageCertificateType.TOEFL:
-        serializer_class = form_serializers.RegularLanguageCertificateCelerySerializer
-        model_class = form_models.RegularLanguageCertificate
+        serializer_class = ad_serializers.RegularLanguageCertificateCelerySerializer
+        model_class = ad_models.RegularLanguageCertificate
 
     elif certificate_type == LanguageCertificateType.GMAT:
-        serializer_class = form_serializers.GMATCertificateCelerySerializer
-        model_class = form_models.GMATCertificate
+        serializer_class = ad_serializers.GMATCertificateCelerySerializer
+        model_class = ad_models.GMATCertificate
 
     elif certificate_type == LanguageCertificateType.GRE_GENERAL:
-        serializer_class = form_serializers.GREGeneralCertificateCelerySerializer
-        model_class = form_models.GREGeneralCertificate
+        serializer_class = ad_serializers.GREGeneralCertificateCelerySerializer
+        model_class = ad_models.GREGeneralCertificate
 
     elif certificate_type == LanguageCertificateType.GRE_MATHEMATICS or \
             certificate_type == LanguageCertificateType.GRE_CHEMISTRY or \
             certificate_type == LanguageCertificateType.GRE_LITERATURE:
-        serializer_class = form_serializers.GRESubjectCertificateCelerySerializer
-        model_class = form_models.GRESubjectCertificate
+        serializer_class = ad_serializers.GRESubjectCertificateCelerySerializer
+        model_class = ad_models.GRESubjectCertificate
 
     elif certificate_type == LanguageCertificateType.GRE_PHYSICS or \
             certificate_type == LanguageCertificateType.GRE_BIOLOGY or \
             certificate_type == LanguageCertificateType.GRE_PSYCHOLOGY:
-        serializer_class = form_serializers.GRESubjectCertificateCelerySerializer
-        model_class = form_models.GRESubjectCertificate
+        serializer_class = ad_serializers.GRESubjectCertificateCelerySerializer
+        model_class = ad_models.GRESubjectCertificate
 
     elif certificate_type == LanguageCertificateType.DUOLINGO:
-        serializer_class = form_serializers.DuolingoCertificateCelerySerializer
-        model_class = form_models.DuolingoCertificate
+        serializer_class = ad_serializers.DuolingoCertificateCelerySerializer
+        model_class = ad_models.DuolingoCertificate
 
     serializer = serializer_class(data=data)
     if not serializer.is_valid():
@@ -550,8 +551,8 @@ def update_ielts_chart(data, db_data, is_delete=False):
     else:
         db_instance = deserialize_language_certificate(data=db_data)
 
-    update_common_chart(Chart.ChartTitle.IELTS, form_models.RegularLanguageCertificate,
-                        form_models.RegularLanguageCertificate.get_ielts__store_label,
+    update_common_chart(Chart.ChartTitle.IELTS, ad_models.RegularLanguageCertificate,
+                        ad_models.RegularLanguageCertificate.get_ielts__store_label,
                         instance, db_instance, is_delete)
 
 
@@ -562,8 +563,8 @@ def update_toefl_chart(data, db_data, is_delete=False):
     else:
         db_instance = deserialize_language_certificate(data=db_data)
 
-    update_common_chart(Chart.ChartTitle.TOEFL, form_models.RegularLanguageCertificate,
-                        form_models.RegularLanguageCertificate.get_toefl__store_label,
+    update_common_chart(Chart.ChartTitle.TOEFL, ad_models.RegularLanguageCertificate,
+                        ad_models.RegularLanguageCertificate.get_toefl__store_label,
                         instance, db_instance, is_delete)
 
 
@@ -575,8 +576,8 @@ def update_gmat_chart(data, db_data, is_delete=False):
     else:
         db_instance = deserialize_language_certificate(data=db_data)
 
-    update_common_chart(Chart.ChartTitle.GMAT, form_models.GMATCertificate,
-                        form_models.GMATCertificate.get_store_label,
+    update_common_chart(Chart.ChartTitle.GMAT, ad_models.GMATCertificate,
+                        ad_models.GMATCertificate.get_store_label,
                         instance, db_instance, is_delete)
 
 
@@ -587,8 +588,8 @@ def update_gre_general_writing_chart(data, db_data, is_delete=False):
         db_instance = None
     else:
         db_instance = deserialize_language_certificate(data=db_data)
-    update_common_chart(Chart.ChartTitle.GRE_GENERAL_WRITING, form_models.GREGeneralCertificate,
-                        form_models.GREGeneralCertificate.get_writing_store_label, instance, db_instance, is_delete)
+    update_common_chart(Chart.ChartTitle.GRE_GENERAL_WRITING, ad_models.GREGeneralCertificate,
+                        ad_models.GREGeneralCertificate.get_writing_store_label, instance, db_instance, is_delete)
 
 
 def update_gre_general_quantitative_and_verbal_chart(data, db_data, is_delete=False):
@@ -598,8 +599,8 @@ def update_gre_general_quantitative_and_verbal_chart(data, db_data, is_delete=Fa
         db_instance = None
     else:
         db_instance = deserialize_language_certificate(data=db_data)
-    update_common_chart(Chart.ChartTitle.GRE_GENERAL_QUANTITATIVE_AND_VERBAL, form_models.GREGeneralCertificate,
-                        form_models.GREGeneralCertificate.get_q_and_v_store_label, instance, db_instance, is_delete)
+    update_common_chart(Chart.ChartTitle.GRE_GENERAL_QUANTITATIVE_AND_VERBAL, ad_models.GREGeneralCertificate,
+                        ad_models.GREGeneralCertificate.get_q_and_v_store_label, instance, db_instance, is_delete)
 
 
 def update_gre_subject_total_chart(data, db_data, is_delete=False):
@@ -609,8 +610,8 @@ def update_gre_subject_total_chart(data, db_data, is_delete=False):
         db_instance = None
     else:
         db_instance = deserialize_language_certificate(data=db_data)
-    update_common_chart(Chart.ChartTitle.GRE_SUBJECT_TOTAL, form_models.GRESubjectCertificate,
-                        form_models.GRESubjectCertificate.get_total_store_label, instance, db_instance, is_delete)
+    update_common_chart(Chart.ChartTitle.GRE_SUBJECT_TOTAL, ad_models.GRESubjectCertificate,
+                        ad_models.GRESubjectCertificate.get_total_store_label, instance, db_instance, is_delete)
 
 
 def update_duolingo_chart(data, db_data, is_delete=False):
@@ -621,8 +622,8 @@ def update_duolingo_chart(data, db_data, is_delete=False):
     else:
         db_instance = deserialize_language_certificate(data=db_data)
 
-    update_common_chart(Chart.ChartTitle.DUOLINGO, form_models.DuolingoCertificate,
-                        form_models.DuolingoCertificate.get_store_label, instance, db_instance, is_delete)
+    update_common_chart(Chart.ChartTitle.DUOLINGO, ad_models.DuolingoCertificate,
+                        ad_models.DuolingoCertificate.get_store_label, instance, db_instance, is_delete)
 
 
 def update_common_chart(chart_title, instance_model, label_function, instance, db_instance, is_delete=False):
