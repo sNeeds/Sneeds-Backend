@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from abroadin.apps.estimation.form import models as form_models
+from abroadin.apps.data.applydata import models as ad_models
 
 CHARTS_TITLES = [
     ('grade_point_average', 'GradePointAverage'),
@@ -88,22 +89,22 @@ class ChartItemData(models.Model):
             self.label_rank = form_models.StudentDetailedInfo.get_related_work__store_label_rank(self.label)
 
         if self.chart.title == Chart.ChartTitle.TOEFL:
-            self.label_rank = form_models.RegularLanguageCertificate.get_toefl__store_label_rank(self.label)
+            self.label_rank = ad_models.RegularLanguageCertificate.get_toefl__store_label_rank(self.label)
 
         if self.chart.title == Chart.ChartTitle.IELTS:
-            self.label_rank = form_models.RegularLanguageCertificate.get_ielts__store_label_rank(self.label)
+            self.label_rank = ad_models.RegularLanguageCertificate.get_ielts__store_label_rank(self.label)
 
         if self.chart.title == Chart.ChartTitle.GMAT:
-            self.label_rank = form_models.GMATCertificate.get_store_label_rank(self.label)
+            self.label_rank = ad_models.GMATCertificate.get_store_label_rank(self.label)
 
         if self.chart.title == Chart.ChartTitle.GRE_GENERAL_WRITING:
-            self.label_rank = form_models.GREGeneralCertificate.get_writing__store_label_rank(self.label)
+            self.label_rank = ad_models.GREGeneralCertificate.get_writing__store_label_rank(self.label)
 
         if self.chart.title == Chart.ChartTitle.GRE_GENERAL_QUANTITATIVE_AND_VERBAL:
-            self.label_rank = form_models.GREGeneralCertificate.get_q_and_v__store_label_rank(self.label)
+            self.label_rank = ad_models.GREGeneralCertificate.get_q_and_v__store_label_rank(self.label)
 
         if self.chart.title == Chart.ChartTitle.GRE_SUBJECT_TOTAL:
-            self.label_rank = form_models.GRESubjectCertificate.get_total__store_label_rank(self.label)
+            self.label_rank = ad_models.GRESubjectCertificate.get_total__store_label_rank(self.label)
 
         if self.chart.title == Chart.ChartTitle.DUOLINGO:
-            self.label_rank = form_models.DuolingoCertificate.get_store_label_rank(self.label)
+            self.label_rank = ad_models.DuolingoCertificate.get_store_label_rank(self.label)
