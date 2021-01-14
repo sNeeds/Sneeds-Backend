@@ -37,9 +37,7 @@ urlpatterns = [
                   path('store/discount/', include('abroadin.apps.store.discounts.urls')),
                   path('store/videochat/', include('abroadin.apps.store.videochats.urls')),
                   path('store/basic-product/', include('abroadin.apps.store.basicProducts.urls')),
-                  path('analyze/form/', include('abroadin.apps.estimation.form.urls')),
-                  path('analyze/estimation/', include('abroadin.apps.estimation.estimations.urls')),
-                  path('analyze/charts/', include('abroadin.apps.estimation.analyze.urls')),
+                  path('analyze/', include('abroadin.apps.estimation.urls')),
                   path('analytics/events/', include('abroadin.apps.analytics.events.urls')),
                   path('apply-profile/', include('abroadin.apps.applyprofile.urls')),
 
