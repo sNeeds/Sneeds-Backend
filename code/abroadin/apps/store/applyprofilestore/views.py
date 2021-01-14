@@ -1,0 +1,1 @@
+from abroadin.base.api.generics import CListCreateAPIView

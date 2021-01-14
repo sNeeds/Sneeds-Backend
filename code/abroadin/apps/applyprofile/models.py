@@ -7,6 +7,8 @@ from django.utils.translation import gettext_lazy as _
 from abroadin.apps.data.account.models import University, Major, Country
 from abroadin.apps.data.applydata.models import Publication, Education, LanguageCertificate
 
+from abroadin.apps.store.storeBase.models import Product
+
 User = get_user_model()
 
 
@@ -85,6 +87,11 @@ class ApplyProfile(models.Model):
     language_certificates = GenericRelation(
         LanguageCertificate, related_query_name='apply_profile'
     )
+
+    def sell(self):
+        Product.objects.create(
+
+        )
 
 
 class Admission(models.Model):
