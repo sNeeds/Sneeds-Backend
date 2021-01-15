@@ -42,6 +42,5 @@ class Admission(models.Model):
     )
     accepted = models.BooleanField()
     scholarship = models.PositiveIntegerField()
-    scholarship_unit = models.CharField(max_length=8, choices=ScholarshipUnitChoices.choices)
     enroll_year = models.PositiveSmallIntegerField()
     description = models.TextField(max_length=4096, null=True, blank=True, )

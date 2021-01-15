@@ -21,6 +21,7 @@ from abroadin.apps.data.applydata.values import VALUES_WITH_ATTRS
 # StudentDetailedInfo_CONTENT_TYPE
 SDI_CT = ContentType.objects.get(app_label='form', model='studentdetailedinfo')
 
+
 class GradeChoices(models.TextChoices):
     # Don't change order
     BACHELOR = 'Bachelor', 'Bachelor'
@@ -89,6 +90,9 @@ class Education(models.Model):
     object_id = models.CharField(
         max_length=40,
     )
+
+    new_object_id = models.PositiveIntegerField()
+
     content_object = GenericForeignKey(
         'content_type', 'object_id',
     )
