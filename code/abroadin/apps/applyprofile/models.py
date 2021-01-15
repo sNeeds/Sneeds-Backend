@@ -27,14 +27,16 @@ class Admission(models.Model):
 
     apply_profile = models.ForeignKey(ApplyProfile, on_delete=models.CASCADE)
     major = models.ForeignKey(Major, on_delete=models.PROTECT)
-    home = models.ForeignKey(University, on_delete=models.PROTECT,
-                                          related_name="admissions_home")
-    destination = models.ForeignKey(University, on_delete=models.PROTECT,
-                                               related_name="admissions_destination")
-
+    home = models.ForeignKey(
+        University, on_delete=models.PROTECT, related_name="admissions_home"
+    )
+    destination = models.ForeignKey(
+        University, on_delete=models.PROTECT, related_name="admissions_destination"
+    )
     enroll_year = models.PositiveSmallIntegerField()
     accepted = models.BooleanField()
     scholarship = models.PositiveIntegerField()
-    scholarship_unit = models.CharField(max_length=8, choices=ScholarshipUnitChoices.choices,
-                                        help_text='Scholarship unit. For example $/Y or €/M', )
+    scholarship_unit = models.CharField(
+        max_length=8, choices=ScholarshipUnitChoices.choices, help_text='Scholarship unit. For example $/Y or €/M',
+    )
     description = models.TextField(max_length=4096, null=True, blank=True, )
