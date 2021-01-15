@@ -47,12 +47,16 @@ class ProfilesListAPIView(CListAPIView):
         qs = profiles.filter(admission_q | education_q)
         return qs
 
-    def _filter_similar_home(self, profiles):
-        # Not needed yet
-        return profiles
+    def _similar_home_Q(self, profiles):
+        return Q()
 
-    def _filter_similar_destination(self, profiles, countries):
-        admission_q = Q(admission__major__in=majors)
+    def _similar_destination_Q(self, profiles, countries):
+        return Q(admission__destination__country__in=countries)
+
+    def _filter_similar_home_and_destination(self, profiles, dest_countries):
+        similar_home_q = self._similar_home_Q(profiles)
+        similar_destination_q = self._similar_destination_Q(profiles, dest_countries)
+        return profiles.filter(similar_home_q | similar_destination_q)
 
     def get_queryset(self):
         form = self.get_form()
@@ -75,7 +79,6 @@ class ProfilesListAPIView(CListAPIView):
         profiles = ApplyProfile.objects.all()
         profiles = self._filter_same_want_to_apply_grades(profiles, grades_want_to_apply)
         profiles = self._filter_similar_majors(profiles, form_related_majors_all_children)
-        profiles = self._filter_similar_destination(profiles, similar_destination_countries)
+        profiles = self._filter_similar_home_and_destination(profiles, similar_destination_countries)
 
-        print(profiles)
         return profiles
