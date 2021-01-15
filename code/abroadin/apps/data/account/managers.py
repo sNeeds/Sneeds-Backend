@@ -45,4 +45,4 @@ class UniversityManager(models.QuerySet):
         return countries_list
 
     def list(self):
-        return [obj for obj in self._chain()]
+        return list(self.all())

@@ -64,6 +64,11 @@ class WantToApply(models.Model):
         # **********************************************
         return self.grades.all()
 
+    def get_countries_qs(self):
+        return self.countries.all()
+
+    def get_universities_qs(self):
+        return self.universities.all()
 
 class StudentDetailedInfoBase(models.Model):
     old_id = models.UUIDField(null=True, blank=True)

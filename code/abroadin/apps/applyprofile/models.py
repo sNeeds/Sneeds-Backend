@@ -24,12 +24,7 @@ class Admission(models.Model):
     )
     major = models.ForeignKey(Major, on_delete=models.PROTECT)
     grade = models.ForeignKey(Grade, on_delete=models.PROTECT)
-    home = models.ForeignKey(
-        University, on_delete=models.PROTECT, related_name="admissions_home"
-    )
-    destination = models.ForeignKey(
-        University, on_delete=models.PROTECT, related_name="admissions_destination"
-    )
+    destination = models.ForeignKey(University, on_delete=models.PROTECT)
     accepted = models.BooleanField()
     scholarship = models.PositiveIntegerField()
     enroll_year = models.PositiveSmallIntegerField()
