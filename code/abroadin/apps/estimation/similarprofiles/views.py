@@ -37,6 +37,9 @@ class ProfilesListAPIView(CListAPIView):
 
         return similar_destination_countries
 
+    def _filter_around_gpa(self, gpa, profiles):
+        qs = profiles.filter
+
     def _filter_same_want_to_apply_grades(self, profiles, grades):
         profiles_qs = profiles.filter(admission__grade__in=grades)
         return profiles_qs

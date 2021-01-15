@@ -11,11 +11,11 @@ class StudentDetailedFormReview(
     def __init__(self, student_detailed_form):
         self.student_detailed_form = student_detailed_form
         self.last_grade = None
-        self.last_university_through = None
+        self.last_education = None
 
     def _set_grade(self):
         self.last_grade = self.student_detailed_form.get_last_university_grade()
-        self.last_university_through = self.student_detailed_form.last_university_through()
+        self.last_education = self.student_detailed_form.last_education()
 
     def _rank(self):
         return self.student_detailed_form.rank
@@ -33,11 +33,11 @@ class StudentDetailedFormReview(
 
             "university_and_gpa": {
                 "comment": self.review_universities(),
-                "value": None if self.last_university_through is None else self.last_university_through.value,
-                "value_label": None if self.last_university_through is None else
-                self.last_university_through.get_value_label(),
-                "university_value": None if self.last_university_through is None else self.last_university_through.university.value,
-                "gpa_value": None if self.last_university_through is None else self.last_university_through.gpa_value
+                "value": None if self.last_education is None else self.last_education.value,
+                "value_label": None if self.last_education is None else
+                self.last_education.get_value_label(),
+                "university_value": None if self.last_education is None else self.last_education.university.value,
+                "gpa_value": None if self.last_education is None else self.last_education.gpa_value
             },
 
             "publication":  self.review_publications(),
