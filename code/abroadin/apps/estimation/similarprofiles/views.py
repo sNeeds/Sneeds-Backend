@@ -1,8 +1,10 @@
+from django.db.models import Q
 from django.http import Http404
 
 from abroadin.base.api.generics import CListAPIView
 from abroadin.apps.estimation.form.models import StudentDetailedInfo
 from abroadin.apps.applyprofile.serializers import ApplyProfileSerializer
+from abroadin.apps.data.account.models import Major
 
 
 class ProfilesListAPIView(CListAPIView):
@@ -16,12 +18,28 @@ class ProfilesListAPIView(CListAPIView):
         except StudentDetailedInfo.DoesNotExist:
             raise Http404
 
+    def _filter_majors_in(self):
+        majors = Major.objects.all[:3]
+        q_obj = Q(education__major__in=majors)
+
+
     def get_queryset(self):
         form = self.get_form()
 
-        last_grade = form.get_last_university_grade()
+        want_to_apply = form.get_want_to_apply_or_none()
         education_qs = form.education_qs()
 
-        print(self.kwargs)
-        # return Response({})
+        education_major_ids = education_qs.get_majors_id_list()
+        education_majors_qs = Major.objects.id_to_qs(education_major_ids)
 
+        want_to_apply_majors_qs = want_to_apply.majors.all()
+
+        form_related_majors = education_majors_qs | want_to_apply_majors_qs
+        form_related_majors_parents = form_related_majors.top_nth_parents(3)
+
+        grades_want_to_apply = want_to_apply.grades_want_to_apply()
+
+        print(form_related_majors_parents)
+        print(grades_want_to_apply)
+
+        return None

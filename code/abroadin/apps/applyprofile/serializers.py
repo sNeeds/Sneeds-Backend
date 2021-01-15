@@ -58,9 +58,8 @@ class AdmissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Admission
         fields = [
-            'id', 'apply_profile', 'enroll_year', 'origin_university', 'destination_university',
-            'scholarships', 'scholarships_unit', 'major',
-            'accepted', 'description',
+            'id', 'apply_profile', 'enroll_year', 'home', 'destination',
+            'scholarship', 'scholarship_unit', 'major', 'accepted', 'description',
         ]
 
 
@@ -85,12 +84,10 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ApplyProfile
-        fields = ['id', 'name', 'academic_gap',
-                  'admissions',
-                  'publications',
-                  'educations',
-                  'language_certificates',
-                  ]
+        fields = {
+            'id', 'name', 'gap', 'admissions', 'publications', 'educations',
+            'language_certificates',
+        }
 
     def get_language_certificates(self, obj):
         return data_serializers.serialize_language_certificates(obj.language_certificates.all(), self, RELATED_CLASSES)

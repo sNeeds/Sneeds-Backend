@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 
-from .managers import CountryQuerySetManager, UniversityQuerySetManager
+from .managers import CountryQuerySetManager, UniversityQuerySetManager, MajorManager
 from abroadin.apps.data.applydata import values
 
 User = get_user_model()
@@ -77,6 +77,8 @@ class Major(models.Model):
     description = models.TextField(blank=True, null=True)
     parent_major = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
 
+    objects = MajorManager.as_manager()
+
     def hierarchy_str(self):
         name = self.name
         if self.parent_major:
@@ -89,7 +91,7 @@ class Major(models.Model):
 
         while parent:
             parents_list.insert(0, parent)
-            parent = parent.parent
+            parent = parent.parent_major
 
         try:
             return parents_list[nth - 1]

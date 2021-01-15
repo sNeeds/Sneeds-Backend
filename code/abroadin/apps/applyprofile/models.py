@@ -1,6 +1,6 @@
-from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
-from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 
@@ -12,81 +12,12 @@ from abroadin.apps.store.storeBase.models import Product
 User = get_user_model()
 
 
-# No underline is used for methods outside of the class definition,
-# If multiple classes use this method why use _ and if one class uses why not in class?
-
-# get_or_create could be a better name
-def _get_other_country_id():
-    """
-    Returns a country which is named 'Other'
-    """
-    qs = Country.objects.filter(name__iexact='Other')
-    if qs.exists():
-        return qs.first().id
-    return Country.objects.create(
-        name='Other',
-        search_name='other',
-        slug='other'
-    ).id
-
-
-# No underline is used for methods outside of the class definition,
-# If multiple classes use this method why use _ and if one class uses why not in class?
-
-# get_or_create could be a better name
-def _get_other_university_id():
-    """
-    Returns a university which is named 'Other'
-    """
-    qs = University.objects.filter(name__iexact='Other')
-    if qs.exists():
-        return qs.first().id
-    return University.objects.create(
-        name='Other',
-        search_name='other',
-        slug='other',
-        country_id=_get_other_country_id(),
-        rank=20000,
-    ).id
-
-# No underline is used for methods outside of the class definition,
-# If multiple classes use this method why use _ and if one class uses why not in class?
-
-# get_or_create could be a better name
-def _get_other_major_id():
-    """
-        Returns a major which is named 'Other'
-    """
-    qs = Major.objects.filter(name__iexact='Other')
-    if qs.exists():
-        return qs.first().id
-    return Major.objects.create(
-        name='Other',
-        search_name='other',
-    ).id
-
-
 class ApplyProfile(models.Model):
-    name = models.CharField(
-        max_length=255,
-    )
-
-    academic_gap = models.PositiveSmallIntegerField(
-        help_text='In months',
-        default=0,
-    )
-
-    publications = GenericRelation(
-        Publication, related_query_name='apply_profile'
-    )
-
-    educations = GenericRelation(
-        Education, related_query_name='apply_profile'
-    )
-
-    language_certificates = GenericRelation(
-        LanguageCertificate, related_query_name='apply_profile'
-    )
+    name = models.CharField(max_length=255)
+    gap = models.PositiveSmallIntegerField(help_text='In months', default=0)
+    publications = GenericRelation(Publication, related_query_name='apply_profile')
+    educations = GenericRelation(Education, related_query_name='apply_profile')
+    language_certificates = GenericRelation(LanguageCertificate, related_query_name='apply_profile')
 
     def sell(self):
         Product.objects.create(
@@ -95,54 +26,22 @@ class ApplyProfile(models.Model):
 
 
 class Admission(models.Model):
-    class ScholarshipsUnitChoices(models.TextChoices):
+    class ScholarshipUnitChoices(models.TextChoices):
         DOLLAR_MONTH = '$/M', _("$/M")
         DOLLAR_YEAR = '$/Y', _("$/Y")
         EURO_MONTH = '€/M', _("€/M")
         EURO_YEAR = '€/Y', _("€/Y")
 
-    apply_profile = models.ForeignKey(
-        ApplyProfile,
-        on_delete=models.CASCADE,
+    apply_profile = models.ForeignKey(ApplyProfile, on_delete=models.CASCADE)
+    major = models.ForeignKey(Major, on_delete=models.PROTECT)
+    home = models.ForeignKey(
+        University, on_delete=models.PROTECT, related_name="admissions_home"
     )
-
-    enroll_year = models.PositiveSmallIntegerField(
+    destination = models.ForeignKey(
+        University, on_delete=models.PROTECT, related_name="admissions_destination"
     )
-
-    origin_university = models.ForeignKey(
-        University,
-        on_delete=models.SET(_get_other_university_id),  # Great but change to Protect
-        related_name='admission_origin_universities',
-        related_query_name='admission_origin_university',
-    )
-
-    destination_university = models.ForeignKey(
-        University,
-        on_delete=models.SET(_get_other_university_id),  # Great but change to Protect
-        related_name='admission_destination_universities',  # goal to destination, also weired name, do we need?
-        related_query_name='admission_destination_university',
-    )
-
-    major = models.ForeignKey(
-        Major,
-        on_delete=models.SET(_get_other_major_id),
-    )
-
-    accepted = models.BooleanField(
-        default=False
-    )
-
-    scholarships = models.PositiveIntegerField(
-    )
-
-    scholarships_unit = models.CharField(
-        max_length=8,
-        help_text='Scholarship unit. For example $/Y or €/M',
-        choices=ScholarshipsUnitChoices.choices,
-    )
-
-    description = models.TextField(
-        max_length=4096,
-        null=True,
-        blank=True,
-    )
+    accepted = models.BooleanField()
+    scholarship = models.PositiveIntegerField()
+    scholarship_unit = models.CharField(max_length=8, choices=ScholarshipUnitChoices.choices)
+    enroll_year = models.PositiveSmallIntegerField()
+    description = models.TextField(max_length=4096, null=True, blank=True, )

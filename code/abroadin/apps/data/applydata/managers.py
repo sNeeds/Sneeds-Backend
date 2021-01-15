@@ -17,14 +17,12 @@ class EducationQuerySetManager(models.QuerySet):
         """
         from .models import GradeChoices
 
-        q_list = []
         when_list = []
 
         for grade in GradeChoices.get_ordered():
             q = Q(grade=grade)
             when = When(q, then=Value(GradeChoices.order_num(grade)))
 
-            q_list.append(q)
             when_list.append(when)
 
         qs = self.all().annotate(
@@ -32,6 +30,10 @@ class EducationQuerySetManager(models.QuerySet):
         ).order_by('grade_ordering')
 
         return qs
+
+    def get_majors_id_list(self):
+        majors_id_list = list(self.all().values_list('major', flat=True))
+        return majors_id_list
 
 
 class PublicationQuerySetManager(models.QuerySet):

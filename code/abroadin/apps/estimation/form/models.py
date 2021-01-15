@@ -35,18 +35,11 @@ class WantToApply(models.Model):
         on_delete=models.CASCADE,
         related_name="want_to_apply",
     )
-    student_detailed_info_old = models.UUIDField(
-        null=True, blank=True,
-    )
-
+    student_detailed_info_old = models.UUIDField(null=True, blank=True, )
     countries = models.ManyToManyField(Country, blank=True)
-
     universities = models.ManyToManyField(University, blank=True)
-
     grades = models.ManyToManyField(Grade, blank=True)
-
     majors = models.ManyToManyField(Major, blank=True)
-
     semester_years = models.ManyToManyField(SemesterYear, blank=True)
 
     @property
@@ -61,6 +54,15 @@ class WantToApply(models.Model):
                 non_complete_fields.append(field)
                 completed = False
         return completed
+
+    def grades_want_to_apply(self):
+        # TODO: VERY IMPORTANT ***************
+        # Hossein change the structure of is_completed definition in WantToApply.
+        # Tell me afterwards *************#########
+        # **********************************************
+        # **********************************************
+        # **********************************************
+        return self.grades.all()
 
 
 class StudentDetailedInfoBase(models.Model):
@@ -417,20 +419,6 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
 
     def get_last_university_grade(self):
         return None if self.last_university_through() is None else self.last_university_through().grade
-
-    def get_related_majors(self):
-        related_major_ids = []
-        education_qs = Education.objects.filter(
-            content_type=SDI_CT, object_id=self.id
-        )
-        related_major_ids += list(education_qs.values_list('major__id', flat=True).distinct())
-        try:
-            want_to_apply = WantToApply.objects.get(student_detailed_info__id=self.id)
-            related_major_ids += list(want_to_apply.majors.all().values_list('id', flat=True).distinct())
-        except WantToApply.DoesNotExist:
-            pass
-
-        return Major.objects.filter(id__in=related_major_ids)
 
     #################################
     # Powerful Recommendation methods
