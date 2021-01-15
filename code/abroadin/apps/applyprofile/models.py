@@ -20,14 +20,7 @@ class ApplyProfile(models.Model):
     language_certificates = GenericRelation(LanguageCertificate, related_query_name='apply_profile')
 
 
-
 class Admission(models.Model):
-    class ScholarshipUnitChoices(models.TextChoices):
-        DOLLAR_MONTH = '$/M', _("$/M")
-        DOLLAR_YEAR = '$/Y', _("$/Y")
-        EURO_MONTH = '€/M', _("€/M")
-        EURO_YEAR = '€/Y', _("€/Y")
-
     apply_profile = models.ForeignKey(
         ApplyProfile, on_delete=models.CASCADE, related_name="admissions", related_query_name="admission"
     )
