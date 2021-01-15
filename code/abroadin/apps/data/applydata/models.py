@@ -22,7 +22,7 @@ from abroadin.apps.data.applydata.values import VALUES_WITH_ATTRS
 SDI_CT = ContentType.objects.get(app_label='form', model='studentdetailedinfo')
 
 class GradeChoices(models.TextChoices):
-    "Don't change order"
+    # Don't change order
     BACHELOR = 'Bachelor', 'Bachelor'
     MASTER = 'Master', 'Master'
     PHD = 'PH.D', 'PH.D'
