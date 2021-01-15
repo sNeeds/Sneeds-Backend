@@ -17,8 +17,8 @@ class ProfilesListAPIView(CListAPIView):
         except StudentDetailedInfo.DoesNotExist:
             raise Http404
 
-    def same_last_grade_Q_obj(self, last_grade):
-        Q
+    # def same_last_grade_Q_obj(self, last_grade):
+    #     Q
 
 
     def get_queryset(self):
