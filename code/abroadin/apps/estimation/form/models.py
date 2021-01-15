@@ -149,12 +149,8 @@ class StudentDetailedInfoBase(models.Model):
         return found
 
     def last_education(self):
-        qs = Education.objects.filter(content_type=SDI_CT, object_id=self.id)
-        ordered_qs = qs.order_by_grade()
-
-        if ordered_qs.exists():
-            return ordered_qs.last()
-        return None
+        education_qs = Education.objects.filter(content_type=SDI_CT, object_id=self.id)
+        return education_qs.get_last_grade_education()
 
     def language_certificates_str(self):
         return LanguageCertificate.objects.filter(content_type=SDI_CT, object_id=self.id).brief_str()

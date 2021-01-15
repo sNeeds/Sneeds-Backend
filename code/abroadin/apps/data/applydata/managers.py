@@ -35,6 +35,13 @@ class EducationManager(models.QuerySet):
         majors_id_list = list(self.all().values_list('major', flat=True))
         return majors_id_list
 
+    def get_last_grade_education(self):
+        ordered_qs = self.order_by_grade()
+
+        if ordered_qs.exists():
+            return ordered_qs.last()
+        return None
+
 
 class PublicationManager(models.QuerySet):
 

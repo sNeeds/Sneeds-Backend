@@ -17,6 +17,10 @@ class ApplyProfile(models.Model):
     educations = GenericRelation(Education, related_query_name='apply_profile')
     language_certificates = GenericRelation(LanguageCertificate, related_query_name='apply_profile')
 
+    def last_education(self):
+        education_qs = self.educations.all()
+        return education_qs.get_last_grade_education()
+
 
 class Admission(models.Model):
     apply_profile = models.ForeignKey(
