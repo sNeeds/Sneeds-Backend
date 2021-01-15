@@ -18,18 +18,21 @@ class CountryQuerySetManager(GetListManagerMixin, models.QuerySet):
 
 class MajorManager(models.QuerySet):
     def top_nth_parents(self, nth):
-        parent_majors = self.none()
+        parents = self.none()
         for major in self.all():
             major_model = self.model
             top_nth_parent = major.top_nth_parent(nth)
-            parent_majors |= major_model.objects.filter(id=top_nth_parent.id)
+            parents |= major_model.objects.filter(id=top_nth_parent.id)
 
-        parent_majors.distinct()
-        return parent_majors
+        parents.distinct()
+        return parents
 
     def id_to_qs(self, ids):
         qs = self.filter(id__in=ids)
         return qs
+
+    def get_all_children_majors(self):
+        pass
 
 
 class UniversityQuerySetManager(GetListManagerMixin, models.QuerySet):

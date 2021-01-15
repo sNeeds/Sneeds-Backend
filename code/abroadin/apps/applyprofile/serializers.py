@@ -4,7 +4,6 @@ from abroadin.apps.data.applydata import serializers as ad_serializers
 from abroadin.apps.data.account import serializers as account_serializers
 
 from .models import ApplyProfile, Admission
-from ...base.api.fields import GenericContentTypeRelatedField
 
 RELATED_CLASSES = [
     {

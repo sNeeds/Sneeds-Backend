@@ -23,6 +23,8 @@ class ProfilesListAPIView(CListAPIView):
         profiles_qs = profiles.filter(admission__grade__in=grades)
         return profiles_qs
 
+    # def _filter_similar_majors(self, majors):
+
     def get_queryset(self):
         form = self.get_form()
 

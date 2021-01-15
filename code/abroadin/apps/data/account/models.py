@@ -75,28 +75,32 @@ class Major(models.Model):
     name = models.CharField(max_length=256)
     search_name = models.CharField(max_length=1024)
     description = models.TextField(blank=True, null=True)
-    parent_major = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
+    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
 
     objects = MajorManager.as_manager()
 
     def hierarchy_str(self):
         name = self.name
-        if self.parent_major:
-            name += " -> " + self.parent_major.hierarchy_str()
+        if self.parent:
+            name += " -> " + self.parent.hierarchy_str()
         return name
 
     def top_nth_parent(self, nth):
         parents_list = []
-        parent = self.parent_major
+        parent = self.parent
 
         while parent:
             parents_list.insert(0, parent)
-            parent = parent.parent_major
+            parent = parent.parent
 
         try:
             return parents_list[nth - 1]
         except IndexError:
             return self
+
+    def get_all_children_majors(self):
+        qs = self.objects.filter(parent=self)
+
 
     def __str__(self):
         return self.name
