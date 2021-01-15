@@ -58,7 +58,7 @@ class AdmissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Admission
         fields = [
-            'id', 'apply_profile', 'enroll_year', 'origin_university', 'destination_university',
+            'id', 'apply_profile', 'enroll_year', 'home', 'destination',
             'scholarship', 'scholarship_unit', 'major', 'accepted', 'description',
         ]
 

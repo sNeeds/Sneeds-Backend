@@ -27,9 +27,9 @@ class Admission(models.Model):
 
     apply_profile = models.ForeignKey(ApplyProfile, on_delete=models.CASCADE)
     major = models.ForeignKey(Major, on_delete=models.PROTECT)
-    origin_university = models.ForeignKey(University, on_delete=models.PROTECT,
+    home = models.ForeignKey(University, on_delete=models.PROTECT,
                                           related_name="admissions_home")
-    destination_university = models.ForeignKey(University, on_delete=models.PROTECT,
+    destination = models.ForeignKey(University, on_delete=models.PROTECT,
                                                related_name="admissions_destination")
 
     enroll_year = models.PositiveSmallIntegerField()

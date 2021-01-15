@@ -11,7 +11,7 @@ from abroadin.apps.data.applydata.models import (
 class AdmissionInline(admin.TabularInline):
     model = Admission
     extra = 1
-    autocomplete_fields = ['origin_university', 'destination_university', 'major']
+    autocomplete_fields = ['home', 'destination', 'major']
 
 
 class EducationInline(GenericTabularInline):
