@@ -129,7 +129,6 @@ class StudentDetailedInfoBase(models.Model):
         return found
 
     def last_university_through(self):
-
         qs = Education.objects.filter(content_type=SDI_CT, object_id=self.id)
         ordered_qs = qs.order_by_grade()
 
@@ -422,19 +421,6 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
     def get_last_university_grade(self):
         return None if self.last_university_through() is None else self.last_university_through().grade
 
-    def get_related_majors(self):
-        related_major_ids = []
-        education_qs = Education.objects.filter(
-            content_type=SDI_CT, object_id=self.id
-        )
-        related_major_ids += list(education_qs.values_list('major__id', flat=True).distinct())
-        try:
-            want_to_apply = WantToApply.objects.get(student_detailed_info__id=self.id)
-            related_major_ids += list(want_to_apply.majors.all().values_list('id', flat=True).distinct())
-        except WantToApply.DoesNotExist:
-            pass
-
-        return Major.objects.filter(id__in=related_major_ids)
 
     #################################
     # Powerful Recommendation methods

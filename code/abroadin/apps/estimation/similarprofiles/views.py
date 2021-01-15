@@ -17,6 +17,10 @@ class ProfilesListAPIView(CListAPIView):
         except StudentDetailedInfo.DoesNotExist:
             raise Http404
 
+    def same_last_grade_Q_obj(self, last_grade):
+        Q
+
+
     def get_queryset(self):
         form = self.get_form()
 
@@ -26,15 +30,13 @@ class ProfilesListAPIView(CListAPIView):
 
         education_major_ids = education_qs.get_majors_id_list()
         education_majors_qs = Major.objects.id_to_qs(education_major_ids)
-        education_major_top_three_parents = education_majors_qs.top_nth_parents(2)
 
         want_to_apply_majors_qs = want_to_apply.majors.all()
 
-        form_related_majors = education_major_top_three_parents | want_to_apply_majors_qs
+        form_related_majors = education_majors_qs | want_to_apply_majors_qs
+        form_related_majors_parents = form_related_majors.top_nth_parents(3)
 
 
-        print(last_grade)
-        print(education_major_top_three_parents)
+        print(form_related_majors_parents)
 
-        print(self.kwargs)
-        # return Response({})
+        return None
