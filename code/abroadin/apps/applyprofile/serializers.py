@@ -84,10 +84,10 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ApplyProfile
-        fields = {
+        fields = [
             'id', 'name', 'gap', 'admissions', 'publications', 'educations',
             'language_certificates',
-        }
+        ]
 
     def get_language_certificates(self, obj):
         return data_serializers.serialize_language_certificates(obj.language_certificates.all(), self, RELATED_CLASSES)
