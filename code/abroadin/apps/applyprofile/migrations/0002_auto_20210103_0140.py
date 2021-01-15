@@ -4,6 +4,9 @@ import abroadin.apps.applyprofile.models
 from django.db import migrations, models
 
 
+def _get_other_university_id():
+    pass
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -15,6 +18,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='admission',
             name='destination_university',
-            field=models.ForeignKey(on_delete=models.SET(abroadin.apps.applyprofile.models._get_other_university_id), related_name='admission_destination_universities', related_query_name='admission_destination_university', to='account.university'),
+            field=models.ForeignKey(on_delete=models.SET(_get_other_university_id), related_name='admission_destination_universities', related_query_name='admission_destination_university', to='account.university'),
         ),
     ]

@@ -5,7 +5,6 @@ from django.db import migrations, models
 import django.db.models.deletion
 
 
-
 def _get_other_country_id():
     pass
 
@@ -13,13 +12,12 @@ def _get_other_country_id():
 def _get_other_university_id():
     pass
 
+
 def _get_other_major_id():
     pass
 
 
-
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -43,12 +41,21 @@ class Migration(migrations.Migration):
                 ('enroll_year', models.PositiveSmallIntegerField()),
                 ('accepted', models.BooleanField(default=False)),
                 ('scholarships', models.PositiveIntegerField()),
-                ('scholarships_unit', models.CharField(choices=[('$/M', '$/M'), ('$/Y', '$/Y'), ('€/M', '€/M'), ('€/Y', '€/Y')], help_text='Scholarship unit. For example $/Y or €/M', max_length=8)),
+                ('scholarships_unit',
+                 models.CharField(choices=[('$/M', '$/M'), ('$/Y', '$/Y'), ('€/M', '€/M'), ('€/Y', '€/Y')],
+                                  help_text='Scholarship unit. For example $/Y or €/M', max_length=8)),
                 ('description', models.TextField(blank=True, max_length=4096, null=True)),
-                ('apply_profile', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='applyprofile.applyprofile')),
-                ('destination_university', models.ForeignKey(on_delete=models.SET(_get_other_university_id), related_name='admission_goal_universities', related_query_name='admission_goal_university', to='account.university')),
+                ('apply_profile',
+                 models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='applyprofile.applyprofile')),
+                ('destination_university', models.ForeignKey(on_delete=models.SET(_get_other_university_id),
+                                                             related_name='admission_goal_universities',
+                                                             related_query_name='admission_goal_university',
+                                                             to='account.university')),
                 ('major', models.ForeignKey(on_delete=models.SET(_get_other_major_id), to='account.major')),
-                ('origin_university', models.ForeignKey(on_delete=models.SET(_get_other_university_id), related_name='admission_origin_universities', related_query_name='admission_origin_university', to='account.university')),
+                ('origin_university', models.ForeignKey(on_delete=models.SET(_get_other_university_id),
+                                                        related_name='admission_origin_universities',
+                                                        related_query_name='admission_origin_university',
+                                                        to='account.university')),
             ],
         ),
     ]
