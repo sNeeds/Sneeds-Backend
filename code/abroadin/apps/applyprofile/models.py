@@ -19,10 +19,6 @@ class ApplyProfile(models.Model):
     educations = GenericRelation(Education, related_query_name='apply_profile')
     language_certificates = GenericRelation(LanguageCertificate, related_query_name='apply_profile')
 
-    def sell(self):
-        Product.objects.create(
-
-        )
 
 
 class Admission(models.Model):
@@ -46,4 +42,4 @@ class Admission(models.Model):
     accepted = models.BooleanField()
     scholarship = models.PositiveIntegerField()
     enroll_year = models.PositiveSmallIntegerField()
-    description = models.TextField(max_length=4096, null=True, blank=True, )
+    description = models.TextField(max_length=4096, null=True, blank=True)

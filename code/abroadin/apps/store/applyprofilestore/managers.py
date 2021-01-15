@@ -1,7 +1,5 @@
 from django.db.models import QuerySet
 
-from abroadin.apps.applyprofile.models import ApplyProfile
-
 from .validators import validate_apply_profiles
 
 
