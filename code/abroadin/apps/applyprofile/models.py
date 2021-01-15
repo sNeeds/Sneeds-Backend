@@ -26,33 +26,15 @@ class Admission(models.Model):
         EURO_YEAR = '€/Y', _("€/Y")
 
     apply_profile = models.ForeignKey(ApplyProfile, on_delete=models.CASCADE)
-    enroll_year = models.PositiveSmallIntegerField()
     major = models.ForeignKey(Major, on_delete=models.PROTECT)
+    origin_university = models.ForeignKey(University, on_delete=models.PROTECT,
+                                          related_name="admissions_home")
+    destination_university = models.ForeignKey(University, on_delete=models.PROTECT,
+                                               related_name="admissions_destination")
+
+    enroll_year = models.PositiveSmallIntegerField()
     accepted = models.BooleanField()
     scholarship = models.PositiveIntegerField()
-
-    origin_university = models.ForeignKey(
-        University,
-        on_delete=models.PROTECT,
-        related_name='admission_origin_universities',
-        related_query_name='admission_origin_university',
-    )
-
-    destination_university = models.ForeignKey(
-        University,
-        on_delete=models.PROTECT,
-        related_name='admission_destination_universities',  # goal to destination, also weired name, do we need?
-        related_query_name='admission_destination_university',
-    )
-
-    scholarship_unit = models.CharField(
-        max_length=8,
-        help_text='Scholarship unit. For example $/Y or €/M',
-        choices=ScholarshipUnitChoices.choices,
-    )
-
-    description = models.TextField(
-        max_length=4096,
-        null=True,
-        blank=True,
-    )
+    scholarship_unit = models.CharField(max_length=8, choices=ScholarshipUnitChoices.choices,
+                                        help_text='Scholarship unit. For example $/Y or €/M', )
+    description = models.TextField(max_length=4096, null=True, blank=True, )
