@@ -4,7 +4,7 @@ from abroadin.apps.data.applydata.models import Publication
 from abroadin.apps.data.applydata import serializers as data_serializers
 
 from .models import ApplyProfile, Admission
-from abroadin.apps.data.account.serializers import UniversitySerializer
+from abroadin.apps.data.account.serializers import UniversitySerializer, MajorSerializer
 from ..data.applydata.serializers import GradeSerializer
 
 RELATED_CLASSES = [
@@ -58,7 +58,9 @@ class EducationRequestSerializer(data_serializers.EducationRequestSerializer):
 class AdmissionSerializer(serializers.ModelSerializer):
     home = UniversitySerializer()
     destination = UniversitySerializer()
-    destination = GradeSerializer()
+    grade = GradeSerializer()
+    major = MajorSerializer()
+
     class Meta:
         model = Admission
         fields = [
