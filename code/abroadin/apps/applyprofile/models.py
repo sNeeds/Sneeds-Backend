@@ -1,6 +1,6 @@
-from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
-from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 
@@ -36,7 +36,5 @@ class Admission(models.Model):
     enroll_year = models.PositiveSmallIntegerField()
     accepted = models.BooleanField()
     scholarship = models.PositiveIntegerField()
-    scholarship_unit = models.CharField(
-        max_length=8, choices=ScholarshipUnitChoices.choices, help_text='Scholarship unit. For example $/Y or €/M',
-    )
+    scholarship_unit = models.CharField(max_length=8, choices=ScholarshipUnitChoices.choices)
     description = models.TextField(max_length=4096, null=True, blank=True, )
