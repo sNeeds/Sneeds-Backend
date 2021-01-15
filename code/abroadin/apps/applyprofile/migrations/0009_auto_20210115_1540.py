@@ -4,6 +4,15 @@ from django.db import migrations, models
 import django.db.models.deletion
 
 
+def fill_grade(apps, schema_editor):
+    GradeModel = apps.get_model('applydata', 'grade')
+    default_grade = GradeModel.objects.all().first()
+    ApplyProfile = apps.get_model('applyprofile', 'admission')
+    for obj in ApplyProfile.objects.all():
+        obj.grade = default_grade
+        obj.save()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -15,7 +24,15 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='admission',
             name='grade',
-            field=models.ForeignKey(default=3000, on_delete=django.db.models.deletion.PROTECT, to='applydata.grade'),
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, to='applydata.grade'),
+            preserve_default=False,
+        ),
+        migrations.RunPython(code=fill_grade,
+                             reverse_code=migrations.RunPython.noop),
+        migrations.AlterField(
+            model_name='admission',
+            name='grade',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='applydata.grade'),
             preserve_default=False,
         ),
         migrations.AlterField(
