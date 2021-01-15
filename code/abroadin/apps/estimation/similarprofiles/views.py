@@ -5,6 +5,7 @@ from abroadin.base.api.generics import CListAPIView
 from abroadin.apps.estimation.form.models import StudentDetailedInfo
 from abroadin.apps.applyprofile.serializers import ApplyProfileSerializer
 from abroadin.apps.data.account.models import Major
+from abroadin.apps.applyprofile.models import ApplyProfile
 
 
 class ProfilesListAPIView(CListAPIView):
@@ -18,10 +19,9 @@ class ProfilesListAPIView(CListAPIView):
         except StudentDetailedInfo.DoesNotExist:
             raise Http404
 
-    def _filter_majors_in(self):
-        majors = Major.objects.all[:3]
-        q_obj = Q(education__major__in=majors)
-
+    def _filter_same_want_to_apply_grades(self, profiles, grades):
+        profiles_qs = profiles.filter(admission__grade__in=grades)
+        return profiles_qs
 
     def get_queryset(self):
         form = self.get_form()
@@ -39,7 +39,8 @@ class ProfilesListAPIView(CListAPIView):
 
         grades_want_to_apply = want_to_apply.grades_want_to_apply()
 
-        print(form_related_majors_parents)
-        print(grades_want_to_apply)
+        profiles = ApplyProfile.objects.all()
+        profiles = self._filter_same_want_to_apply_grades(profiles, grades_want_to_apply)
+        print(profiles)
 
-        return None
+        return profiles

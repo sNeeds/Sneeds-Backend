@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 
 from abroadin.apps.data.account.models import University, Major, Country
-from abroadin.apps.data.applydata.models import Publication, Education, LanguageCertificate
+from abroadin.apps.data.applydata.models import Publication, Education, LanguageCertificate, Grade
 
 User = get_user_model()
 
@@ -25,8 +25,11 @@ class Admission(models.Model):
         EURO_MONTH = '€/M', _("€/M")
         EURO_YEAR = '€/Y', _("€/Y")
 
-    apply_profile = models.ForeignKey(ApplyProfile, on_delete=models.CASCADE)
+    apply_profile = models.ForeignKey(
+        ApplyProfile, on_delete=models.CASCADE, related_name="admissions", related_query_name="admission"
+    )
     major = models.ForeignKey(Major, on_delete=models.PROTECT)
+    grade = models.ForeignKey(Grade, on_delete=models.PROTECT)
     home = models.ForeignKey(
         University, on_delete=models.PROTECT, related_name="admissions_home"
     )
