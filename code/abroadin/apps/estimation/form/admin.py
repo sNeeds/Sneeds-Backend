@@ -114,25 +114,3 @@ class StudentDetailedInfoAdmin(StudentDetailedInfoBaseAdmin):
         return instance.is_complete
 
     is_complete.boolean = True
-
-# # admin.site.register(models.WantToApplyTransferSemesterGrade)
-
-
-# class WantToApplyInline(admin.TabularInline):
-#     model = models.WantToApply
-#     extra = 1
-#     filter_horizontal = ['universities']
-#     autocomplete_fields = ['countries', 'universities', 'majors']
-#
-#
-# @admin.register(models.StudentDetailedInfo)
-# class StudentDetailedInfoAdmin(admin.ModelAdmin):
-#     inlines = [
-#                   WantToApplyInline
-#               ]
-#     list_display = ['id', 'user', 'value', 'rank', 'updated', 'created', 'is_complete']
-#
-#     def is_complete(self, instance):
-#         return instance.is_complete
-#
-#     is_complete.boolean = True

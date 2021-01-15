@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
-from abroadin.apps.data.applydata.models import Publication
-from abroadin.apps.data.applydata import serializers as data_serializers
+from abroadin.apps.data.applydata import serializers as ad_serializers
+from abroadin.apps.data.account import serializers as account_serializers
 
 from .models import ApplyProfile, Admission
 from ...base.api.fields import GenericContentTypeRelatedField
@@ -17,37 +17,37 @@ RELATED_CLASSES = [
 ]
 
 
-class PublicationSerializer(data_serializers.PublicationSerializer):
+class AppSpecificPublicationSerializer(ad_serializers.PublicationSerializer):
     related_classes = RELATED_CLASSES
 
-    class Meta(data_serializers.PublicationSerializer.Meta):
+    class Meta(ad_serializers.PublicationSerializer.Meta):
         abstract = False
 
 
-class PublicationRequestSerializer(data_serializers.PublicationRequestSerializer):
+class AppSpecificPublicationRequestSerializer(ad_serializers.PublicationRequestSerializer):
     related_classes = RELATED_CLASSES
 
-    class Meta(data_serializers.PublicationRequestSerializer.Meta):
-        abstract = False
-
-    def validate(self, attrs):
-        return super().validate(attrs)
-
-
-class EducationSerializer(data_serializers.EducationSerializer):
-    related_classes = RELATED_CLASSES
-
-    class Meta(data_serializers.EducationSerializer.Meta):
+    class Meta(ad_serializers.PublicationRequestSerializer.Meta):
         abstract = False
 
     def validate(self, attrs):
         return super().validate(attrs)
 
 
-class EducationRequestSerializer(data_serializers.EducationRequestSerializer):
+class AppSpecificEducationSerializer(ad_serializers.EducationSerializer):
     related_classes = RELATED_CLASSES
 
-    class Meta(data_serializers.EducationRequestSerializer.Meta):
+    class Meta(ad_serializers.EducationSerializer.Meta):
+        abstract = False
+
+    def validate(self, attrs):
+        return super().validate(attrs)
+
+
+class AppSpecificEducationRequestSerializer(ad_serializers.EducationRequestSerializer):
+    related_classes = RELATED_CLASSES
+
+    class Meta(ad_serializers.EducationRequestSerializer.Meta):
         pass
 
     def validate(self, attrs):
@@ -55,25 +55,29 @@ class EducationRequestSerializer(data_serializers.EducationRequestSerializer):
 
 
 class AdmissionSerializer(serializers.ModelSerializer):
+    home = account_serializers.UniversitySerializer()
+    destination = account_serializers.UniversitySerializer()
+    major = account_serializers.MajorSerializer()
+    grade = ad_serializers.GradeSerializer()
+
     class Meta:
         model = Admission
         fields = [
             'id', 'apply_profile', 'enroll_year', 'home', 'destination',
-            'scholarship', 'scholarship_unit', 'major', 'accepted', 'description',
+            'scholarship', 'major', 'grade', 'accepted', 'description',
         ]
 
 
 class ApplyProfileSerializer(serializers.ModelSerializer):
     admissions = AdmissionSerializer(
-        source='admission_set',
         many=True,
     )
 
-    publications = PublicationSerializer(
+    publications = AppSpecificPublicationSerializer(
         many=True
     )
 
-    educations = EducationSerializer(
+    educations = AppSpecificEducationSerializer(
         many=True,
     )
 
@@ -84,10 +88,10 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ApplyProfile
-        fields = {
+        fields = [
             'id', 'name', 'gap', 'admissions', 'publications', 'educations',
             'language_certificates',
-        }
+        ]
 
     def get_language_certificates(self, obj):
-        return data_serializers.serialize_language_certificates(obj.language_certificates.all(), self, RELATED_CLASSES)
+        return ad_serializers.serialize_language_certificates(obj.language_certificates.all(), self, RELATED_CLASSES)
