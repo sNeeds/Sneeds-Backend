@@ -4,7 +4,7 @@ from django.db import migrations, models
 from django.db.models import PositiveIntegerField
 from django.db.models.functions import Cast
 
-from abroadin.base.models.migrations.decortaors import flex_run_python_decorator
+from abroadin.base.django.migrations.decortaors import flex_run_python_decorator
 
 
 def fill_new_object_id(apps, schema_editor, app_name, model_name):
