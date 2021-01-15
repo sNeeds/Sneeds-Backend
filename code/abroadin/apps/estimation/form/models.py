@@ -64,6 +64,11 @@ class WantToApply(models.Model):
         # **********************************************
         return self.grades.all()
 
+    def get_countries_qs(self):
+        return self.countries.all()
+
+    def get_universities_qs(self):
+        return self.universities.all()
 
 class StudentDetailedInfoBase(models.Model):
     old_id = models.UUIDField(null=True, blank=True)
@@ -143,8 +148,7 @@ class StudentDetailedInfoBase(models.Model):
             found = found or self._university_through_has_this_major(major)
         return found
 
-    def last_university_through(self):
-
+    def last_education(self):
         qs = Education.objects.filter(content_type=SDI_CT, object_id=self.id)
         ordered_qs = qs.order_by_grade()
 
@@ -323,8 +327,8 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
 
         total_value = 0
 
-        if self.last_university_through():
-            total_value += 2 * self.last_university_through().value
+        if self.last_education():
+            total_value += 2 * self.last_education().value
 
         if languages.exists():
             total_value += languages.get_total_value()
@@ -418,7 +422,7 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         return completed, errors
 
     def get_last_university_grade(self):
-        return None if self.last_university_through() is None else self.last_university_through().grade
+        return None if self.last_education() is None else self.last_education().grade
 
     #################################
     # Powerful Recommendation methods

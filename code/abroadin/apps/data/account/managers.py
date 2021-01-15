@@ -1,9 +1,7 @@
 from django.db import models
 
-from abroadin.base.mixins.manager import GetListManagerMixin
 
-
-class CountryQuerySetManager(GetListManagerMixin, models.QuerySet):
+class CountryManager(models.QuerySet):
     def with_active_time_slot_consultants(self):
         from abroadin.apps.users.consultants.models import StudyInfo
 
@@ -15,22 +13,36 @@ class CountryQuerySetManager(GetListManagerMixin, models.QuerySet):
 
         return qs
 
+    def list(self):
+        return [obj for obj in self._chain()]
+
 
 class MajorManager(models.QuerySet):
     def top_nth_parents(self, nth):
-        parent_majors = self.none()
+        parents = self.none()
         for major in self.all():
             major_model = self.model
             top_nth_parent = major.top_nth_parent(nth)
-            parent_majors |= major_model.objects.filter(id=top_nth_parent.id)
+            parents |= major_model.objects.filter(id=top_nth_parent.id)
 
-        parent_majors.distinct()
-        return parent_majors
+        parents.distinct()
+        return parents
 
     def id_to_qs(self, ids):
         qs = self.filter(id__in=ids)
         return qs
 
+    def get_all_children_majors(self):
+        return_qs = self.all()
+        for obj in self.all():
+            return_qs |= obj.get_all_children_majors()
+        return return_qs
 
-class UniversityQuerySetManager(GetListManagerMixin, models.QuerySet):
-    pass
+
+class UniversityManager(models.QuerySet):
+    def get_countries_list(self):
+        countries_list = list(self.all().values_list('country', flat=True))
+        return countries_list
+
+    def list(self):
+        return list(self.all())

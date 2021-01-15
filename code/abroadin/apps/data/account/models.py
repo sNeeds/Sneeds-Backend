@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 
-from .managers import CountryQuerySetManager, UniversityQuerySetManager, MajorManager
+from .managers import CountryManager, UniversityManager, MajorManager
 from abroadin.apps.data.applydata import values
 
 User = get_user_model()
@@ -27,7 +27,7 @@ class Country(models.Model):
     picture = models.ImageField(null=True, blank=True, upload_to=get_image_upload_path("country-pictures"))
     slug = models.SlugField(unique=True, help_text="Lowercase pls")
 
-    objects = CountryQuerySetManager.as_manager()
+    objects = CountryManager.as_manager()
 
     class Meta:
         ordering = ["name"]
@@ -45,7 +45,7 @@ class University(models.Model):
     rank = models.PositiveIntegerField()
     is_college = models.BooleanField(default=False)
 
-    objects = UniversityQuerySetManager.as_manager()
+    objects = UniversityManager.as_manager()
 
     class Meta:
         ordering = ["name"]
@@ -75,28 +75,35 @@ class Major(models.Model):
     name = models.CharField(max_length=256)
     search_name = models.CharField(max_length=1024)
     description = models.TextField(blank=True, null=True)
-    parent_major = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
+    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
 
     objects = MajorManager.as_manager()
 
     def hierarchy_str(self):
         name = self.name
-        if self.parent_major:
-            name += " -> " + self.parent_major.hierarchy_str()
+        if self.parent:
+            name += " -> " + self.parent.hierarchy_str()
         return name
 
     def top_nth_parent(self, nth):
         parents_list = []
-        parent = self.parent_major
+        parent = self.parent
 
         while parent:
             parents_list.insert(0, parent)
-            parent = parent.parent_major
+            parent = parent.parent
 
         try:
             return parents_list[nth - 1]
         except IndexError:
             return self
+
+    def get_all_children_majors(self):
+        qs = Major.objects.filter(parent=self)
+        self_obj_qs = Major.objects.filter(id=self.id)
+        if not qs.exists():
+            return self_obj_qs
+        return qs.get_all_children_majors() | self_obj_qs
 
     def __str__(self):
         return self.name

@@ -11,7 +11,7 @@ from django.utils import timezone
 
 from abroadin.apps.users.consultants.models import ConsultantProfile
 from abroadin.apps.store.storeBase.models import Product, SoldProduct
-from abroadin.apps.store.storePackages.managers import StorePackageQuerySetManager, SoldStorePackageQuerySet, \
+from abroadin.apps.store.storePackages.managers import StorePackageManager, SoldStorePackageQuerySet, \
     SoldStorePaidPackagePhaseQuerySet, SoldStoreUnpaidPackagePhaseQuerySet
 
 User = get_user_model()
@@ -88,7 +88,7 @@ class StorePackage(Product):
 
     total_price = models.PositiveIntegerField(blank=True)
 
-    objects = StorePackageQuerySetManager.as_manager()
+    objects = StorePackageManager.as_manager()
 
     def _update_price(self):
         try:

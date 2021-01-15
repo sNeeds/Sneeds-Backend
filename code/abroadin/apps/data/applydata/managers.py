@@ -3,14 +3,14 @@ from django.db.models import When, Q, Value, IntegerField, Case
 
 from abroadin.apps.data.applydata.classes import ValueRange
 from abroadin.apps.data.applydata.values import VALUES_WITH_ATTRS
-from abroadin.base.mixins.manager import GetListManagerMixin
 
 
-class GradeQuerySetManager(GetListManagerMixin, models.QuerySet):
-    pass
+class GradeManager( models.QuerySet):
+    def list(self):
+        return [obj for obj in self._chain()]
 
 
-class EducationQuerySetManager(models.QuerySet):
+class EducationManager(models.QuerySet):
     def order_by_grade(self):
         """
             Returns from lower to higher grade. e.g, Bachelor, Master, ...
@@ -36,7 +36,7 @@ class EducationQuerySetManager(models.QuerySet):
         return majors_id_list
 
 
-class PublicationQuerySetManager(models.QuerySet):
+class PublicationManager(models.QuerySet):
 
     @classmethod
     def calculate_value(cls, qs):
@@ -59,7 +59,7 @@ class PublicationQuerySetManager(models.QuerySet):
         return label
 
 
-class LanguageCertificateQuerySetManager(models.QuerySet):
+class LanguageCertificateManager(models.QuerySet):
     def get_from_type_or_none(self, certificate_type):
         from abroadin.apps.estimation.form.models import LanguageCertificate
         try:

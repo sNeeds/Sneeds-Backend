@@ -22,7 +22,7 @@ def get_consultant_resume_path(instance, filename):
     return "account/files/consultants/{}/resume/{}".format(instance.user.id, filename)
 
 
-class ConsultantProfileQuerySetManager(models.QuerySet):
+class ConsultantProfileManager(models.QuerySet):
     def at_least_one_time_slot(self):
         from abroadin.apps.store.storeBase.models import TimeSlotSale
         qs = self.none()
@@ -69,7 +69,7 @@ class ConsultantProfile(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    objects = ConsultantProfileQuerySetManager.as_manager()
+    objects = ConsultantProfileManager.as_manager()
 
     def update_rate(self):
         """Currently based on sold time slot sales rate"""
