@@ -35,22 +35,15 @@ class WantToApply(models.Model):
         on_delete=models.CASCADE,
         related_name="want_to_apply",
     )
-    student_detailed_info_old = models.UUIDField(
-        null=True, blank=True,
-    )
-
+    student_detailed_info_old = models.UUIDField(null=True, blank=True, )
     countries = models.ManyToManyField(Country, blank=True)
-
     universities = models.ManyToManyField(University, blank=True)
-
     grades = models.ManyToManyField(Grade, blank=True)
-
     majors = models.ManyToManyField(Major, blank=True)
-
     semester_years = models.ManyToManyField(SemesterYear, blank=True)
 
     def grades_want_to_apply(self):
-        #TODO: VERY IMPORTANT ***************
+        # TODO: VERY IMPORTANT ***************
         # Hossein change the structure of is_completed definition in WantToApply.
         # Tell me afterwards *************#########
         # **********************************************
@@ -151,16 +144,6 @@ class StudentDetailedInfoBase(models.Model):
 
 
 class StudentDetailedInfo(StudentDetailedInfoBase):
-    # studentdetailedinfobase_ptr_newid = models.IntegerField(auto_created=True, unique=True, serialize=False, verbose_name='NEW_ID', default=1)
-    # studentdetailedinfobase_ptr_id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)
-
-    # studentdetailedinfobase_ptr = models.ForeignKey(
-    #     StudentDetailedInfoBase, on_delete=models.CASCADE, primary_key=True,
-    # )
-    # local_new_id = models.ForeignKey(StudentDetailedInfoBase, to_field='new_id', on_delete=models.CASCADE, unique=True),
-    # local_new_id = models.ForeignKey(StudentDetailedInfoBase, primary_key=True, serialize=False, default=1)
-    # studentdetailedinfobase_ptr = models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='form.studentdetailedinfobase')
-
     class PaymentAffordabilityChoices(models.TextChoices):
         LOW = 'Low', 'Low'
         AVERAGE = 'Average', 'Average'

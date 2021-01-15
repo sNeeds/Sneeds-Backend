@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.http import Http404
 
 from abroadin.base.api.generics import CListAPIView
@@ -16,6 +17,10 @@ class ProfilesListAPIView(CListAPIView):
             return StudentDetailedInfo.objects.get(id=form_id)
         except StudentDetailedInfo.DoesNotExist:
             raise Http404
+
+    def _filter_majors_in(self):
+        majors = Major.objects.all[:3]
+        q_obj = Q(education__major__in=majors)
 
 
     def get_queryset(self):
