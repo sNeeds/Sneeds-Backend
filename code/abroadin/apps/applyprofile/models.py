@@ -12,7 +12,7 @@ User = get_user_model()
 
 class ApplyProfile(models.Model):
     name = models.CharField(max_length=255)
-    academic_gap = models.PositiveSmallIntegerField(help_text='In months', default=0)
+    gap = models.PositiveSmallIntegerField(help_text='In months', default=0)
     publications = GenericRelation(Publication, related_query_name='apply_profile')
     educations = GenericRelation(Education, related_query_name='apply_profile')
     language_certificates = GenericRelation(LanguageCertificate, related_query_name='apply_profile')
@@ -33,8 +33,8 @@ class Admission(models.Model):
     destination = models.ForeignKey(
         University, on_delete=models.PROTECT, related_name="admissions_destination"
     )
-    enroll_year = models.PositiveSmallIntegerField()
     accepted = models.BooleanField()
     scholarship = models.PositiveIntegerField()
     scholarship_unit = models.CharField(max_length=8, choices=ScholarshipUnitChoices.choices)
+    enroll_year = models.PositiveSmallIntegerField()
     description = models.TextField(max_length=4096, null=True, blank=True, )
