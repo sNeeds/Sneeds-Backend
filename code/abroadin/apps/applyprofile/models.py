@@ -10,60 +10,6 @@ from abroadin.apps.data.applydata.models import Publication, Education, Language
 User = get_user_model()
 
 
-# No underline is used for methods outside of the class definition,
-# If multiple classes use this method why use _ and if one class uses why not in class?
-
-# get_or_create could be a better name
-def _get_other_country_id():
-    """
-    Returns a country which is named 'Other'
-    """
-    qs = Country.objects.filter(name__iexact='Other')
-    if qs.exists():
-        return qs.first().id
-    return Country.objects.create(
-        name='Other',
-        search_name='other',
-        slug='other'
-    ).id
-
-
-# No underline is used for methods outside of the class definition,
-# If multiple classes use this method why use _ and if one class uses why not in class?
-
-# get_or_create could be a better name
-def _get_other_university_id():
-    """
-    Returns a university which is named 'Other'
-    """
-    qs = University.objects.filter(name__iexact='Other')
-    if qs.exists():
-        return qs.first().id
-    return University.objects.create(
-        name='Other',
-        search_name='other',
-        slug='other',
-        country_id=_get_other_country_id(),
-        rank=20000,
-    ).id
-
-# No underline is used for methods outside of the class definition,
-# If multiple classes use this method why use _ and if one class uses why not in class?
-
-# get_or_create could be a better name
-def _get_other_major_id():
-    """
-        Returns a major which is named 'Other'
-    """
-    qs = Major.objects.filter(name__iexact='Other')
-    if qs.exists():
-        return qs.first().id
-    return Major.objects.create(
-        name='Other',
-        search_name='other',
-    ).id
-
-
 class ApplyProfile(models.Model):
     name = models.CharField(
         max_length=255,
@@ -104,21 +50,21 @@ class Admission(models.Model):
 
     origin_university = models.ForeignKey(
         University,
-        on_delete=models.SET(_get_other_university_id),  # Great but change to Protect
+        on_delete=models.PROTECT,
         related_name='admission_origin_universities',
         related_query_name='admission_origin_university',
     )
 
     destination_university = models.ForeignKey(
         University,
-        on_delete=models.SET(_get_other_university_id),  # Great but change to Protect
+        on_delete=models.PROTECT,
         related_name='admission_destination_universities',  # goal to destination, also weired name, do we need?
         related_query_name='admission_destination_university',
     )
 
     major = models.ForeignKey(
         Major,
-        on_delete=models.SET(_get_other_major_id),
+        on_delete=models.PROTECT,
     )
 
     accepted = models.BooleanField(
