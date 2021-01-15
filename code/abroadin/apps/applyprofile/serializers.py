@@ -59,7 +59,7 @@ class AdmissionSerializer(serializers.ModelSerializer):
         model = Admission
         fields = [
             'id', 'apply_profile', 'enroll_year', 'origin_university', 'destination_university',
-            'scholarships', 'scholarships_unit', 'major',
+            'scholarship', 'scholarship_unit', 'major',
             'accepted', 'description',
         ]
 

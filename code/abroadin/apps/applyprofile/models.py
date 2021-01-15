@@ -11,30 +11,15 @@ User = get_user_model()
 
 
 class ApplyProfile(models.Model):
-    name = models.CharField(
-        max_length=255,
-    )
-
-    academic_gap = models.PositiveSmallIntegerField(
-        help_text='In months',
-        default=0,
-    )
-
-    publications = GenericRelation(
-        Publication, related_query_name='apply_profile'
-    )
-
-    educations = GenericRelation(
-        Education, related_query_name='apply_profile'
-    )
-
-    language_certificates = GenericRelation(
-        LanguageCertificate, related_query_name='apply_profile'
-    )
+    name = models.CharField(max_length=255)
+    academic_gap = models.PositiveSmallIntegerField(help_text='In months', default=0)
+    publications = GenericRelation(Publication, related_query_name='apply_profile')
+    educations = GenericRelation(Education, related_query_name='apply_profile')
+    language_certificates = GenericRelation(LanguageCertificate, related_query_name='apply_profile')
 
 
 class Admission(models.Model):
-    class ScholarshipsUnitChoices(models.TextChoices):
+    class ScholarshipUnitChoices(models.TextChoices):
         DOLLAR_MONTH = '$/M', _("$/M")
         DOLLAR_YEAR = '$/Y', _("$/Y")
         EURO_MONTH = '€/M', _("€/M")
@@ -42,6 +27,9 @@ class Admission(models.Model):
 
     apply_profile = models.ForeignKey(ApplyProfile, on_delete=models.CASCADE)
     enroll_year = models.PositiveSmallIntegerField()
+    major = models.ForeignKey(Major, on_delete=models.PROTECT)
+    accepted = models.BooleanField()
+    scholarship = models.PositiveIntegerField()
 
     origin_university = models.ForeignKey(
         University,
@@ -57,14 +45,10 @@ class Admission(models.Model):
         related_query_name='admission_destination_university',
     )
 
-    major = models.ForeignKey(Major, on_delete=models.PROTECT)
-    accepted = models.BooleanField()
-    scholarships = models.PositiveIntegerField()
-
-    scholarships_unit = models.CharField(
+    scholarship_unit = models.CharField(
         max_length=8,
         help_text='Scholarship unit. For example $/Y or €/M',
-        choices=ScholarshipsUnitChoices.choices,
+        choices=ScholarshipUnitChoices.choices,
     )
 
     description = models.TextField(
