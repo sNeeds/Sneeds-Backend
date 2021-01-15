@@ -177,7 +177,7 @@ def prepare_publications_score_chart_data(instance, db_instance, is_delete=False
         old_publications_list.append(instance)
         old_publications_list.sort(key=lambda x: x.value, reverse=True)
 
-        old_publications_score = ad_managers.PublicationQuerySetManager.calculate_value(old_publications_list)
+        old_publications_score = ad_managers.PublicationManager.calculate_value(old_publications_list)
 
         old_label = form_models.Publication.get_publications_score__store_label(old_publications_score)
         new_label = form_models.Publication.get_publications_score__store_label(new_publications_score)
@@ -195,7 +195,7 @@ def prepare_publications_score_chart_data(instance, db_instance, is_delete=False
             new_publications_list.append(instance)
             new_publications_list.sort(key=lambda x: x.value, reverse=True)
 
-            new_publications_score = ad_managers.PublicationQuerySetManager.calculate_value(new_publications_list)
+            new_publications_score = ad_managers.PublicationManager.calculate_value(new_publications_list)
 
             old_label = form_models.Publication.get_publications_score__store_label(old_publications_score)
             new_label = form_models.Publication.get_publications_score__store_label(new_publications_score)
@@ -211,7 +211,7 @@ def prepare_publications_score_chart_data(instance, db_instance, is_delete=False
             new_publications_list.append(instance)
             new_publications_list.sort(key=lambda x: x.value, reverse=True)
 
-            new_publications_score = ad_managers.PublicationQuerySetManager.calculate_value(new_publications_list)
+            new_publications_score = ad_managers.PublicationManager.calculate_value(new_publications_list)
 
             old_label = form_models.Publication.get_publications_score__store_label(old_publications_score)
             new_label = form_models.Publication.get_publications_score__store_label(new_publications_score)

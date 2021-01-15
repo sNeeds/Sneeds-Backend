@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 
-from .managers import CountryQuerySetManager, UniversityManager, MajorManager
+from .managers import CountryManager, UniversityManager, MajorManager
 from abroadin.apps.data.applydata import values
 
 User = get_user_model()
@@ -27,7 +27,7 @@ class Country(models.Model):
     picture = models.ImageField(null=True, blank=True, upload_to=get_image_upload_path("country-pictures"))
     slug = models.SlugField(unique=True, help_text="Lowercase pls")
 
-    objects = CountryQuerySetManager.as_manager()
+    objects = CountryManager.as_manager()
 
     class Meta:
         ordering = ["name"]

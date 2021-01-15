@@ -12,8 +12,8 @@ from abroadin.apps.data.account.models import University, Major, Country
 from abroadin.apps.data.account.validators import ten_factor_validator
 from abroadin.apps.data.applydata.classes import ValueRange
 from abroadin.apps.data.applydata.decorators import regular_certificate_or_none
-from abroadin.apps.data.applydata.managers import EducationQuerySetManager, GradeQuerySetManager, \
-    PublicationQuerySetManager, LanguageCertificateQuerySetManager
+from abroadin.apps.data.applydata.managers import EducationManager, GradeManager, \
+    PublicationManager, LanguageCertificateManager
 from abroadin.apps.data.applydata.validators import validate_ielts_score, validate_toefl_overall_score, \
     validate_toefl_section_score
 from abroadin.apps.data.applydata.values import VALUES_WITH_ATTRS
@@ -77,7 +77,7 @@ class Grade(models.Model):
         unique=True
     )
 
-    objects = GradeQuerySetManager.as_manager()
+    objects = GradeManager.as_manager()
 
     def __str__(self):
         return self.name.__str__()
@@ -124,7 +124,7 @@ class Education(models.Model):
         editable=False
     )
 
-    objects = EducationQuerySetManager.as_manager()
+    objects = EducationManager.as_manager()
 
     class Meta:
         pass
@@ -264,7 +264,7 @@ class Publication(models.Model):
         editable=False
     )  # Updated in signal
 
-    objects = PublicationQuerySetManager.as_manager()
+    objects = PublicationManager.as_manager()
 
     def __str__(self):
         return self.title
@@ -466,7 +466,7 @@ class LanguageCertificate(models.Model):
         default=False
     )
 
-    objects = LanguageCertificateQuerySetManager.as_manager()
+    objects = LanguageCertificateManager.as_manager()
 
     class Meta:
         unique_together = ('certificate_type', 'content_type', 'object_id')

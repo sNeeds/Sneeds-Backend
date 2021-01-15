@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class CountryQuerySetManager(models.QuerySet):
+class CountryManager(models.QuerySet):
     def with_active_time_slot_consultants(self):
         from abroadin.apps.users.consultants.models import StudyInfo
 
