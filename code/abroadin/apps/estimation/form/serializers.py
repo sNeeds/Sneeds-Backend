@@ -1,5 +1,6 @@
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
+
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.request import Request
@@ -10,7 +11,6 @@ from abroadin.apps.data.account.models import BasicFormField
 from abroadin.apps.data.account.serializers import CountrySerializer, UniversitySerializer, MajorSerializer
 from abroadin.apps.data.applydata import serializers as ad_serializers
 from abroadin.apps.data.applydata import models as ad_models
-
 
 from .models import WantToApply, StudentDetailedInfo, SDI_CT
 
