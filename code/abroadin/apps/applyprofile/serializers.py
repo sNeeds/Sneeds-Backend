@@ -4,7 +4,8 @@ from abroadin.apps.data.applydata.models import Publication
 from abroadin.apps.data.applydata import serializers as data_serializers
 
 from .models import ApplyProfile, Admission
-from ...base.api.fields import GenericContentTypeRelatedField
+from abroadin.apps.data.account.serializers import UniversitySerializer
+from ..data.applydata.serializers import GradeSerializer
 
 RELATED_CLASSES = [
     {
@@ -55,17 +56,19 @@ class EducationRequestSerializer(data_serializers.EducationRequestSerializer):
 
 
 class AdmissionSerializer(serializers.ModelSerializer):
+    home = UniversitySerializer()
+    destination = UniversitySerializer()
+    destination = GradeSerializer()
     class Meta:
         model = Admission
         fields = [
-            'id', 'apply_profile', 'enroll_year', 'home', 'destination',
+            'id', 'apply_profile', 'enroll_year', 'home', 'destination', 'grade',
             'scholarship', 'scholarship_unit', 'major', 'accepted', 'description',
         ]
 
 
 class ApplyProfileSerializer(serializers.ModelSerializer):
     admissions = AdmissionSerializer(
-        source='admission_set',
         many=True,
     )
 

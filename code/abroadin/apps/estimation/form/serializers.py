@@ -1,24 +1,19 @@
-import time
-from collections import OrderedDict
-
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.request import Request
 
-import abroadin.apps
 import abroadin.apps.data.applydata.models
 from abroadin.apps.data.account import models
-from abroadin.apps.data.account.models import BasicFormField, University, Major
+from abroadin.apps.data.account.models import BasicFormField
 from abroadin.apps.data.account.serializers import CountrySerializer, UniversitySerializer, MajorSerializer
-
 from abroadin.apps.data.applydata import serializers as ad_serializers
-from abroadin.base.api.fields import GenericContentObjectRelatedURL, GenericContentTypeRelatedField
+from abroadin.apps.data.applydata import models as ad_models
+
 
 from .models import WantToApply, StudentDetailedInfo, SDI_CT
 
-from abroadin.apps.data.applydata import models as ad_models
 
 LanguageCertificateType = abroadin.apps.estimation.form.models.LanguageCertificate.LanguageCertificateType
 

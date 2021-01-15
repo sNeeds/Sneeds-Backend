@@ -43,4 +43,4 @@ class ProfilesListAPIView(CListAPIView):
         profiles = self._filter_same_want_to_apply_grades(profiles, grades_want_to_apply)
         print(profiles)
 
-        return None
+        return profiles
