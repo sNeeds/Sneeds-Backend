@@ -49,6 +49,15 @@ class WantToApply(models.Model):
 
     semester_years = models.ManyToManyField(SemesterYear, blank=True)
 
+    def grades_want_to_apply(self):
+        #TODO: VERY IMPORTANT ***************
+        # Hossein change the structure of is_completed definition in WantToApply.
+        # Tell me afterwards *************#########
+        # **********************************************
+        # **********************************************
+        # **********************************************
+        return self.grades.all()
+
 
 class StudentDetailedInfoBase(models.Model):
     old_id = models.UUIDField(null=True, blank=True)
@@ -420,7 +429,6 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
 
     def get_last_university_grade(self):
         return None if self.last_university_through() is None else self.last_university_through().grade
-
 
     #################################
     # Powerful Recommendation methods
