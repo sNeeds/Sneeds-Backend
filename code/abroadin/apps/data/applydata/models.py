@@ -20,7 +20,7 @@ from abroadin.apps.data.applydata.values import VALUES_WITH_ATTRS
 
 
 class GradeChoices(models.TextChoices):
-    "Don't change order"
+    # Don't change order
     BACHELOR = 'Bachelor', 'Bachelor'
     MASTER = 'Master', 'Master'
     PHD = 'PH.D', 'PH.D'
