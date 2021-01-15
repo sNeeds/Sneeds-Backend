@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 
-from .managers import CountryQuerySetManager, UniversityQuerySetManager, MajorManager
+from .managers import CountryQuerySetManager, UniversityManager, MajorManager
 from abroadin.apps.data.applydata import values
 
 User = get_user_model()
@@ -45,7 +45,7 @@ class University(models.Model):
     rank = models.PositiveIntegerField()
     is_college = models.BooleanField(default=False)
 
-    objects = UniversityQuerySetManager.as_manager()
+    objects = UniversityManager.as_manager()
 
     class Meta:
         ordering = ["name"]

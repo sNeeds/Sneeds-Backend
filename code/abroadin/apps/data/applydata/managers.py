@@ -3,11 +3,11 @@ from django.db.models import When, Q, Value, IntegerField, Case
 
 from abroadin.apps.data.applydata.classes import ValueRange
 from abroadin.apps.data.applydata.values import VALUES_WITH_ATTRS
-from abroadin.base.mixins.manager import GetListManagerMixin
 
 
-class GradeQuerySetManager(GetListManagerMixin, models.QuerySet):
-    pass
+class GradeQuerySetManager( models.QuerySet):
+    def list(self):
+        return [obj for obj in self._chain()]
 
 
 class EducationQuerySetManager(models.QuerySet):

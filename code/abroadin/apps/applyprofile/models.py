@@ -2,11 +2,9 @@ from django.db import models
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
-from django.utils.translation import gettext_lazy as _
 
 from abroadin.apps.data.account.models import University, Major, Country
 from abroadin.apps.data.applydata.models import Publication, Education, LanguageCertificate, Grade
-
 from abroadin.apps.store.storeBase.models import Product
 
 User = get_user_model()

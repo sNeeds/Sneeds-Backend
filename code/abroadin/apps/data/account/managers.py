@@ -1,9 +1,7 @@
 from django.db import models
 
-from abroadin.base.mixins.manager import GetListManagerMixin
 
-
-class CountryQuerySetManager(GetListManagerMixin, models.QuerySet):
+class CountryQuerySetManager(models.QuerySet):
     def with_active_time_slot_consultants(self):
         from abroadin.apps.users.consultants.models import StudyInfo
 
@@ -14,6 +12,9 @@ class CountryQuerySetManager(GetListManagerMixin, models.QuerySet):
         qs = self.filter(id__in=country_list).exclude(slug="iran")
 
         return qs
+
+    def list(self):
+        return [obj for obj in self._chain()]
 
 
 class MajorManager(models.QuerySet):
@@ -38,5 +39,10 @@ class MajorManager(models.QuerySet):
         return return_qs
 
 
-class UniversityQuerySetManager(GetListManagerMixin, models.QuerySet):
-    pass
+class UniversityManager(models.QuerySet):
+    def get_countries_list(self):
+        countries_list = list(self.all().values_list('country', flat=True))
+        return countries_list
+
+    def list(self):
+        return [obj for obj in self._chain()]

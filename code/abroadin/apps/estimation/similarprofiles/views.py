@@ -24,9 +24,17 @@ class ProfilesListAPIView(CListAPIView):
         return profiles_qs
 
     def _filter_similar_majors(self, profiles, majors):
-        profiles_admission_major_qs = profiles.filter(admission__major__in = majors)
-        profiles_education_major_qs = profiles.filter(admission__major__in = majors)
+        admission_q = Q(admission__major__in=majors)
+        education_q = Q(educations__major__in=majors)
+        qs = profiles.filter(admission_q | education_q)
+        return qs
 
+    def _filter_similar_home(self, profiles):
+        # Not needed yet
+        return profiles
+
+    def _filter_similar_destination(self, profiles, countries):
+        return profiles
 
     def get_queryset(self):
         form = self.get_form()
@@ -47,10 +55,7 @@ class ProfilesListAPIView(CListAPIView):
 
         profiles = ApplyProfile.objects.all()
         profiles = self._filter_same_want_to_apply_grades(profiles, grades_want_to_apply)
-        # print(profiles)
+        profiles = self._filter_similar_majors(profiles, form_related_majors_all_children)
 
-        major1 = Major.objects.all()
-        print(major1)
-        # print(major1.get_all_children_majors().distinct().count())
-        print(major1.get_all_children_majors())
+        print(profiles)
         return profiles
