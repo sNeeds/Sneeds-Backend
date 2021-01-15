@@ -40,13 +40,8 @@ class Admission(models.Model):
         EURO_MONTH = '€/M', _("€/M")
         EURO_YEAR = '€/Y', _("€/Y")
 
-    apply_profile = models.ForeignKey(
-        ApplyProfile,
-        on_delete=models.CASCADE,
-    )
-
-    enroll_year = models.PositiveSmallIntegerField(
-    )
+    apply_profile = models.ForeignKey(ApplyProfile, on_delete=models.CASCADE)
+    enroll_year = models.PositiveSmallIntegerField()
 
     origin_university = models.ForeignKey(
         University,
@@ -62,17 +57,9 @@ class Admission(models.Model):
         related_query_name='admission_destination_university',
     )
 
-    major = models.ForeignKey(
-        Major,
-        on_delete=models.PROTECT,
-    )
-
-    accepted = models.BooleanField(
-        default=False
-    )
-
-    scholarships = models.PositiveIntegerField(
-    )
+    major = models.ForeignKey(Major, on_delete=models.PROTECT)
+    accepted = models.BooleanField()
+    scholarships = models.PositiveIntegerField()
 
     scholarships_unit = models.CharField(
         max_length=8,
