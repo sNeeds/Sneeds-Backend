@@ -43,6 +43,9 @@ class ProfilesListAPIView(CListAPIView):
 
         profiles = ApplyProfile.objects.all()
         profiles = self._filter_same_want_to_apply_grades(profiles, grades_want_to_apply)
-        print(profiles)
+        # print(profiles)
 
+        major1 = Major.objects.all()[1]
+        print(major1)
+        print(major1.get_all_children_majors())
         return profiles

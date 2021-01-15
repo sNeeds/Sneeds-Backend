@@ -99,8 +99,11 @@ class Major(models.Model):
             return self
 
     def get_all_children_majors(self):
-        qs = self.objects.filter(parent=self)
-
+        qs = Major.objects.filter(parent=self)
+        self_obj_qs = Major.objects.filter(id=self.id)
+        if not qs.exists():
+            return self_obj_qs
+        return qs.get_all_children_majors() | self_obj_qs
 
     def __str__(self):
         return self.name

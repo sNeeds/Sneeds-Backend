@@ -32,7 +32,10 @@ class MajorManager(models.QuerySet):
         return qs
 
     def get_all_children_majors(self):
-        pass
+        return_qs = self.all()
+        for obj in self.all():
+            return_qs |= obj.get_all_children_majors()
+        return return_qs
 
 
 class UniversityQuerySetManager(GetListManagerMixin, models.QuerySet):
