@@ -12,7 +12,6 @@ from abroadin.apps.applyprofile.models import ApplyProfile
 User = get_user_model()
 
 APPLY_PROFILE_GROUP_CT = ContentType.objects.get(app_label='applyprofilestore', model='applyprofilegroup')
-# SOLD_APPLY_PROFILE_GROUP_CT = ContentType.objects.get(app_label='applyprofilestore', model='soldapplyprofilegroup')
 
 
 class ApplyProfileGroup(Product):
@@ -44,7 +43,7 @@ class ApplyProfileGroup(Product):
 
     def sell(self, user, price):
         sold_apply_profile_group = SoldApplyProfileGroup.objects.create(
-            user=user,
+            sold_to=user,
             price=price
         )
         sold_apply_profile_group.apply_profiles.set(self.apply_profiles.all())
@@ -59,17 +58,7 @@ class ApplyProfileGroup(Product):
 
 
 class SoldApplyProfileGroup(SoldProduct):
-    user = models.ForeignKey(to=User,
-                             null=True,
-                             blank=True,
-                             on_delete=models.SET_NULL
-                             )
-
     apply_profiles = models.ManyToManyField(ApplyProfile)
-
-    # def save(self, *args, **kwargs):
-    #     self.real_type = SOLD_APPLY_PROFILE_GROUP_CT
-    #     return super().save(*args, **kwargs)
 
     def title(self):
         return f'Similar admissions'
@@ -88,4 +77,4 @@ class SoldApplyProfileGroup(SoldProduct):
 
     @classmethod
     def user_bought_apply_profiles(cls, user):
-        cls.objects.filter(user=user, )
+        return ApplyProfile.objects.filter(soldapplyprofilegroup__sold_to=user).distinct()

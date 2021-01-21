@@ -5,7 +5,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.request import Request
 
-from .models import ApplyProfileGroup
+from .models import ApplyProfileGroup, SoldApplyProfileGroup
 
 from abroadin.apps.applyprofile.models import ApplyProfile
 from abroadin.apps.applyprofile.serializers import ApplyProfileSerializer
@@ -70,6 +70,25 @@ class ApplyProfileGroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ApplyProfileGroup
+        fields = ['id', 'apply_profiles', 'title', 'subtitle', 'price']
+
+    def create(self, validated_data):
+        raise NotImplementedError("Create through this serializer is not allowed.")
+
+    def update(self, instance, validated_data):
+        raise NotImplementedError("Update through this serializer is not allowed.")
+
+
+class SoldApplyProfileGroupSerializer(serializers.ModelSerializer):
+    apply_profiles = ApplyProfileSerializer(
+        many=True
+    )
+
+    title = serializers.CharField()
+    subtitle = serializers.CharField()
+
+    class Meta:
+        model = SoldApplyProfileGroup
         fields = ['id', 'apply_profiles', 'title', 'subtitle', 'price']
 
     def create(self, validated_data):
