@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-from .VALUES import MAX_ALLOWED_APPLY_PROFILES
+from .values import MAX_ALLOWED_APPLY_PROFILES
 
 
 def validate_apply_profiles(apply_profiles):

@@ -4,13 +4,14 @@ from django.utils.translation import ngettext
 from django.contrib.auth import get_user_model
 
 from .managers import ApplyProfileGroupManager
-from ..storeBase.models import Product
+from ..storeBase.models import Product, SoldProduct
 
 from abroadin.apps.applyprofile.models import ApplyProfile
 
 User = get_user_model()
 
 APPLY_PROFILE_GROUP_CT = ContentType.objects.get(app_label='applyprofilestore', model='applyprofilegroup')
+SOLD_APPLY_PROFILE_GROUP_CT = ContentType.objects.get(app_label='applyprofilestore', model='soldapplyprofilegroup')
 
 
 class ApplyProfileGroup(Product):
@@ -18,6 +19,10 @@ class ApplyProfileGroup(Product):
     apply_profiles = models.ManyToManyField(ApplyProfile)
 
     objects = ApplyProfileGroupManager.as_manager()
+
+    def save(self, *args, **kwargs):
+        self.real_type = APPLY_PROFILE_GROUP_CT
+        return super().save(*args, **kwargs)
 
     @property
     def title(self):
@@ -36,8 +41,15 @@ class ApplyProfileGroup(Product):
 
         return msg
 
+    def sell(self, user, price):
+        sold_apply_profile_group = SoldApplyProfileGroup.objects.create(
+            user=user,
+            price=price
+        )
+        sold_apply_profile_group.apply_profiles.set(self.apply_profiles.all())
 
-class SoldApplyProfileGroup(Product):
+
+class SoldApplyProfileGroup(SoldProduct):
     user = models.ForeignKey(to=User,
                              null=True,
                              blank=True,
@@ -46,8 +58,9 @@ class SoldApplyProfileGroup(Product):
 
     apply_profiles = models.ManyToManyField(ApplyProfile)
 
-    # def save(self, *args, **kwargs):
-    #     self.real_type =
+    def save(self, *args, **kwargs):
+        self.real_type = SOLD_APPLY_PROFILE_GROUP_CT
+        return super().save(*args, **kwargs)
 
     def title(self):
         return f'Similar admissions'

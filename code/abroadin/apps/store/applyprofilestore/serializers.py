@@ -37,7 +37,7 @@ class ApplyProfileGroupSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ApplyProfileGroup
-        fields = ['id', 'apply_profiles', 'title', 'subtitle']
+        fields = ['id', 'apply_profiles', 'title', 'subtitle', 'price']
 
     def create(self, validated_data):
         raise NotImplementedError("Create through this serializer is not allowed.")

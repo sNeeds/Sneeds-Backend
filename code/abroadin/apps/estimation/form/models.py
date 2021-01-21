@@ -70,6 +70,7 @@ class WantToApply(models.Model):
     def get_universities_qs(self):
         return self.universities.all()
 
+
 class StudentDetailedInfoBase(models.Model):
     old_id = models.UUIDField(null=True, blank=True)
 
