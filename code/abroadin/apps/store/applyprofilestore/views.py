@@ -4,7 +4,8 @@ from abroadin.apps.store.applyprofilestore.models import ApplyProfileGroup, Sold
 from abroadin.apps.store.applyprofilestore.permissions import ApplyProfileGroupOwner, SoldApplyProfileGroupOwner
 from abroadin.apps.store.applyprofilestore.serializers import ApplyProfileGroupRequestSerializer, \
     ApplyProfileGroupSerializer, SoldApplyProfileGroupSerializer
-from abroadin.base.api.generics import CListCreateAPIView, CRetrieveUpdateDestroyAPIView, CListAPIView, CRetrieveAPIView
+from abroadin.base.api.generics import CListCreateAPIView, CRetrieveUpdateDestroyAPIView, CListAPIView, \
+    CRetrieveAPIView, CRetrieveDestroyAPIView
 
 
 class ApplyProfileGroupListView(CListCreateAPIView):
@@ -19,7 +20,7 @@ class ApplyProfileGroupListView(CListCreateAPIView):
         return ApplyProfileGroup.objects.none()
 
 
-class ApplyProfileGroupDetailView(CRetrieveUpdateDestroyAPIView):
+class ApplyProfileGroupDetailView(CRetrieveDestroyAPIView):
     lookup_field = 'id'
     queryset = ApplyProfileGroup.objects.all()
     request_serializer_class = ApplyProfileGroupRequestSerializer
