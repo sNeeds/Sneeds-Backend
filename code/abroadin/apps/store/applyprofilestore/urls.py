@@ -1,10 +1,12 @@
 from django.urls import path
 from . import views
 
+app_name = 'store.applyprofilestore'
+
 
 urlpatterns = [
-    path('apply-profile-group-store/', views.ApplyProfileGroupListView.as_view(),
-         name='apply-profile-group-store-list'),
-    path('apply-profile-group-store/<int:id>/', views.ApplyProfileGroupDetailView.as_view(),
-         name='apply-profile-group-store-detail'),
+    path('apply-profile-groups/', views.ApplyProfileGroupListView.as_view(),
+         name='apply-profile-group-list'),
+    path('apply-profile-groups/<int:id>/', views.ApplyProfileGroupDetailView.as_view(),
+         name='apply-profile-group-detail'),
 ]

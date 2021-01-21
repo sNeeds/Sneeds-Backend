@@ -6,6 +6,5 @@ from .values import MAX_ALLOWED_APPLY_PROFILES
 
 def validate_apply_profiles(apply_profiles):
     if len(apply_profiles) > MAX_ALLOWED_APPLY_PROFILES:
-        ValidationError({'apply_profiles': _('apply_profiles count violates the maximum allowed constraint.')})
-
+        raise ValidationError(_('apply_profiles count violates the maximum allowed constraint.'))
     return apply_profiles

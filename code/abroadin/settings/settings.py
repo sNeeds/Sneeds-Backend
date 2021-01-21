@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'abroadin.apps.store.videochats',
     'abroadin.apps.store.storePackages',
     'abroadin.apps.store.basicProducts',
+    'abroadin.apps.store.applyprofilestore',
     'abroadin.apps.estimation.form',
     'abroadin.apps.estimation.estimations',
     'abroadin.apps.estimation.analyze',
