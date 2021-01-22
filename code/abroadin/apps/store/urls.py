@@ -10,4 +10,5 @@ urlpatterns = [
                   path('discount/', include('abroadin.apps.store.discounts.urls')),
                   path('videochat/', include('abroadin.apps.store.videochats.urls')),
                   path('basic-product/', include('abroadin.apps.store.basicProducts.urls')),
+                  path('apply-profile/', include('abroadin.apps.store.applyprofilestore.urls')),
 ]

@@ -19,6 +19,8 @@ from abroadin.apps.data.applydata.validators import validate_ielts_score, valida
 from abroadin.apps.data.applydata.values import VALUES_WITH_ATTRS
 
 # StudentDetailedInfo_CONTENT_TYPE
+from abroadin.base.mixins.validators import GenericForeignkeyUniqueTogetherValidationMixin
+
 SDI_CT = ContentType.objects.get(app_label='form', model='studentdetailedinfo')
 
 
@@ -83,7 +85,13 @@ class Grade(models.Model):
         return self.name.__str__()
 
 
-class Education(models.Model):
+class Education(GenericForeignkeyUniqueTogetherValidationMixin, models.Model):
+    content_type_based_uniqueness_check_fields = {
+        'content_type': {
+            'form__studentdetailedinfo': ['object_id', 'grade'],
+            'form__studentdetailedinfobase': ['object_id', 'grade'],
+        }
+    }
     content_type = models.ForeignKey(
         ContentType, on_delete=models.CASCADE
     )
@@ -433,7 +441,7 @@ class Publication(models.Model):
         return float(label)
 
 
-class LanguageCertificate(models.Model):
+class LanguageCertificate(models.Model, GenericForeignkeyUniqueTogetherValidationMixin):
     class LanguageCertificateType(models.TextChoices):
         IELTS_GENERAL = 'IELTS General', 'IELTS General'
         IELTS_ACADEMIC = 'IELTS Academic', 'IELTS Academic'
@@ -447,6 +455,13 @@ class LanguageCertificate(models.Model):
         GRE_PHYSICS = 'GRE Physics', 'GRE Physics'
         GRE_PSYCHOLOGY = 'GRE Psychology', 'GRE Psychology'
         DUOLINGO = 'Duolingo', 'Duolingo'
+
+    content_type_based_uniqueness_check_fields = {
+        'content_type': {
+            'form__studentdetailedinfo': ['object_id', 'certificate_type'],
+            'form__studentdetailedinfobase': ['object_id', 'certificate_type'],
+        }
+    }
 
     content_type = models.ForeignKey(
         ContentType, on_delete=models.CASCADE

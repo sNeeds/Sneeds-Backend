@@ -87,7 +87,9 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = ApplyProfile
         fields = [
-            'id', 'name', 'gap', 'admissions', 'publications', 'educations',
+            'id', 'name', 'gap',
+            'admissions',
+            'publications', 'educations',
             'language_certificates',
         ]
 

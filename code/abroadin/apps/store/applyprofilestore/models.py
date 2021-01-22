@@ -4,7 +4,8 @@ from django.utils.translation import ngettext
 from django.contrib.auth import get_user_model
 
 from .managers import ApplyProfileGroupManager
-from ..storeBase.models import Product
+from .values import APPLY_PROFILE_PRICE_IN_DOLLAR
+from ..storeBase.models import Product, SoldProduct
 
 from abroadin.apps.applyprofile.models import ApplyProfile
 
@@ -18,6 +19,10 @@ class ApplyProfileGroup(Product):
     apply_profiles = models.ManyToManyField(ApplyProfile)
 
     objects = ApplyProfileGroupManager.as_manager()
+
+    def save(self, *args, **kwargs):
+        self.real_type = APPLY_PROFILE_GROUP_CT
+        return super().save(*args, **kwargs)
 
     @property
     def title(self):
@@ -36,18 +41,24 @@ class ApplyProfileGroup(Product):
 
         return msg
 
+    def sell(self, user, price):
+        sold_apply_profile_group = SoldApplyProfileGroup.objects.create(
+            sold_to=user,
+            price=price
+        )
+        sold_apply_profile_group.apply_profiles.set(self.apply_profiles.all())
 
-class SoldApplyProfileGroup(Product):
-    user = models.ForeignKey(to=User,
-                             null=True,
-                             blank=True,
-                             on_delete=models.SET_NULL
-                             )
+    def update_price(self):
+        self.price = self.calculate_profiles_price(self.apply_profiles.all())
+        self.save()
 
+    @classmethod
+    def calculate_profiles_price(cls, apply_profiles: iter):
+        return len(apply_profiles) * APPLY_PROFILE_PRICE_IN_DOLLAR
+
+
+class SoldApplyProfileGroup(SoldProduct):
     apply_profiles = models.ManyToManyField(ApplyProfile)
-
-    # def save(self, *args, **kwargs):
-    #     self.real_type =
 
     def title(self):
         return f'Similar admissions'
@@ -66,4 +77,4 @@ class SoldApplyProfileGroup(Product):
 
     @classmethod
     def user_bought_apply_profiles(cls, user):
-        cls.objects.filter(user=user, )
+        return ApplyProfile.objects.filter(soldapplyprofilegroup__sold_to=user).distinct()
