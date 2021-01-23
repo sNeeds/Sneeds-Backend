@@ -12,8 +12,6 @@ def create_new_id(apps, schema_editor):
         assert same_id is not None and isinstance(same_id, int)
         sdi.local_new_id = same_id
         sdi.save()
-    # for sdi in StudentDetailedInfo.objects.all():
-    #     print(sdi.local_new_id)
 
 
 class Migration(migrations.Migration):

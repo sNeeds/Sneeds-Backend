@@ -109,25 +109,19 @@ class StudentDetailedInfoBase(models.Model):
     )
 
     resume = models.FileField(
-        upload_to=get_student_resume_path,
         null=True,
         blank=True,
+        upload_to=get_student_resume_path,
         validators=[
             FileExtensionValidator(allowed_extensions=['pdf']), validate_resume_file_size
         ]
     )
 
-    related_work_experience = models.PositiveIntegerField(
-        null=True,
-        blank=True,
-        help_text="In months"
-    )
+    related_work_experience = models.PositiveIntegerField(help_text="In months")
     academic_break = models.PositiveIntegerField(
-        null=True,
-        blank=True,
-        validators=[MinValueValidator(0), MaxValueValidator(100)],
-        help_text="In years"
+        validators=[MinValueValidator(0), MaxValueValidator(100)], help_text="In years"
     )
+
     olympiad = models.CharField(
         max_length=256,
         blank=True,
@@ -190,18 +184,9 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    age = models.PositiveSmallIntegerField(
-        validators=[MinValueValidator(15), MaxValueValidator(100)],
-        null=True,
-        blank=True,
-    )
+    age = models.PositiveSmallIntegerField(validators=[MinValueValidator(15), MaxValueValidator(100)])
 
-    gender = models.CharField(
-        null=True,
-        blank=True,
-        max_length=128,
-        choices=GenderChoices.choices,
-    )
+    gender = models.CharField(max_length=128, choices=GenderChoices.choices)
 
     is_married = models.BooleanField(
         default=None,
@@ -238,10 +223,7 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         null=True,
         blank=True
     )
-    powerful_recommendation = models.BooleanField(
-        null=True,
-        blank=True,
-    )
+    powerful_recommendation = models.BooleanField()
     linkedin_url = models.URLField(
         blank=True,
         null=True,
