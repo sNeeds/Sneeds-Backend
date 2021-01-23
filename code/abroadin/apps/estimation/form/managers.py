@@ -1,7 +1,7 @@
 from django.db import models
-from django.db.models import Q, F, Case, When, Value, IntegerField
 from django.utils import timezone
 
+from abroadin.base.mixins.validators import CreateM2MManagerMixin
 from .variables import FORM_WITHOUT_USER_LIVE_PERIOD_DAYS
 
 
@@ -42,20 +42,5 @@ class StudentDetailedInfoManager(models.QuerySet):
         return qs.delete()
 
 
-class WantToApplyManager(models.QuerySet):
-    def create_with_m2m(self, *args, **kwargs):
-        model = self.model
-        model_fields = model._meta.get_fields()
-
-        m2m_fields = {}
-        for field in model_fields:
-            if isinstance(field, models.ManyToManyField):
-                m2m_fields[field] = kwargs.pop(field.name)
-
-        obj = model(**kwargs)
-        obj.save()
-
-        for field, value in m2m_fields.items():
-            getattr(obj, field.name).set(value)
-
-        return obj
+class WantToApplyManager(CreateM2MManagerMixin, models.QuerySet):
+    pass

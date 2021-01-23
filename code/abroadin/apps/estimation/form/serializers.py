@@ -84,8 +84,6 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
 
     @transaction.atomic()
     def create(self, validated_data):
-        # print("HHHHHHHHHHHHH")
-        print(validated_data)
         want_to_apply_data = validated_data.pop('want_to_apply')
 
         form = StudentDetailedInfo.objects.create(**validated_data)
