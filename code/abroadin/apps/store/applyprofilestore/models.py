@@ -74,6 +74,3 @@ class SoldApplyProfileGroup(SoldProduct):
 
         return msg
 
-    @classmethod
-    def user_bought_apply_profiles(cls, user):
-        return ApplyProfile.objects.filter(soldapplyprofilegroup__sold_to=user).distinct()
