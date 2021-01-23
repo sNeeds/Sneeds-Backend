@@ -86,19 +86,19 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
         publications_data = validated_data.pop('publications')
 
         form = StudentDetailedInfo.objects.create(**validated_data)
-        SDI_content_type = ContentType.objects.get(app_label="form", model="studentdetailedinfo")
+        form_content_type = ContentType.objects.get(app_label="form", model="studentdetailedinfo")
 
         want_to_apply_data['student_detailed_info'] = form
         WantToApply.objects.create_with_m2m(**want_to_apply_data)
 
         for data in educations_data:
             data['object_id'] = form.id
-            data['content_type'] = SDI_content_type
+            data['content_type'] = form_content_type
             Education.objects.create_with_m2m(**data)
 
         for data in publications_data:
             data['object_id'] = form.id
-            data['content_type'] = SDI_content_type
+            data['content_type'] = form_content_type
             Publication.objects.create_with_m2m(**data)
 
         return form

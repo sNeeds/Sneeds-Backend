@@ -121,12 +121,17 @@ class LanguageCertificateSerializer(serializers.ModelSerializer):
 class RegularLanguageCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = RegularLanguageCertificate
-        fields = '__all__'
+        fields = [
+            'speaking', 'listening', 'writing', 'reading', 'overall', 'certificate_type',
+            'is_mock', 'content_type', 'object_id'
+        ]
 
     def validate_certificate_type(self, value):
-        if value not in [LCType.IELTS_ACADEMIC, LCType.IELTS_GENERAL,
-                         LCType.TOEFL]:
+        if value not in [
+            LCType.IELTS_ACADEMIC, LCType.IELTS_GENERAL, LCType.TOEFL
+        ]:
             raise ValidationError(_("Value is not in allowed certificate types."))
+
         return value
 
 
