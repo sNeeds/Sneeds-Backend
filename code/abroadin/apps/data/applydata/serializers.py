@@ -24,24 +24,6 @@ from abroadin.apps.applyprofile.models import ApplyProfile
 LCType = LanguageCertificate.LanguageCertificateType
 
 
-# related_classes = [
-#     {
-#         'model_class': ApplyProfile,
-#         'hyperlink_view_name': 'applyprofile:apply-profile-detail',
-#         'hyperlink_lookup_field': 'object_id',
-#         'hyperlink_lookup_url_kwarg': 'id',
-#         'hyperlink_format': None
-#     },
-#     {
-#         'model_class': StudentDetailedInfo,
-#         'hyperlink_view_name': 'estimation.form:student-detailed-info-detail',
-#         'hyperlink_lookup_field': 'object_id',
-#         'hyperlink_lookup_url_kwarg': 'form-id',
-#         'hyperlink_format': None
-#     }
-# ]
-
-
 class GradeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Grade
@@ -95,23 +77,6 @@ class PublicationSerializer(serializers.ModelSerializer):
     content_type = GenericContentTypeRelatedField()
     content_url = GenericContentObjectRelatedURL()
 
-    # content_object = GenericRelatedField(
-    #     related_classes=[
-    #         {
-    #             'model_class': ApplyProfile,
-    #             # 'representation_identifier': '',
-    #             'primary_key_related_field': serializers.PrimaryKeyRelatedField(
-    #                 queryset=ApplyProfile.objects.all()
-    #             ),
-    #             'hyperlinked_related_field': serializers.HyperlinkedRelatedField(
-    #                 queryset=ApplyProfile.objects.all(),
-    #                 lookup_field='id',
-    #                 view_name='platform.applyprofile:apply-profile-list'
-    #             ),
-    #         }
-    #     ]
-    # )
-
     class Meta:
         model = Publication
         abstract = True
@@ -136,25 +101,6 @@ class PublicationRequestSerializer(serializers.ModelSerializer):
             'id', 'content_object', 'title', 'publish_year', 'which_author', 'type', 'journal_reputation',
             'content_type', 'object_id',
         ]
-
-    def validate(self, attrs):
-        request: Request = self.context.get("request")
-        if request and hasattr(request, "user"):
-            request_user = request.user
-            content_type: ContentType = attrs.get("content_type")
-            if content_type.model_class() == StudentDetailedInfo:
-                try:
-                    sdi = StudentDetailedInfo.objects.get(pk=attrs.get(Publication.content_object.fk_field))
-                    if sdi.user is not None and sdi.user != request_user:
-                        raise ValidationError(_("User can't set student_detailed_info of another user."))
-                    if sdi.user is None and request_user.is_authenticated:
-                        raise ValidationError(_("User can't set student_detailed_info of another user."))
-                except StudentDetailedInfo.DoesNotExist:
-                    ValidationError({Publication.content_object.fk_field: _("There is no object with this id")})
-                return attrs
-            raise ValidationError({'content_type': _("Invalid or forbidden content_type")})
-        else:
-            raise ValidationError(_("Can't validate data.Can't get request user."))
 
 
 class EducationSerializer(serializers.ModelSerializer):
@@ -194,6 +140,7 @@ class EducationRequestSerializer(serializers.ModelSerializer):
     )
 
     content_type = GenericContentTypeRelatedField()
+
     # content_url = GenericContentObjectRelatedURL()
 
     class Meta:
@@ -201,55 +148,25 @@ class EducationRequestSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'university', 'content_object', 'grade', 'major', 'graduate_in', 'thesis_title', 'gpa',
             'content_type', 'object_id',
-            # 'content_url',
         ]
-
-    # def validate(self, attrs):
-    #     request = self.context.get("request")
-    #     if request and hasattr(request, "user"):
-    #         request_user = request.user
-    #         student_detailed_info = attrs.get("student_detailed_info")
-    #         if student_detailed_info.user is not None and student_detailed_info.user != request_user:
-    #             raise ValidationError(_("User can't set student_detailed_info of another user."))
-    #         if student_detailed_info.user is None and request_user.is_authenticated:
-    #             raise ValidationError(_("User can't set student_detailed_info of another user."))
-    #     else:
-    #         raise ValidationError(_("Can't validate data.Can't get request user."))
-    #     return attrs
 
 
 class LanguageCertificateSerializer(serializers.ModelSerializer):
     related_classes = []
 
     content_type = GenericContentTypeRelatedField()
-    # content_url = GenericContentObjectRelatedURL()
+
 
     class Meta:
         model = LanguageCertificate
         fields = '__all__'
-        # exclude = ['content_object']
 
-    # def validate(self, attrs):
-    #     request = self.context.get("request")
-    #     if request and hasattr(request, "user"):
-    #         request_user = request.user
-    #         student_detailed_info = attrs.get("student_detailed_info")
-    #         if student_detailed_info.user is not None and student_detailed_info.user != request_user:
-    #             raise ValidationError(
-    #                 {'student_detailed_info': _("User can't set student_detailed_info of another user.")})
-    #         if student_detailed_info.user is None and request_user.is_authenticated:
-    #             raise ValidationError(
-    #                 {'student_detailed_info': _("User can't set student_detailed_info of another user.")})
-    #     else:
-    #         raise ValidationError(_("Can't validate data.Can't get request user."))
-    #     return attrs
 
 
 class RegularLanguageCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = RegularLanguageCertificate
         fields = '__all__'
-        # # exclude = ['content_object']
 
     def validate_certificate_type(self, value):
         if value not in [LCType.IELTS_ACADEMIC, LCType.IELTS_GENERAL,

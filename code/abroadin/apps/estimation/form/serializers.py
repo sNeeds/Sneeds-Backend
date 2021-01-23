@@ -5,11 +5,10 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from abroadin.apps.data.applydata import models as ad_models
-from abroadin.apps.data.applydata.serializers import serialize_language_certificates, SemesterYearSerializer, \
-    GradeSerializer
+from abroadin.apps.data.applydata.serializers import SemesterYearSerializer, GradeSerializer, EducationSerializer
 from abroadin.apps.users.customAuth.serializers import SafeUserDataSerializer
 
-from .models import WantToApply, StudentDetailedInfo, SDI_CT
+from .models import WantToApply, StudentDetailedInfo
 from abroadin.apps.data.account.serializers import CountrySerializer, UniversitySerializer, MajorSerializer
 
 LanguageCertificateType = ad_models.LanguageCertificate.LanguageCertificateType
@@ -25,32 +24,13 @@ RELATED_CLASSES = [
 ]
 
 
-class WantToApplySerializer(serializers.ModelSerializer):
-    countries = CountrySerializer(many=True)
-    universities = UniversitySerializer(many=True)
-    majors = MajorSerializer(many=True)
-    semester_years = SemesterYearSerializer(many=True)
-    grades = GradeSerializer(many=True)
-
+class WantToApplyBaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = WantToApply
         fields = [
-            'id', 'student_detailed_info', 'countries', 'universities', 'grades', 'majors', 'semester_years',
+            'id', 'student_detailed_info', 'countries',
+            'universities', 'grades', 'majors', 'semester_years',
         ]
-
-    def create(self, validated_data):
-        raise ValidationError(_("Creating object through this serializer is not allowed"))
-
-
-class WantToApplyInternalCheckSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = WantToApply
-        fields = [
-            'id', 'student_detailed_info', 'countries', 'universities', 'grades', 'majors', 'semester_years',
-        ]
-        extra_kwargs = {
-            "student_detailed_info": {"read_only": True}
-        }
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
@@ -65,9 +45,17 @@ class WantToApplyInternalCheckSerializer(serializers.ModelSerializer):
         return ret
 
 
+class WantToApplyStudentDetailedInfoReadonlySerializer(WantToApplyBaseSerializer):
+    class Meta(WantToApplyBaseSerializer.Meta):
+        extra_kwargs = {
+            "student_detail_info": {"required": False}
+        }
+
+
 class StudentDetailedInfoSerializer(serializers.ModelSerializer):
     user = SafeUserDataSerializer(read_only=True)
-    want_to_apply = WantToApplyInternalCheckSerializer()
+    want_to_apply = WantToApplyStudentDetailedInfoReadonlySerializer()
+    educations = EducationSerializer()
 
     class Meta:
         model = StudentDetailedInfo
