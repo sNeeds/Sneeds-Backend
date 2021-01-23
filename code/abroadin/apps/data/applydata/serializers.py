@@ -14,7 +14,6 @@ from .models import (
     RegularLanguageCertificate, GMATCertificate, GREGeneralCertificate, GRESubjectCertificate, GREPhysicsCertificate,
     GREBiologyCertificate, GREPsychologyCertificate, DuolingoCertificate)
 
-
 LCType = LanguageCertificate.LanguageCertificateType
 
 
@@ -69,30 +68,12 @@ class PublicationSerializer(serializers.ModelSerializer):
     related_classes = []
 
     content_type = GenericContentTypeRelatedField()
-    content_url = GenericContentObjectRelatedURL()
 
     class Meta:
         model = Publication
         abstract = True
         fields = [
             'id', 'title', 'publish_year', 'which_author', 'type', 'journal_reputation',
-            'content_type', 'object_id', 'content_url',
-        ]
-
-        extra_kwargs = {
-            # 'content_object': {'read_only': True},
-        }
-
-
-class PublicationRequestSerializer(serializers.ModelSerializer):
-    related_classes = []
-
-    content_type = GenericContentTypeRelatedField()
-
-    class Meta:
-        model = Publication
-        fields = [
-            'id', 'content_object', 'title', 'publish_year', 'which_author', 'type', 'journal_reputation',
             'content_type', 'object_id',
         ]
 

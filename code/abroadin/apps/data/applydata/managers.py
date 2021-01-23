@@ -44,8 +44,7 @@ class EducationManager(CreateM2MManagerMixin, models.QuerySet):
         return None
 
 
-class PublicationManager(models.QuerySet):
-
+class PublicationManager(CreateM2MManagerMixin, models.QuerySet):
     @classmethod
     def calculate_value(cls, qs):
         total_val = 0.0

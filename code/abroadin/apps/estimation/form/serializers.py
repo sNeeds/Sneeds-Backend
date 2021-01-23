@@ -5,12 +5,12 @@ from rest_framework import serializers
 
 from abroadin.apps.data.applydata import models as ad_models
 from abroadin.apps.data.applydata.serializers import SemesterYearSerializer, GradeSerializer, EducationSerializer, \
-    EducationDetailedRepresentationSerializer
+    EducationDetailedRepresentationSerializer, PublicationSerializer
 from abroadin.apps.users.customAuth.serializers import SafeUserDataSerializer
 
 from .models import WantToApply, StudentDetailedInfo
 from abroadin.apps.data.account.serializers import CountrySerializer, UniversitySerializer, MajorSerializer
-from ...data.applydata.models import Education
+from ...data.applydata.models import Education, Publication
 
 LanguageCertificateType = ad_models.LanguageCertificate.LanguageCertificateType
 
@@ -58,28 +58,32 @@ class EducationValidationSerializer(EducationDetailedRepresentationSerializer):
         fields = list(set(EducationDetailedRepresentationSerializer.Meta.fields) - {"content_type", "object_id"})
 
 
+class PublicationValidationSerializer(PublicationSerializer):
+    class Meta(PublicationSerializer.Meta):
+        fields = list(set(PublicationSerializer.Meta.fields) - {"content_type", "object_id"})
+
+
 class StudentDetailedInfoSerializer(serializers.ModelSerializer):
     user = SafeUserDataSerializer(read_only=True)
     want_to_apply = WantToApplyValidationSerializer()
     educations = EducationValidationSerializer(many=True)
+    publications = PublicationValidationSerializer(many=True)
 
     class Meta:
         model = StudentDetailedInfo
         fields = [
             'id', 'user', 'age', 'gender', 'is_married',
             'resume', 'related_work_experience', 'academic_break', 'olympiad',
-            'created', 'updated', 'want_to_apply', 'educations',
+            'created', 'updated', 'want_to_apply', 'educations', 'publications',
             'payment_affordability', 'prefers_full_fund', 'prefers_half_fund', 'prefers_self_fund',
             'comment', 'powerful_recommendation', 'linkedin_url', 'homepage_url',
         ]
-
-    def validate(self, attrs):
-        return attrs
 
     @transaction.atomic()
     def create(self, validated_data):
         want_to_apply_data = validated_data.pop('want_to_apply')
         educations_data = validated_data.pop('educations')
+        publications_data = validated_data.pop('publications')
 
         form = StudentDetailedInfo.objects.create(**validated_data)
         SDI_content_type = ContentType.objects.get(app_label="form", model="studentdetailedinfo")
@@ -91,6 +95,11 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
             data['object_id'] = form.id
             data['content_type'] = SDI_content_type
             Education.objects.create_with_m2m(**data)
+
+        for data in publications_data:
+            data['object_id'] = form.id
+            data['content_type'] = SDI_content_type
+            Publication.objects.create_with_m2m(**data)
 
         return form
 

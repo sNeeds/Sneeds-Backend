@@ -32,11 +32,9 @@ class CreateM2MManagerMixin:
             if isinstance(field, models.ManyToManyField):
                 m2m_fields[field] = kwargs.pop(field.name, [])
 
-        print("**" , 1)
         obj = self.create(**kwargs)
-        print("**" , 2)
 
         for field, value in m2m_fields.items():
             getattr(obj, field.name).set(value)
-        print("**" , 3)
+
         return obj
