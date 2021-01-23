@@ -3,15 +3,14 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ngettext
 from django.contrib.auth import get_user_model
 
+from abroadin.apps.applyprofile.models import ApplyProfile
+
 from .managers import ApplyProfileGroupManager
 from .values import APPLY_PROFILE_PRICE_IN_DOLLAR
 from ..storeBase.models import Product, SoldProduct
 
-from abroadin.apps.applyprofile.models import ApplyProfile
 
 User = get_user_model()
-
-APPLY_PROFILE_GROUP_CT = ContentType.objects.get(app_label='applyprofilestore', model='applyprofilegroup')
 
 
 class ApplyProfileGroup(Product):
@@ -21,7 +20,7 @@ class ApplyProfileGroup(Product):
     objects = ApplyProfileGroupManager.as_manager()
 
     def save(self, *args, **kwargs):
-        self.real_type = APPLY_PROFILE_GROUP_CT
+        self.real_type = ContentType.objects.get(app_label='applyprofilestore', model='applyprofilegroup')
         return super().save(*args, **kwargs)
 
     @property
@@ -36,8 +35,8 @@ class ApplyProfileGroup(Product):
             '%(count)d Student Profiles',
             apply_profiles_count,
         ) % {
-                   'count': apply_profiles_count,
-               }
+                  'count': apply_profiles_count,
+              }
 
         return msg
 
