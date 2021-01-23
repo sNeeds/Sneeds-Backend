@@ -5,6 +5,7 @@ from rest_framework.exceptions import ValidationError
 
 from abroadin.apps.data.applydata import models as ad_models
 from abroadin.apps.data.applydata.serializers import serialize_language_certificates
+from abroadin.apps.users.customAuth.serializers import SafeUserDataSerializer
 
 from .models import WantToApply, StudentDetailedInfo, SDI_CT
 
@@ -22,7 +23,6 @@ RELATED_CLASSES = [
 
 
 class StudentDetailedInfoSerializer(serializers.ModelSerializer):
-    from abroadin.apps.users.customAuth.serializers import SafeUserDataSerializer
 
     user = SafeUserDataSerializer(read_only=True)
     regular_certificates = serializers.SerializerMethodField()

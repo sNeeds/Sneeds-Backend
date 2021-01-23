@@ -1,7 +1,5 @@
 from drf_yasg.utils import swagger_auto_schema
 
-from rest_framework import permissions
-
 from abroadin.base.api import generics
 from abroadin.base.api.permissions import permission_class_factory
 
@@ -11,7 +9,7 @@ from .serializers import StudentDetailedInfoSerializer, StudentDetailedInfoReque
 from .permissions import OnlyOneFormPermission, SameUserOrNone, UserAlreadyHasForm
 
 
-class StudentDetailedInfoListCreateAPIView(generics.CListCreateAPIView):
+class StudentDetailedInfoListCreateView(generics.CListCreateAPIView):
     queryset = StudentDetailedInfo.objects.all()
     serializer_class = StudentDetailedInfoSerializer
     request_serializer_class = StudentDetailedInfoRequestSerializer
@@ -45,7 +43,7 @@ class StudentDetailedInfoListCreateAPIView(generics.CListCreateAPIView):
         return super().post(request, *args, **kwargs)
 
 
-class StudentDetailedInfoRetrieveUpdateAPIView(generics.CRetrieveUpdateAPIView):
+class StudentDetailedInfoRetrieveUpdateView(generics.CRetrieveUpdateAPIView):
     lookup_field = 'id'
     queryset = StudentDetailedInfo.objects.all()
     serializer_class = StudentDetailedInfoSerializer
@@ -83,12 +81,3 @@ class StudentDetailedInfoRetrieveUpdateAPIView(generics.CRetrieveUpdateAPIView):
             request.data.update({"user": user.id})
         return super().partial_update(request, *args, **kwargs)
 
-
-class UserStudentDetailedInfoRetrieveAPIView(generics.CRetrieveAPIView):
-    queryset = StudentDetailedInfo.objects.all()
-    serializer_class = StudentDetailedInfoSerializer
-    permission_classes = (
-        permissions.IsAuthenticated,
-    )
-    lookup_url_kwarg = 'user_id'
-    lookup_field = 'user__id'
