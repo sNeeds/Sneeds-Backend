@@ -3,14 +3,15 @@ from django.db.models import When, Q, Value, IntegerField, Case
 
 from abroadin.apps.data.applydata.classes import ValueRange
 from abroadin.apps.data.applydata.values import VALUES_WITH_ATTRS
+from abroadin.base.mixins.validators import CreateM2MManagerMixin
 
 
-class GradeManager( models.QuerySet):
+class GradeManager(models.QuerySet):
     def list(self):
         return [obj for obj in self._chain()]
 
 
-class EducationManager(models.QuerySet):
+class EducationManager(CreateM2MManagerMixin, models.QuerySet):
     def order_by_grade(self):
         """
             Returns from lower to higher grade. e.g, Bachelor, Master, ...
@@ -43,8 +44,7 @@ class EducationManager(models.QuerySet):
         return None
 
 
-class PublicationManager(models.QuerySet):
-
+class PublicationManager(CreateM2MManagerMixin, models.QuerySet):
     @classmethod
     def calculate_value(cls, qs):
         total_val = 0.0

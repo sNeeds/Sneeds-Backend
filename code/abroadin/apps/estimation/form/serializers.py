@@ -1,13 +1,16 @@
+from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 
 from rest_framework import serializers
 
 from abroadin.apps.data.applydata import models as ad_models
-from abroadin.apps.data.applydata.serializers import SemesterYearSerializer, GradeSerializer, EducationSerializer
+from abroadin.apps.data.applydata.serializers import SemesterYearSerializer, GradeSerializer, EducationSerializer, \
+    EducationDetailedRepresentationSerializer, PublicationSerializer, RegularLanguageCertificateSerializer
 from abroadin.apps.users.customAuth.serializers import SafeUserDataSerializer
 
 from .models import WantToApply, StudentDetailedInfo
 from abroadin.apps.data.account.serializers import CountrySerializer, UniversitySerializer, MajorSerializer
+from ...data.applydata.models import Education, Publication, RegularLanguageCertificate
 
 LanguageCertificateType = ad_models.LanguageCertificate.LanguageCertificateType
 
@@ -43,40 +46,72 @@ class WantToApplyBaseSerializer(serializers.ModelSerializer):
         return ret
 
 
-class WantToApplyStudentDetailedInfoReadonlySerializer(WantToApplyBaseSerializer):
+class WantToApplyValidationSerializer(WantToApplyBaseSerializer):
     class Meta(WantToApplyBaseSerializer.Meta):
         extra_kwargs = {
-            "student_detail_info": {"required": False}
+            "student_detailed_info": {"read_only": True}
         }
+
+
+class EducationValidationSerializer(EducationDetailedRepresentationSerializer):
+    class Meta(EducationDetailedRepresentationSerializer.Meta):
+        fields = list(set(EducationDetailedRepresentationSerializer.Meta.fields) - {"content_type", "object_id"})
+
+
+class PublicationValidationSerializer(PublicationSerializer):
+    class Meta(PublicationSerializer.Meta):
+        fields = list(set(PublicationSerializer.Meta.fields) - {"content_type", "object_id"})
+
+
+class RegularLanguageCertificateValidationSerializer(RegularLanguageCertificateSerializer):
+    class Meta(RegularLanguageCertificateSerializer.Meta):
+        fields = list(set(RegularLanguageCertificateSerializer.Meta.fields) - {"content_type", "object_id"})
 
 
 class StudentDetailedInfoSerializer(serializers.ModelSerializer):
     user = SafeUserDataSerializer(read_only=True)
-    want_to_apply = WantToApplyStudentDetailedInfoReadonlySerializer()
-    educations = EducationSerializer()
+    want_to_apply = WantToApplyValidationSerializer()
+    educations = EducationValidationSerializer(many=True)
+    publications = PublicationValidationSerializer(many=True)
+    language_certificates = RegularLanguageCertificateValidationSerializer(many=True)
 
     class Meta:
         model = StudentDetailedInfo
         fields = [
             'id', 'user', 'age', 'gender', 'is_married',
             'resume', 'related_work_experience', 'academic_break', 'olympiad',
-            'created', 'updated', 'want_to_apply', 'payment_affordability',
-            'prefers_full_fund', 'prefers_half_fund', 'prefers_self_fund',
+            'created', 'updated', 'want_to_apply', 'educations', 'publications', 'language_certificates',
+            'payment_affordability', 'prefers_full_fund', 'prefers_half_fund', 'prefers_self_fund',
             'comment', 'powerful_recommendation', 'linkedin_url', 'homepage_url',
         ]
-
-    def validate(self, attrs):
-        return attrs
 
     @transaction.atomic()
     def create(self, validated_data):
         want_to_apply_data = validated_data.pop('want_to_apply')
+        educations_data = validated_data.pop('educations')
+        publications_data = validated_data.pop('publications')
+        language_certificates_data = validated_data.pop('language_certificates')
 
         form = StudentDetailedInfo.objects.create(**validated_data)
+        form_content_type = ContentType.objects.get(app_label="form", model="studentdetailedinfo")
 
         want_to_apply_data['student_detailed_info'] = form
-        want_to_apply = WantToApply.objects.create_with_m2m(**want_to_apply_data)
-        want_to_apply.save()
+        WantToApply.objects.create_with_m2m(**want_to_apply_data)
+
+        for data in educations_data:
+            data['object_id'] = form.id
+            data['content_type'] = form_content_type
+            Education.objects.create_with_m2m(**data)
+
+        for data in publications_data:
+            data['object_id'] = form.id
+            data['content_type'] = form_content_type
+            Publication.objects.create_with_m2m(**data)
+
+        for data in language_certificates_data:
+            data['object_id'] = form.id
+            data['content_type'] = form_content_type
+            # RegularLanguageCertificate.objects.create_with_m2m(**data)
 
         return form
 

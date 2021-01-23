@@ -1,25 +1,18 @@
 from collections import OrderedDict
 
-from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
+
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from rest_framework.fields import SerializerMethodField
-from rest_framework.request import Request
 
-from abroadin.apps.data.account.models import BasicFormField, University, Major
+from abroadin.apps.data.account.models import BasicFormField
 from abroadin.apps.data.account.serializers import UniversitySerializer, MajorSerializer
 from abroadin.base.api.fields import GenericContentTypeRelatedField, GenericContentObjectRelatedURL
-from abroadin.base.api.serializers import generic_hyperlinked_related_method
 
 from .models import (
     SemesterYear, Publication, Grade, Education, LanguageCertificate,
     RegularLanguageCertificate, GMATCertificate, GREGeneralCertificate, GRESubjectCertificate, GREPhysicsCertificate,
     GREBiologyCertificate, GREPsychologyCertificate, DuolingoCertificate)
-
-from abroadin.apps.estimation.form.models import StudentDetailedInfo
-
-from abroadin.apps.applyprofile.models import ApplyProfile
 
 LCType = LanguageCertificate.LanguageCertificateType
 
@@ -75,35 +68,17 @@ class PublicationSerializer(serializers.ModelSerializer):
     related_classes = []
 
     content_type = GenericContentTypeRelatedField()
-    content_url = GenericContentObjectRelatedURL()
 
     class Meta:
         model = Publication
         abstract = True
         fields = [
             'id', 'title', 'publish_year', 'which_author', 'type', 'journal_reputation',
-            'content_type', 'object_id', 'content_url',
-        ]
-
-        extra_kwargs = {
-            # 'content_object': {'read_only': True},
-        }
-
-
-class PublicationRequestSerializer(serializers.ModelSerializer):
-    related_classes = []
-
-    content_type = GenericContentTypeRelatedField()
-
-    class Meta:
-        model = Publication
-        fields = [
-            'id', 'content_object', 'title', 'publish_year', 'which_author', 'type', 'journal_reputation',
             'content_type', 'object_id',
         ]
 
 
-class EducationBaseSerializer(serializers.ModelSerializer):
+class EducationSerializer(serializers.ModelSerializer):
     related_classes = []
 
     content_type = GenericContentTypeRelatedField()
@@ -119,12 +94,18 @@ class EducationBaseSerializer(serializers.ModelSerializer):
         raise ValidationError(_("Creating object through this serializer is not allowed"))
 
 
-class EducationContentTypeObjIdReadonlySerializer(EducationBaseSerializer):
-    class Meta(EducationBaseSerializer.Meta):
-        extra_kwargs = {
-            "content_type": {"readonly": True},
-            "object_id": {"readonly": True}
-        }
+class EducationDetailedRepresentationSerializer(EducationSerializer):
+    class Meta(EducationSerializer.Meta):
+        pass
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        context = {"request": self.context.get("request")}
+
+        ret["university"] = UniversitySerializer(instance.university, context=context).data
+        ret["major"] = MajorSerializer(instance.major, context=context).data
+
+        return ret
 
 
 class LanguageCertificateSerializer(serializers.ModelSerializer):
@@ -134,18 +115,21 @@ class LanguageCertificateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = LanguageCertificate
-        fields = '__all__'
+        fields = ['certificate_type', 'is_mock', 'content_type', 'object_id']
 
 
 class RegularLanguageCertificateSerializer(LanguageCertificateSerializer):
-    class Meta:
+    class Meta(LanguageCertificateSerializer.Meta):
         model = RegularLanguageCertificate
-        fields = '__all__'
+        fields = LanguageCertificateSerializer.Meta.fields + [
+        ]
 
     def validate_certificate_type(self, value):
-        if value not in [LCType.IELTS_ACADEMIC, LCType.IELTS_GENERAL,
-                         LCType.TOEFL]:
+        if value not in [
+            LCType.IELTS_ACADEMIC, LCType.IELTS_GENERAL, LCType.TOEFL
+        ]:
             raise ValidationError(_("Value is not in allowed certificate types."))
+
         return value
 
 
