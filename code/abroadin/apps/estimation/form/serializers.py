@@ -5,12 +5,12 @@ from rest_framework import serializers
 
 from abroadin.apps.data.applydata import models as ad_models
 from abroadin.apps.data.applydata.serializers import SemesterYearSerializer, GradeSerializer, EducationSerializer, \
-    EducationDetailedRepresentationSerializer, PublicationSerializer
+    EducationDetailedRepresentationSerializer, PublicationSerializer, RegularLanguageCertificateSerializer
 from abroadin.apps.users.customAuth.serializers import SafeUserDataSerializer
 
 from .models import WantToApply, StudentDetailedInfo
 from abroadin.apps.data.account.serializers import CountrySerializer, UniversitySerializer, MajorSerializer
-from ...data.applydata.models import Education, Publication
+from ...data.applydata.models import Education, Publication, RegularLanguageCertificate
 
 LanguageCertificateType = ad_models.LanguageCertificate.LanguageCertificateType
 
@@ -63,18 +63,24 @@ class PublicationValidationSerializer(PublicationSerializer):
         fields = list(set(PublicationSerializer.Meta.fields) - {"content_type", "object_id"})
 
 
+class RegularLanguageCertificateValidationSerializer(RegularLanguageCertificateSerializer):
+    class Meta(RegularLanguageCertificateSerializer.Meta):
+        fields = list(set(RegularLanguageCertificateSerializer.Meta.fields) - {"content_type", "object_id"})
+
+
 class StudentDetailedInfoSerializer(serializers.ModelSerializer):
     user = SafeUserDataSerializer(read_only=True)
     want_to_apply = WantToApplyValidationSerializer()
     educations = EducationValidationSerializer(many=True)
     publications = PublicationValidationSerializer(many=True)
+    language_certificates = RegularLanguageCertificateValidationSerializer(many=True)
 
     class Meta:
         model = StudentDetailedInfo
         fields = [
             'id', 'user', 'age', 'gender', 'is_married',
             'resume', 'related_work_experience', 'academic_break', 'olympiad',
-            'created', 'updated', 'want_to_apply', 'educations', 'publications',
+            'created', 'updated', 'want_to_apply', 'educations', 'publications', 'language_certificates',
             'payment_affordability', 'prefers_full_fund', 'prefers_half_fund', 'prefers_self_fund',
             'comment', 'powerful_recommendation', 'linkedin_url', 'homepage_url',
         ]
@@ -84,6 +90,7 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
         want_to_apply_data = validated_data.pop('want_to_apply')
         educations_data = validated_data.pop('educations')
         publications_data = validated_data.pop('publications')
+        language_certificates_data = validated_data.pop('language_certificates')
 
         form = StudentDetailedInfo.objects.create(**validated_data)
         form_content_type = ContentType.objects.get(app_label="form", model="studentdetailedinfo")
@@ -100,6 +107,11 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
             data['object_id'] = form.id
             data['content_type'] = form_content_type
             Publication.objects.create_with_m2m(**data)
+
+        for data in language_certificates_data:
+            data['object_id'] = form.id
+            data['content_type'] = form_content_type
+            # RegularLanguageCertificate.objects.create_with_m2m(**data)
 
         return form
 

@@ -115,15 +115,13 @@ class LanguageCertificateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = LanguageCertificate
-        fields = '__all__'
+        fields = ['certificate_type', 'is_mock', 'content_type', 'object_id']
 
 
 class RegularLanguageCertificateSerializer(LanguageCertificateSerializer):
-    class Meta:
+    class Meta(LanguageCertificateSerializer.Meta):
         model = RegularLanguageCertificate
-        fields = [
-            'speaking', 'listening', 'writing', 'reading', 'overall', 'certificate_type',
-            'is_mock', 'content_type', 'object_id'
+        fields = LanguageCertificateSerializer.Meta.fields + [
         ]
 
     def validate_certificate_type(self, value):
