@@ -169,7 +169,6 @@ class LanguageCertificateListCreateAPIView(generics.CListCreateAPIView):
     serializer_class = AppSpecificLanguageCertificateSerializer
 
     def get_queryset(self):
-        user = self.request.user
         sdi_id = self.request.query_params.get('student-detailed-info', None)
         qs = self.queryset.filter(content_type=SDI_CT, object_id=sdi_id)
         return qs
@@ -300,96 +299,7 @@ class DuolingoCertificateRetrieveDestroyAPIView(LanguageCertificateRetrieveDestr
     permission_classes = [IsLanguageCertificateOwnerOrDetailedInfoWithoutUser]
 
 
-class WantToApplyListAPIView(generics.CListCreateAPIView):
-    serializer_class = WantToApplySerializer
-    request_serializer_class = WantToApplyRequestSerializer
 
-    def get_queryset(self):
-        sdi_id = self.request.query_params.get('student-detailed-info', None)
-        qs = WantToApply.objects.filter(student_detailed_info__id=sdi_id)
-        return qs
-
-    @swagger_auto_schema(
-        request_body=request_serializer_class,
-        responses={200: serializer_class},
-    )
-    def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
-
-
-class WantToApplyDetailAPIView(generics.CRetrieveUpdateDestroyAPIView):
-    lookup_field = 'id'
-    queryset = WantToApply.objects.all()
-    serializer_class = WantToApplySerializer
-    request_serializer_class = WantToApplyRequestSerializer
-    permission_classes = [IsWantToApplyOwnerOrDetailedInfoWithoutUser]
-
-    @swagger_auto_schema(
-        request_body=request_serializer_class,
-        responses={200: serializer_class},
-    )
-    def put(self, request, *args, **kwargs):
-        return super().put(request, *args, **kwargs)
-
-    @swagger_auto_schema(
-        request_body=request_serializer_class,
-        responses={200: serializer_class},
-    )
-    def patch(self, request, *args, **kwargs):
-        return super().patch(request, *args, **kwargs)
-
-
-class PublicationListCreateAPIView(generics.CListCreateAPIView):
-    queryset = ad_models.Publication.objects.all()
-    serializer_class = AppSpecificPublicationSerializer
-    request_serializer_class = AppSpecificPublicationRequestSerializer
-
-    def get_queryset(self):
-        user = self.request.user
-        sdi_id = self.request.query_params.get('student-detailed-info', None)
-        qs = self.queryset.filter(content_type=SDI_CT, object_id=sdi_id)
-        return qs
-
-    @swagger_auto_schema(
-        request_body=request_serializer_class,
-        responses={200: serializer_class},
-    )
-    def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
-
-
-class PublicationRetrieveDestroyAPIView(generics.CRetrieveDestroyAPIView):
-    lookup_field = 'id'
-    queryset = ad_models.Publication.objects.all()
-    serializer_class = AppSpecificPublicationSerializer
-    permission_classes = [IsPublicationOwnerOrDetailedInfoWithoutUser]
-
-
-class EducationListAPIView(generics.CListCreateAPIView):
-    queryset = ad_models.Education.objects.all()
-    serializer_class = AppSpecificEducationSerializer
-    request_serializer_class = AppSpecificEducationRequestSerializer
-
-    def get_queryset(self):
-        sdi_id = self.request.query_params.get('student-detailed-info', None)
-        if not sdi_id:
-            return self.queryset.none()
-        qs = self.queryset.filter(content_type=SDI_CT, object_id=sdi_id)
-        return qs
-
-    @swagger_auto_schema(
-        request_body=request_serializer_class,
-        responses={200: serializer_class},
-    )
-    def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
-
-
-class EducationDetailAPIView(generics.CRetrieveDestroyAPIView):
-    lookup_field = 'id'
-    queryset = ad_models.Education.objects.all()
-    serializer_class = AppSpecificEducationSerializer
-    permission_classes = [IsEducationOwnerOrDetailedInfoWithoutUser]
 
 
 class GradesListAPIView(generics.CListAPIView):
@@ -421,8 +331,3 @@ class LanguageCertificateTypeListAPIView(EnumViewList):
     enum_class = ad_models.LanguageCertificate.LanguageCertificateType
 
 
-class Akbar(CAPIView):
-    def get(self, request):
-        from abroadin.apps.estimation.form.tasks import update_student_detailed_info_ranks
-        update_student_detailed_info_ranks()
-        return Response()
