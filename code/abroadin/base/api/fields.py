@@ -22,22 +22,9 @@ def _get_content_type_by_identifier(identifier: str) -> tuple:
     return t[0], t[1]
 
 
-# a = [
-#     {
-#         'model_class': serializers.ModelSerializer,
-#         'representation_identifier': '',
-#         'pk_field': 'id',
-#         'pk': 2,
-#         'primary_key_related_field': serializers.PrimaryKeyRelatedField(),
-#         'query_set': '',
-#         'hyperlinked_related_field': serializers.HyperlinkedRelatedField(),
-#     }
-# ]
-
 class GenericRelatedField(serializers.RelatedField):
     def __init__(self, **kwargs):
         self.related_classes = kwargs.pop('related_classes', None)
-        # print('related classes', self.related_classes)
         assert self.related_classes is not None, _("related_classes may not be None.")
         assert isinstance(self.related_classes, list), _("related classes should be an object of list")
         for module in self.related_classes:
@@ -48,7 +35,6 @@ class GenericRelatedField(serializers.RelatedField):
         super().__init__(**kwargs)
 
     def to_internal_value(self, data):
-        print('to_internalll', data)
         app_label, model = _get_content_type_by_identifier(data.get('representation_identifier'))
         content_type = ContentType.objects.get(app_label=app_label, model=model)
         pk = data.get('pk')
@@ -58,14 +44,11 @@ class GenericRelatedField(serializers.RelatedField):
         raise serializers.ValidationError({"content_type": "ContentTypeRelatedField wrong instance."}, code=400)
 
     def to_representation(self, value):
-        print('to_representation')
-        # print(value)
         if isinstance(value, int):
             return value
         for module in self.related_classes:
             if isinstance(value, module.get('model_class')):
                 content_type = ContentType.objects.get_for_model(module.get('model_class'))
-                print(module.get('model_class'))
                 return {
                     'representation_identifier': _get_content_type_identifier(content_type),
                     'pk': value.pk,
@@ -135,7 +118,6 @@ class GenericContentTypeRelatedField(serializers.RelatedField):
         return ret
 
     def perform_query_set(self):
-        # print('perform query set')
         query_set = ContentType.objects.none()
         for module in self.related_classes:
             content_type = ContentType.objects.get_for_model(model=module['model_class'])
@@ -143,7 +125,6 @@ class GenericContentTypeRelatedField(serializers.RelatedField):
         return query_set
 
     def perform_allowed_content_types(self):
-        # print('perform allowed content type')
         return [_get_content_type_identifier(ContentType.objects.get_for_model(module['model_class']))
                 for module in self.related_classes]
 
@@ -189,11 +170,6 @@ class GenericContentObjectRelatedURL(SerializerMethodField):
     def to_representation(self, value):
         return generic_hyperlinked_related_method(self.parent, self.related_classes, value, self.content_type_field,
                                                   self.object_id_field)
-
-
-# h =[
-#     (ApplyProfile, serializers.HyperlinkedRelatedField())
-# ]
 
 
 class GenericHyperlinkedRelatedField(serializers.RelatedField):
