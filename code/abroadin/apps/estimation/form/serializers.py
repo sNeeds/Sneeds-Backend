@@ -1,8 +1,6 @@
 from django.db import transaction
-from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 
 from abroadin.apps.data.applydata import models as ad_models
 from abroadin.apps.data.applydata.serializers import SemesterYearSerializer, GradeSerializer, EducationSerializer

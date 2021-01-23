@@ -33,21 +33,11 @@ class AppSpecificPublicationRequestSerializer(ad_serializers.PublicationRequestS
         return super().validate(attrs)
 
 
-class AppSpecificEducationSerializer(ad_serializers.EducationSerializer):
+class AppSpecificEducationSerializer(ad_serializers.EducationBaseSerializer):
     related_classes = RELATED_CLASSES
 
-    class Meta(ad_serializers.EducationSerializer.Meta):
+    class Meta(ad_serializers.EducationBaseSerializer.Meta):
         abstract = False
-
-    def validate(self, attrs):
-        return super().validate(attrs)
-
-
-class AppSpecificEducationRequestSerializer(ad_serializers.EducationRequestSerializer):
-    related_classes = RELATED_CLASSES
-
-    class Meta(ad_serializers.EducationRequestSerializer.Meta):
-        pass
 
     def validate(self, attrs):
         return super().validate(attrs)

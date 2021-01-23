@@ -103,52 +103,28 @@ class PublicationRequestSerializer(serializers.ModelSerializer):
         ]
 
 
-class EducationSerializer(serializers.ModelSerializer):
+class EducationBaseSerializer(serializers.ModelSerializer):
     related_classes = []
 
     content_type = GenericContentTypeRelatedField()
-    content_url = GenericContentObjectRelatedURL()
 
     class Meta:
         model = Education
         fields = [
             'id', 'university', 'grade', 'major', 'graduate_in', 'thesis_title', 'gpa',
-            'content_type', 'object_id', 'content_url',
+            'content_type', 'object_id',
         ]
 
     def create(self, validated_data):
         raise ValidationError(_("Creating object through this serializer is not allowed"))
 
 
-class EducationRequestSerializer(serializers.ModelSerializer):
-    related_classes = []
-
-    university = serializers.PrimaryKeyRelatedField(
-        queryset=University.objects.all(),
-        pk_field=serializers.IntegerField(label='id'),
-        allow_null=False,
-        allow_empty=False,
-        required=True,
-    )
-
-    major = serializers.PrimaryKeyRelatedField(
-        queryset=Major.objects.all(),
-        pk_field=serializers.IntegerField(label='id'),
-        allow_null=False,
-        allow_empty=False,
-        required=True,
-    )
-
-    content_type = GenericContentTypeRelatedField()
-
-    # content_url = GenericContentObjectRelatedURL()
-
-    class Meta:
-        model = Education
-        fields = [
-            'id', 'university', 'content_object', 'grade', 'major', 'graduate_in', 'thesis_title', 'gpa',
-            'content_type', 'object_id',
-        ]
+class EducationContentTypeObjIdReadonlySerializer(EducationBaseSerializer):
+    class Meta(EducationBaseSerializer.Meta):
+        extra_kwargs = {
+            "content_type": {"readonly": True},
+            "object_id": {"readonly": True}
+        }
 
 
 class LanguageCertificateSerializer(serializers.ModelSerializer):
@@ -156,11 +132,9 @@ class LanguageCertificateSerializer(serializers.ModelSerializer):
 
     content_type = GenericContentTypeRelatedField()
 
-
     class Meta:
         model = LanguageCertificate
         fields = '__all__'
-
 
 
 class RegularLanguageCertificateSerializer(LanguageCertificateSerializer):
