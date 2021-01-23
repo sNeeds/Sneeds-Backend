@@ -78,8 +78,8 @@ class GenericContentTypeRelatedField(serializers.RelatedField):
         }
     ]
     """
-    allowed_content_types = None
     related_classes = None
+    allowed_content_types = None
 
     def __init__(self, **kwargs):
         self.related_classes = kwargs.pop('related_classes', None)

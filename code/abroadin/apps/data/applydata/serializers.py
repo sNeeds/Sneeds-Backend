@@ -1,25 +1,19 @@
 from collections import OrderedDict
 
-from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
+
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from rest_framework.fields import SerializerMethodField
-from rest_framework.request import Request
 
-from abroadin.apps.data.account.models import BasicFormField, University, Major
-from abroadin.apps.data.account.serializers import UniversitySerializer, MajorSerializer, CountrySerializer
+from abroadin.apps.data.account.models import BasicFormField
+from abroadin.apps.data.account.serializers import UniversitySerializer, MajorSerializer
 from abroadin.base.api.fields import GenericContentTypeRelatedField, GenericContentObjectRelatedURL
-from abroadin.base.api.serializers import generic_hyperlinked_related_method
 
 from .models import (
     SemesterYear, Publication, Grade, Education, LanguageCertificate,
     RegularLanguageCertificate, GMATCertificate, GREGeneralCertificate, GRESubjectCertificate, GREPhysicsCertificate,
     GREBiologyCertificate, GREPsychologyCertificate, DuolingoCertificate)
 
-from abroadin.apps.estimation.form.models import StudentDetailedInfo
-
-from abroadin.apps.applyprofile.models import ApplyProfile
 
 LCType = LanguageCertificate.LanguageCertificateType
 
@@ -129,7 +123,6 @@ class EducationDetailedRepresentationSerializer(EducationSerializer):
 
         ret["university"] = UniversitySerializer(instance.university, context=context).data
         ret["major"] = MajorSerializer(instance.major, context=context).data
-        ret["semester_years"] = SemesterYearSerializer(instance.semester_years, context=context, many=True).data
 
         return ret
 
