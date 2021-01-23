@@ -51,12 +51,12 @@ class AdmissionSerializer(serializers.ModelSerializer):
 
 
 class LockedUniversitySerializer(serializers.ModelSerializer):
-    id = serializers.ReadOnlyField(default="*")
-    url = serializers.ReadOnlyField(default="*")
-    name = serializers.ReadOnlyField(default="*")
-    country = serializers.ReadOnlyField(default="*")
-    description = serializers.ReadOnlyField(default="*")
-    picture = serializers.ReadOnlyField(default="*")
+    id = serializers.CharField(read_only=True, default="*", source=' ')
+    url = serializers.CharField(read_only=True, default="*", source=' ')
+    name = serializers.CharField(read_only=True, default="*", source=' ')
+    country = serializers.CharField(read_only=True, default="*", source=' ')
+    description = serializers.CharField(read_only=True, default="*", source=' ')
+    picture = serializers.CharField(read_only=True, default="*", source=' ')
 
     class Meta:
         model = University
@@ -64,10 +64,10 @@ class LockedUniversitySerializer(serializers.ModelSerializer):
 
 
 class LockedMajorSerializer(serializers.ModelSerializer):
-    id = serializers.ReadOnlyField(default="*")
-    url = serializers.ReadOnlyField(default="*")
-    name = serializers.ReadOnlyField(default="*")
-    description = serializers.ReadOnlyField(default="*")
+    id = serializers.CharField(read_only=True, default="*", source=' ')
+    url = serializers.CharField(read_only=True, default="*", source=' ')
+    name = serializers.CharField(read_only=True, default="*", source=' ')
+    description = serializers.CharField(read_only=True, default="*", source=' ')
 
     class Meta:
         model = Major
@@ -75,8 +75,8 @@ class LockedMajorSerializer(serializers.ModelSerializer):
 
 
 class LockedGradeSerializer(serializers.ModelSerializer):
-    id = serializers.ReadOnlyField(default="*")
-    name = serializers.ReadOnlyField(default="*")
+    id = serializers.CharField(read_only=True, default="*", source=' ')
+    name = serializers.CharField(read_only=True, default="*", source=' ')
 
     class Meta:
         model = Grade
@@ -84,14 +84,16 @@ class LockedGradeSerializer(serializers.ModelSerializer):
 
 
 class LockedAdmissionSerializer(serializers.ModelSerializer):
+
+    id = serializers.CharField(read_only=True, default="*", source=' ')
     destination = LockedUniversitySerializer()
     major = LockedMajorSerializer()
     grade = LockedGradeSerializer()
 
-    enroll_year = serializers.ReadOnlyField(default="*")
-    scholarship = serializers.ReadOnlyField(default="*")
-    accepted = serializers.ReadOnlyField(default="*")
-    description = serializers.ReadOnlyField(default="*")
+    enroll_year = serializers.CharField(read_only=True, default="*", source=' ')
+    scholarship = serializers.CharField(read_only=True, default="*", source=' ')
+    accepted = serializers.CharField(read_only=True, default="*", source=' ')
+    description = serializers.CharField(read_only=True, default="*", source=' ')
 
     class Meta:
         model = Admission
@@ -131,11 +133,12 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
 
     def represent_admissions(self, is_unlocked, admissions):
         if is_unlocked:
-            return AdmissionSerializer(admissions)
+            return AdmissionSerializer(admissions, many=True, context=self.context).data
 
         free_admissions = Admission.get_free_admissions(admissions)
         locked_admissions = Admission.get_locked_admissions(admissions, free_admissions)
-        return AdmissionSerializer(free_admissions, many=True).data + LockedAdmissionSerializer(locked_admissions).data
+        return AdmissionSerializer(free_admissions, many=True, context=self.context).data +\
+               LockedAdmissionSerializer(locked_admissions, many=True, context=self.context).data
 
     def get_admissions(self, obj):
         assert self.context is not None, "context is None"
@@ -145,10 +148,10 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
         is_unlocked_apply_profile = False
         if not user.is_authenticated:
             is_unlocked_apply_profile = False
-        elif obj.id in get_user_bought_apply_profiles(user=user):
+        elif obj.id in get_user_bought_apply_profiles(user=user).values_list('id', flat=True):
             is_unlocked_apply_profile = True
 
-        return self.represent_admissions(is_unlocked_apply_profile, obj.adnissions)
+        return self.represent_admissions(is_unlocked_apply_profile, obj.admissions)
 
     def get_language_certificates(self, obj):
         return ad_serializers.serialize_language_certificates(obj.language_certificates.all(), self, RELATED_CLASSES)
