@@ -3,7 +3,8 @@ from django.db import transaction
 from rest_framework import serializers
 
 from abroadin.apps.data.applydata import models as ad_models
-from abroadin.apps.data.applydata.serializers import SemesterYearSerializer, GradeSerializer, EducationSerializer
+from abroadin.apps.data.applydata.serializers import SemesterYearSerializer, GradeSerializer, EducationSerializer, \
+    EducationDetailedRepresentationSerializer
 from abroadin.apps.users.customAuth.serializers import SafeUserDataSerializer
 
 from .models import WantToApply, StudentDetailedInfo
@@ -43,25 +44,33 @@ class WantToApplyBaseSerializer(serializers.ModelSerializer):
         return ret
 
 
-class WantToApplyStudentDetailedInfoReadonlySerializer(WantToApplyBaseSerializer):
+class WantToApplyValidationSerializer(WantToApplyBaseSerializer):
     class Meta(WantToApplyBaseSerializer.Meta):
         extra_kwargs = {
             "student_detail_info": {"required": False}
         }
 
 
+class EducationValidationSerializer(EducationDetailedRepresentationSerializer):
+    class Meta(EducationDetailedRepresentationSerializer.Meta):
+        extra_kwargs = {
+            "content_type": {"read_only": False},
+            "object_id": {"read_only": False},
+        }
+
+
 class StudentDetailedInfoSerializer(serializers.ModelSerializer):
     user = SafeUserDataSerializer(read_only=True)
-    want_to_apply = WantToApplyStudentDetailedInfoReadonlySerializer()
-    educations = EducationSerializer()
+    want_to_apply = WantToApplyValidationSerializer()
+    educations = EducationValidationSerializer(many=True)
 
     class Meta:
         model = StudentDetailedInfo
         fields = [
             'id', 'user', 'age', 'gender', 'is_married',
             'resume', 'related_work_experience', 'academic_break', 'olympiad',
-            'created', 'updated', 'want_to_apply', 'payment_affordability',
-            'prefers_full_fund', 'prefers_half_fund', 'prefers_self_fund',
+            'created', 'updated', 'want_to_apply', 'educations',
+            'payment_affordability', 'prefers_full_fund', 'prefers_half_fund', 'prefers_self_fund',
             'comment', 'powerful_recommendation', 'linkedin_url', 'homepage_url',
         ]
 

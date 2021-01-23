@@ -8,7 +8,7 @@ from rest_framework.fields import SerializerMethodField
 from rest_framework.request import Request
 
 from abroadin.apps.data.account.models import BasicFormField, University, Major
-from abroadin.apps.data.account.serializers import UniversitySerializer, MajorSerializer
+from abroadin.apps.data.account.serializers import UniversitySerializer, MajorSerializer, CountrySerializer
 from abroadin.base.api.fields import GenericContentTypeRelatedField, GenericContentObjectRelatedURL
 from abroadin.base.api.serializers import generic_hyperlinked_related_method
 
@@ -103,7 +103,7 @@ class PublicationRequestSerializer(serializers.ModelSerializer):
         ]
 
 
-class EducationBaseSerializer(serializers.ModelSerializer):
+class EducationSerializer(serializers.ModelSerializer):
     related_classes = []
 
     content_type = GenericContentTypeRelatedField()
@@ -119,12 +119,19 @@ class EducationBaseSerializer(serializers.ModelSerializer):
         raise ValidationError(_("Creating object through this serializer is not allowed"))
 
 
-class EducationContentTypeObjIdReadonlySerializer(EducationBaseSerializer):
-    class Meta(EducationBaseSerializer.Meta):
-        extra_kwargs = {
-            "content_type": {"readonly": True},
-            "object_id": {"readonly": True}
-        }
+class EducationDetailedRepresentationSerializer(EducationSerializer):
+    class Meta(EducationSerializer.Meta):
+        pass
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        context = {"request": self.context.get("request")}
+
+        ret["university"] = UniversitySerializer(instance.university, context=context).data
+        ret["major"] = MajorSerializer(instance.major, context=context).data
+        ret["semester_years"] = SemesterYearSerializer(instance.semester_years, context=context, many=True).data
+
+        return ret
 
 
 class LanguageCertificateSerializer(serializers.ModelSerializer):
