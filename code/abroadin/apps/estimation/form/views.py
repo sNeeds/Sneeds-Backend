@@ -12,7 +12,7 @@ from .permissions import OnlyOneFormPermission, SameUserOrNone, UserAlreadyHasFo
 class StudentDetailedInfoListCreateView(generics.CListCreateAPIView):
     queryset = StudentDetailedInfo.objects.all()
     serializer_class = StudentDetailedInfoSerializer
-    request_serializer_class = StudentDetailedInfoRequestSerializer
+    request_serializer_class = StudentDetailedInfoSerializer
     permission_classes = [
         permission_class_factory(OnlyOneFormPermission, ["POST"])
     ]

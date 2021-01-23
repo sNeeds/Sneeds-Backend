@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import serializers
@@ -41,32 +42,59 @@ class WantToApplySerializer(serializers.ModelSerializer):
         raise ValidationError(_("Creating object through this serializer is not allowed"))
 
 
+class WantToApplyInternalCheckSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WantToApply
+        fields = [
+            'id', 'student_detailed_info', 'countries', 'universities', 'grades', 'majors', 'semester_years',
+        ]
+        extra_kwargs = {
+            "student_detailed_info": {"read_only": True}
+        }
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        context = {"request": self.context.get("request")}
+
+        ret["countries"] = CountrySerializer(instance.countries, context=context, many=True).data
+        ret["universities"] = UniversitySerializer(instance.universities, context=context, many=True).data
+        ret["grades"] = GradeSerializer(instance.grades, context=context, many=True).data
+        ret["majors"] = MajorSerializer(instance.majors, context=context, many=True).data
+        ret["semester_years"] = SemesterYearSerializer(instance.semester_years, context=context, many=True).data
+
+        return ret
+
+
 class StudentDetailedInfoSerializer(serializers.ModelSerializer):
     user = SafeUserDataSerializer(read_only=True)
-    want_to_applies = serializers.SerializerMethodField()
+    want_to_apply = WantToApplyInternalCheckSerializer()
 
     class Meta:
         model = StudentDetailedInfo
         fields = [
             'id', 'user', 'age', 'gender', 'is_married',
             'resume', 'related_work_experience', 'academic_break', 'olympiad',
-            'created', 'updated', 'want_to_applies', 'payment_affordability',
+            'created', 'updated', 'want_to_apply', 'payment_affordability',
             'prefers_full_fund', 'prefers_half_fund', 'prefers_self_fund',
             'comment', 'powerful_recommendation', 'linkedin_url', 'homepage_url',
         ]
 
+    def validate(self, attrs):
+        return attrs
+
+    @transaction.atomic()
     def create(self, validated_data):
-        form_id = validated_data['id']
+        # print("HHHHHHHHHHHHH")
+        print(validated_data)
+        want_to_apply_data = validated_data.pop('want_to_apply')
 
-        want_to_apply_data = validated_data.pop('want-to-apply')
-        want_to_apply_data['student_detailed_info'] = form_id
-        want_to_apply_serializer = WantToApplySerializer(want_to_apply_data)
-        want_to_apply_serializer.is_valid()
-        want_to_apply_serializer.save()
+        form = StudentDetailedInfo.objects.create(**validated_data)
 
-    def get_want_to_applies(self, obj):
-        qs = WantToApply.objects.filter(student_detailed_info__id=obj.id)
-        return WantToApplySerializer(qs, many=True, context=self.context).data
+        want_to_apply_data['student_detailed_info'] = form
+        want_to_apply = WantToApply.objects.create_with_m2m(**want_to_apply_data)
+        want_to_apply.save()
+
+        return form
 
 
 class StudentDetailedInfoRequestSerializer(serializers.ModelSerializer):

@@ -11,7 +11,7 @@ from rest_framework.exceptions import ValidationError as DRFValidationError
 from abroadin.apps.data.applydata.models import Education, LanguageCertificate, Publication, Grade, SemesterYear
 from abroadin.apps.data.applydata.values import LANGUAGE_B_VALUE
 from abroadin.apps.estimation.form.variables import MISSING_LABEL, REWARDED_LABEL
-from abroadin.apps.estimation.form.managers import StudentDetailedInfoManager
+from abroadin.apps.estimation.form.managers import StudentDetailedInfoManager, WantToApplyManager
 
 from abroadin.apps.data.account.models import \
     (Country,
@@ -41,6 +41,8 @@ class WantToApply(models.Model):
     grades = models.ManyToManyField(Grade, blank=True)
     majors = models.ManyToManyField(Major, blank=True)
     semester_years = models.ManyToManyField(SemesterYear, blank=True)
+
+    objects = WantToApplyManager.as_manager()
 
     @property
     def is_complete(self):

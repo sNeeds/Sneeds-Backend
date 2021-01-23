@@ -4,6 +4,7 @@ from django.utils import timezone
 
 from .variables import FORM_WITHOUT_USER_LIVE_PERIOD_DAYS
 
+
 def get_grade_or_none(self, grade):
     try:
         return self.all().get(grade=grade)
@@ -39,3 +40,22 @@ class StudentDetailedInfoManager(models.QuerySet):
         deadline = timezone.now() - timezone.timedelta(days=live_period)
         qs = self.all().filter(created__lt=deadline, user__isnull=True)
         return qs.delete()
+
+
+class WantToApplyManager(models.QuerySet):
+    def create_with_m2m(self, *args, **kwargs):
+        model = self.model
+        model_fields = model._meta.get_fields()
+
+        m2m_fields = {}
+        for field in model_fields:
+            if isinstance(field, models.ManyToManyField):
+                m2m_fields[field] = kwargs.pop(field.name)
+
+        obj = model(**kwargs)
+        obj.save()
+
+        for field, value in m2m_fields.items():
+            getattr(obj, field.name).set(value)
+
+        return obj
