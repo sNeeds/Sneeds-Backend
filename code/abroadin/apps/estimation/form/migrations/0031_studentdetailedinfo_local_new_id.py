@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 def create_new_id(apps, schema_editor):
-    print('for child')
     StudentDetailedInfo = apps.get_model('form', 'studentdetailedinfo')
     for sdi in StudentDetailedInfo.objects.all():
         same_id = sdi.new_id

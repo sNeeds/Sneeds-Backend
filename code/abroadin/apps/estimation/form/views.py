@@ -43,7 +43,7 @@ class StudentDetailedInfoListCreateView(generics.CListCreateAPIView):
         return super().post(request, *args, **kwargs)
 
 
-class StudentDetailedInfoRetrieveUpdateView(generics.CRetrieveUpdateAPIView):
+class StudentDetailedInfoRetrieveUpdateView(generics.CRetrieveAPIView):
     lookup_field = 'id'
     queryset = StudentDetailedInfo.objects.all()
     serializer_class = StudentDetailedInfoSerializer

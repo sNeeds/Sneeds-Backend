@@ -158,7 +158,6 @@ class StudentDetailedInfoBase(models.Model):
 
 
 class StudentDetailedInfo(StudentDetailedInfoBase):
-
     class PaymentAffordabilityChoices(models.TextChoices):
         LOW = 'Low', 'Low'
         AVERAGE = 'Average', 'Average'
@@ -189,12 +188,7 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
          },
     ]
 
-    user = models.OneToOneField(
-        User,
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE
-    )
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     age = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(15), MaxValueValidator(100)],
