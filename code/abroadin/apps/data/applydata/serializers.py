@@ -123,7 +123,7 @@ class LanguageCertificateInheritedSerializer(serializers.Serializer):
         {
             'model_class': RegularLanguageCertificate,
         },
-    ]
+    ]  # Currently RegularLanguageCertificate is supported
 
     certificate_type = GenericContentTypeRelatedField()
 
@@ -296,55 +296,41 @@ class DuolingoCertificateCelerySerializer(serializers.ModelSerializer):
         return attrs
 
 
+def get_certificate_obj_serializer_class(certificate_obj):
+    model_serializer_map = {
+        "regularlanguagecertificate": RegularLanguageCertificateSerializer,
+        "gmatcertificate": GMATCertificateSerializer,
+        "gregeneralcertificate": GREGeneralCertificateSerializer,
+        "gresubjectcertificate": GRESubjectCertificateSerializer,
+        "grebiologycertificate": GREBiologyCertificateSerializer,
+        "grephysicscertificate": GREPhysicsCertificateSerializer,
+        "grepsychologycertificate": GREPsychologyCertificateSerializer,
+        "duolingocertificate": DuolingoCertificateSerializer
+    }
+
+    obj_model_name = certificate_obj.__class__.__name__
+    serializer_class = model_serializer_map.get(obj_model_name.lower(), None)
+
+    if not serializer_class:
+        raise ValueError(f"Can't find match to model {obj_model_name} in model serializer map")
+
+    return serializer_class
+
+
 def serialize_language_certificates(queryset, parent_serializer, related_classes):
     """
     parameter: queryset is a queryset of parent LanguageCertificate objects
     """
+
     ret = {}
     ret2 = []
 
     for obj in queryset:
-        if obj.certificate_type in [LCType.TOEFL, LCType.IELTS_GENERAL, LCType.IELTS_ACADEMIC]:
-            serializer = RegularLanguageCertificateSerializer(obj.regularlanguagecertificate,
-                                                              many=False,
-                                                              context=parent_serializer.context)
-
-        elif obj.certificate_type in [LCType.GMAT]:
-            serializer = GMATCertificateSerializer(obj.gmatcertificate,
-                                                   many=False,
-                                                   context=parent_serializer.context)
-
-        elif obj.certificate_type in [LCType.GRE_GENERAL]:
-            serializer = GREGeneralCertificateSerializer(obj.gregeneralcertificate,
-                                                         many=False,
-                                                         context=parent_serializer.context)
-
-        elif obj.certificate_type in [LCType.GRE_CHEMISTRY, LCType.GRE_LITERATURE, LCType.GRE_MATHEMATICS]:
-            serializer = GRESubjectCertificateSerializer(obj.gresubjectcertificate,
-                                                         many=False,
-                                                         context=parent_serializer.context)
-
-        elif obj.certificate_type in [LCType.GRE_BIOLOGY]:
-            serializer = GREBiologyCertificateSerializer(obj.gresubjectcertificate.grebiologycertificate,
-                                                         many=False,
-                                                         context=parent_serializer.context)
-
-        elif obj.certificate_type in [LCType.GRE_PHYSICS]:
-            serializer = GREPhysicsCertificateSerializer(obj.gresubjectcertificate.grephysicscertificate,
-                                                         many=False,
-                                                         context=parent_serializer.context)
-
-        elif obj.certificate_type in [LCType.GRE_PSYCHOLOGY]:
-            serializer = GREPsychologyCertificateSerializer(obj.gresubjectcertificate.grepsychologycertificate,
-                                                            many=False,
-                                                            context=parent_serializer.context)
-
-        elif obj.certificate_type in [LCType.DUOLINGO]:
-            serializer = DuolingoCertificateSerializer(obj.duolingocertificate,
-                                                       many=False,
-                                                       context=parent_serializer.context)
-
+        obj = obj.cast()
+        serializer_class = get_certificate_obj_serializer_class(obj)
+        serializer = serializer_class(obj, parent_serializer.context)
         serializer.related_classes = related_classes
         ret[obj.certificate_type] = serializer.data
         ret2.append(serializer.data)
+
     return ret2

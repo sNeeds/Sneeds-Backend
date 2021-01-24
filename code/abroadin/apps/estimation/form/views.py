@@ -87,5 +87,6 @@ class StudentDetailedInfoRetrieveUpdateView(generics.CRetrieveAPIView):
 class AliView(generics.CAPIView):
     def post(self, request):
         print(request.data)
-        ali = LanguageCertificateInheritedSerializer(request.data).data
-        return Response(ali)
+        serializer = LanguageCertificateInheritedSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.data)
