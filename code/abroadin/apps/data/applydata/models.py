@@ -133,9 +133,6 @@ class Education(GenericForeignkeyUniqueTogetherValidationMixin, models.Model):
 
     objects = EducationManager.as_manager()
 
-    class Meta:
-        pass
-
     GPA_STORE_LABEL_RANGE = 0.25
     GPA_VIEW_LABEL_RANGE = 1
     GPA_MAX_ALLOWED = 20

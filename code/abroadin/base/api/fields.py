@@ -95,7 +95,7 @@ class GenericContentTypeRelatedField(serializers.RelatedField):
         if self.related_classes is None or len(self.related_classes) == 0:
             self.related_classes = self.parent.related_classes
 
-        assert self.related_classes is not None, _("related_classes may not be None.")
+        assert self.related_classes is not None, _("related_classes may not be None")
         assert isinstance(self.related_classes, list), _("related classes should be an object of list")
 
         if self.allowed_content_types is None:

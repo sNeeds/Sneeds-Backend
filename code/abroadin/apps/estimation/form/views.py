@@ -1,4 +1,5 @@
 from drf_yasg.utils import swagger_auto_schema
+from rest_framework.response import Response
 
 from abroadin.base.api import generics
 from abroadin.base.api.permissions import permission_class_factory
@@ -7,6 +8,7 @@ from .models import StudentDetailedInfo
 
 from .serializers import StudentDetailedInfoSerializer, StudentDetailedInfoRequestSerializer
 from .permissions import OnlyOneFormPermission, SameUserOrNone, UserAlreadyHasForm
+from ...data.applydata.serializers import LanguageCertificateInheritedSerializer
 
 
 class StudentDetailedInfoListCreateView(generics.CListCreateAPIView):
@@ -81,3 +83,9 @@ class StudentDetailedInfoRetrieveUpdateView(generics.CRetrieveAPIView):
             request.data.update({"user": user.id})
         return super().partial_update(request, *args, **kwargs)
 
+
+class AliView(generics.CAPIView):
+    def post(self, request):
+        print(request.data)
+        ali = LanguageCertificateInheritedSerializer(request.data).data
+        return Response(ali)

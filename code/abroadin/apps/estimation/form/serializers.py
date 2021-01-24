@@ -85,6 +85,7 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
             'comment', 'powerful_recommendation', 'linkedin_url', 'homepage_url',
         ]
 
+
     @transaction.atomic()
     def create(self, validated_data):
         want_to_apply_data = validated_data.pop('want_to_apply')
@@ -112,7 +113,7 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
             data['object_id'] = form.id
             data['content_type'] = form_content_type
             # RegularLanguageCertificate.objects.create_with_m2m(**data)
-
+        raise Exception
         return form
 
 

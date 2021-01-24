@@ -51,6 +51,7 @@ INSTALLED_APPS = [
 
     'dbbackup',
     'django_cleanup',  # should go after your apps
+    'debug_toolbar',  # should go after staticfiles
 ]
 # Imported key to prevent circular imports.
 from .secure import keys
@@ -68,6 +69,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 
     'abroadin.settings.middlewares.middlewares.JWTAuthenticationMiddleware',
     'abroadin.settings.middlewares.middlewares.CORSMiddleware',
@@ -235,3 +237,9 @@ VERIFICATION = {
 # django-phonenumber-field config
 PHONENUMBER_DB_FORMAT = 'E164'
 # ---------------------
+
+
+# Django Debug Toolbar
+INTERNAL_IPS = [
+    '127.0.0.1',
+]

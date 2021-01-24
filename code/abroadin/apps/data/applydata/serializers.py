@@ -118,6 +118,19 @@ class LanguageCertificateSerializer(serializers.ModelSerializer):
         fields = ['certificate_type', 'is_mock', 'content_type', 'object_id']
 
 
+class LanguageCertificateInheritedSerializer(serializers.Serializer):
+    related_classes = [
+        {
+            'model_class': RegularLanguageCertificate,
+        },
+    ]
+
+    certificate_type = GenericContentTypeRelatedField()
+
+    class Meta:
+        fields = ['certificate_type']
+
+
 class RegularLanguageCertificateSerializer(LanguageCertificateSerializer):
     class Meta(LanguageCertificateSerializer.Meta):
         model = RegularLanguageCertificate

@@ -11,7 +11,6 @@ class GenericForeignkeyUniqueTogetherValidationMixin:
 
     def validate_generic_fk_unique_together(self, *args, **kwargs):
         for ct_field_name, apps in self.content_type_based_uniqueness_check_fields.items():
-            print(self.__dict__)
             try:
                 content_type_obj = getattr(self, ct_field_name)
             except Exception:
