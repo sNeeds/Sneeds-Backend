@@ -17,9 +17,8 @@ from abroadin.apps.data.applydata.managers import EducationManager, GradeManager
 from abroadin.apps.data.applydata.validators import validate_ielts_score, validate_toefl_overall_score, \
     validate_toefl_section_score
 from abroadin.apps.data.applydata.values import VALUES_WITH_ATTRS
-
-# StudentDetailedInfo_CONTENT_TYPE
 from abroadin.base.mixins.validators import GenericForeignkeyUniqueTogetherValidationMixin
+from abroadin.base.models.abstracts import InheritanceCastModel
 
 SDI_CT = ContentType.objects.get(app_label='form', model='studentdetailedinfo')
 
@@ -441,7 +440,11 @@ class Publication(models.Model):
         return float(label)
 
 
-class LanguageCertificate(models.Model, GenericForeignkeyUniqueTogetherValidationMixin):
+class LanguageCertificate(
+    InheritanceCastModel,
+    GenericForeignkeyUniqueTogetherValidationMixin,
+    models.Model
+):
     class LanguageCertificateType(models.TextChoices):
         IELTS_GENERAL = 'IELTS General', 'IELTS General'
         IELTS_ACADEMIC = 'IELTS Academic', 'IELTS Academic'
@@ -464,7 +467,7 @@ class LanguageCertificate(models.Model, GenericForeignkeyUniqueTogetherValidatio
     }
 
     content_type = models.ForeignKey(
-        ContentType, on_delete=models.CASCADE
+        ContentType, on_delete=models.CASCADE, related_name='language_certificates'
     )
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey(
