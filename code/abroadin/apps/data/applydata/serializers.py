@@ -17,6 +17,46 @@ from .models import (
 LCType = LanguageCertificate.LanguageCertificateType
 
 
+def get_certificate_obj_serializer_class(certificate_obj):
+    model_serializer_map = {
+        "regularlanguagecertificate": RegularLanguageCertificateSerializer,
+        "gmatcertificate": GMATCertificateSerializer,
+        "gregeneralcertificate": GREGeneralCertificateSerializer,
+        "gresubjectcertificate": GRESubjectCertificateSerializer,
+        "grebiologycertificate": GREBiologyCertificateSerializer,
+        "grephysicscertificate": GREPhysicsCertificateSerializer,
+        "grepsychologycertificate": GREPsychologyCertificateSerializer,
+        "duolingocertificate": DuolingoCertificateSerializer
+    }
+
+    obj_model_name = certificate_obj.__class__.__name__
+    serializer_class = model_serializer_map.get(obj_model_name.lower(), None)
+
+    if not serializer_class:
+        raise ValueError(f"Can't find match to model {obj_model_name} in model serializer map")
+
+    return serializer_class
+
+
+def serialize_language_certificates(queryset, parent_serializer, related_classes):
+    """
+    parameter: queryset is a queryset of parent LanguageCertificate objects
+    """
+
+    ret = {}
+    ret2 = []
+
+    for obj in queryset:
+        obj = obj.cast()
+        serializer_class = get_certificate_obj_serializer_class(obj)
+        serializer = serializer_class(obj, parent_serializer.context)
+        serializer.related_classes = related_classes
+        ret[obj.certificate_type] = serializer.data
+        ret2.append(serializer.data)
+
+    return ret2
+
+
 class GradeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Grade
@@ -294,43 +334,3 @@ class DuolingoCertificateCelerySerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         return attrs
-
-
-def get_certificate_obj_serializer_class(certificate_obj):
-    model_serializer_map = {
-        "regularlanguagecertificate": RegularLanguageCertificateSerializer,
-        "gmatcertificate": GMATCertificateSerializer,
-        "gregeneralcertificate": GREGeneralCertificateSerializer,
-        "gresubjectcertificate": GRESubjectCertificateSerializer,
-        "grebiologycertificate": GREBiologyCertificateSerializer,
-        "grephysicscertificate": GREPhysicsCertificateSerializer,
-        "grepsychologycertificate": GREPsychologyCertificateSerializer,
-        "duolingocertificate": DuolingoCertificateSerializer
-    }
-
-    obj_model_name = certificate_obj.__class__.__name__
-    serializer_class = model_serializer_map.get(obj_model_name.lower(), None)
-
-    if not serializer_class:
-        raise ValueError(f"Can't find match to model {obj_model_name} in model serializer map")
-
-    return serializer_class
-
-
-def serialize_language_certificates(queryset, parent_serializer, related_classes):
-    """
-    parameter: queryset is a queryset of parent LanguageCertificate objects
-    """
-
-    ret = {}
-    ret2 = []
-
-    for obj in queryset:
-        obj = obj.cast()
-        serializer_class = get_certificate_obj_serializer_class(obj)
-        serializer = serializer_class(obj, parent_serializer.context)
-        serializer.related_classes = related_classes
-        ret[obj.certificate_type] = serializer.data
-        ret2.append(serializer.data)
-
-    return ret2
