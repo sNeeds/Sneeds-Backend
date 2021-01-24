@@ -6,7 +6,8 @@ from abroadin.apps.data.account import serializers as account_serializers
 from abroadin.apps.store.applyprofilestore.utils import get_user_bought_apply_profiles
 
 from .models import ApplyProfile, Admission
-from ..data.account.serializers import LockedUniversitySerializer, LockedMajorSerializer
+from ..data.account.serializers import LockedUniversitySerializer, LockedMajorSerializer, UniversitySerializer\
+    , MajorSerializer
 from ..data.applydata.serializers import LockedGradeSerializer
 from ...base.values import AccessibilityTypeChoices
 
@@ -45,7 +46,17 @@ class FullEducationSerializer(ad_serializers.EducationSerializer):
 class PartialEducationSerializer(ad_serializers.EducationSerializer):
     related_classes = RELATED_CLASSES
 
-    accessibility_type = serializers.CharField(read_only=True, default=AccessibilityTypeChoices.UNLOCKED, source=' ')
+    id = serializers.CharField(read_only=True, default='*', source=' ')
+    grade = serializers.CharField(read_only=True, default='*', source=' ')
+    graduate_in = serializers.CharField(read_only=True, default='*', source=' ')
+    thesis_title = serializers.CharField(read_only=True, default='*', source=' ')
+    gpa = serializers.CharField(read_only=True, default='*', source=' ')
+    content_type = serializers.CharField(read_only=True, default='*', source=' ')
+    object_id = serializers.CharField(read_only=True, default='*', source=' ')
+    accessibility_type = serializers.CharField(read_only=True, default=AccessibilityTypeChoices.PARTIAL, source=' ')
+
+    university = UniversitySerializer()
+    major = MajorSerializer()
 
     class Meta(ad_serializers.EducationSerializer.Meta):
         fields = [
@@ -165,6 +176,10 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
         method_name="get_educations"
     )
 
+    last_education = serializers.SerializerMethodField(
+        method_name="get_last_education"
+    )
+
     # TODO change this to a more simple class without writing function
     language_certificates = serializers.SerializerMethodField(
         method_name='get_language_certificates',
@@ -174,10 +189,10 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
         model = ApplyProfile
         fields = [
             'id', 'name', 'gap',
-            'admissions',
-            'publications', 'educations',
-            'language_certificates',
             'accessibility_type',
+            'admissions',
+            'publications', 'educations', 'last_education',
+            'language_certificates',
         ]
 
     def to_representation(self, instance):
@@ -252,6 +267,19 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
             accessibility_type = AccessibilityTypeChoices.PARTIAL
 
         return {'accessibility_type': accessibility_type, 'objects': objects}
+
+    def get_last_education(self, obj):
+        return self.represent_last_education(obj, self._is_unlocked(obj))
+
+    def represent_last_education(self, obj, is_unlocked,):
+        if is_unlocked:
+            obj = FullEducationSerializer(obj.last_education(), many=False, context=self.context).data
+            accessibility_type = AccessibilityTypeChoices.UNLOCKED
+        else:
+            obj = PartialEducationSerializer(obj.last_education(), many=False, context=self.context).data
+            accessibility_type = AccessibilityTypeChoices.PARTIAL
+
+        return {'accessibility_type': accessibility_type, 'object': obj}
 
     def get_language_certificates(self, obj):
         return self.represent_language_certificates(obj, self._is_unlocked(obj))
