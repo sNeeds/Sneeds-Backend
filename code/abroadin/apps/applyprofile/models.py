@@ -4,8 +4,9 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
 from django.db.models import QuerySet
 
+from abroadin.apps.applyprofile.managers import AdmissionQuerySet
 from abroadin.apps.data.account.models import University, Major, Country
-from abroadin.apps.data.applydata.models import Publication, Education, LanguageCertificate, Grade
+from abroadin.apps.data.applydata.models import Publication, Education, LanguageCertificate, Grade, GradeChoices
 from abroadin.apps.store.storeBase.models import Product
 
 User = get_user_model()
@@ -21,6 +22,13 @@ class ApplyProfile(models.Model):
     def last_education(self):
         education_qs = self.educations.all()
         return education_qs.get_last_grade_education()
+
+    def main_admission(self):
+        admission_qs = self.admissions.all()
+        qs = admission_qs.order_by('-destination__rank').order_by_grade()
+        if qs.exists():
+            return qs.last()
+        return None
 
     def get_free_locked_admissions(self) -> tuple:
         """
@@ -75,6 +83,22 @@ class ApplyProfile(models.Model):
         locked = self.educations.exclude(id__in=free_ids)
         return locked
 
+    def get_free_locked_language_certificates(self) -> tuple:
+        """
+        @returns a tuple which contains two query sets. first unlocked language_certificate and second locked language_certificates
+        """
+        free = self.get_free_language_certificates()
+        locked = self.get_locked_language_certificates(free)
+        return free, locked
+
+    def get_free_language_certificates(self) -> QuerySet:
+        free = self.language_certificates.none()
+        return free
+
+    def get_locked_language_certificates(self, free_language_certificates: QuerySet) -> QuerySet:
+        locked = self.language_certificates.none()
+        return locked
+
 
 class Admission(models.Model):
     apply_profile = models.ForeignKey(
@@ -87,4 +111,6 @@ class Admission(models.Model):
     scholarship = models.PositiveIntegerField()
     enroll_year = models.PositiveSmallIntegerField()
     description = models.TextField(max_length=4096, null=True, blank=True)
+
+    objects = AdmissionQuerySet.as_manager()
 
