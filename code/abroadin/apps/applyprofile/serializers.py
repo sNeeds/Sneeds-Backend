@@ -8,7 +8,7 @@ from abroadin.apps.store.applyprofilestore.utils import get_user_bought_apply_pr
 from .models import ApplyProfile, Admission
 from ..data.account.serializers import LockedUniversitySerializer, LockedMajorSerializer, UniversitySerializer\
     , MajorSerializer
-from ..data.applydata.serializers import LockedGradeSerializer
+from ..data.applydata.serializers import LockedGradeSerializer, get_certificate_obj_serializer_class
 from ...base.values import AccessibilityTypeChoices
 
 RELATED_CLASSES = [
@@ -102,6 +102,7 @@ class FullAdmissionSerializer(serializers.ModelSerializer):
     destination = account_serializers.UniversitySerializer()
     major = account_serializers.MajorSerializer()
     grade = ad_serializers.GradeSerializer()
+    country = serializers.SerializerMethodField(method_name='get_country')
     accessibility_type = serializers.CharField(read_only=True, default=AccessibilityTypeChoices.UNLOCKED, source=' ')
 
     class Meta:
@@ -109,17 +110,24 @@ class FullAdmissionSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'apply_profile', 'enroll_year', 'destination',
             'scholarship', 'major', 'grade', 'accepted', 'description',
+            'country',
             'accessibility_type',
         ]
+
+    def get_country(self, obj):
+        return obj.destination.country.name
 
 
 class PartialAdmissionSerializer(FullAdmissionSerializer):
     """
     Free admissions serializer. Just some fields are shown.
     """
-    grade = serializers.CharField(read_only=True, default="*", source=' ')
+    enroll_year = serializers.CharField(read_only=True, default="*", source=' ')
     scholarship = serializers.CharField(read_only=True, default="*", source=' ')
     description = serializers.CharField(read_only=True, default="*", source=' ')
+    destination = serializers.CharField(read_only=True, default="*", source=' ')
+    major = serializers.CharField(read_only=True, default="*", source=' ')
+    accepted = serializers.CharField(read_only=True, default="*", source=' ')
 
     accessibility_type = serializers.CharField(read_only=True, default=AccessibilityTypeChoices.PARTIAL, source=' ')
 
@@ -128,6 +136,7 @@ class PartialAdmissionSerializer(FullAdmissionSerializer):
         fields = [
             'id', 'apply_profile', 'enroll_year', 'destination',
             'scholarship', 'major', 'grade', 'accepted', 'description',
+            'country',
             'accessibility_type'
         ]
 
@@ -158,7 +167,7 @@ class LockedAdmissionSerializer(serializers.ModelSerializer):
 
 
 class ApplyProfileSerializer(serializers.ModelSerializer):
-    user_bought_apply_profiles_id = []
+    cached_user_bought_apply_profiles_id = []
 
     accessibility_type = serializers.SerializerMethodField(
         method_name='get_accessibility_type'
@@ -200,7 +209,7 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
         return super().to_representation(instance)
 
     def clear_local_cache(self):
-        self.user_bought_apply_profiles_id = None
+        self.cached_user_bought_apply_profiles_id = None
 
     def _is_unlocked(self, obj):
         assert self.context is not None, "context is None"
@@ -212,10 +221,10 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
             is_unlocked_apply_profile = False
             return is_unlocked_apply_profile
 
-        if self.user_bought_apply_profiles_id is None:
-            self.user_bought_apply_profiles_id = get_user_bought_apply_profiles(user=user).values_list('id', flat=True)
+        if self.cached_user_bought_apply_profiles_id is None:
+            self.cached_user_bought_apply_profiles_id = get_user_bought_apply_profiles(user=user).values_list('id', flat=True)
 
-        if obj.id in self.user_bought_apply_profiles_id:
+        if obj.id in self.cached_user_bought_apply_profiles_id:
             is_unlocked_apply_profile = True
         return is_unlocked_apply_profile
 
@@ -289,13 +298,13 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
             objects = serialize_language_certificates(obj.language_certificates.all(), self, RELATED_CLASSES)
             accessibility_type = AccessibilityTypeChoices.UNLOCKED
         else:
-            free_educations, locked_educations = obj.get_free_locked_educations()
-            objects = PartialEducationSerializer(free_educations, many=True, context=self.context).data + \
-                      LockedEducationSerializer(locked_educations, many=True, context=self.context).data
-            accessibility_type = AccessibilityTypeChoices.PARTIAL
+            objects = []
+            accessibility_type = AccessibilityTypeChoices.LOCKED
 
         return {'accessibility_type': accessibility_type, 'objects': objects}
 
 
 def serialize_language_certificates(queryset, parent_serializer, related_classes):
-    return ad_serializers.serialize_language_certificates(queryset, parent_serializer, related_classes)
+    return ad_serializers.serialize_language_certificates(queryset,
+                                                          parent_serializer,
+                                                          related_classes)
