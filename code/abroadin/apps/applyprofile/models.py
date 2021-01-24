@@ -22,6 +22,59 @@ class ApplyProfile(models.Model):
         education_qs = self.educations.all()
         return education_qs.get_last_grade_education()
 
+    def get_free_locked_admissions(self) -> tuple:
+        """
+        @returns a tuple which contains two query sets. first unlocked admissions and second locked admissions
+        """
+        free = self.get_free_admissions()
+        locked = self.get_locked_admissions(free)
+        return free, locked
+
+    def get_free_admissions(self) -> QuerySet:
+        admissions = self.admissions.order_by('enroll_year')
+        free = self.admissions.filter(pk=admissions.first().id)
+        return free
+
+    def get_locked_admissions(self, free_admissions) -> QuerySet:
+        free_ids = free_admissions.values_list('id', flat=True)
+        locked = self.admissions.exclude(id__in=free_ids)
+        return locked
+
+    def get_free_locked_publications(self) -> tuple:
+        """
+        @returns a tuple which contains two query sets. first unlocked publication and second locked publications
+        """
+        free = self.get_free_publications()
+        locked = self.get_locked_publications(free)
+        return free, locked
+
+    def get_free_publications(self) -> QuerySet:
+        publications = self.publications.order_by('enroll_year')
+        free = publications.filter(pk=publications.first().id)
+        return free
+
+    def get_locked_publications(self, free_publications: QuerySet) -> QuerySet:
+        free_ids = free_publications.values_list('id', flat=True)
+        locked = self.publications.exclude(id__in=free_ids)
+        return locked
+
+    def get_free_locked_educations(self) -> tuple:
+        """
+        @returns a tuple which contains two query sets. first unlocked education and second locked educations
+        """
+        free = self.get_free_educations()
+        locked = self.get_locked_educations(free)
+        return free, locked
+
+    def get_free_educations(self) -> QuerySet:
+        free = self.educations.none()
+        return free
+
+    def get_locked_educations(self, free_educations: QuerySet) -> QuerySet:
+        free_ids = free_educations.values_list('id', flat=True)
+        locked = self.educations.exclude(id__in=free_ids)
+        return locked
+
 
 class Admission(models.Model):
     apply_profile = models.ForeignKey(
@@ -35,26 +88,3 @@ class Admission(models.Model):
     enroll_year = models.PositiveSmallIntegerField()
     description = models.TextField(max_length=4096, null=True, blank=True)
 
-    @classmethod
-    def get_unlocked_locked_admissions(cls, admissions: QuerySet) -> tuple:
-        """
-        @returns a tuple which contains two query sets. first unlocked admissions and second locked admissions
-        """
-        # admissions = admissions.order_by('enroll_year')
-        cls.objects.first()
-        unlocked = cls.get_free_admissions(admissions)
-        unlocked_ids = unlocked.values_list('id', flat=True)
-        locked = admissions.exclude(id__in=unlocked_ids)
-        return locked
-
-    @classmethod
-    def get_free_admissions(cls, admissions: QuerySet) -> QuerySet:
-        admissions = admissions.order_by('enroll_year')
-        free = cls.objects.filter(pk=admissions.first().id)
-        return free
-
-    @classmethod
-    def get_locked_admissions(cls, admissions: QuerySet, free_admissions) -> QuerySet:
-        free_ids = free_admissions.values_list('id', flat=True)
-        locked = admissions.exclude(id__in=free_ids)
-        return locked

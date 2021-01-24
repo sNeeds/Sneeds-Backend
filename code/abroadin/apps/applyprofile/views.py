@@ -1,6 +1,6 @@
 from abroadin.base.api.generics import CListAPIView, CRetrieveAPIView
 
-from .serializers import ApplyProfileSerializer, AdmissionSerializer
+from .serializers import ApplyProfileSerializer, FullAdmissionSerializer
 from .models import ApplyProfile, Admission
 
 
@@ -17,12 +17,12 @@ class ApplyProfileDetailAPIView(CRetrieveAPIView):
 
 class AdmissionListAPIView(CListAPIView):
     queryset = Admission.objects.all()
-    serializer_class = AdmissionSerializer
+    serializer_class = FullAdmissionSerializer
 
 
 class AdmissionDetailAPIView(CRetrieveAPIView):
     lookup_field = 'id'
     queryset = Admission.objects.all()
-    serializer_class = AdmissionSerializer
+    serializer_class = FullAdmissionSerializer
 
 

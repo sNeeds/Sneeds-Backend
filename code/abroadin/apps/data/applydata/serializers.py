@@ -8,6 +8,7 @@ from rest_framework.exceptions import ValidationError
 from abroadin.apps.data.account.models import BasicFormField
 from abroadin.apps.data.account.serializers import UniversitySerializer, MajorSerializer
 from abroadin.base.api.fields import GenericContentTypeRelatedField, GenericContentObjectRelatedURL
+from abroadin.base.values import AccessibilityTypeChoices
 
 from .models import (
     SemesterYear, Publication, Grade, Education, LanguageCertificate,
@@ -21,6 +22,18 @@ class GradeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Grade
         fields = ["id", "name"]
+
+
+class LockedGradeSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(read_only=True, default="*", source=' ')
+    name = serializers.CharField(read_only=True, default="*", source=' ')
+    accessibility_type = serializers.CharField(read_only=True, default=AccessibilityTypeChoices.LOCKED, source=' ')
+
+    class Meta:
+        model = Grade
+        fields = ["id", "name",
+                  'accessibility_type',
+                  ]
 
 
 class SemesterYearSerializer(serializers.ModelSerializer):
