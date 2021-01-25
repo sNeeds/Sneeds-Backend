@@ -75,7 +75,7 @@ class ApplyProfile(models.Model):
         return free, locked
 
     def get_free_educations(self) -> QuerySet:
-        free = self.educations.none()
+        free = self.educations.all()
         return free
 
     def get_locked_educations(self, free_educations: QuerySet) -> QuerySet:
