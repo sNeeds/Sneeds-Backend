@@ -8,6 +8,7 @@ from rest_framework.exceptions import ValidationError
 from abroadin.apps.data.account.models import BasicFormField
 from abroadin.apps.data.account.serializers import UniversitySerializer, MajorSerializer
 from abroadin.base.api.fields import GenericContentTypeRelatedField, GenericContentObjectRelatedURL
+from abroadin.base.values import AccessibilityTypeChoices
 
 from .models import (
     SemesterYear, Publication, Grade, Education, LanguageCertificate,
@@ -38,7 +39,8 @@ def get_certificate_obj_serializer_class(certificate_obj):
     return serializer_class
 
 
-def serialize_language_certificates(queryset, parent_serializer, related_classes):
+def serialize_language_certificates(queryset, parent_serializer, related_classes,
+                                    mapper_func=get_certificate_obj_serializer_class, **kwargs):
     """
     parameter: queryset is a queryset of parent LanguageCertificate objects
     """
@@ -48,13 +50,15 @@ def serialize_language_certificates(queryset, parent_serializer, related_classes
 
     for obj in queryset:
         obj = obj.cast()
-        serializer_class = get_certificate_obj_serializer_class(obj)
-        serializer = serializer_class(obj, parent_serializer.context)
+        serializer_class = mapper_func(obj)
+        serializer = serializer_class(obj, context=parent_serializer.context)
         serializer.related_classes = related_classes
         serializer.is_valid()
         ret[obj.certificate_type] = serializer.data
         ret2.append(serializer.data)
 
+    if kwargs.pop('dict_output', False):
+        return ret
     return ret2
 
 
@@ -62,6 +66,18 @@ class GradeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Grade
         fields = ["id", "name"]
+
+
+class LockedGradeSerializer(serializers.ModelSerializer):
+    id = serializers.CharField(read_only=True, default="*", source=' ')
+    name = serializers.CharField(read_only=True, default="*", source=' ')
+    accessibility_type = serializers.CharField(read_only=True, default=AccessibilityTypeChoices.LOCKED, source=' ')
+
+    class Meta:
+        model = Grade
+        fields = ["id", "name",
+                  'accessibility_type',
+                  ]
 
 
 class SemesterYearSerializer(serializers.ModelSerializer):

@@ -29,7 +29,7 @@ def set_language_certificates_real_type(apps, schema_editor):
             obj.real_type = ContentType.objects.get(app_label="applydata", model="regularlanguagecertificate")
 
         elif obj.certificate_type in [LCType.GMAT]:
-            obj.real_type = ContentType.objects.get(app_label="applydata", model="gmatvertificate")
+            obj.real_type = ContentType.objects.get(app_label="applydata", model="gmatcertificate")
 
         elif obj.certificate_type in [LCType.GRE_GENERAL]:
             obj.real_type = ContentType.objects.get(app_label="applydata", model="gregeneralcertificate")
