@@ -39,9 +39,9 @@ class ApplyProfile(models.Model):
         return free, locked
 
     def get_free_admissions(self) -> QuerySet:
-        admissions = self.admissions.order_by('enroll_year')
-        free = self.admissions.filter(pk=admissions.first().id)
-        return free
+        # admissions = self.admissions.order_by('enroll_year')
+        # free = self.admissions.filter(pk=admissions.first().id)
+        return self.admissions.all()
 
     def get_locked_admissions(self, free_admissions) -> QuerySet:
         free_ids = free_admissions.values_list('id', flat=True)
