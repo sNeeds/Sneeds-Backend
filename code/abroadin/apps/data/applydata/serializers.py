@@ -18,7 +18,22 @@ from .models import (
 LCType = LanguageCertificate.LanguageCertificateType
 
 
-def get_certificate_obj_serializer_class(certificate_obj):
+def exclude_meta_fields_class_factory(base_class, exclude_fields):
+    class MetaUpdatedClass(base_class):
+        class Meta(base_class.Meta):
+            fields = list(set(base_class.Meta.fields) - {"content_type", "object_id"})
+
+    meta_fields = base_class.Meta.fields
+    if not set(exclude_fields) <= set(meta_fields):
+        raise ValidationError(
+            f"Exclude_fields with value {exclude_fields} contains value that is"
+            f" not in base_class.Meta.fields {meta_fields}."
+        )
+
+    return MetaUpdatedClass
+
+
+def get_certificate_class_serializer_class(certificate_class):
     model_serializer_map = {
         "regularlanguagecertificate": RegularLanguageCertificateSerializer,
         "gmatcertificate": GMATCertificateSerializer,
@@ -30,13 +45,17 @@ def get_certificate_obj_serializer_class(certificate_obj):
         "duolingocertificate": DuolingoCertificateSerializer
     }
 
-    obj_model_name = certificate_obj.__class__.__name__
-    serializer_class = model_serializer_map.get(obj_model_name.lower(), None)
+    certificate_class_name = certificate_class.__name__.lower()
+    serializer_class = model_serializer_map.get(certificate_class_name)
 
     if not serializer_class:
-        raise ValueError(f"Can't find match to model {obj_model_name} in model serializer map")
+        raise ValueError(f"Can't find match to model {certificate_class_name} in model serializer map")
 
     return serializer_class
+
+
+def get_certificate_obj_serializer_class(certificate_obj):
+    return get_certificate_class_serializer_class(certificate_obj.__class__)
 
 
 def serialize_language_certificates(queryset, parent_serializer, related_classes,
@@ -135,6 +154,11 @@ class PublicationSerializer(serializers.ModelSerializer):
         ]
 
 
+class PublicationValidationSerializer(PublicationSerializer):
+    class Meta(PublicationSerializer.Meta):
+        fields = list(set(PublicationSerializer.Meta.fields) - {"content_type", "object_id"})
+
+
 class EducationSerializer(serializers.ModelSerializer):
     related_classes = []
 
@@ -165,6 +189,11 @@ class EducationDetailedRepresentationSerializer(EducationSerializer):
         return ret
 
 
+class EducationValidationSerializer(EducationDetailedRepresentationSerializer):
+    class Meta(EducationDetailedRepresentationSerializer.Meta):
+        fields = list(set(EducationDetailedRepresentationSerializer.Meta.fields) - {"content_type", "object_id"})
+
+
 class LanguageCertificateSerializer(serializers.ModelSerializer):
     related_classes = []
 
@@ -183,15 +212,27 @@ class LanguageCertificateInheritedSerializer(serializers.Serializer):
     ]  # Currently RegularLanguageCertificate is supported
 
     certificate_type = GenericContentTypeRelatedField()
+    data = serializers.DictField(allow_empty=False)
 
     class Meta:
-        fields = ['certificate_type']
+        fields = ['certificate_type', 'data']
+
+    def to_internal_value(self, data):
+        internal_value = super().to_internal_value(data)
+        content_type = internal_value.get('certificate_type')
+        model_class = content_type.model_class()
+        serializer_class = get_certificate_class_serializer_class(model_class)
+        serializer_class = not_required_content_type_object_id_class_factory(serializer_class)
+        serializer = serializer_class(data=internal_value.get('data'))
+        serializer.is_valid(raise_exception=True)
+        return internal_value
 
 
 class RegularLanguageCertificateSerializer(LanguageCertificateSerializer):
     class Meta(LanguageCertificateSerializer.Meta):
         model = RegularLanguageCertificate
         fields = LanguageCertificateSerializer.Meta.fields + [
+            'listening', 'writing', 'speaking', 'reading', 'overall'
         ]
 
     def validate_certificate_type(self, value):

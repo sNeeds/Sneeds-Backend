@@ -5,7 +5,8 @@ from rest_framework import serializers
 
 from abroadin.apps.data.applydata import models as ad_models
 from abroadin.apps.data.applydata.serializers import SemesterYearSerializer, GradeSerializer, EducationSerializer, \
-    EducationDetailedRepresentationSerializer, PublicationSerializer, RegularLanguageCertificateSerializer
+    EducationDetailedRepresentationSerializer, PublicationSerializer, RegularLanguageCertificateSerializer, \
+    EducationValidationSerializer, PublicationValidationSerializer
 from abroadin.apps.users.customAuth.serializers import SafeUserDataSerializer
 
 from .models import WantToApply, StudentDetailedInfo
@@ -53,27 +54,12 @@ class WantToApplyValidationSerializer(WantToApplyBaseSerializer):
         }
 
 
-class EducationValidationSerializer(EducationDetailedRepresentationSerializer):
-    class Meta(EducationDetailedRepresentationSerializer.Meta):
-        fields = list(set(EducationDetailedRepresentationSerializer.Meta.fields) - {"content_type", "object_id"})
-
-
-class PublicationValidationSerializer(PublicationSerializer):
-    class Meta(PublicationSerializer.Meta):
-        fields = list(set(PublicationSerializer.Meta.fields) - {"content_type", "object_id"})
-
-
-class RegularLanguageCertificateValidationSerializer(RegularLanguageCertificateSerializer):
-    class Meta(RegularLanguageCertificateSerializer.Meta):
-        fields = list(set(RegularLanguageCertificateSerializer.Meta.fields) - {"content_type", "object_id"})
-
-
 class StudentDetailedInfoSerializer(serializers.ModelSerializer):
     user = SafeUserDataSerializer(read_only=True)
     want_to_apply = WantToApplyValidationSerializer()
     educations = EducationValidationSerializer(many=True)
     publications = PublicationValidationSerializer(many=True)
-    language_certificates = RegularLanguageCertificateValidationSerializer(many=True)
+    language_certificates = serializers.CharField()
 
     class Meta:
         model = StudentDetailedInfo
@@ -84,7 +70,6 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
             'payment_affordability', 'prefers_full_fund', 'prefers_half_fund', 'prefers_self_fund',
             'comment', 'powerful_recommendation', 'linkedin_url', 'homepage_url',
         ]
-
 
     @transaction.atomic()
     def create(self, validated_data):
