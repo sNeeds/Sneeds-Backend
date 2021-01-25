@@ -51,7 +51,7 @@ def serialize_language_certificates(queryset, parent_serializer, related_classes
         serializer_class = get_certificate_obj_serializer_class(obj)
         serializer = serializer_class(obj, parent_serializer.context)
         serializer.related_classes = related_classes
-        serializer.is_valid(raise_exception=True)
+        serializer.is_valid()
         ret[obj.certificate_type] = serializer.data
         ret2.append(serializer.data)
 
@@ -192,7 +192,7 @@ class RegularLanguageCertificateCelerySerializer(serializers.ModelSerializer):
         model = RegularLanguageCertificate
         validators = []
         fields = '__all__'
-        # # exclude = ['content_object']
+        # exclude = ['content_object']
 
     default_validators = []
 
