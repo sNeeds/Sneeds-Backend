@@ -7,8 +7,9 @@ from rest_framework.exceptions import ValidationError
 
 from abroadin.apps.data.account.models import BasicFormField
 from abroadin.apps.data.account.serializers import UniversitySerializer, MajorSerializer
-from abroadin.base.api.fields import GenericContentTypeRelatedField, GenericContentObjectRelatedURL
+from abroadin.base.api.fields import GenericContentTypeRelatedField
 from abroadin.base.values import AccessibilityTypeChoices
+from abroadin.base.factory.class_factory import exclude_meta_fields_class_factory
 
 from .models import (
     SemesterYear, Publication, Grade, Education, LanguageCertificate,
@@ -18,22 +19,7 @@ from .models import (
 LCType = LanguageCertificate.LanguageCertificateType
 
 
-def exclude_meta_fields_class_factory(base_class, exclude_fields):
-    class MetaUpdatedClass(base_class):
-        class Meta(base_class.Meta):
-            fields = list(set(base_class.Meta.fields) - {"content_type", "object_id"})
-
-    meta_fields = base_class.Meta.fields
-    if not set(exclude_fields) <= set(meta_fields):
-        raise ValidationError(
-            f"Exclude_fields with value {exclude_fields} contains value that is"
-            f" not in base_class.Meta.fields {meta_fields}."
-        )
-
-    return MetaUpdatedClass
-
-
-def get_certificate_class_serializer_class(certificate_class):
+def get_certificate_class_serializer(certificate_class):
     model_serializer_map = {
         "regularlanguagecertificate": RegularLanguageCertificateSerializer,
         "gmatcertificate": GMATCertificateSerializer,
@@ -55,7 +41,7 @@ def get_certificate_class_serializer_class(certificate_class):
 
 
 def get_certificate_obj_serializer_class(certificate_obj):
-    return get_certificate_class_serializer_class(certificate_obj.__class__)
+    return get_certificate_class_serializer(certificate_obj.__class__)
 
 
 def serialize_language_certificates(queryset, parent_serializer, related_classes,
@@ -154,11 +140,6 @@ class PublicationSerializer(serializers.ModelSerializer):
         ]
 
 
-class PublicationValidationSerializer(PublicationSerializer):
-    class Meta(PublicationSerializer.Meta):
-        fields = list(set(PublicationSerializer.Meta.fields) - {"content_type", "object_id"})
-
-
 class EducationSerializer(serializers.ModelSerializer):
     related_classes = []
 
@@ -189,11 +170,6 @@ class EducationDetailedRepresentationSerializer(EducationSerializer):
         return ret
 
 
-class EducationValidationSerializer(EducationDetailedRepresentationSerializer):
-    class Meta(EducationDetailedRepresentationSerializer.Meta):
-        fields = list(set(EducationDetailedRepresentationSerializer.Meta.fields) - {"content_type", "object_id"})
-
-
 class LanguageCertificateSerializer(serializers.ModelSerializer):
     related_classes = []
 
@@ -221,10 +197,13 @@ class LanguageCertificateInheritedSerializer(serializers.Serializer):
         internal_value = super().to_internal_value(data)
         content_type = internal_value.get('certificate_type')
         model_class = content_type.model_class()
-        serializer_class = get_certificate_class_serializer_class(model_class)
-        serializer_class = not_required_content_type_object_id_class_factory(serializer_class)
-        serializer = serializer_class(data=internal_value.get('data'))
+
+        serializer_class = get_certificate_class_serializer(model_class)
+        exclude_fields = {"content_type", "object_id"}
+        SerializerClass = exclude_meta_fields_class_factory(serializer_class, exclude_fields)
+        serializer = SerializerClass(data=internal_value.get('data'))
         serializer.is_valid(raise_exception=True)
+
         return internal_value
 
 
@@ -249,7 +228,6 @@ class RegularLanguageCertificateCelerySerializer(serializers.ModelSerializer):
         model = RegularLanguageCertificate
         validators = []
         fields = '__all__'
-        # exclude = ['content_object']
 
     default_validators = []
 
@@ -261,7 +239,6 @@ class GMATCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = GMATCertificate
         fields = '__all__'
-        # exclude = ['content_object']
 
     def validate_certificate_type(self, value):
         if value not in [LCType.GMAT]:
@@ -286,7 +263,6 @@ class GREGeneralCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = GREGeneralCertificate
         fields = '__all__'
-        # exclude = ['content_object']
 
     def validate_certificate_type(self, value):
         if value not in [LCType.GRE_GENERAL]:
@@ -299,7 +275,6 @@ class GREGeneralCertificateCelerySerializer(serializers.ModelSerializer):
         model = GREGeneralCertificate
         validators = []
         fields = '__all__'
-        # exclude = ['content_object']
 
     default_validators = []
 
@@ -311,7 +286,6 @@ class GRESubjectCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = GRESubjectCertificate
         fields = '__all__'
-        # exclude = ['content_object']
 
     def validate_certificate_type(self, value):
         if value not in [LCType.GRE_CHEMISTRY, LCType.GRE_LITERATURE,
@@ -337,7 +311,6 @@ class GREBiologyCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = GREBiologyCertificate
         fields = '__all__'
-        # exclude = ['content_object']
 
     def validate_certificate_type(self, value):
         if value not in [LCType.GRE_BIOLOGY]:
@@ -349,7 +322,6 @@ class GREPhysicsCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = GREPhysicsCertificate
         fields = '__all__'
-        # exclude = ['content_object']
 
     def validate_certificate_type(self, value):
         if value not in [LCType.GRE_PHYSICS]:
@@ -361,7 +333,6 @@ class GREPsychologyCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = GREPsychologyCertificate
         fields = '__all__'
-        # exclude = ['content_object']
 
     def validate_certificate_type(self, value):
         if value not in [LCType.GRE_PSYCHOLOGY]:
@@ -373,7 +344,6 @@ class DuolingoCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = DuolingoCertificate
         fields = '__all__'
-        # exclude = ['content_object']
 
     def validate_certificate_type(self, value):
         if value not in [LCType.DUOLINGO]:
@@ -386,7 +356,6 @@ class DuolingoCertificateCelerySerializer(serializers.ModelSerializer):
         model = DuolingoCertificate
         validators = []
         fields = '__all__'
-        # exclude = ['content_object']
 
     default_validators = []
 

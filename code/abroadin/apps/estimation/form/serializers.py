@@ -4,9 +4,9 @@ from django.db import transaction
 from rest_framework import serializers
 
 from abroadin.apps.data.applydata import models as ad_models
-from abroadin.apps.data.applydata.serializers import SemesterYearSerializer, GradeSerializer, EducationSerializer, \
-    EducationDetailedRepresentationSerializer, PublicationSerializer, RegularLanguageCertificateSerializer, \
-    EducationValidationSerializer, PublicationValidationSerializer
+from abroadin.apps.data.applydata.serializers import SemesterYearSerializer, GradeSerializer, \
+    EducationDetailedRepresentationSerializer, PublicationSerializer
+from abroadin.base.factory.class_factory import exclude_meta_fields_class_factory
 from abroadin.apps.users.customAuth.serializers import SafeUserDataSerializer
 
 from .models import WantToApply, StudentDetailedInfo
@@ -47,14 +47,18 @@ class WantToApplyBaseSerializer(serializers.ModelSerializer):
         return ret
 
 
-class WantToApplyValidationSerializer(WantToApplyBaseSerializer):
-    class Meta(WantToApplyBaseSerializer.Meta):
-        extra_kwargs = {
-            "student_detailed_info": {"read_only": True}
-        }
-
-
 class StudentDetailedInfoSerializer(serializers.ModelSerializer):
+    exclude_fields = {"content_type", "object_id"}
+    WantToApplyValidationSerializer = exclude_meta_fields_class_factory(
+        WantToApplyBaseSerializer, exclude_fields={"student_detailed_info"}
+    )
+    EducationValidationSerializer = exclude_meta_fields_class_factory(
+        EducationDetailedRepresentationSerializer, exclude_fields
+    )
+    PublicationValidationSerializer = exclude_meta_fields_class_factory(
+        PublicationSerializer, exclude_fields
+    )
+
     user = SafeUserDataSerializer(read_only=True)
     want_to_apply = WantToApplyValidationSerializer()
     educations = EducationValidationSerializer(many=True)

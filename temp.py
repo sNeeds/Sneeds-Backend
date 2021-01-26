@@ -11,7 +11,7 @@ data = {
         "speaking": 5,
         "writing": 5,
         "overall": 5,
-        "certificate_type": "sdsd",  # TODO: Check works
+        "certificate_type": "TOEFL",  # TODO: Check works
         "is_mock": False
     }
 }
