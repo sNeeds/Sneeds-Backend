@@ -2,13 +2,21 @@
 import uuid
 
 from django.contrib.contenttypes.models import ContentType
+from django.db import connection
 from django.db import migrations
 
 
 def forwards_func(apps, schema_editor, model_name):
+
+    db_name = connection.settings_dict['NAME']
+    # print(db_name)
+    if db_name.startswith('test'):
+        return
+
     print(model_name)
     # We get the model from the versioned app registry;
     # if we directly import it, it'll be the wrong version
+    # ContentType = apps.get_model("contenttypes", 'contenttype')
     sdi_content_type = ContentType.objects.get(app_label='form', model='studentdetailedinfo')
     sdib_content_type = ContentType.objects.get(app_label='form', model='studentdetailedinfobase')
     ApplyDataModel = apps.get_model("applydata", model_name)

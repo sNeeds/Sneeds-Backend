@@ -7,7 +7,7 @@ class AdmissionQuerySet(models.QuerySet):
         """
             Returns from lower to higher grade. e.g, Bachelor, Master, ...
         """
-        from .models import GradeChoices
+        from abroadin.apps.data.applydata.models import GradeChoices
 
         when_list = []
 
