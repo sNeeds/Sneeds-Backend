@@ -7,8 +7,9 @@ from rest_framework.exceptions import ValidationError
 
 from abroadin.apps.data.account.models import BasicFormField
 from abroadin.apps.data.account.serializers import UniversitySerializer, MajorSerializer
-from abroadin.base.api.fields import GenericContentTypeRelatedField, GenericContentObjectRelatedURL
+from abroadin.base.api.fields import GenericContentTypeRelatedField
 from abroadin.base.values import AccessibilityTypeChoices
+from abroadin.base.factory.class_factory import exclude_meta_fields_class_factory
 
 from .models import (
     SemesterYear, Publication, Grade, Education, LanguageCertificate,
@@ -18,7 +19,7 @@ from .models import (
 LCType = LanguageCertificate.LanguageCertificateType
 
 
-def get_certificate_obj_serializer_class(certificate_obj):
+def get_certificate_class_serializer(certificate_class):
     model_serializer_map = {
         "regularlanguagecertificate": RegularLanguageCertificateSerializer,
         "gmatcertificate": GMATCertificateSerializer,
@@ -30,13 +31,17 @@ def get_certificate_obj_serializer_class(certificate_obj):
         "duolingocertificate": DuolingoCertificateSerializer
     }
 
-    obj_model_name = certificate_obj.__class__.__name__
-    serializer_class = model_serializer_map.get(obj_model_name.lower(), None)
+    certificate_class_name = certificate_class.__name__.lower()
+    serializer_class = model_serializer_map.get(certificate_class_name)
 
     if not serializer_class:
-        raise ValueError(f"Can't find match to model {obj_model_name} in model serializer map")
+        raise ValueError(f"Can't find match to model {certificate_class_name} in model serializer map")
 
     return serializer_class
+
+
+def get_certificate_obj_serializer_class(certificate_obj):
+    return get_certificate_class_serializer(certificate_obj.__class__)
 
 
 def serialize_language_certificates(queryset, parent_serializer, related_classes,
@@ -53,6 +58,7 @@ def serialize_language_certificates(queryset, parent_serializer, related_classes
         serializer_class = mapper_func(obj)
         serializer = serializer_class(obj, context=parent_serializer.context)
         serializer.related_classes = related_classes
+        serializer.is_valid()
         ret[obj.certificate_type] = serializer.data
         ret2.append(serializer.data)
 
@@ -176,21 +182,60 @@ class LanguageCertificateSerializer(serializers.ModelSerializer):
 
 class LanguageCertificateInheritedSerializer(serializers.Serializer):
     related_classes = [
-        {
-            'model_class': RegularLanguageCertificate,
-        },
+        {'model_class': RegularLanguageCertificate, },
     ]  # Currently RegularLanguageCertificate is supported
 
     certificate_type = GenericContentTypeRelatedField()
+    data = serializers.DictField(allow_empty=False)
 
     class Meta:
-        fields = ['certificate_type']
+        fields = ['certificate_type', 'data']
 
+    def to_internal_value(self, data):
+        raise Exception
+        internal_value = super().to_internal_value(data)
+        content_type = internal_value.get('certificate_type')
+        model_class = content_type.model_class()
+
+        serializer_class = get_certificate_class_serializer(model_class)
+        exclude_fields = {"content_type", "object_id"}
+        SerializerClass = exclude_meta_fields_class_factory(serializer_class, exclude_fields)
+        serializer = SerializerClass(data=internal_value.get('data'))
+        serializer.is_valid(raise_exception=True)
+
+        return internal_value
+
+    def to_representation(self, instance):
+        print (instance)
+        raise Exception
+        ret = OrderedDict()
+        fields = self._readable_fields
+
+        for field in fields:
+            try:
+                attribute = field.get_attribute(instance)
+            except SkipField:
+                continue
+
+            # We skip `to_representation` for `None` values so that fields do
+            # not have to explicitly deal with that case.
+            #
+            # For related fields with `use_pk_only_optimization` we need to
+            # resolve the pk value.
+            check_for_none = attribute.pk if isinstance(attribute, PKOnlyObject) else attribute
+            if check_for_none is None:
+                ret[field.field_name] = None
+            else:
+                ret[field.field_name] = field.to_representation(attribute)
+
+        return ret
+        return {}
 
 class RegularLanguageCertificateSerializer(LanguageCertificateSerializer):
     class Meta(LanguageCertificateSerializer.Meta):
         model = RegularLanguageCertificate
         fields = LanguageCertificateSerializer.Meta.fields + [
+            'listening', 'writing', 'speaking', 'reading', 'overall'
         ]
 
     def validate_certificate_type(self, value):
@@ -207,7 +252,6 @@ class RegularLanguageCertificateCelerySerializer(serializers.ModelSerializer):
         model = RegularLanguageCertificate
         validators = []
         fields = '__all__'
-        # # exclude = ['content_object']
 
     default_validators = []
 
@@ -219,7 +263,6 @@ class GMATCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = GMATCertificate
         fields = '__all__'
-        # exclude = ['content_object']
 
     def validate_certificate_type(self, value):
         if value not in [LCType.GMAT]:
@@ -244,7 +287,6 @@ class GREGeneralCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = GREGeneralCertificate
         fields = '__all__'
-        # exclude = ['content_object']
 
     def validate_certificate_type(self, value):
         if value not in [LCType.GRE_GENERAL]:
@@ -257,7 +299,6 @@ class GREGeneralCertificateCelerySerializer(serializers.ModelSerializer):
         model = GREGeneralCertificate
         validators = []
         fields = '__all__'
-        # exclude = ['content_object']
 
     default_validators = []
 
@@ -269,7 +310,6 @@ class GRESubjectCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = GRESubjectCertificate
         fields = '__all__'
-        # exclude = ['content_object']
 
     def validate_certificate_type(self, value):
         if value not in [LCType.GRE_CHEMISTRY, LCType.GRE_LITERATURE,
@@ -295,7 +335,6 @@ class GREBiologyCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = GREBiologyCertificate
         fields = '__all__'
-        # exclude = ['content_object']
 
     def validate_certificate_type(self, value):
         if value not in [LCType.GRE_BIOLOGY]:
@@ -307,7 +346,6 @@ class GREPhysicsCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = GREPhysicsCertificate
         fields = '__all__'
-        # exclude = ['content_object']
 
     def validate_certificate_type(self, value):
         if value not in [LCType.GRE_PHYSICS]:
@@ -319,7 +357,6 @@ class GREPsychologyCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = GREPsychologyCertificate
         fields = '__all__'
-        # exclude = ['content_object']
 
     def validate_certificate_type(self, value):
         if value not in [LCType.GRE_PSYCHOLOGY]:
@@ -331,7 +368,6 @@ class DuolingoCertificateSerializer(LanguageCertificateSerializer):
     class Meta:
         model = DuolingoCertificate
         fields = '__all__'
-        # exclude = ['content_object']
 
     def validate_certificate_type(self, value):
         if value not in [LCType.DUOLINGO]:
@@ -344,7 +380,6 @@ class DuolingoCertificateCelerySerializer(serializers.ModelSerializer):
         model = DuolingoCertificate
         validators = []
         fields = '__all__'
-        # exclude = ['content_object']
 
     default_validators = []
 

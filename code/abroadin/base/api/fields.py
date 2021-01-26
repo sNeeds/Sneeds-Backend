@@ -110,6 +110,9 @@ class GenericContentTypeRelatedField(serializers.RelatedField):
         return ContentType.objects.get(app_label=app_label, model=model)
 
     def to_representation(self, value):
+        print("HERE")
+        print(value)
+        print(type(value))
         ret = _get_content_type_identifier(value)
         assert ret in self.allowed_content_types, _("Object is not allowed to be serialized through this"
                                                     " related serializer.\n"

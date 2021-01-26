@@ -1,4 +1,5 @@
 from drf_yasg.utils import swagger_auto_schema
+from rest_framework import permissions
 from rest_framework.response import Response
 
 from abroadin.base.api import generics
@@ -84,9 +85,18 @@ class StudentDetailedInfoRetrieveUpdateView(generics.CRetrieveAPIView):
         return super().partial_update(request, *args, **kwargs)
 
 
+class UserStudentDetailedInfoRetrieveAPIView(generics.CRetrieveAPIView):
+    queryset = StudentDetailedInfo.objects.all()
+    serializer_class = StudentDetailedInfoSerializer
+    permission_classes = (
+        permissions.IsAuthenticated,
+    )
+    lookup_url_kwarg = 'user_id'
+    lookup_field = 'user__id'
+
+
 class AliView(generics.CAPIView):
     def post(self, request):
-        print(request.data)
         serializer = LanguageCertificateInheritedSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data)

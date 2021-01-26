@@ -4,8 +4,9 @@ from django.db import transaction
 from rest_framework import serializers
 
 from abroadin.apps.data.applydata import models as ad_models
-from abroadin.apps.data.applydata.serializers import SemesterYearSerializer, GradeSerializer, EducationSerializer, \
-    EducationDetailedRepresentationSerializer, PublicationSerializer, RegularLanguageCertificateSerializer
+from abroadin.apps.data.applydata.serializers import SemesterYearSerializer, GradeSerializer, \
+    EducationDetailedRepresentationSerializer, PublicationSerializer, LanguageCertificateInheritedSerializer
+from abroadin.base.factory.class_factory import exclude_meta_fields_class_factory
 from abroadin.apps.users.customAuth.serializers import SafeUserDataSerializer
 
 from .models import WantToApply, StudentDetailedInfo
@@ -46,34 +47,23 @@ class WantToApplyBaseSerializer(serializers.ModelSerializer):
         return ret
 
 
-class WantToApplyValidationSerializer(WantToApplyBaseSerializer):
-    class Meta(WantToApplyBaseSerializer.Meta):
-        extra_kwargs = {
-            "student_detailed_info": {"read_only": True}
-        }
-
-
-class EducationValidationSerializer(EducationDetailedRepresentationSerializer):
-    class Meta(EducationDetailedRepresentationSerializer.Meta):
-        fields = list(set(EducationDetailedRepresentationSerializer.Meta.fields) - {"content_type", "object_id"})
-
-
-class PublicationValidationSerializer(PublicationSerializer):
-    class Meta(PublicationSerializer.Meta):
-        fields = list(set(PublicationSerializer.Meta.fields) - {"content_type", "object_id"})
-
-
-class RegularLanguageCertificateValidationSerializer(RegularLanguageCertificateSerializer):
-    class Meta(RegularLanguageCertificateSerializer.Meta):
-        fields = list(set(RegularLanguageCertificateSerializer.Meta.fields) - {"content_type", "object_id"})
-
-
 class StudentDetailedInfoSerializer(serializers.ModelSerializer):
+    exclude_fields = {"content_type", "object_id"}
+    WantToApplyValidationSerializer = exclude_meta_fields_class_factory(
+        WantToApplyBaseSerializer, exclude_fields={"student_detailed_info"}
+    )
+    EducationValidationSerializer = exclude_meta_fields_class_factory(
+        EducationDetailedRepresentationSerializer, exclude_fields
+    )
+    PublicationValidationSerializer = exclude_meta_fields_class_factory(
+        PublicationSerializer, exclude_fields
+    )
+
     user = SafeUserDataSerializer(read_only=True)
     want_to_apply = WantToApplyValidationSerializer()
     educations = EducationValidationSerializer(many=True)
     publications = PublicationValidationSerializer(many=True)
-    language_certificates = RegularLanguageCertificateValidationSerializer(many=True)
+    language_certificates = LanguageCertificateInheritedSerializer(many=True)
 
     class Meta:
         model = StudentDetailedInfo
@@ -84,7 +74,6 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
             'payment_affordability', 'prefers_full_fund', 'prefers_half_fund', 'prefers_self_fund',
             'comment', 'powerful_recommendation', 'linkedin_url', 'homepage_url',
         ]
-
 
     @transaction.atomic()
     def create(self, validated_data):
