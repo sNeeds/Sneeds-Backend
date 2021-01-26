@@ -2,7 +2,7 @@ from abroadin.apps.applyprofile.models import ApplyProfile
 from abroadin.apps.applyprofile.tests.base import ApplyProfileTestBase
 
 from ...tests.base import StoreBaseTest
-from ..models import ApplyProfileGroup
+from ..models import ApplyProfileGroup, SoldApplyProfileGroup
 
 
 class ApplyProfileStoreTestBase(StoreBaseTest, ApplyProfileTestBase):
@@ -35,7 +35,24 @@ class ApplyProfileStoreTestBase(StoreBaseTest, ApplyProfileTestBase):
         self.app_profile_group3.apply_profiles.set([self.applyprofile2, self.applyprofile3,
                                                     self.applyprofile4, self.applyprofile5])
 
+        self.sold_app_profile_group1 = SoldApplyProfileGroup.objects.create(
+            sold_to=self.user1,
+            price=4,
+        )
 
+        self.sold_app_profile_group2 = SoldApplyProfileGroup.objects.create(
+            sold_to=self.user1,
+            price=4,
+        )
 
+        self.sold_app_profile_group3 = SoldApplyProfileGroup.objects.create(
+            sold_to=self.user2,
+            price=4,
+        )
 
+        self.sold_app_profile_group1.apply_profiles.set([self.applyprofile1, self.applyprofile2])
 
+        self.sold_app_profile_group2.apply_profiles.set([self.applyprofile4, self.applyprofile5, self.applyprofile6])
+
+        self.sold_app_profile_group3.apply_profiles.set([self.applyprofile2, self.applyprofile3,
+                                                         self.applyprofile4, self.applyprofile5])

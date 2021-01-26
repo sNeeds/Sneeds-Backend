@@ -11,12 +11,10 @@ class ApplyProfileGroupOwner(BasePermission):
 
 
 class SoldApplyProfileGroupOwner(BasePermission):
-    message = "User should be the buyer."
+    message = "User should be the sold apply profile group buyer."
 
     def has_object_permission(self, request, view, obj):
-        if request.user and request.user.is_authenticated:
-            obj.sold_to = request.user
-        return True
+        return (not request.user.is_authenticated) or (request.user.is_authenticated and obj.sold_to == request.user)
 
 
 class BoughtApplyProfile(BasePermission):
