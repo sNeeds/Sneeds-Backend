@@ -58,7 +58,6 @@ def serialize_language_certificates(queryset, parent_serializer, related_classes
         serializer_class = mapper_func(obj)
         serializer = serializer_class(obj, context=parent_serializer.context)
         serializer.related_classes = related_classes
-        serializer.is_valid()
         ret[obj.certificate_type] = serializer.data
         ret2.append(serializer.data)
 
