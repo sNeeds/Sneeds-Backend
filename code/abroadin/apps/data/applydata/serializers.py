@@ -182,9 +182,7 @@ class LanguageCertificateSerializer(serializers.ModelSerializer):
 
 class LanguageCertificateInheritedSerializer(serializers.Serializer):
     related_classes = [
-        {
-            'model_class': RegularLanguageCertificate,
-        },
+        {'model_class': RegularLanguageCertificate, },
     ]  # Currently RegularLanguageCertificate is supported
 
     certificate_type = GenericContentTypeRelatedField()
@@ -194,6 +192,7 @@ class LanguageCertificateInheritedSerializer(serializers.Serializer):
         fields = ['certificate_type', 'data']
 
     def to_internal_value(self, data):
+        raise Exception
         internal_value = super().to_internal_value(data)
         content_type = internal_value.get('certificate_type')
         model_class = content_type.model_class()
@@ -206,6 +205,31 @@ class LanguageCertificateInheritedSerializer(serializers.Serializer):
 
         return internal_value
 
+    def to_representation(self, instance):
+        print (instance)
+        raise Exception
+        ret = OrderedDict()
+        fields = self._readable_fields
+
+        for field in fields:
+            try:
+                attribute = field.get_attribute(instance)
+            except SkipField:
+                continue
+
+            # We skip `to_representation` for `None` values so that fields do
+            # not have to explicitly deal with that case.
+            #
+            # For related fields with `use_pk_only_optimization` we need to
+            # resolve the pk value.
+            check_for_none = attribute.pk if isinstance(attribute, PKOnlyObject) else attribute
+            if check_for_none is None:
+                ret[field.field_name] = None
+            else:
+                ret[field.field_name] = field.to_representation(attribute)
+
+        return ret
+        return {}
 
 class RegularLanguageCertificateSerializer(LanguageCertificateSerializer):
     class Meta(LanguageCertificateSerializer.Meta):

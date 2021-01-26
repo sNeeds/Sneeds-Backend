@@ -8,9 +8,9 @@ data = {
     "data": {
         "reading": 5,
         "listening": 5,
-        "speaking": 5,
+        "speaking": 253,
         "writing": 5,
-        "overall": 5,
+        "overall": 599,
         "certificate_type": "TOEFL",  # TODO: Check works
         "is_mock": False
     }

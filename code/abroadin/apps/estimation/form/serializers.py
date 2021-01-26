@@ -5,7 +5,7 @@ from rest_framework import serializers
 
 from abroadin.apps.data.applydata import models as ad_models
 from abroadin.apps.data.applydata.serializers import SemesterYearSerializer, GradeSerializer, \
-    EducationDetailedRepresentationSerializer, PublicationSerializer
+    EducationDetailedRepresentationSerializer, PublicationSerializer, LanguageCertificateInheritedSerializer
 from abroadin.base.factory.class_factory import exclude_meta_fields_class_factory
 from abroadin.apps.users.customAuth.serializers import SafeUserDataSerializer
 
@@ -63,7 +63,7 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
     want_to_apply = WantToApplyValidationSerializer()
     educations = EducationValidationSerializer(many=True)
     publications = PublicationValidationSerializer(many=True)
-    language_certificates = serializers.CharField()
+    language_certificates = LanguageCertificateInheritedSerializer(many=True)
 
     class Meta:
         model = StudentDetailedInfo
