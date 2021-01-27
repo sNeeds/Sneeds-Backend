@@ -42,12 +42,8 @@ def get_certificate_class_serializer(certificate_class):
     return serializer_class
 
 
-def get_certificate_obj_serializer_class(certificate_obj):
-    return get_certificate_class_serializer(certificate_obj.__class__)
-
-
 def serialize_language_certificates(queryset, parent_serializer, related_classes,
-                                    mapper_func=get_certificate_obj_serializer_class, **kwargs):
+                                    mapper_func=get_certificate_class_serializer, **kwargs):
     """
     parameter: queryset is a queryset of parent LanguageCertificate objects
     """
@@ -57,7 +53,7 @@ def serialize_language_certificates(queryset, parent_serializer, related_classes
 
     for obj in queryset:
         obj = obj.cast()
-        serializer_class = mapper_func(obj)
+        serializer_class = mapper_func(obj.__class__)
         serializer = serializer_class(obj, context=parent_serializer.context)
         serializer.related_classes = related_classes
         ret[obj.certificate_type] = serializer.data

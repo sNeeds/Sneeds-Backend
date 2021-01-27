@@ -8,7 +8,7 @@ from abroadin.apps.store.applyprofilestore.utils import get_user_bought_apply_pr
 from .models import ApplyProfile, Admission
 from ..data.account.serializers import LockedUniversitySerializer, LockedMajorSerializer, UniversitySerializer \
     , MajorSerializer, CountrySerializer
-from ..data.applydata.serializers import LockedGradeSerializer, get_certificate_obj_serializer_class
+from ..data.applydata.serializers import LockedGradeSerializer
 from ...base.values import AccessibilityTypeChoices
 
 RELATED_CLASSES = [
