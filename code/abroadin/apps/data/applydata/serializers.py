@@ -1,5 +1,6 @@
 from collections import OrderedDict
 
+from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import serializers
@@ -7,7 +8,7 @@ from rest_framework.exceptions import ValidationError
 
 from abroadin.apps.data.account.models import BasicFormField
 from abroadin.apps.data.account.serializers import UniversitySerializer, MajorSerializer
-from abroadin.base.api.fields import GenericContentTypeRelatedField
+from abroadin.base.api.fields import GenericContentTypeRelatedField, _get_content_type_identifier
 from abroadin.base.values import AccessibilityTypeChoices
 from abroadin.base.factory.class_factory import exclude_meta_fields_class_factory
 
@@ -15,6 +16,7 @@ from .models import (
     SemesterYear, Publication, Grade, Education, LanguageCertificate,
     RegularLanguageCertificate, GMATCertificate, GREGeneralCertificate, GRESubjectCertificate, GREPhysicsCertificate,
     GREBiologyCertificate, GREPsychologyCertificate, DuolingoCertificate)
+from abroadin.apps.estimation.form.models import StudentDetailedInfo
 
 LCType = LanguageCertificate.LanguageCertificateType
 
@@ -171,7 +173,10 @@ class EducationDetailedRepresentationSerializer(EducationSerializer):
 
 
 class LanguageCertificateSerializer(serializers.ModelSerializer):
-    related_classes = []
+    # TODO: Makes program decoupled, Can we change this?
+    related_classes = [
+        {'model_class': StudentDetailedInfo}
+    ]
 
     content_type = GenericContentTypeRelatedField()
 
@@ -185,16 +190,15 @@ class LanguageCertificateInheritedSerializer(serializers.Serializer):
         {'model_class': RegularLanguageCertificate, },
     ]  # Currently RegularLanguageCertificate is supported
 
-    certificate_type = GenericContentTypeRelatedField()
+    class_type = GenericContentTypeRelatedField()
     data = serializers.DictField(allow_empty=False)
 
     class Meta:
         fields = ['certificate_type', 'data']
 
     def to_internal_value(self, data):
-        raise Exception
         internal_value = super().to_internal_value(data)
-        content_type = internal_value.get('certificate_type')
+        content_type = internal_value.get('class_type')
         model_class = content_type.model_class()
 
         serializer_class = get_certificate_class_serializer(model_class)
@@ -206,30 +210,20 @@ class LanguageCertificateInheritedSerializer(serializers.Serializer):
         return internal_value
 
     def to_representation(self, instance):
-        print (instance)
-        raise Exception
         ret = OrderedDict()
-        fields = self._readable_fields
+        instance = instance.cast()
 
-        for field in fields:
-            try:
-                attribute = field.get_attribute(instance)
-            except SkipField:
-                continue
+        content_type = ContentType.objects.get_for_model(instance)
+        model_class = content_type.model_class()
 
-            # We skip `to_representation` for `None` values so that fields do
-            # not have to explicitly deal with that case.
-            #
-            # For related fields with `use_pk_only_optimization` we need to
-            # resolve the pk value.
-            check_for_none = attribute.pk if isinstance(attribute, PKOnlyObject) else attribute
-            if check_for_none is None:
-                ret[field.field_name] = None
-            else:
-                ret[field.field_name] = field.to_representation(attribute)
+        SerializerClass = get_certificate_class_serializer(model_class)
+        serializer = SerializerClass(instance)
+
+        ret['class_type'] = _get_content_type_identifier(content_type)
+        ret['data'] = serializer.data
 
         return ret
-        return {}
+
 
 class RegularLanguageCertificateSerializer(LanguageCertificateSerializer):
     class Meta(LanguageCertificateSerializer.Meta):

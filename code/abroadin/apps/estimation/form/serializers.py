@@ -8,10 +8,11 @@ from abroadin.apps.data.applydata.serializers import SemesterYearSerializer, Gra
     EducationDetailedRepresentationSerializer, PublicationSerializer, LanguageCertificateInheritedSerializer
 from abroadin.base.factory.class_factory import exclude_meta_fields_class_factory
 from abroadin.apps.users.customAuth.serializers import SafeUserDataSerializer
+from abroadin.base.mixins.validators import CreateM2MManagerMixin
+from abroadin.apps.data.applydata.models import Education, Publication
+from abroadin.apps.data.account.serializers import CountrySerializer, UniversitySerializer, MajorSerializer
 
 from .models import WantToApply, StudentDetailedInfo
-from abroadin.apps.data.account.serializers import CountrySerializer, UniversitySerializer, MajorSerializer
-from ...data.applydata.models import Education, Publication, RegularLanguageCertificate
 
 LanguageCertificateType = ad_models.LanguageCertificate.LanguageCertificateType
 
@@ -30,7 +31,7 @@ class WantToApplyBaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = WantToApply
         fields = [
-            'id', 'student_detailed_info', 'countries',
+            'id', 'countries', 'student_detailed_info',
             'universities', 'grades', 'majors', 'semester_years',
         ]
 
@@ -47,7 +48,9 @@ class WantToApplyBaseSerializer(serializers.ModelSerializer):
         return ret
 
 
-class StudentDetailedInfoSerializer(serializers.ModelSerializer):
+class StudentDetailedInfoSerializer(
+    serializers.ModelSerializer
+):
     exclude_fields = {"content_type", "object_id"}
     WantToApplyValidationSerializer = exclude_meta_fields_class_factory(
         WantToApplyBaseSerializer, exclude_fields={"student_detailed_info"}
@@ -98,11 +101,16 @@ class StudentDetailedInfoSerializer(serializers.ModelSerializer):
             data['content_type'] = form_content_type
             Publication.objects.create_with_m2m(**data)
 
-        for data in language_certificates_data:
+        for type_data in language_certificates_data:
+            content_type = type_data['class_type']
+            data = type_data['data']
+
             data['object_id'] = form.id
             data['content_type'] = form_content_type
-            # RegularLanguageCertificate.objects.create_with_m2m(**data)
-        raise Exception
+
+            CertificateClass = content_type.model_class()
+            CertificateClass.objects.create_with_m2m(**data)
+
         return form
 
 

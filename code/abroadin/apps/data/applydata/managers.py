@@ -66,7 +66,10 @@ class PublicationManager(CreateM2MManagerMixin, models.QuerySet):
         return label
 
 
-class LanguageCertificateManager(models.QuerySet):
+class LanguageCertificateManager(
+    CreateM2MManagerMixin,
+    models.QuerySet
+):
     def get_from_type_or_none(self, certificate_type):
         from abroadin.apps.estimation.form.models import LanguageCertificate
         try:
