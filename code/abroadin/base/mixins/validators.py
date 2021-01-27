@@ -13,7 +13,7 @@ class GenericForeignkeyUniqueTogetherValidationMixin:
                 continue
             fields = apps.get(content_type_obj.app_label + '__' + content_type_obj.model, None)
             if fields:
-                fields.append(str(ct_field_name))
+                fields.insert(0, str(ct_field_name))
                 generic_fk_unique_together_validator(self, self.__class__.objects.all(), fields)
         return super().validate_unique(exclude)
 
