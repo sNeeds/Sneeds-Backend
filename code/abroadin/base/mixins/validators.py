@@ -5,11 +5,7 @@ from ..django.validators import generic_fk_unique_together_validator
 class GenericForeignkeyUniqueTogetherValidationMixin:
     content_type_based_uniqueness_check_fields = {}
 
-    def save(self, *args, **kwargs):
-        self.validate_generic_fk_unique_together(self, *args, **kwargs)
-        return super().save(*args, **kwargs)
-
-    def validate_generic_fk_unique_together(self, *args, **kwargs):
+    def validate_unique(self, exclude=None):
         for ct_field_name, apps in self.content_type_based_uniqueness_check_fields.items():
             try:
                 content_type_obj = getattr(self, ct_field_name)
@@ -19,6 +15,7 @@ class GenericForeignkeyUniqueTogetherValidationMixin:
             if fields:
                 fields.append(str(ct_field_name))
                 generic_fk_unique_together_validator(self, self.__class__.objects.all(), fields)
+        return super().validate_unique(exclude)
 
 
 class CreateM2MManagerMixin:
