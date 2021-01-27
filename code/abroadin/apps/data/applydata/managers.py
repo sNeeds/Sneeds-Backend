@@ -43,6 +43,12 @@ class EducationManager(CreateM2MManagerMixin, models.QuerySet):
             return ordered_qs.last()
         return None
 
+    def get_grade_or_none(self, grade):
+        try:
+            return self.all().get(grade=grade)
+        except self.model.DoesNotExist:
+            return None
+
 
 class PublicationManager(CreateM2MManagerMixin, models.QuerySet):
     @classmethod

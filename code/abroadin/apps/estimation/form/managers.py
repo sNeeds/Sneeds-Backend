@@ -5,13 +5,6 @@ from abroadin.base.mixins.validators import CreateM2MManagerMixin
 from .variables import FORM_WITHOUT_USER_LIVE_PERIOD_DAYS
 
 
-def get_grade_or_none(self, grade):
-    try:
-        return self.all().get(grade=grade)
-    except self.model.DoesNotExist:
-        return None
-
-
 class StudentDetailedInfoManager(models.QuerySet):
     def get_with_value_rank_list(self):
         result = []
