@@ -36,7 +36,6 @@ INSTALLED_APPS = [
     'abroadin.apps.estimation.estimations',
     'abroadin.apps.estimation.analyze',
     'abroadin.apps.estimation.similarprofiles',
-    'abroadin.apps.estimation.similarApply',
     'abroadin.apps.data.account',
     'abroadin.apps.analytics.events',
     'abroadin.apps.data.applydata',
