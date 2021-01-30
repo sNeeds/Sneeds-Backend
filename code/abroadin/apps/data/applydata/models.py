@@ -94,7 +94,6 @@ class Education(GenericForeignkeyUniqueTogetherValidationMixin, models.Model):
     content_type = models.ForeignKey(
         ContentType, on_delete=models.CASCADE
     )
-
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey(
         'content_type', 'object_id',
@@ -123,7 +122,9 @@ class Education(GenericForeignkeyUniqueTogetherValidationMixin, models.Model):
     gpa = models.DecimalField(
         validators=[MinValueValidator(0), MaxValueValidator(20)],
         max_digits=4,
-        decimal_places=2
+        decimal_places=2,
+        null=False,
+        blank=False
     )
     value = models.FloatField(
         validators=[MinValueValidator(0), MaxValueValidator(1)],
