@@ -1,65 +1,75 @@
 from django.contrib import admin
+from django.contrib.contenttypes.admin import GenericTabularInline
+
+
 from rangefilter.filter import DateTimeRangeFilter
 
+from abroadin.apps.data.applydata import models as ad_models
 from . import models
 
-admin.site.register(models.Grade)
-admin.site.register(models.SemesterYear)
-admin.site.register(models.UniversityThrough)
-admin.site.register(models.WantToApply)
-admin.site.register(models.RegularLanguageCertificate)
-admin.site.register(models.GMATCertificate)
-admin.site.register(models.DuolingoCertificate)
-admin.site.register(models.GREGeneralCertificate)
-admin.site.register(models.GRESubjectCertificate)
-admin.site.register(models.GREPsychologyCertificate)
-admin.site.register(models.GREPhysicsCertificate)
-admin.site.register(models.GREBiologyCertificate)
+from abroadin.apps.data.applydata.models import LanguageCertificate
+
+LanguageCertificateType = LanguageCertificate.LanguageCertificateType
 
 
-class UniversityThroughInline(admin.TabularInline):
-    model = models.UniversityThrough
+class EducationInline(GenericTabularInline):
+    model = ad_models.Education
     autocomplete_fields = ('university', 'major')
     extra = 1
 
 
-class RegularLanguageCertificateTypeInline(admin.TabularInline):
-    model = models.RegularLanguageCertificate
+class RegularLanguageCertificateInline(GenericTabularInline):
+    model = ad_models.RegularLanguageCertificate
     extra = 1
 
 
-class GMATCertificateTypeInline(admin.TabularInline):
-    model = models.GMATCertificate
+class GMATCertificateInline(GenericTabularInline):
+    model = ad_models.GMATCertificate
     extra = 1
 
 
-class GREGeneralCertificateTypeInline(admin.TabularInline):
-    model = models.GREGeneralCertificate
+class GREGeneralCertificateInline(GenericTabularInline):
+    model = ad_models.GREGeneralCertificate
     extra = 1
 
 
-class GRESubjectCertificateTypeInline(admin.TabularInline):
-    model = models.GRESubjectCertificate
+class GRESubjectCertificateInline(GenericTabularInline):
+    model = ad_models.GRESubjectCertificate
+    extra = 1
+
+    def get_queryset(self, request):
+        queryset = self.model.objects.filter(
+            certificate_type__in=[LanguageCertificateType.GRE_CHEMISTRY,
+                                  LanguageCertificateType.GRE_LITERATURE,
+                                  LanguageCertificate.LanguageCertificateType.GRE_MATHEMATICS]
+        )
+        if not self.has_view_or_change_permission(request):
+            queryset = queryset.none()
+        return queryset
+
+
+class GREBiologyCertificateInline(GenericTabularInline):
+    model = ad_models.GREBiologyCertificate
     extra = 1
 
 
-class GREBiologyCertificateTypeInline(admin.TabularInline):
-    model = models.GREBiologyCertificate
+class GREPhysicsCertificateInline(GenericTabularInline):
+    model = ad_models.GREPhysicsCertificate
     extra = 1
 
 
-class GREPhysicsCertificateTypeInline(admin.TabularInline):
-    model = models.GREPhysicsCertificate
+class GREPsychologyCertificateInline(GenericTabularInline):
+    model = ad_models.GREPsychologyCertificate
     extra = 1
 
 
-class GREPsychologyCertificate(admin.TabularInline):
-    model = models.GREPsychologyCertificate
+class DuolingoCertificateInline(GenericTabularInline):
+    model = ad_models.DuolingoCertificate
     extra = 1
 
 
-class DuolingoCertificateCertificate(admin.TabularInline):
-    model = models.DuolingoCertificate
+class PublicationInline(GenericTabularInline):
+    model = ad_models.Publication
     extra = 1
 
 
@@ -70,24 +80,19 @@ class WantToApplyInline(admin.TabularInline):
     autocomplete_fields = ['countries', 'universities', 'majors']
 
 
-class PublicationInline(admin.TabularInline):
-    model = models.Publication
-    extra = 1
-
-
 class StudentDetailedInfoBaseAdmin(admin.ModelAdmin):
     inlines = [
-        UniversityThroughInline,
+        EducationInline,
         PublicationInline,
 
-        RegularLanguageCertificateTypeInline,
-        GMATCertificateTypeInline,
-        GREGeneralCertificateTypeInline,
-        GRESubjectCertificateTypeInline,
-        GREBiologyCertificateTypeInline,
-        GREPhysicsCertificateTypeInline,
-        GREPsychologyCertificate,
-        DuolingoCertificateCertificate,
+        RegularLanguageCertificateInline,
+        GMATCertificateInline,
+        GREGeneralCertificateInline,
+        GRESubjectCertificateInline,
+        GREBiologyCertificateInline,
+        GREPhysicsCertificateInline,
+        GREPsychologyCertificateInline,
+        DuolingoCertificateInline,
     ]
 
     list_display = ['id']
@@ -95,7 +100,9 @@ class StudentDetailedInfoBaseAdmin(admin.ModelAdmin):
 
 @admin.register(models.StudentDetailedInfo)
 class StudentDetailedInfoAdmin(StudentDetailedInfoBaseAdmin):
-    inlines = [WantToApplyInline] + StudentDetailedInfoBaseAdmin.inlines
+    inlines = [
+                  WantToApplyInline
+              ] + StudentDetailedInfoBaseAdmin.inlines
     list_filter = (
         ('updated', DateTimeRangeFilter),
         ('created', DateTimeRangeFilter),
@@ -107,13 +114,3 @@ class StudentDetailedInfoAdmin(StudentDetailedInfoBaseAdmin):
         return instance.is_complete
 
     is_complete.boolean = True
-
-
-@admin.register(models.Publication)
-class PublicationAdmin(admin.ModelAdmin):
-    list_display = ['id', 'title', 'student_detailed_info', 'value']
-    readonly_fields = ['value']
-
-    def delete_queryset(self, request, queryset):
-        for obj in queryset:
-            obj.delete()

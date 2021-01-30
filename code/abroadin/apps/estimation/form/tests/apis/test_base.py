@@ -4,7 +4,6 @@ from rest_framework import status
 
 from abroadin.apps.estimation.tests.base import EstimationBaseTest
 from abroadin.apps.estimation.form.models import StudentDetailedInfo, Grade, WantToApply, SemesterYear
-from abroadin.apps.data.account.models import Country, University, Major
 
 User = get_user_model()
 

@@ -31,13 +31,15 @@ INSTALLED_APPS = [
     'abroadin.apps.store.videochats',
     'abroadin.apps.store.storePackages',
     'abroadin.apps.store.basicProducts',
+    'abroadin.apps.store.applyprofilestore',
     'abroadin.apps.estimation.form',
     'abroadin.apps.estimation.estimations',
-    'abroadin.apps.estimation.similarApply',
     'abroadin.apps.estimation.analyze',
+    'abroadin.apps.estimation.similarprofiles',
     'abroadin.apps.data.account',
     'abroadin.apps.analytics.events',
-    'abroadin.apps.testapps.similarProfiles',
+    'abroadin.apps.data.applydata',
+    'abroadin.apps.applyprofile',
 
     'django.contrib.auth',
     'django.contrib.admin',
@@ -49,6 +51,7 @@ INSTALLED_APPS = [
 
     'dbbackup',
     'django_cleanup',  # should go after your apps
+    'debug_toolbar',  # should go after staticfiles
 ]
 # Imported key to prevent circular imports.
 from .secure import keys
@@ -66,6 +69,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 
     'abroadin.settings.middlewares.middlewares.JWTAuthenticationMiddleware',
     'abroadin.settings.middlewares.middlewares.CORSMiddleware',
@@ -233,3 +237,9 @@ VERIFICATION = {
 # django-phonenumber-field config
 PHONENUMBER_DB_FORMAT = 'E164'
 # ---------------------
+
+
+# Django Debug Toolbar
+INTERNAL_IPS = [
+    '127.0.0.1',
+]

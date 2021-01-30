@@ -21,7 +21,7 @@ class Command(BaseCommand):
             major = Major.objects.create(
                 name=node.content,
                 search_name=node.content + " major field of study",
-                parent_major=parent
+                parent=parent
             )
             self.imported_nodes.append((major, node))
 

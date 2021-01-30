@@ -1,5 +1,5 @@
-from django.db.models import QuerySet
 from django.http import Http404
+
 from rest_framework.response import Response
 
 from abroadin.apps.estimation.form.permissions import CompletedForm
@@ -8,8 +8,6 @@ from abroadin.base.api.viewsets import CAPIView
 from abroadin.apps.estimation.form.models import WantToApply, StudentDetailedInfo
 from abroadin.apps.estimation.estimations.reviews import StudentDetailedFormReview
 from abroadin.apps.estimation.estimations.chances import AdmissionChance
-from abroadin.base.api.generics import CGenericAPIView
-from abroadin.apps.users.customAuth.permissions import UserEmailIsVerified
 
 
 class FormComments(CAPIView):
@@ -73,7 +71,7 @@ class WantToApplyChance(CAPIView):
 
         try:
             admission_chance = AdmissionChance(form)
-            want_to_apply = WantToApply.objects.get(student_detailed_info=form)
+            want_to_apply = WantToApply.objects.get(student_detailed_info__id=form.id)
 
             for university in want_to_apply.universities.all().order_by('rank'):
                 values_and_labels = {}

@@ -35,3 +35,20 @@ def add_one_to_rank_with_values_greater_than_this(value, exclude_id):
 @shared_task()
 def delete_forms_without_user(live_period=None):
     StudentDetailedInfo.objects.delete_forms_without_user(live_period=live_period)
+
+
+
+# from abroadin.apps.estimation.form.models import StudentDetailedInfoBase, StudentDetailedInfo
+# from abroadin.apps.data.applydata.models import Education
+# from django.contrib.contenttypes.models import ContentType
+#
+# StudentDetailedInfoBase.objects.get(id=711).educations_to_base.all()
+# StudentDetailedInfo.objects.get(id=711).educations.all()
+#
+# Education.objects.filter(student_detailed_info__studentdetailedinfobase_ptr=711)
+# Education.objects.filter(student_detailed_info__studentdetailedinfobase_ptr_id=711)
+# Education.objects.filter(student_detailed_info__studentdetailedinfobase_ptr__id=711)
+#
+# sdi_ct = ContentType.objects.get_for_model(StudentDetailedInfo)
+# Education.objects.filter(content_type=sdi_ct, object_id=711)
+# Education.objects.filter(student_detailed_info__gender='Male')

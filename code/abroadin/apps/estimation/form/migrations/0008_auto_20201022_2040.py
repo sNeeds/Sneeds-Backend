@@ -2,7 +2,7 @@
 
 from django.db import migrations, models
 
-from abroadin.apps.estimation.form.models import GradeChoices
+from abroadin.apps.data.applydata.models import GradeChoices
 
 
 def add_grades(apps, schema_editor):

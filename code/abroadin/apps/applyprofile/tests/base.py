@@ -1,0 +1,105 @@
+from rest_framework.test import APITestCase
+
+from abroadin.apps.data.applydata import models as ad_models
+# from abroadin.apps.data.applydata.
+
+from abroadin.apps.data.account import models as ac_models
+from abroadin.apps.data.account.tests.base import AccountTestBase
+
+from ..models import ApplyProfile, Admission
+from ...data.applydata.tests.base import ApplyDataTestBase
+
+
+class ApplyProfileTestBase(ApplyDataTestBase):
+
+    def setUp(self) -> None:
+        super().setUp()
+
+        self.applyprofile1 = ApplyProfile.objects.create(
+            name='applyprofile1',
+            gap=10,
+        )
+
+        self.applyprofile2 = ApplyProfile.objects.create(
+            name='applyprofile2',
+            gap=10,
+        )
+
+        self.applyprofile3 = ApplyProfile.objects.create(
+            name='applyprofile3',
+            gap=10,
+        )
+
+        self.applyprofile4 = ApplyProfile.objects.create(
+            name='applyprofile4',
+            gap=10,
+        )
+
+        self.applyprofile5 = ApplyProfile.objects.create(
+            name='applyprofile5',
+            gap=10,
+        )
+
+        self.applyprofile6 = ApplyProfile.objects.create(
+            name='applyprofile6',
+            gap=10,
+        )
+
+        self.applyprofile7 = ApplyProfile.objects.create(
+            name='applyprofile7',
+            gap=10,
+        )
+
+        self.applyprofile8 = ApplyProfile.objects.create(
+            name='applyprofile8',
+            gap=10,
+        )
+
+        self.applyprofile9 = ApplyProfile.objects.create(
+            name='applyprofile9',
+            gap=10,
+        )
+
+        self.admission1for1 = Admission.objects.create(
+            apply_profile=self.applyprofile1,
+            major=self.major1,
+            grade=self.grade1,
+            destination=self.university1,
+            accepted=False,
+            scholarship=2000,
+            enroll_year=2018,
+            description='giivbkwfoewvnopibv',
+        )
+
+        self.admission2for1 = Admission.objects.create(
+            apply_profile=self.applyprofile1,
+            major=self.major2,
+            grade=self.grade1,
+            destination=self.university2,
+            accepted=True,
+            scholarship=3000,
+            enroll_year=2018,
+            description='sdbfspfkknvkv',
+        )
+
+        self.admission1for2 = Admission.objects.create(
+            apply_profile=self.applyprofile2,
+            major=self.major3,
+            grade=self.grade2,
+            destination=self.university3,
+            accepted=False,
+            scholarship=2200,
+            enroll_year=2019,
+            description='giivbkwfoewvnopibv',
+        )
+
+        self.admission2for2 = Admission.objects.create(
+            apply_profile=self.applyprofile2,
+            major=self.major2,
+            grade=self.grade2,
+            destination=self.university2,
+            accepted=False,
+            scholarship=800,
+            enroll_year=2020,
+            description='giivbkwfoewvnopibv',
+        )

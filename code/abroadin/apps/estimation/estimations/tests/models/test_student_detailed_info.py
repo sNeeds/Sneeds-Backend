@@ -8,7 +8,7 @@ from abroadin.apps.estimation.form.models import (
     Grade,
     WantToApply,
     SemesterYear,
-    UniversityThrough,
+    Education,
     GradeChoices,
     Publication,
     RegularLanguageCertificate,

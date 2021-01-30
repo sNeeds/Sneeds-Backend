@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+import debug_toolbar
 from django.contrib import admin
 from django.urls import include, path
 from django.conf import settings
@@ -26,21 +27,11 @@ urlpatterns = [
                   path('chat/', include('abroadin.apps.chats.urls')),
                   path('utils/', include('abroadin.apps.customUtils.urls')),
                   path('users/', include('abroadin.apps.users.urls')),
-                  path('data/account/', include('abroadin.apps.data.account.urls')),
-                  path('store/packages/', include('abroadin.apps.store.storePackages.urls')),
-                  path('store/base/', include('abroadin.apps.store.storeBase.urls')),
-                  path('store/cart/', include('abroadin.apps.store.carts.urls')),
-                  path('store/order/', include('abroadin.apps.store.orders.urls')),
-                  path('store/payment/', include('abroadin.apps.store.payments.urls')),
-                  path('store/comment/', include('abroadin.apps.store.comments.urls')),
-                  path('store/discount/', include('abroadin.apps.store.discounts.urls')),
-                  path('store/videochat/', include('abroadin.apps.store.videochats.urls')),
-                  path('store/basic-product/', include('abroadin.apps.store.basicProducts.urls')),
-                  path('analyze/form/', include('abroadin.apps.estimation.form.urls')),
-                  path('analyze/estimation/', include('abroadin.apps.estimation.estimations.urls')),
-                  path('analyze/similars/', include('abroadin.apps.estimation.similarApply.urls')),
-                  path('analyze/charts/', include('abroadin.apps.estimation.analyze.urls')),
-                  path('analytics/events/', include('abroadin.apps.analytics.events.urls')),
-
-                  path('test/similar-profiles/', include('abroadin.apps.testapps.similarProfiles.urls')),
+                  path('data/', include('abroadin.apps.data.urls')),
+                  path('store/', include('abroadin.apps.store.urls')),
+                  path('analyze/', include('abroadin.apps.estimation.urls')),
+                  path('analytics/', include('abroadin.apps.analytics.urls')),
+                  path('apply-profile/', include('abroadin.apps.applyprofile.urls')),
+                  path('test/', include('abroadin.apps.testapps.urls')),
+                  path('__debug__/', include(debug_toolbar.urls)),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

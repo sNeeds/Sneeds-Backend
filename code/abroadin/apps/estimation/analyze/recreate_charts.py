@@ -6,9 +6,10 @@ from django.db import transaction
 
 from abroadin.apps.estimation.form import models as form_models
 from abroadin.apps.estimation.analyze.models import Chart, ChartItemData
+from abroadin.apps.data.applydata import models as ad_models
 from abroadin.apps.estimation.form.serializers import StudentDetailedInfoCelerySerializer
 
-LanguageCertificateType = form_models.LanguageCertificate.LanguageCertificateType
+LanguageCertificateType = ad_models.LanguageCertificate.LanguageCertificateType
 
 
 # @shared_task
@@ -101,18 +102,18 @@ def recreate_publication_charts():
 
 @shared_task
 def recreate_regular_language_certificate_chart():
-    qs = form_models.RegularLanguageCertificate.objects.all()
+    qs = ad_models.RegularLanguageCertificate.objects.all()
     ielts_data = {}
     toefl_data = {}
 
     for obj in qs:
         if obj.certificate_type == LanguageCertificateType.IELTS_GENERAL or \
                 obj.certificate_type == LanguageCertificateType.IELTS_ACADEMIC:
-            ielts_label = form_models.RegularLanguageCertificate.get_ielts__store_label(obj)
+            ielts_label = ad_models.RegularLanguageCertificate.get_ielts__store_label(obj)
             ielts_data[ielts_label] = ielts_data.get(ielts_label, 0) + 1
 
         elif obj.certificate_type == LanguageCertificateType.TOEFL:
-            toefl_label = form_models.RegularLanguageCertificate.get_toefl__store_label(obj)
+            toefl_label = ad_models.RegularLanguageCertificate.get_toefl__store_label(obj)
             toefl_data[toefl_label] = toefl_data.get(toefl_label, 0) + 1
 
     chart, created = Chart.objects.get_or_create(title=Chart.ChartTitle.IELTS)
@@ -126,11 +127,11 @@ def recreate_regular_language_certificate_chart():
 
 @shared_task
 def recreate_gmat_language_certificate_chart():
-    qs = form_models.GMATCertificate.objects.all()
+    qs = ad_models.GMATCertificate.objects.all()
     gmat_data = {}
 
     for obj in qs:
-        gmat_label = form_models.GMATCertificate.get_store_label(obj)
+        gmat_label = ad_models.GMATCertificate.get_store_label(obj)
         gmat_data[gmat_label] = gmat_data.get(gmat_label, 0) + 1
 
     chart, created = Chart.objects.get_or_create(title=Chart.ChartTitle.GMAT)
@@ -140,11 +141,11 @@ def recreate_gmat_language_certificate_chart():
 
 @shared_task
 def recreate_duolingo_language_certificate_chart():
-    qs = form_models.DuolingoCertificate.objects.all()
+    qs = ad_models.DuolingoCertificate.objects.all()
     duolingo_data = {}
 
     for obj in qs:
-        duolingo_label = form_models.DuolingoCertificate.get_store_label(obj)
+        duolingo_label = ad_models.DuolingoCertificate.get_store_label(obj)
         duolingo_data[duolingo_label] = duolingo_data.get(duolingo_label, 0) + 1
 
     chart, created = Chart.objects.get_or_create(title=Chart.ChartTitle.DUOLINGO)
@@ -154,15 +155,15 @@ def recreate_duolingo_language_certificate_chart():
 
 @shared_task
 def recreate_gre_general_language_certificate_chart():
-    qs = form_models.GREGeneralCertificate.objects.all()
+    qs = ad_models.GREGeneralCertificate.objects.all()
     writing_data = {}
     q_and_v_data = {}
 
     for obj in qs:
-        writing_label = form_models.GREGeneralCertificate.get_writing_store_label(obj)
+        writing_label = ad_models.GREGeneralCertificate.get_writing_store_label(obj)
         writing_data[writing_label] = writing_data.get(writing_label, 0) + 1
 
-        q_and_v_label = form_models.GREGeneralCertificate.get_q_and_v_store_label(obj)
+        q_and_v_label = ad_models.GREGeneralCertificate.get_q_and_v_store_label(obj)
         q_and_v_data[q_and_v_label] = q_and_v_data.get(q_and_v_label, 0) + 1
 
     chart, created = Chart.objects.get_or_create(title=Chart.ChartTitle.GRE_GENERAL_WRITING)
@@ -176,11 +177,11 @@ def recreate_gre_general_language_certificate_chart():
 
 @shared_task
 def recreate_gre_subject_total_language_certificate_chart():
-    qs = form_models.GRESubjectCertificate.objects.all()
-    total_score_data = {}
+    qs = ad_models.GRESubjectCertificate.objects.all()
+    total_score_data: dict = {}
 
     for obj in qs:
-        total_score_label = form_models.GMATCertificate.get_store_label(obj)
+        total_score_label = ad_models.GMATCertificate.get_store_label(obj)
         total_score_data[total_score_label] = total_score_data.get(total_score_label, 0) + 1
 
     chart, created = Chart.objects.get_or_create(title=Chart.ChartTitle.GRE_SUBJECT_TOTAL)
