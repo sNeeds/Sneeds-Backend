@@ -1,3 +1,4 @@
+from django.contrib.contenttypes.models import ContentType
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import permissions
 from rest_framework.response import Response
@@ -100,3 +101,8 @@ class AliView(generics.CAPIView):
         serializer = LanguageCertificateInheritedSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data)
+
+    def get(self, request):
+        t = ContentType.objects.get(app_label="applydata", model="regularlanguagecertificate")
+        print(t)
+        return Response({})
