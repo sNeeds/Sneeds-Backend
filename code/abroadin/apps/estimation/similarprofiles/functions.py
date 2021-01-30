@@ -13,7 +13,6 @@ def get_want_to_apply_similar_countries(want_to_apply):
 
     want_to_apply_universities_qs = want_to_apply.get_universities_qs()
     want_to_apply_universities_countries_list = want_to_apply_universities_qs.get_countries_list()
-
     similar_destination_countries = want_to_apply_countries_list + want_to_apply_universities_countries_list
 
     if not similar_destination_countries:
