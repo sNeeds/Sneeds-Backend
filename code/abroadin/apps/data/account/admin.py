@@ -17,5 +17,5 @@ class CountryAdmin(admin.ModelAdmin):
 
 @admin.register(models.Major)
 class MajorAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'parent_major', 'hierarchy_str']
+    list_display = ['id', 'name', 'parent', 'hierarchy_str']
     search_fields = ['name']

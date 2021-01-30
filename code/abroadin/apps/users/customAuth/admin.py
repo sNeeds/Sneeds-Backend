@@ -58,11 +58,11 @@ class CustomUserAdmin(UserAdmin):
         except StudentDetailedInfo.DoesNotExist:
             return None
 
-        university_through_qs = form.university_through_qs()
-        if not university_through_qs.exists():
+        education_qs = form.education_qs()
+        if not education_qs.exists():
             return None
 
-        last_grade = university_through_qs.order_by_grade().last()
+        last_grade = education_qs.order_by_grade().last()
 
         return last_grade.university
 

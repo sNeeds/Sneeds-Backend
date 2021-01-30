@@ -4,7 +4,7 @@ from django.db import models, transaction
 from abroadin.apps.estimation.form.models import StudentDetailedInfo
 
 
-class StorePackageQuerySetManager(models.QuerySet):
+class StorePackageManager(models.QuerySet):
     def update(self, **kwargs):
         super().update(**kwargs)
         for obj in self._chain():

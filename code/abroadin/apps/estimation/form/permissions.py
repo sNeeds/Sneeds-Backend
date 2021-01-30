@@ -1,3 +1,4 @@
+from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import permissions
@@ -5,7 +6,7 @@ from rest_framework.exceptions import NotFound
 from rest_framework.exceptions import ValidationError
 from rest_framework.settings import api_settings
 
-from abroadin.apps.estimation.form.models import StudentDetailedInfo
+from abroadin.apps.estimation.form.models import StudentDetailedInfo, StudentDetailedInfoBase, SDI_CT
 
 
 class OnlyOneFormPermission(permissions.BasePermission):
@@ -46,7 +47,7 @@ class UserAlreadyHasForm(permissions.BasePermission):
         return True
 
 
-class SDIThirdModelsPermission(permissions.BasePermission):
+class IsWantToApplyOwnerOrDetailedInfoWithoutUser(permissions.BasePermission):
     message = "Only owner can view or edit object."
 
     def has_object_permission(self, request, view, obj):
@@ -58,21 +59,6 @@ class SDIThirdModelsPermission(permissions.BasePermission):
             return obj.student_detailed_info.studentdetailedinfo.user is None
 
         return False
-
-
-class IsLanguageCertificateOwnerOrDetailedInfoWithoutUser(SDIThirdModelsPermission):
-    pass
-
-
-class IsPublicationOwnerOrDetailedInfoWithoutUser(SDIThirdModelsPermission):
-    pass
-
-
-class IsWantToApplyOwnerOrDetailedInfoWithoutUser(SDIThirdModelsPermission):
-    pass
-
-
-class IsUniversityThroughOwnerOrDetailedInfoWithoutUser(SDIThirdModelsPermission):
     pass
 
 
@@ -141,3 +127,32 @@ def get_form_obj(form_id):
         return StudentDetailedInfo.objects.get(id=form_id)
     except StudentDetailedInfo.DoesNotExist:
         return None
+
+
+class SDIThirdModelsWithGFPermission(permissions.BasePermission):
+    message = "Only owner can view or edit object."
+
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+        # sdib_content_type = ContentType.objects.get_for_model(StudentDetailedInfoBase)
+
+        if obj.content_type in [SDI_CT]:
+            if user and user.is_authenticated:
+                return obj.content_object.user == user
+            if not user.is_authenticated:
+                return obj.content_object.user is None
+            return False
+
+        return False
+
+
+class IsLanguageCertificateOwnerOrDetailedInfoWithoutUser(SDIThirdModelsWithGFPermission):
+    pass
+
+
+class IsPublicationOwnerOrDetailedInfoWithoutUser(SDIThirdModelsWithGFPermission):
+    pass
+
+
+class IsEducationOwnerOrDetailedInfoWithoutUser(SDIThirdModelsWithGFPermission):
+    pass

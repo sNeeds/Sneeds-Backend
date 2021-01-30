@@ -2,6 +2,7 @@ from django.db.models import F, Sum
 from rest_framework import serializers
 
 import abroadin.apps.estimation.form.models as form_models
+import abroadin.apps.data.applydata.models as ad_models
 from abroadin.apps.estimation.analyze.models import ChartItemData
 
 
@@ -108,23 +109,23 @@ class GradePointAverageChartSerializer(CommonChartSerializer):
 
         self._data['title'] = chart.title
 
-        self._data['label_range'] = form_models.UniversityThrough.GPA_VIEW_LABEL_RANGE
+        self._data['label_range'] = form_models.Education.GPA_VIEW_LABEL_RANGE
 
         self._data['chart_items'] = self.get_chart_items(items_qs)
 
         self._data['user_positions'] = \
             get_store_to_view_labels(user_store_based_positions,
-                                     form_models.UniversityThrough.convert_gpa_store_to_view_label)
+                                     form_models.Education.convert_gpa_store_to_view_label)
 
         self._data['data_number'] = data_number
 
         self._data['user_status'] = get_user_status(user_store_based_positions,
                                                     items_qs,
-                                                    form_models.UniversityThrough.compare_gpa_labels)
+                                                    form_models.Education.compare_gpa_labels)
 
     def get_chart_items(self, qs):
         return get_converted_chart_items(qs,
-                                         form_models.UniversityThrough.convert_gpa_store_to_view_label
+                                         form_models.Education.convert_gpa_store_to_view_label
                                          )
 
     def get_user_positions(self, obj):
@@ -132,7 +133,7 @@ class GradePointAverageChartSerializer(CommonChartSerializer):
         if sdi_id is not None:
             try:
                 sdi = form_models.StudentDetailedInfo.objects.get(id=sdi_id)
-                return form_models.UniversityThrough.get_gpa_user_store_based_positions(sdi)
+                return form_models.Education.get_gpa_user_store_based_positions(sdi)
             except form_models.StudentDetailedInfo.DoesNotExist:
                 return None
         return None
@@ -446,23 +447,23 @@ class ToeflChartSerializer(CommonChartSerializer):
         self._data['title'] = chart.title
 
         self._data[
-            'label_range'] = form_models.RegularLanguageCertificate.TOEFL__VIEW_LABEL_RANGE
+            'label_range'] = ad_models.RegularLanguageCertificate.TOEFL__VIEW_LABEL_RANGE
 
         self._data['chart_items'] = self.get_chart_items(items_qs)
 
         self._data['user_positions'] = \
             get_store_to_view_labels(user_store_based_positions,
-                                     form_models.RegularLanguageCertificate.convert_toefl_store_to_view_label)
+                                     ad_models.RegularLanguageCertificate.convert_toefl_store_to_view_label)
 
         self._data['data_number'] = data_number
 
         self._data['user_status'] = get_user_status(user_store_based_positions,
                                                     items_qs,
-                                                    form_models.RegularLanguageCertificate.compare_toefl_labels)
+                                                    ad_models.RegularLanguageCertificate.compare_toefl_labels)
 
     def get_chart_items(self, qs):
         return get_converted_chart_items(qs,
-                                         form_models.RegularLanguageCertificate.convert_toefl_store_to_view_label
+                                         ad_models.RegularLanguageCertificate.convert_toefl_store_to_view_label
                                          )
 
     def get_user_positions(self, obj):
@@ -470,7 +471,7 @@ class ToeflChartSerializer(CommonChartSerializer):
         if sdi_id is not None:
             try:
                 sdi = form_models.StudentDetailedInfo.objects.get(id=sdi_id)
-                return form_models.RegularLanguageCertificate.get_toefl_user_store_based_positions(
+                return ad_models.RegularLanguageCertificate.get_toefl_user_store_based_positions(
                     sdi)
             except form_models.StudentDetailedInfo.DoesNotExist:
                 return None
@@ -491,23 +492,23 @@ class IeltsChartSerializer(CommonChartSerializer):
         self._data['title'] = chart.title
 
         self._data[
-            'label_range'] = form_models.RegularLanguageCertificate.IELTS__VIEW_LABEL_RANGE
+            'label_range'] = ad_models.RegularLanguageCertificate.IELTS__VIEW_LABEL_RANGE
 
         self._data['chart_items'] = self.get_chart_items(items_qs)
 
         self._data['user_positions'] = \
             get_store_to_view_labels(user_store_based_positions,
-                                     form_models.RegularLanguageCertificate.convert_ielts_store_to_view_label)
+                                     ad_models.RegularLanguageCertificate.convert_ielts_store_to_view_label)
 
         self._data['data_number'] = data_number
 
         self._data['user_status'] = get_user_status(user_store_based_positions,
                                                     items_qs,
-                                                    form_models.RegularLanguageCertificate.compare_ielts_labels)
+                                                    ad_models.RegularLanguageCertificate.compare_ielts_labels)
 
     def get_chart_items(self, qs):
         return get_converted_chart_items(qs,
-                                         form_models.RegularLanguageCertificate.convert_ielts_store_to_view_label,
+                                         ad_models.RegularLanguageCertificate.convert_ielts_store_to_view_label,
                                          )
 
     def get_user_positions(self, obj):
@@ -515,7 +516,7 @@ class IeltsChartSerializer(CommonChartSerializer):
         if sdi_id is not None:
             try:
                 sdi = form_models.StudentDetailedInfo.objects.get(id=sdi_id)
-                return form_models.RegularLanguageCertificate.get_ielts_user_store_based_positions(
+                return ad_models.RegularLanguageCertificate.get_ielts_user_store_based_positions(
                     sdi)
             except form_models.StudentDetailedInfo.DoesNotExist:
                 return None
@@ -536,23 +537,23 @@ class GMATChartSerializer(CommonChartSerializer):
 
         self._data['title'] = chart.title
 
-        self._data['label_range'] = form_models.GMATCertificate.TOTAL_VIEW_LABEL_RANGE
+        self._data['label_range'] = ad_models.GMATCertificate.TOTAL_VIEW_LABEL_RANGE
 
         self._data['chart_items'] = self.get_chart_items(items_qs)
 
         self._data['user_positions'] = \
             get_store_to_view_labels(user_store_based_positions,
-                                     form_models.GMATCertificate.convert_store_to_view_label)
+                                     ad_models.GMATCertificate.convert_store_to_view_label)
 
         self._data['data_number'] = data_number
 
         self._data['user_status'] = get_user_status(user_store_based_positions,
                                                     items_qs,
-                                                    form_models.GMATCertificate.compare_labels)
+                                                    ad_models.GMATCertificate.compare_labels)
 
     def get_chart_items(self, qs):
         return get_converted_chart_items(qs,
-                                         form_models.GMATCertificate.convert_store_to_view_label
+                                         ad_models.GMATCertificate.convert_store_to_view_label
                                          )
 
     def get_user_positions(self, obj):
@@ -560,7 +561,7 @@ class GMATChartSerializer(CommonChartSerializer):
         if sdi_id is not None:
             try:
                 sdi = form_models.StudentDetailedInfo.objects.get(id=sdi_id)
-                return form_models.GMATCertificate.get_user_store_based_positions(sdi)
+                return ad_models.GMATCertificate.get_user_store_based_positions(sdi)
             except form_models.StudentDetailedInfo.DoesNotExist:
                 return None
         return None
@@ -580,23 +581,23 @@ class GREGeneralWritingChartSerializer(CommonChartSerializer):
 
         self._data['title'] = chart.title
 
-        self._data['label_range'] = form_models.GREGeneralCertificate.WRITING_VIEW_LABEL_RANGE
+        self._data['label_range'] = ad_models.GREGeneralCertificate.WRITING_VIEW_LABEL_RANGE
 
         self._data['chart_items'] = self.get_chart_items(items_qs)
 
         self._data['user_positions'] = \
             get_store_to_view_labels(user_store_based_positions,
-                                     form_models.GREGeneralCertificate.convert_writing_store_to_view_label)
+                                     ad_models.GREGeneralCertificate.convert_writing_store_to_view_label)
 
         self._data['data_number'] = data_number
 
         self._data['user_status'] = get_user_status(user_store_based_positions,
                                                     items_qs,
-                                                    form_models.GREGeneralCertificate.compare_writing_labels)
+                                                    ad_models.GREGeneralCertificate.compare_writing_labels)
 
     def get_chart_items(self, qs):
         return get_converted_chart_items(qs,
-                                         form_models.GREGeneralCertificate.convert_writing_store_to_view_label
+                                         ad_models.GREGeneralCertificate.convert_writing_store_to_view_label
                                          )
 
     def get_user_positions(self, obj):
@@ -604,7 +605,7 @@ class GREGeneralWritingChartSerializer(CommonChartSerializer):
         if sdi_id is not None:
             try:
                 sdi = form_models.StudentDetailedInfo.objects.get(id=sdi_id)
-                return form_models.GREGeneralCertificate.get_writing_user_store_based_positions(
+                return ad_models.GREGeneralCertificate.get_writing_user_store_based_positions(
                     sdi)
             except form_models.StudentDetailedInfo.DoesNotExist:
                 return None
@@ -625,23 +626,23 @@ class GREGeneralQuantitativeAndVerbalChartSerializer(CommonChartSerializer):
 
         self._data['title'] = chart.title
 
-        self._data['label_range'] = form_models.GREGeneralCertificate.Q_AND_V_VIEW_LABEL_RANGE
+        self._data['label_range'] = ad_models.GREGeneralCertificate.Q_AND_V_VIEW_LABEL_RANGE
 
         self._data['chart_items'] = self.get_chart_items(items_qs)
 
         self._data['user_positions'] = \
             get_store_to_view_labels(user_store_based_positions,
-                                     form_models.GREGeneralCertificate.convert_q_and_v_store_to_view_label)
+                                     ad_models.GREGeneralCertificate.convert_q_and_v_store_to_view_label)
 
         self._data['data_number'] = data_number
 
         self._data['user_status'] = get_user_status(user_store_based_positions,
                                                     items_qs,
-                                                    form_models.GREGeneralCertificate.compare_q_and_v_labels)
+                                                    ad_models.GREGeneralCertificate.compare_q_and_v_labels)
 
     def get_chart_items(self, qs):
         return get_converted_chart_items(qs,
-                                         form_models.GREGeneralCertificate.convert_q_and_v_store_to_view_label
+                                         ad_models.GREGeneralCertificate.convert_q_and_v_store_to_view_label
                                          )
 
     def get_user_positions(self, obj):
@@ -649,7 +650,7 @@ class GREGeneralQuantitativeAndVerbalChartSerializer(CommonChartSerializer):
         if sdi_id is not None:
             try:
                 sdi = form_models.StudentDetailedInfo.objects.get(id=sdi_id)
-                return form_models.GREGeneralCertificate.get_q_and_v_user_store_based_positions(
+                return ad_models.GREGeneralCertificate.get_q_and_v_user_store_based_positions(
                     sdi)
             except form_models.StudentDetailedInfo.DoesNotExist:
                 return None
@@ -669,23 +670,23 @@ class GRESubjectTotalChartSerializer(CommonChartSerializer):
         user_store_based_positions = self.get_user_positions(chart)
         self._data['title'] = chart.title
 
-        self._data['label_range'] = form_models.GRESubjectCertificate.TOTAL_VIEW_LABEL_RANGE
+        self._data['label_range'] = ad_models.GRESubjectCertificate.TOTAL_VIEW_LABEL_RANGE
 
         self._data['chart_items'] = self.get_chart_items(items_qs)
 
         self._data['user_positions'] = \
             get_store_to_view_labels(user_store_based_positions,
-                                     form_models.GRESubjectCertificate.convert_total_store_to_view_label)
+                                     ad_models.GRESubjectCertificate.convert_total_store_to_view_label)
 
         self._data['data_number'] = data_number
 
         self._data['user_status'] = get_user_status(user_store_based_positions,
                                                     items_qs,
-                                                    form_models.GRESubjectCertificate.compare_total_labels)
+                                                    ad_models.GRESubjectCertificate.compare_total_labels)
 
     def get_chart_items(self, qs):
         return get_converted_chart_items(qs,
-                                         form_models.GRESubjectCertificate.convert_total_store_to_view_label
+                                         ad_models.GRESubjectCertificate.convert_total_store_to_view_label
                                          )
 
     def get_user_positions(self, obj):
@@ -693,7 +694,7 @@ class GRESubjectTotalChartSerializer(CommonChartSerializer):
         if sdi_id is not None:
             try:
                 sdi = form_models.StudentDetailedInfo.objects.get(id=sdi_id)
-                return form_models.GRESubjectCertificate.get_total_user_store_based_positions(
+                return ad_models.GRESubjectCertificate.get_total_user_store_based_positions(
                     sdi
                 )
             except form_models.StudentDetailedInfo.DoesNotExist:
@@ -714,23 +715,23 @@ class DuolingoChartSerializer(CommonChartSerializer):
         user_store_based_positions = self.get_user_positions(chart)
         self._data['title'] = chart.title
 
-        self._data['label_range'] = form_models.DuolingoCertificate.OVERALL_VIEW_LABEL_RANGE
+        self._data['label_range'] = ad_models.DuolingoCertificate.OVERALL_VIEW_LABEL_RANGE
 
         self._data['chart_items'] = self.get_chart_items(items_qs)
 
         self._data['user_positions'] = \
             get_store_to_view_labels(user_store_based_positions,
-                                     form_models.DuolingoCertificate.convert_store_to_view_label)
+                                     ad_models.DuolingoCertificate.convert_store_to_view_label)
 
         self._data['data_number'] = data_number
 
         self._data['user_status'] = get_user_status(user_store_based_positions,
                                                     items_qs,
-                                                    form_models.DuolingoCertificate.compare_labels)
+                                                    ad_models.DuolingoCertificate.compare_labels)
 
     def get_chart_items(self, qs):
         return get_converted_chart_items(qs,
-                                         form_models.DuolingoCertificate.convert_store_to_view_label,
+                                         ad_models.DuolingoCertificate.convert_store_to_view_label,
                                          )
 
     def get_user_positions(self, obj):
@@ -738,7 +739,7 @@ class DuolingoChartSerializer(CommonChartSerializer):
         if sdi_id is not None:
             try:
                 sdi = form_models.StudentDetailedInfo.objects.get(id=sdi_id)
-                return form_models.DuolingoCertificate.get__user_store_based_positions(sdi)
+                return ad_models.DuolingoCertificate.get__user_store_based_positions(sdi)
             except form_models.StudentDetailedInfo.DoesNotExist:
                 return None
         return None

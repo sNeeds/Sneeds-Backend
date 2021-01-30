@@ -4,15 +4,16 @@ from django.conf import settings
 
 from rest_framework import permissions
 from rest_framework.response import Response
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import NotFound, ValidationError
 
 from abroadin.settings.config.variables import FRONTEND_URL
 from .models import PayPayment
-from .permissions import CartOwnerPermission
+from .permissions import CartOwnerPermission, PayPaymentOwnerPermission
 from abroadin.base.api.permissions import permission_class_factory
 from abroadin.base.api.viewsets import CAPIView
 from abroadin.apps.store.orders.models import Order
 from abroadin.apps.store.carts.models import Cart
+from .serializers import PaymentVerifySerializer
 
 ZARINPAL_MERCHANT = settings.ZARINPAL_MERCHANT
 
@@ -138,7 +139,10 @@ class Verify(CAPIView):
     }
 
     """
-    permission_classes = [permissions.IsAuthenticated, ]
+    permission_classes = [
+        permissions.IsAuthenticated,
+        permission_class_factory(PayPaymentOwnerPermission, apply_on=['POST'])
+    ]
 
     def get_data(self):
         return self.request.data
@@ -146,36 +150,31 @@ class Verify(CAPIView):
     def get_user(self):
         return self.request.user
 
-    def get_authority(self):
-        return self.get_data().get('authority')
-
-    def get_payment(self, user, authority):
+    def get_payment(self, authority):
         try:
-            payment = PayPayment.objects.get(user=user, authority=authority)
+            payment = PayPayment.objects.get(authority=authority)
         except PayPayment.DoesNotExist:
-            raise NotFound({"detail": "PayPayment does not exists."})
+            raise NotFound({"detail": "No paypayment with this user and authority exists"})
         return payment
 
-    def is_status_ok(self):
+    def get_payment_or_none(self):
         data = self.get_data()
-        return data.get('status') == 'OK'
+        authority = data.get('authority')
+
+        if authority:
+            payment = self.get_payment(authority)
+            return payment
+
+        return None
+
+    def is_status_ok(self, status):
+        return status == 'OK'
 
     def sell_cart(self, cart):
         return Order.objects.sell_cart_create_order(cart)
 
-    def order_created_response(self, ref_id, order):
-        return Response({"detail": "Success", "ReflD": str(ref_id), "order": order.id}, status=200)
-
-    def transaction_failed_response(self, status):
-        return Response({"detail": "Transaction failed", "status": str(status)}, status=400)
-
-    def transaction_nok_response(self):
-        return Response({"detail": "Transaction failed or canceled by user"}, status=400)
-
-    def transaction_ok_handler(self, client):
-        user = self.get_user()
-        authority = self.get_authority()
-        payment = self.get_payment(user, authority)
+    def transaction_ok_handler(self, client, authority):
+        payment = self.get_payment(authority)
 
         total = int(payment.cart.total)
         result = client.service.PaymentVerification(ZARINPAL_MERCHANT, authority, total)
@@ -184,16 +183,33 @@ class Verify(CAPIView):
             order = self.sell_cart(payment.cart)
             response = self.order_created_response(result.RefID, order)
         else:
-            response = self.transaction_failed_response(result.Status)
+            response = self.transaction_verification_failed_response(result.Status)
 
         return response
 
     def post(self, request):
-        client = Client('https://sandbox.zarinpal.com/pg/services/WebGate/wsdl')
+        data = self.get_data()
+        serializer = PaymentVerifySerializer(data=data)
 
-        if self.is_status_ok():
-            response = self.transaction_ok_handler(client)
+        serializer.is_valid(raise_exception=True)
+
+        status = serializer.validated_data["status"]
+        authority = serializer.validated_data["authority"]
+
+        status_ok = self.is_status_ok(status)
+        if status_ok:
+            client = Client('https://sandbox.zarinpal.com/pg/services/WebGate/wsdl')
+            response = self.transaction_ok_handler(client, authority)
         else:
             response = self.transaction_nok_response()
 
         return response
+
+    def order_created_response(self, ref_id, order):
+        return Response({"detail": "Success", "ReflD": str(ref_id), "order": order.id}, status=200)
+
+    def transaction_verification_failed_response(self, status):
+        return Response({"detail": "Transaction verification failed", "status": str(status)}, status=400)
+
+    def transaction_nok_response(self):
+        return Response({"detail": "Transaction failed or canceled by user"}, status=400)

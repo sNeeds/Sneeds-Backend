@@ -5,7 +5,7 @@ from rest_framework import status
 from abroadin.apps.data.account.models import University
 from abroadin.apps.estimation.form.models import (
     StudentDetailedInfo,
-    UniversityThrough,
+    Education,
     GradeChoices,
 )
 

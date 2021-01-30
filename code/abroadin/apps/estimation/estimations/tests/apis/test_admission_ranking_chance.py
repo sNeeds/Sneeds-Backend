@@ -8,7 +8,7 @@ from abroadin.apps.estimation.form.tests.apis.form_completion.base import BaseTe
 
 from abroadin.apps.estimation.form.models import (
     StudentDetailedInfo,
-    UniversityThrough, GradeChoices, WantToApply)
+    Education, GradeChoices, WantToApply)
 
 User = get_user_model()
 
@@ -63,7 +63,7 @@ class AdmissionRankingChanceUserEmailVerifiedTests(EstimationBaseTest):
             homepage_url="http://aryakhaligh.ir/",
         )
 
-        self.sdi_1_university_through_1 = UniversityThrough.objects.create(
+        self.sdi_1_university_through_1 = Education.objects.create(
             student_detailed_info=self.completed_sdi_1,
             university=self.university1,
             grade=GradeChoices.BACHELOR,

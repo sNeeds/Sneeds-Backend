@@ -45,15 +45,19 @@ class WantToApplyAPITest(FormAPITests):
     def test_want_to_apply_list_get_200_1(self):
         data = self._want_to_apply_list(
             "get", None, status.HTTP_200_OK,
+            # TODO Change coed to be consistence with new form structure
             data={"student-detailed-info": self.local_want_to_apply.student_detailed_info.id}
         )
         self.assertEqual(len(data), 1)
 
     def test_want_to_apply_list_get_200_2(self):
+        # TODO Change coed to be consistence with new form structure
         self.local_want_to_apply.student_detailed_info.user = self.local_user
+        # TODO Change coed to be consistence with new form structure
         self.local_want_to_apply.student_detailed_info.save()
         data = self._want_to_apply_list(
             "get", self.local_user, status.HTTP_200_OK,
+            # TODO Change coed to be consistence with new form structure
             data={"student-detailed-info": self.local_want_to_apply.student_detailed_info.id}
         )
         self.assertEqual(len(data), 1)
@@ -84,6 +88,7 @@ class WantToApplyAPITest(FormAPITests):
         data = self._want_to_apply_list("post", None, status.HTTP_201_CREATED, data=payload)
         want_to_apply = WantToApply.objects.get(id=data['id'])
 
+        # TODO Change coed to be consistence with new form structure
         self.assertEqual(want_to_apply.student_detailed_info.id, data["student_detailed_info"])
         self.assertEqual([c.id for c in want_to_apply.countries.all()], payload['countries'])
         self.assertEqual([u.id for u in want_to_apply.universities.all()], payload['universities'])

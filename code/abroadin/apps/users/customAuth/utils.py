@@ -87,16 +87,10 @@ def check_email_assigned_to_user(email):
 def set_user_receive_marketing_email(email):
     qs = User.objects.filter(email__iexact=email)
     if qs.exists():
-        # User.objects.filter(email__iexact=email).update(receive_marketing_email=True)
-        # print('set_user_receive_marketing_email')
         user = User.objects.get(email__iexact=email)
         user.receive_marketing_email = True
         user.save()
-        # print(User.objects.filter(email__iexact=email))
-        # print(value)
         user.refresh_from_db()
-        # print('HERERERER')
-        # print(user.receive_marketing_email)
 
 
 def send_verification_code(view, request, verification):
