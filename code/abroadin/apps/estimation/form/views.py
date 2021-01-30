@@ -1,16 +1,17 @@
-from django.contrib.contenttypes.models import ContentType
 from drf_yasg.utils import swagger_auto_schema
+
+from django.contrib.contenttypes.models import ContentType
+
 from rest_framework import permissions
 from rest_framework.response import Response
 
 from abroadin.base.api import generics
 from abroadin.base.api.permissions import permission_class_factory
+from abroadin.apps.data.applydata.serializers import LanguageCertificateInheritedSerializer
 
 from .models import StudentDetailedInfo
-
 from .serializers import StudentDetailedInfoSerializer, StudentDetailedInfoRequestSerializer
 from .permissions import OnlyOneFormPermission, SameUserOrNone, UserAlreadyHasForm
-from ...data.applydata.serializers import LanguageCertificateInheritedSerializer
 
 
 class StudentDetailedInfoListCreateView(generics.CListCreateAPIView):
@@ -94,15 +95,3 @@ class UserStudentDetailedInfoRetrieveAPIView(generics.CRetrieveAPIView):
     )
     lookup_url_kwarg = 'user_id'
     lookup_field = 'user__id'
-
-
-class AliView(generics.CAPIView):
-    def post(self, request):
-        serializer = LanguageCertificateInheritedSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        return Response(serializer.data)
-
-    def get(self, request):
-        t = ContentType.objects.get(app_label="applydata", model="regularlanguagecertificate")
-        print(t)
-        return Response({})

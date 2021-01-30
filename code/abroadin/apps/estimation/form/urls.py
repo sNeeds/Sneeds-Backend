@@ -13,6 +13,4 @@ urlpatterns = [
 
     path('user-student-detailed-info/<int:user_id>/', views.UserStudentDetailedInfoRetrieveAPIView.as_view(),
          name='user-student-detailed-info-detail'),
-
-    path('ali/', views.AliView.as_view(),),
 ]
