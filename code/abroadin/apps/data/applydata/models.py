@@ -98,7 +98,6 @@ class Education(GenericForeignkeyUniqueTogetherValidationMixin, models.Model):
     content_object = GenericForeignKey(
         'content_type', 'object_id',
     )
-
     university = models.ForeignKey(
         University, on_delete=models.PROTECT
     )

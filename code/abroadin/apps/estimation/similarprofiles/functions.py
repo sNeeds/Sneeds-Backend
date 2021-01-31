@@ -22,9 +22,15 @@ def get_want_to_apply_similar_countries(want_to_apply):
     return similar_destination_countries
 
 
-def filter_around_gpa(profiles):
-    # Todo : implement
-    return profiles
+def filter_around_gpa(profiles, gpa, offset):
+    assert 0 < offset
+    assert offset < 20
+    gpa_low = max(0, gpa - offset)
+    gpa_high = min(20, gpa + offset)
+
+    high_q = Q(educations__gpa__lte=gpa_high)
+    low_q = Q(educations__gpa__gte=gpa_low)
+    return profiles.filter(high_q & low_q)
 
 
 def filter_same_want_to_apply_grades(profiles, grades):
