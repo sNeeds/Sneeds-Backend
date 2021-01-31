@@ -1,6 +1,6 @@
 from django.contrib.contenttypes.models import ContentType
 
-from abroadin.apps.applyprofile.models import ApplyProfile
+from abroadin.apps.applyprofile.models import ApplyProfile, Admission
 from abroadin.apps.data.account.models import Country, University
 from abroadin.apps.data.applydata.models import Grade, Education
 
@@ -12,8 +12,6 @@ class SimilarProfilesBaseTests(EstimationBaseTest):
     def setUp(self):
         super().setUp()
 
-        sdi_content_type = ContentType.objects.get(app_label="form", model='studentdetailedinfo')
-
         self.form_1 = StudentDetailedInfo.objects.create(
             user=self.user1,
             age=20,
@@ -23,23 +21,12 @@ class SimilarProfilesBaseTests(EstimationBaseTest):
             powerful_recommendation=False
         )
 
-        want_to_apply = WantToApply.objects.create(student_detailed_info=self.form_1)
-        want_to_apply.countries.add(self.country1)
-        want_to_apply.universities.add(self.university1)
-        want_to_apply.grades.add(self.grade1)
-        want_to_apply.majors.add(self.major1)
-        want_to_apply.semester_years.add(self.semester_year1)
-
-        education = Education.objects.create(
-            gpa=18,
-            content_type=sdi_content_type,
-            object_id=self.form_1.id,
-            major=self.major2,
-            university=self.university2,
-            graduate_in=2020
-        )
-
-        self.apply_profile_1 = ApplyProfile.objects.create(
+        self.profile_1 = ApplyProfile.objects.create(
             name="profile 1",
             gap=5,
+        )
+
+        self.profile_2 = ApplyProfile.objects.create(
+            name="profile 2",
+            gap=0
         )
