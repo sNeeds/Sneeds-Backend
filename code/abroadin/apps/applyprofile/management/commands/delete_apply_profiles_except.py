@@ -12,6 +12,8 @@ from abroadin.apps.data.applydata.utils import convert_pbt_overall_to_ibt_overal
     get_ielts_fake_sub_scores_based_on_overall, \
     get_toefl_fake_sub_scores_based_on_overall
 
+APPLYPROFILE_CT = ContentType.objects.get(app_label='applyprofile', model='applyprofile')
+
 
 class Command(BaseCommand):
 
@@ -22,5 +24,11 @@ class Command(BaseCommand):
 
         ids = options['ids']
 
-        ApplyProfile.objects.exclude(id__in=ids).delete()
-
+        for obj in ApplyProfile.objects.exclude(id__in=ids):
+            if Education.objects.filter(content_type=APPLYPROFILE_CT, object_id=obj.id).exists():
+                Education.objects.filter(content_type=APPLYPROFILE_CT, object_id=obj.id).delete()
+            if Publication.objects.filter(content_type=APPLYPROFILE_CT, object_id=obj.id).exists():
+                Publication.objects.filter(content_type=APPLYPROFILE_CT, object_id=obj.id).delete()
+            if LanguageCertificate.objects.filter(content_type=APPLYPROFILE_CT, object_id=obj.id).exists():
+                LanguageCertificate.objects.filter(content_type=APPLYPROFILE_CT, object_id=obj.id).delete()
+            obj.delete()

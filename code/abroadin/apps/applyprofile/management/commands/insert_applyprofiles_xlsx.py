@@ -1,4 +1,6 @@
 from pprint import pprint
+from decimal import Decimal
+
 from openpyxl import load_workbook, Workbook
 from django.core.management import BaseCommand
 from django.contrib.contenttypes.models import ContentType
@@ -50,6 +52,13 @@ def _get_lc_sub_scores(lc_type, lc_overall):
     raise Exception('wrong lc type')
 
 
+def _convert_lc_overall_into_suitable_type(lc_type, lc_overall):
+    if lc_type == LCType.TOEFL:
+        return int(lc_overall)
+    elif lc_type == LCType.IELTS_GENERAL or lc_type == LCType.IELTS_ACADEMIC:
+        return float(lc_overall)
+
+
 def detect_outlier(admission_grade, major, destination, scholarship, enroll_year,
                    master_gpa, master_university, bachelor_gpa, bachelor_university, publication_count,
                    lc_type, speaking, listening, writing, reading, overall):
@@ -67,6 +76,7 @@ def insert_into_db(row_id, admission_grade, major, destination, scholarship, enr
     master_education = None
     bachelor_education = None
     lc = None
+    publications = None
 
     try:
         apply_profile = ApplyProfile.objects.create(
@@ -85,10 +95,6 @@ def insert_into_db(row_id, admission_grade, major, destination, scholarship, enr
         )
 
         if master_gpa:
-            if master_university is None:
-                # TODO handle empty university
-                master_university = ''
-                pass
             master_education = Education.objects.create(
                 grade=GradeChoices.MASTER,
                 gpa=master_gpa,
@@ -100,10 +106,6 @@ def insert_into_db(row_id, admission_grade, major, destination, scholarship, enr
             )
 
         if bachelor_gpa:
-            if bachelor_university is None:
-                # TODO handle empty university
-                bachelor_university = ''
-                pass
             bachelor_education = Education.objects.create(
                 grade=GradeChoices.BACHELOR,
                 gpa=bachelor_gpa,
@@ -125,13 +127,27 @@ def insert_into_db(row_id, admission_grade, major, destination, scholarship, enr
                 )
             )
 
-        if lc_type:
-            pass
+        if lc_type and lc_type == LCType.TOEFL:
             lc = RegularLanguageCertificate.objects.create(
                 certificate_type=lc_type,
-                speaking=lc,
                 content_type=APPLYPROFILE_CT,
                 object_id=apply_profile.id,
+                speaking=speaking,
+                listening=listening,
+                writing=writing,
+                reading=reading,
+                overall=overall,
+            )
+        elif lc_type and (lc_type == LCType.IELTS_ACADEMIC or lc_type == LCType.IELTS_GENERAL):
+            lc = RegularLanguageCertificate.objects.create(
+                certificate_type=lc_type,
+                content_type=APPLYPROFILE_CT,
+                object_id=apply_profile.id,
+                speaking=Decimal("%.1f" % speaking),
+                listening=Decimal("%.1f" % listening),
+                writing=Decimal("%.1f" % writing),
+                reading=Decimal("%.1f" % reading),
+                overall=Decimal("%.1f" % overall),
             )
 
         return apply_profile.id
@@ -150,6 +166,8 @@ def insert_into_db(row_id, admission_grade, major, destination, scholarship, enr
             lc.delete()
         if apply_profile:
             apply_profile.delete()
+
+        # raise e
 
         raise Exception("row {} failed to create. detail: {}".format(row_id, str(e)))
 
@@ -171,9 +189,15 @@ class Command(BaseCommand):
         warny_rows = []
         succeed_rows = []
         failed_rows = []
+
+        print("start ...")
+
         for sheet_name in wb.sheetnames:
             sheet = wb[sheet_name]
             for i in range(2, sheet.max_row):
+                if i % 100 == 0:
+                    print(f"{i} rows has been processed...")
+
                 proceed_possible = True
 
                 grade = None
@@ -371,6 +395,9 @@ class Command(BaseCommand):
                     #                                 ' generate fake scores. detail: {}'.format(str(e))))
                     #     proceed_possible = False
 
+                if lc_type and lc_overall:
+                    lc_overall = _convert_lc_overall_into_suitable_type(lc_type, lc_overall)
+
                 # # TODO Determine certificate score :/
                 # ######################
                 # # LC
@@ -445,7 +472,6 @@ class Command(BaseCommand):
 
                 if proceed_possible:
                     try:
-
                         db_id = insert_into_db(row_id, grade, major, destination, scholarship, enroll_year,
                                                master_gpa, master_university, bachelor_gpa, bachelor_university, pub_count,
                                                lc_type, speaking, listening, writing, reading, lc_overall)
@@ -453,7 +479,6 @@ class Command(BaseCommand):
                         succeed_rows.append((row_id, "inserted successfully into db with object id: {}".format(db_id)))
                     except Exception as e:
                         failed_rows.append((row_id, str(e)))
-                    # print(i, str(major).strip(), destination)
 
                 else:
                     failed_rows.append((row_id, "failed to insert. more details in faulty rows"))
