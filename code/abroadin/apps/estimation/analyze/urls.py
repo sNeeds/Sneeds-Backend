@@ -12,7 +12,4 @@ urlpatterns = [
 
     path('<int:form_id>/other/', views.OtherChartsRetrieveAPIView.as_view(),
          name='other-charts'),
-
-    # path('akbar/', views.AkbarView.as_view(),
-    #      name='other-charts'),
 ]

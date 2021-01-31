@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 def create_new_id(apps, schema_editor):
-    print('for base')
     StudentDetailedInfoBase = apps.get_model('form', 'studentdetailedinfobase')
     id = 1
     for sdib in StudentDetailedInfoBase.objects.all():

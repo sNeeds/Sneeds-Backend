@@ -41,8 +41,10 @@ class MajorManager(models.QuerySet):
 
 class UniversityManager(models.QuerySet):
     def get_countries_list(self):
-        countries_list = list(self.all().values_list('country', flat=True))
-        return countries_list
+        Country = self.model._meta.get_field('country').remote_field.model
+        country_ids = self.values_list('country', flat=True)
+        countries_qs = Country.objects.filter(id__in=country_ids)
+        return list(countries_qs)
 
     def list(self):
         return list(self.all())

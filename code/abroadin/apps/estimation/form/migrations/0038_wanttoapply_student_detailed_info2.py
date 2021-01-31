@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 def set_sdi(apps, schema_editor):
-    print('for base')
     StudentDetailedInfoBase = apps.get_model('form', 'studentdetailedinfobase')
     StudentDetailedInfo = apps.get_model('form', 'studentdetailedinfo')
     WantToApply = apps.get_model('form', 'wanttoapply')
