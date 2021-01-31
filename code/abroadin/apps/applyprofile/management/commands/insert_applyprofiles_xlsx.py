@@ -445,12 +445,12 @@ class Command(BaseCommand):
 
                 if proceed_possible:
                     try:
-                        pass
-                        # db_id = insert_into_db(row_id, grade, major, destination, scholarship, enroll_year,
-                        #                        master_gpa, master_university, bachelor_gpa, bachelor_university, pub_count,
-                        #                        lc_type, speaking, listening, writing, reading, lc_overall)
-                        #
-                        # succeed_rows.append((row_id, "inserted successfully into db with object id: {}".format(db_id)))
+
+                        db_id = insert_into_db(row_id, grade, major, destination, scholarship, enroll_year,
+                                               master_gpa, master_university, bachelor_gpa, bachelor_university, pub_count,
+                                               lc_type, speaking, listening, writing, reading, lc_overall)
+
+                        succeed_rows.append((row_id, "inserted successfully into db with object id: {}".format(db_id)))
                     except Exception as e:
                         failed_rows.append((row_id, str(e)))
                     # print(i, str(major).strip(), destination)
@@ -458,7 +458,6 @@ class Command(BaseCommand):
                 else:
                     failed_rows.append((row_id, "failed to insert. more details in faulty rows"))
 
-                # print(', '.join(l))
 
         # print('succeed rows')
         # pprint(succeed_rows)
