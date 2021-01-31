@@ -43,11 +43,11 @@ def similar_home_Q(profiles):
     return Q()
 
 
-def similar_destination_Q(profiles, countries):
+def similar_destination_Q(countries):
     return Q(admission__destination__country__in=countries)
 
 
 def filter_similar_home_and_destination(profiles, dest_countries):
     similar_home_q = similar_home_Q(profiles)
-    similar_destination_q = similar_destination_Q(profiles, dest_countries)
+    similar_destination_q = similar_destination_Q(dest_countries)
     return profiles.filter(similar_home_q | similar_destination_q)
