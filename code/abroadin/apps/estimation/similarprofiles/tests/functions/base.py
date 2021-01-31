@@ -1,8 +1,10 @@
 from abroadin.apps.data.account.models import Country
 from abroadin.apps.estimation.form.models import WantToApply, StudentDetailedInfo
+from abroadin.apps.applyprofile.models import Admission, ApplyProfile
 
 from ..base import SimilarProfilesBaseTests
-from ...functions import get_preferred_apply_country, get_want_to_apply_similar_countries
+from ...functions import get_preferred_apply_country, get_want_to_apply_similar_countries, filter_around_gpa, \
+    filter_same_want_to_apply_grades
 
 
 class SimilarProfilesFunctionsBaseTests(SimilarProfilesBaseTests):
@@ -87,3 +89,29 @@ class SimilarProfilesFunctionsBaseTests(SimilarProfilesBaseTests):
         assert self.university1.country != self.country2
         want_to_apply.countries.add(self.country2)
         country_university_scenario(result)
+
+    def test_filter_around_gpa(self):
+        func = filter_around_gpa
+
+    def test_filter_same_want_to_apply_grades(self):
+        func = filter_same_want_to_apply_grades
+
+        admission = Admission.objects.create(
+            apply_profile=self.profile_1,
+            major=self.major1,
+            grade=self.grade1,
+            destination=self.university1,
+            accepted=True,
+            scholarship=25000,
+            enroll_year=2020
+        )
+
+        profiles = ApplyProfile.objects.filter(id=self.profile_1.id)
+        result = func(profiles, [self.grade1])
+        self.assertQuerysetEqual(result, profiles, transform=lambda x: x)
+
+        result = func(profiles, [self.grade2])
+        self.assertQuerysetEqual(result, ApplyProfile.objects.none(), transform=lambda x: x)
+
+        result = func(profiles, [self.grade1, self.grade2])
+        self.assertQuerysetEqual(result, profiles, transform=lambda x: x)
