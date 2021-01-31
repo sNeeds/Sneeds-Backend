@@ -33,6 +33,8 @@ class FullPublicationSerializer(ad_serializers.PublicationSerializer):
 class FullEducationSerializer(ad_serializers.EducationSerializer):
     related_classes = RELATED_CLASSES
     accessibility_type = serializers.CharField(read_only=True, default=AccessibilityTypeChoices.UNLOCKED, source=' ')
+    university = UniversitySerializer()
+    major = MajorSerializer()
 
     country = serializers.SerializerMethodField(method_name='get_country')
 
