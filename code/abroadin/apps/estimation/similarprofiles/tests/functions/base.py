@@ -96,10 +96,20 @@ class SimilarProfilesFunctionsBaseTests(SimilarProfilesBaseTests):
     def test_filter_same_want_to_apply_grades(self):
         func = filter_same_want_to_apply_grades
 
-        admission = Admission.objects.create(
+        Admission.objects.create(
             apply_profile=self.profile_1,
             major=self.major1,
             grade=self.grade1,
+            destination=self.university1,
+            accepted=True,
+            scholarship=25000,
+            enroll_year=2020
+        )
+
+        Admission.objects.create(
+            apply_profile=self.profile_2,
+            major=self.major1,
+            grade=self.grade2,
             destination=self.university1,
             accepted=True,
             scholarship=25000,
@@ -110,8 +120,18 @@ class SimilarProfilesFunctionsBaseTests(SimilarProfilesBaseTests):
         result = func(profiles, [self.grade1])
         self.assertQuerysetEqual(result, profiles, transform=lambda x: x)
 
+        profiles = ApplyProfile.objects.filter(id=self.profile_2.id)
         result = func(profiles, [self.grade2])
-        self.assertQuerysetEqual(result, ApplyProfile.objects.none(), transform=lambda x: x)
+        self.assertQuerysetEqual(result, profiles, transform=lambda x: x)
 
+        profiles = ApplyProfile.objects.filter(id__in=[self.profile_1.id, self.profile_2.id])
+        result = func(profiles, [self.grade1, self.grade2])
+        self.assertQuerysetEqual(result, profiles, transform=lambda x: x, ordered=False)
+
+        profiles = ApplyProfile.objects.none()
         result = func(profiles, [self.grade1, self.grade2])
         self.assertQuerysetEqual(result, profiles, transform=lambda x: x)
+
+        profiles = ApplyProfile.objects.filter(id__in=[self.profile_1.id, self.profile_2.id])
+        result = func(profiles, [self.grade3])
+        self.assertQuerysetEqual(result, ApplyProfile.objects.none(), transform=lambda x: x)

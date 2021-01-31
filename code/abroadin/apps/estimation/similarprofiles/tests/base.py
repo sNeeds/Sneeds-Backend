@@ -12,7 +12,6 @@ class SimilarProfilesBaseTests(EstimationBaseTest):
     def setUp(self):
         super().setUp()
 
-
         self.form_1 = StudentDetailedInfo.objects.create(
             user=self.user1,
             age=20,
@@ -27,5 +26,7 @@ class SimilarProfilesBaseTests(EstimationBaseTest):
             gap=5,
         )
 
-
-
+        self.profile_2 = ApplyProfile.objects.create(
+            name="profile 2",
+            gap=0
+        )
