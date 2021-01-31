@@ -46,4 +46,4 @@ class ProfilesListAPIView(CListAPIView):
         profiles = filter_similar_majors(profiles, form_related_majors_all_children)
         profiles = filter_similar_home_and_destination(profiles, similar_destination_countries)
 
-        return profiles
+        return profiles[:7]
