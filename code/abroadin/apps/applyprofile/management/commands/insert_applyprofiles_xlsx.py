@@ -494,19 +494,19 @@ class Command(BaseCommand):
         # print('warny_rows')
         # pprint(warny_rows)
 
-        with open('/'.join(input_file_path.split('/')[:-1] + ['succeed rows']), 'w') as f:
+        with open('/'.join(input_file_path.split('/')[:-1] + ['succeed_rows.txt']), 'w') as f:
             for entry in succeed_rows:
                 f.write(str(entry) + '\n')
 
-        with open('/'.join(input_file_path.split('/')[:-1] + ['failed rows']), 'w') as f:
+        with open('/'.join(input_file_path.split('/')[:-1] + ['failed_rows.txt']), 'w') as f:
             for entry in failed_rows:
                 f.write(str(entry) + '\n')
 
-        with open('/'.join(input_file_path.split('/')[:-1] + ['faulty rows']), 'w') as f:
+        with open('/'.join(input_file_path.split('/')[:-1] + ['faulty_rows.txt']), 'w') as f:
             for entry in faulty_rows:
                 f.write(str(entry) + '\n')
 
-        with open('/'.join(input_file_path.split('/')[:-1] + ['warny rows']), 'w') as f:
+        with open('/'.join(input_file_path.split('/')[:-1] + ['warny_rows.txt']), 'w') as f:
             for entry in warny_rows:
                 f.write(str(entry) + '\n')
 
