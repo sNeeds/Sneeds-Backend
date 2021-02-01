@@ -210,9 +210,10 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
 
 
 # ---------------------
-SWAGGER_SETTINGS = {
-    "DEFAULT_GENERATOR_CLASS": "rest_framework.schemas.generators.BaseSchemaGenerator",
-}
+# from rest_framework.schemas.generators import BaseSchemaGenerator
+# SWAGGER_SETTINGS = {
+#     "DEFAULT_GENERATOR_CLASS": "rest_framework.schemas.generators.BaseSchemaGenerator",
+# }
 
 # Add new DateTimeFormat
 from django.conf.global_settings import DATETIME_INPUT_FORMATS

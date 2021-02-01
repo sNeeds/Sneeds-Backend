@@ -78,7 +78,7 @@ class SubscribeAPIView(generics.CCreateAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        
+
         if check_email_assigned_to_user(serializer.validated_data['email']):
             set_user_receive_marketing_email(serializer.validated_data['email'])
             data = serializer.data

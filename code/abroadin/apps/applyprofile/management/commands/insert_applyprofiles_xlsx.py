@@ -167,8 +167,6 @@ def insert_into_db(row_id, admission_grade, major, destination, scholarship, enr
         if apply_profile:
             apply_profile.delete()
 
-        # raise e
-
         raise Exception("row {} failed to create. detail: {}".format(row_id, str(e)))
 
 
