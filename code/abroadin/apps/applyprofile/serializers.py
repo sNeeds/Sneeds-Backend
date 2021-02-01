@@ -54,7 +54,6 @@ class PartialEducationSerializer(FullEducationSerializer):
 
     id = serializers.CharField(read_only=True, default='*', source=' ')
     university = serializers.CharField(read_only=True, default='*', source=' ')
-    grade = serializers.CharField(read_only=True, default='*', source=' ')
     graduate_in = serializers.CharField(read_only=True, default='*', source=' ')
     thesis_title = serializers.CharField(read_only=True, default='*', source=' ')
     gpa = serializers.CharField(read_only=True, default='*', source=' ')
