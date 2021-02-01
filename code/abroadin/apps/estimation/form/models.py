@@ -73,8 +73,6 @@ class WantToApply(models.Model):
 
 
 class StudentDetailedInfoBase(models.Model):
-    old_id = models.UUIDField(null=True, blank=True)
-
     publications_to_base = GenericRelation(
         Publication, related_query_name='student_detailed_info_base'
     )
