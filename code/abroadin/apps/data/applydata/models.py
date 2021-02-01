@@ -85,8 +85,8 @@ class Grade(models.Model):
 
 
 class Education(GenericForeignkeyUniqueTogetherValidationMixin, models.Model):
-    content_type_based_uniqueness_check_fields = {
-        'content_type': {
+    content_type_uniqueness_check = {
+        'object_id': {
             'form__studentdetailedinfo': ['object_id', 'grade'],
             'form__studentdetailedinfobase': ['object_id', 'grade'],
         }
@@ -456,7 +456,7 @@ class LanguageCertificate(
         GRE_PSYCHOLOGY = 'GRE Psychology', 'GRE Psychology'
         DUOLINGO = 'Duolingo', 'Duolingo'
 
-    content_type_based_uniqueness_check_fields = {
+    content_type_uniqueness_check = {
         'content_type': {
             'form__studentdetailedinfo': ['object_id', 'certificate_type'],
             'form__studentdetailedinfobase': ['object_id', 'certificate_type'],
