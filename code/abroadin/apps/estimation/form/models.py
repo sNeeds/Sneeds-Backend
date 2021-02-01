@@ -34,7 +34,6 @@ class WantToApply(models.Model):
         on_delete=models.CASCADE,
         related_name="want_to_apply",
     )
-    student_detailed_info_old = models.UUIDField(null=True, blank=True, )
     countries = models.ManyToManyField(Country, blank=True)
     universities = models.ManyToManyField(University, blank=True)
     grades = models.ManyToManyField(Grade, blank=True)
