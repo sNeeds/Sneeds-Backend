@@ -38,11 +38,13 @@ class GenericForeignkeyUniqueTogetherValidationMixin:
             )
 
     def validate_unique(self, exclude=None):
-        for ct_field_name, apps in self.content_type_uniqueness_check.items():
-            ct_obj = self._get_content_type_obj(ct_field_name)
-            fields = apps.get(ct_obj.app_label + '__' + ct_obj.model, None)
-            if fields:
-                self._generic_fk_unique_together_validator([ct_field_name] + fields)
+        model_class_pk = self._get_pk_val(self.__class__._meta)
+        if not self._state.adding and model_class_pk is not None:
+            for ct_field_name, apps in self.content_type_uniqueness_check.items():
+                ct_obj = self._get_content_type_obj(ct_field_name)
+                fields = apps.get(ct_obj.app_label + '__' + ct_obj.model, None)
+                if fields:
+                    self._generic_fk_unique_together_validator([ct_field_name] + fields)
 
         return super().validate_unique(exclude)
 
