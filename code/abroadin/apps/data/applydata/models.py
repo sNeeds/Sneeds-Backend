@@ -86,11 +86,12 @@ class Grade(models.Model):
 
 class Education(GenericForeignkeyUniqueTogetherValidationMixin, models.Model):
     content_type_uniqueness_check = {
-        'object_id': {
+        'content_type': {
             'form__studentdetailedinfo': ['object_id', 'grade'],
             'form__studentdetailedinfobase': ['object_id', 'grade'],
         }
     }
+
     content_type = models.ForeignKey(
         ContentType, on_delete=models.CASCADE
     )

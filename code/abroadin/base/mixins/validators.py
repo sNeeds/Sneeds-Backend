@@ -1,11 +1,10 @@
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from ..django.validators import generic_fk_unique_together_validator
+from django.core.exceptions import ValidationError, NON_FIELD_ERRORS
+from django.utils.translation import gettext as _
 
 
 class GenericForeignkeyUniqueTogetherValidationMixin:
-    content_type_uniqueness_check = {}
-
     def _get_content_type_obj(self, field_name):
         try:
             content_type_obj = getattr(self, field_name)
@@ -22,13 +21,24 @@ class GenericForeignkeyUniqueTogetherValidationMixin:
 
         return content_type_obj
 
+    def _generic_fk_unique_together_validator(self, fields):
+        lookup_kwargs = {}
+        for field in fields:
+            lookup_kwargs[field] = getattr(self, field)
+        exists = self.__class__.objects.filter(**lookup_kwargs).exists()
+        if exists:
+            raise ValidationError(
+                {NON_FIELD_ERRORS: _(f"The fields {fields} must make a unique set.")}
+            )
+
     def validate_unique(self, exclude=None):
         for ct_field_name, apps in self.content_type_uniqueness_check.items():
             ct_obj = self._get_content_type_obj(ct_field_name)
-            fields = apps.get(ct_obj.app_label + '__' + ct_obj.model.__name__, None)
+            fields = apps.get(ct_obj.app_label + '__' + ct_obj.model, None)
             if fields:
-                fields.insert(0, str(ct_field_name))
-                generic_fk_unique_together_validator(self, self.__class__.objects.all(), fields)
+                fields.insert(0, ct_field_name)
+                self._generic_fk_unique_together_validator(fields)
+
         return super().validate_unique(exclude)
 
 
