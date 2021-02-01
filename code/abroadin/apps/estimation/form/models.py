@@ -25,8 +25,7 @@ from abroadin.apps.data.applydata import models as ad_models
 
 from abroadin.apps.data.account.validators import validate_resume_file_size
 
-# SDI_CT = ContentType.objects.get(app_label='form', model='studentdetailedinfo')
-SDI_CT = None
+SDI_CT = ContentType.objects.get(app_label='form', model='studentdetailedinfo')
 
 
 class WantToApply(models.Model):

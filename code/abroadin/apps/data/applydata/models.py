@@ -20,8 +20,7 @@ from abroadin.apps.data.applydata.values import VALUES_WITH_ATTRS
 from abroadin.base.mixins.validators import GenericForeignkeyUniqueTogetherValidationMixin
 from abroadin.base.models.abstracts import InheritanceCastModel
 
-# SDI_CT = ContentType.objects.get(app_label='form', model='studentdetailedinfo')
-SDI_CT = None
+SDI_CT = ContentType.objects.get(app_label='form', model='studentdetailedinfo')
 
 
 class GradeChoices(models.TextChoices):
