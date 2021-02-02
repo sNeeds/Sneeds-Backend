@@ -23,15 +23,3 @@ class ApplyProfileDetailAPIView(CRetrieveAPIView):
     queryset = ApplyProfile.objects.all()
     serializer_class = ApplyProfileSerializer
 
-
-class AdmissionListAPIView(CListAPIView):
-    queryset = Admission.objects.all()
-    serializer_class = FullAdmissionSerializer
-
-
-class AdmissionDetailAPIView(CRetrieveAPIView):
-    lookup_field = 'id'
-    queryset = Admission.objects.all()
-    serializer_class = FullAdmissionSerializer
-
-
