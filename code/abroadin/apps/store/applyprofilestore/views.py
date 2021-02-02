@@ -12,13 +12,6 @@ class ApplyProfileGroupListView(CListCreateAPIView):
     serializer_class = ApplyProfileGroupSerializer
     permission_classes = [IsAuthenticated]
 
-    def perform_create(self, serializer):
-        user = self.request.user
-        if user.is_authenticated:
-            serializer.save(user=user)
-        else:
-            super().perform_create(serializer)
-
 
 class ApplyProfileGroupDetailView(CRetrieveDestroyAPIView):
     lookup_field = 'id'
