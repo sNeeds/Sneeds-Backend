@@ -9,7 +9,6 @@ from .managers import ApplyProfileGroupManager
 from .values import APPLY_PROFILE_PRICE_IN_DOLLAR
 from ..storeBase.models import Product, SoldProduct
 
-
 User = get_user_model()
 
 
@@ -51,7 +50,10 @@ class ApplyProfileGroup(Product):
 
     @classmethod
     def calculate_profiles_price(cls, apply_profiles: iter):
-        return len(apply_profiles) * APPLY_PROFILE_PRICE_IN_DOLLAR
+        discount = 1
+        if len(apply_profiles) != 1:
+            discount = 0.7
+        return int((len(apply_profiles) * APPLY_PROFILE_PRICE_IN_DOLLAR * discount) / 1000) * 1000
 
 
 class SoldApplyProfileGroup(SoldProduct):
@@ -71,4 +73,3 @@ class SoldApplyProfileGroup(SoldProduct):
               }
 
         return msg
-

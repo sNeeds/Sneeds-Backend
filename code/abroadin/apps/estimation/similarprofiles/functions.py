@@ -78,7 +78,7 @@ class SimilarProfilesForForm:
         want_to_apply_majors_qs = want_to_apply.majors.all()
 
         related_majors = education_majors_qs | want_to_apply_majors_qs
-        related_majors_parents = related_majors.top_nth_parents(2)
+        related_majors_parents = related_majors.top_nth_parents(3)
 
         related_majors_all_children = related_majors_parents.get_all_children_majors()
         grades_want_to_apply = want_to_apply.grades_want_to_apply()
