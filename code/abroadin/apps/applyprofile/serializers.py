@@ -249,7 +249,6 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
         if is_unlocked:
             objects = FullAdmissionSerializer(obj.admissions.all(), many=True, context=self.context).data
             accessibility_type = AccessibilityTypeChoices.UNLOCKED
-
         else:
             free_admissions, locked_admissions = obj.get_free_locked_admissions()
             objects = PartialAdmissionSerializer(free_admissions, many=True, context=self.context).data + \

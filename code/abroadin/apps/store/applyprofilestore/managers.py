@@ -7,7 +7,6 @@ from .values import APPLY_PROFILE_PRICE_IN_DOLLAR
 
 
 class ApplyProfileGroupManager(QuerySet):
-
     def create_by_apply_profiles(self, **kwargs):
         apply_profiles = kwargs.pop('apply_profiles')
         try:
