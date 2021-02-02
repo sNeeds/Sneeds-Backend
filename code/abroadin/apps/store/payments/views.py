@@ -101,13 +101,13 @@ class SendRequest(CAPIView):
         return Response({"detail": "Cart is empty"}, 400)
 
     def payment_request_ok_response(self, result):
-        return Response({"redirect": 'https://sandbox.zarinpal.com/pg/StartPay/' + str(result.Authority)}, 201)
+        return Response({"redirect": 'https://www.zarinpal.com/pg/StartPay/' + str(result.Authority)}, 201)
 
     def payment_request_not_ok_response(self, result):
         return Response({"detail": 'Zarinpal error', 'code': str(result.Status)}, 400)
 
     def post(self, request, *args, **kwargs):
-        client = Client('https://sandbox.zarinpal.com/pg/services/WebGate/wsdl')
+        client = Client('https://www.zarinpal.com/pg/services/WebGate/wsdl')
 
         user = self.get_user()
         cart = self.get_cart_or_none()
@@ -199,7 +199,7 @@ class Verify(CAPIView):
 
         status_ok = self.is_status_ok(status)
         if status_ok:
-            client = Client('https://sandbox.zarinpal.com/pg/services/WebGate/wsdl')
+            client = Client('https://www.zarinpal.com/pg/services/WebGate/wsdl')
             response = self.transaction_ok_handler(client, authority)
         else:
             response = self.transaction_nok_response()

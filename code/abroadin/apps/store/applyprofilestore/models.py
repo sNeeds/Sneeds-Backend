@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, transaction
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ngettext
 from django.contrib.auth import get_user_model
@@ -19,10 +19,6 @@ class ApplyProfileGroup(Product):
 
     objects = ApplyProfileGroupManager.as_manager()
 
-    def save(self, *args, **kwargs):
-        self.real_type = ContentType.objects.get(app_label='applyprofilestore', model='applyprofilegroup')
-        return super().save(*args, **kwargs)
-
     @property
     def title(self):
         return f'Similar Applied Profiles'
@@ -40,12 +36,14 @@ class ApplyProfileGroup(Product):
 
         return msg
 
-    def sell(self, user, price):
+    @transaction.atomic
+    def sell(self):
         sold_apply_profile_group = SoldApplyProfileGroup.objects.create(
-            sold_to=user,
-            price=price
+            sold_to=self.user,
+            price=self.price
         )
         sold_apply_profile_group.apply_profiles.set(self.apply_profiles.all())
+        super().sell()
 
     def update_price(self):
         self.price = self.calculate_profiles_price(self.apply_profiles.all())

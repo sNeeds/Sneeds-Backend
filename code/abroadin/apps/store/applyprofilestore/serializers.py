@@ -18,6 +18,9 @@ class ApplyProfileGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = ApplyProfileGroup
         fields = ['id', 'apply_profiles', 'user', 'title', 'subtitle', 'price']
+        extra_kwargs = {
+            'price': {'read_only': True}
+        }
 
     def validate(self, attrs):
         return super().validate(attrs)

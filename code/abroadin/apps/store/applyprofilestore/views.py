@@ -2,7 +2,8 @@ from rest_framework.permissions import IsAuthenticated
 
 from abroadin.apps.store.applyprofilestore.models import ApplyProfileGroup, SoldApplyProfileGroup
 from abroadin.apps.store.applyprofilestore.permissions import ApplyProfileGroupOwner, SoldApplyProfileGroupOwner
-from abroadin.apps.store.applyprofilestore.serializers import ApplyProfileGroupSerializer, SoldApplyProfileGroupSerializer
+from abroadin.apps.store.applyprofilestore.serializers import ApplyProfileGroupSerializer, \
+    SoldApplyProfileGroupSerializer
 from abroadin.base.api.generics import CListCreateAPIView, CListAPIView, \
     CRetrieveAPIView, CRetrieveDestroyAPIView
 
@@ -11,6 +12,9 @@ class ApplyProfileGroupListView(CListCreateAPIView):
     queryset = ApplyProfileGroup.objects.none()
     serializer_class = ApplyProfileGroupSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return ApplyProfileGroup.objects.filter(user=self.request.user)
 
 
 class ApplyProfileGroupDetailView(CRetrieveDestroyAPIView):
@@ -24,6 +28,9 @@ class SoldApplyProfileGroupListView(CListAPIView):
     queryset = SoldApplyProfileGroup.objects.none()
     serializer_class = SoldApplyProfileGroupSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return SoldApplyProfileGroup.objects.filter(sold_to=self.request.user)
 
 
 class SoldApplyProfileGroupDetailView(CRetrieveAPIView):

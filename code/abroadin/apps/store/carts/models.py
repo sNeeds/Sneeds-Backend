@@ -65,5 +65,11 @@ class Cart(models.Model):
 
         self.save()
 
+    def sell(self):
+        products = self.products.all()
+        casted_products = products.cast_subclasses()
+        for product in casted_products:
+            product.sell()
+
     def __str__(self):
         return "User {} cart | pk: {}".format(self.user, str(self.pk))

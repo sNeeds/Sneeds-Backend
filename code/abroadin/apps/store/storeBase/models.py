@@ -140,7 +140,7 @@ class Product(InheritanceCastModel):
         raise NotImplementedError
 
     def sell(self):
-        raise NotImplementedError
+        self.delete()
 
 
 class TimeSlotSale(Product):
