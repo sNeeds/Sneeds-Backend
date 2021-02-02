@@ -7,7 +7,7 @@ from abroadin.apps.data.applydata.models import Education
 
 from ..base import SimilarProfilesBaseTests
 from ...functions import get_preferred_apply_country, get_want_to_apply_similar_countries, filter_around_gpa, \
-    filter_same_want_to_apply_grades, similar_destination_Q, filter_similar_majors
+    filter_same_want_to_apply_grades, similar_destination_Q, filter_similar_majors, filter_similar_home_and_destination
 
 
 class SimilarProfilesFunctionsBaseTests(SimilarProfilesBaseTests):
@@ -226,23 +226,19 @@ class SimilarProfilesFunctionsBaseTests(SimilarProfilesBaseTests):
         )
 
     def test_filter_similar_home_and_destination(self):
-        raise NotImplementedError
+        func = filter_similar_home_and_destination
 
     def test_filter_similar_majors(self):
+        def test_qs_equal(profiles, filtered_profiles, majors):
+            qs = func(profiles, majors)
+            self.assertQuerysetEqual(qs, filtered_profiles, lambda x: x, ordered=False)
+
         func = filter_similar_majors
-
-        majors = []
         profiles = ApplyProfile.objects.filter(id=self.profile_1.id)
-        qs = func(profiles, majors)
-        self.assertQuerysetEqual(qs, profiles.none(), lambda x: x, ordered=False)
 
-        majors = [self.major1]
-        qs = func(profiles, majors)
-        self.assertQuerysetEqual(qs, profiles.none(), lambda x: x, ordered=False)
-
-        majors = [self.major1, self.major2]
-        qs = func(profiles, majors)
-        self.assertQuerysetEqual(qs, profiles.none(), lambda x: x, ordered=False)
+        test_qs_equal(profiles, profiles.none(), [])
+        test_qs_equal(profiles, profiles.none(), [self.major1])
+        test_qs_equal(profiles, profiles.none(), [self.major1, self.major2])
 
         content_type = ContentType.objects.get(app_label='applyprofile', model='applyprofile')
         education = Education.objects.create(
@@ -254,13 +250,8 @@ class SimilarProfilesFunctionsBaseTests(SimilarProfilesBaseTests):
             graduate_in=2020,
             gpa=16
         )
-        majors = [self.major2]
-        qs = func(profiles, majors)
-        self.assertQuerysetEqual(qs, profiles.none(), lambda x: x, ordered=False)
-
-        majors = [self.major1]
-        qs = func(profiles, majors)
-        self.assertQuerysetEqual(qs, profiles, lambda x: x, ordered=False)
+        test_qs_equal(profiles, profiles, [self.major1])
+        test_qs_equal(profiles, profiles.none(), [self.major2])
         education.delete()
 
         admission = Admission.objects.create(
@@ -272,13 +263,8 @@ class SimilarProfilesFunctionsBaseTests(SimilarProfilesBaseTests):
             scholarship=25000,
             enroll_year=2020
         )
-        majors = [self.major2]
-        qs = func(profiles, majors)
-        self.assertQuerysetEqual(qs, profiles.none(), lambda x: x, ordered=False)
-
-        majors = [self.major1]
-        qs = func(profiles, majors)
-        self.assertQuerysetEqual(qs, profiles, lambda x: x, ordered=False)
+        test_qs_equal(profiles, profiles.none(), [self.major2])
+        test_qs_equal(profiles, profiles, [self.major1])
         admission.delete()
 
         education = Education.objects.create(
@@ -299,13 +285,8 @@ class SimilarProfilesFunctionsBaseTests(SimilarProfilesBaseTests):
             scholarship=25000,
             enroll_year=2020
         )
-        majors = [self.major2]
-        qs = func(profiles, majors)
-        self.assertQuerysetEqual(qs, profiles.none(), lambda x: x, ordered=False)
-
-        majors = [self.major1]
-        qs = func(profiles, majors)
-        self.assertQuerysetEqual(qs, profiles, lambda x: x, ordered=False)
+        test_qs_equal(profiles, profiles, [self.major1])
+        test_qs_equal(profiles, profiles.none(), [self.major2])
 
         Education.objects.create(
             content_type=content_type,
@@ -316,7 +297,5 @@ class SimilarProfilesFunctionsBaseTests(SimilarProfilesBaseTests):
             graduate_in=2020,
             gpa=16
         )
-        majors = [self.major1]
         profiles = ApplyProfile.objects.filter(id__in=[self.profile_1.id, self.profile_2.id])
-        qs = func(profiles, majors)
-        self.assertQuerysetEqual(qs, profiles.filter(id=self.profile_1.id), lambda x: x, ordered=False)
+        test_qs_equal(profiles, profiles.filter(id=self.profile_1.id), [self.major1])
