@@ -4,7 +4,7 @@ from abroadin.base.api.generics import CListAPIView
 from abroadin.apps.estimation.form.models import StudentDetailedInfo
 from abroadin.apps.applyprofile.serializers import ApplyProfileSerializer
 
-from .functions import similar_profiles_for_form
+from .functions import  SimilarProfilesForForm
 
 
 class ProfilesListAPIView(CListAPIView):
@@ -20,5 +20,6 @@ class ProfilesListAPIView(CListAPIView):
 
     def get_queryset(self):
         form = self.get_form()
-        profiles = similar_profiles_for_form(form)
+        similar_profiles_for_form = SimilarProfilesForForm(form)
+        profiles = similar_profiles_for_form.find_similar_profiles()
         return profiles[:7]

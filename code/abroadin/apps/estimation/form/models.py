@@ -369,9 +369,6 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
             return False
         return want_to_apply.is_complete
 
-    def education_qs(self):
-        return Education.objects.filter(content_type=SDI_CT, object_id=self.id)
-
     @property
     def is_complete(self):
         completed = True

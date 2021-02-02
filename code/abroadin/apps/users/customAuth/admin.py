@@ -58,7 +58,7 @@ class CustomUserAdmin(UserAdmin):
         except StudentDetailedInfo.DoesNotExist:
             return None
 
-        education_qs = form.education_qs()
+        education_qs = form.educations.all()
         if not education_qs.exists():
             return None
 
