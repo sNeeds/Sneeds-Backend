@@ -20,7 +20,7 @@ class ApplyProfileGroup(Product):
 
     @property
     def title(self):
-        return f'Similar Applied Profiles'
+        return f'Similar Students Like You'
 
     @property
     def subtitle(self):
