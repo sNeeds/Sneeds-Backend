@@ -7,7 +7,8 @@ from abroadin.apps.data.applydata.models import Education
 
 from ..base import SimilarProfilesBaseTests
 from ...functions import get_preferred_apply_country, get_want_to_apply_similar_countries, filter_around_gpa, \
-    filter_same_want_to_apply_grades, similar_destination_Q, filter_similar_majors, filter_similar_home_and_destination
+    filter_same_want_to_apply_grades, similar_destination_Q, filter_similar_majors, filter_similar_home_and_destination, \
+    similar_profiles_for_form
 
 
 class SimilarProfilesFunctionsBaseTests(SimilarProfilesBaseTests):
@@ -227,6 +228,7 @@ class SimilarProfilesFunctionsBaseTests(SimilarProfilesBaseTests):
 
     def test_filter_similar_home_and_destination(self):
         func = filter_similar_home_and_destination
+        raise NotImplemented
 
     def test_filter_similar_majors(self):
         def test_qs_equal(profiles, filtered_profiles, majors):
@@ -299,3 +301,57 @@ class SimilarProfilesFunctionsBaseTests(SimilarProfilesBaseTests):
         )
         profiles = ApplyProfile.objects.filter(id__in=[self.profile_1.id, self.profile_2.id])
         test_qs_equal(profiles, profiles.filter(id=self.profile_1.id), [self.major1])
+
+    def test_similar_profiles_for_form(self):
+        func = similar_profiles_for_form
+
+        form = self.form_1
+        profile = self.profile_1
+
+        form_ct = ContentType.objects.get(app_label='form', model='studentdetailedinfo')
+        profile_ct = ContentType.objects.get(app_label='applyprofile', model='applyprofile')
+
+        form_ed_1 = Education.objects.create(
+            content_type=form_ct,
+            object_id=form.id,
+            university=self.university1,
+            grade=self.grade_bachelor,
+            major=self.major1,
+            graduate_in=2016,
+            gpa=17
+        )
+        form_ed_2 = Education.objects.create(
+            content_type=form_ct,
+            object_id=form.id,
+            university=self.university1,
+            grade=self.grade_master,
+            major=self.major1,
+            graduate_in=2020,
+            gpa=18
+        )
+        wta = WantToApply.objects.create(student_detailed_info=form)
+        wta.majors.add(self.major1)
+        wta.grades.add(self.grade_bachelor)
+        wta.semester_years.add(self.semester_year1)
+
+        profile_ed_1 = Education.objects.create(
+            content_type=form_ct,
+            object_id=form.id,
+            university=self.university2,
+            grade=self.grade_bachelor,
+            major=self.major1,
+            graduate_in=2016,
+            gpa=17
+        )
+        profile_ed_2 = Education.objects.create(
+            content_type=form_ct,
+            object_id=form.id,
+            university=self.university2,
+            grade=self.grade_master,
+            major=self.major1,
+            graduate_in=2020,
+            gpa=18
+        )
+        # profile_admission_1 = Admission.objects.create(
+        #     apply_profile=pro
+        # )
