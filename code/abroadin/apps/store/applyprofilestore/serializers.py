@@ -14,69 +14,28 @@ from .validators import validate_apply_profiles
 User = get_user_model()
 
 
-class ApplyProfileGroupRequestSerializer(serializers.ModelSerializer):
-    apply_profiles = serializers.PrimaryKeyRelatedField(
-        queryset=ApplyProfile.objects.all(),
-        pk_field=serializers.IntegerField(label='id'),
-        allow_null=False,
-        allow_empty=False,
-        required=True,
-        many=True,
-    )
-
-    user = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all(),
-        pk_field=serializers.IntegerField(label='id'),
-        allow_null=False,
-        allow_empty=False,
-        required=True,
-        many=False,
-    )
-
+class ApplyProfileGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = ApplyProfileGroup
-        fields = ['id', 'apply_profiles', 'user']
+        fields = ['id', 'apply_profiles', 'user', 'title', 'subtitle', 'price']
 
-    def validate_apply_profiles(self, value):
-        try:
-            return validate_apply_profiles(value)
-        except Exception as e:
-            raise ValidationError(_(e.message))
-
-    def validate_user(self, value):
-        request: Request = self.context.get("request")
-        if request and hasattr(request, "user"):
-            if value != request.user:
-                raise ValidationError(_("User is not the user mentioned in data"))
-            return value
-        else:
-            raise ValidationError(_("Can't validate data.Can't get request user."))
+    def validate(self, attrs):
+        return super().validate(attrs)
 
     def create(self, validated_data):
-        instance = ApplyProfileGroup.objects.create_by_apply_profiles(**validated_data)
+        instance = ApplyProfileGroup.objects.create_with_apply_profiles(**validated_data)
         return instance
 
     def update(self, instance, validated_data):
         raise NotImplementedError("Update through this serializer is not allowed.")
 
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        context = {"request": self.context.get("request")}
 
-class ApplyProfileGroupSerializer(serializers.ModelSerializer):
-    apply_profiles = ApplyProfileSerializer(
-        many=True
-    )
+        ret["apply_profiles"] = ApplyProfileSerializer(instance.apply_profiles, context=context, many=True).data
 
-    title = serializers.CharField()
-    subtitle = serializers.CharField()
-
-    class Meta:
-        model = ApplyProfileGroup
-        fields = ['id', 'apply_profiles', 'title', 'subtitle', 'price']
-
-    def create(self, validated_data):
-        raise NotImplementedError("Create through this serializer is not allowed.")
-
-    def update(self, instance, validated_data):
-        raise NotImplementedError("Update through this serializer is not allowed.")
+        return ret
 
 
 class SoldApplyProfileGroupSerializer(serializers.ModelSerializer):

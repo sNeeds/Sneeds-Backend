@@ -2,28 +2,27 @@ from rest_framework.permissions import IsAuthenticated
 
 from abroadin.apps.store.applyprofilestore.models import ApplyProfileGroup, SoldApplyProfileGroup
 from abroadin.apps.store.applyprofilestore.permissions import ApplyProfileGroupOwner, SoldApplyProfileGroupOwner
-from abroadin.apps.store.applyprofilestore.serializers import ApplyProfileGroupRequestSerializer, \
-    ApplyProfileGroupSerializer, SoldApplyProfileGroupSerializer
+from abroadin.apps.store.applyprofilestore.serializers import ApplyProfileGroupSerializer, SoldApplyProfileGroupSerializer
 from abroadin.base.api.generics import CListCreateAPIView, CRetrieveUpdateDestroyAPIView, CListAPIView, \
     CRetrieveAPIView, CRetrieveDestroyAPIView
 
 
 class ApplyProfileGroupListView(CListCreateAPIView):
     queryset = ApplyProfileGroup.objects.none()
-    request_serializer_class = ApplyProfileGroupRequestSerializer
     serializer_class = ApplyProfileGroupSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        if self.request.user.is_authenticated:
-            return ApplyProfileGroup.objects.filter(user=self.request.user)
-        return ApplyProfileGroup.objects.none()
+    def perform_create(self, serializer):
+        user = self.request.user
+        if user.is_authenticated:
+            serializer.save(user=user)
+        else:
+            super().perform_create(serializer)
 
 
 class ApplyProfileGroupDetailView(CRetrieveDestroyAPIView):
     lookup_field = 'id'
     queryset = ApplyProfileGroup.objects.all()
-    request_serializer_class = ApplyProfileGroupRequestSerializer
     serializer_class = ApplyProfileGroupSerializer
     permission_classes = [IsAuthenticated, ApplyProfileGroupOwner]
 

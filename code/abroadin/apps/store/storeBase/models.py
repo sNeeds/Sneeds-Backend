@@ -12,7 +12,7 @@ from abroadin.base.models.abstracts import InheritanceCastModel
 User = get_user_model()
 
 
-class ProductQuerySet(models.QuerySet):
+class ProductManager(models.QuerySet):
     def get_time_slot_sales(self):
         pass
 
@@ -129,13 +129,18 @@ class Product(InheritanceCastModel):
     price = models.PositiveIntegerField(blank=True)
     active = models.BooleanField(default=True)
 
-    objects = ProductQuerySet.as_manager()
+    objects = ProductManager.as_manager()
 
+    @property
     def title(self):
-        return f"Product {self.id}"
+        raise NotImplementedError
 
+    @property
     def subtitle(self):
-        return None
+        raise NotImplementedError
+
+    def sell(self):
+        raise NotImplementedError
 
 
 class TimeSlotSale(Product):

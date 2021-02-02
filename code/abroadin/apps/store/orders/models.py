@@ -29,6 +29,10 @@ class OrderManager(models.QuerySet):
             subtotal=cart.subtotal,
         )
 
+        for product in cart.products.all():
+            product = product.cast().cast_subclasses()
+            product.sell()
+
         cart.delete()
 
         return order

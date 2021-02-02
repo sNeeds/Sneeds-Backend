@@ -25,14 +25,14 @@ class ApplyProfileGroup(Product):
 
     @property
     def title(self):
-        return f'Similar admissions'
+        return f'Similar Applied Profiles'
 
     @property
     def subtitle(self):
         apply_profiles_count = self.apply_profiles.all().count()
         msg = ngettext(
-            '%(count)d Student Profile',
-            '%(count)d Student Profiles',
+            '%(count)d Profile',
+            '%(count)d Profiles',
             apply_profiles_count,
         ) % {
                   'count': apply_profiles_count,
