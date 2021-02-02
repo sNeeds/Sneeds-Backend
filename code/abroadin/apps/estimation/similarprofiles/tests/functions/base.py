@@ -7,7 +7,7 @@ from abroadin.apps.data.applydata.models import Education
 
 from ..base import SimilarProfilesBaseTests
 from ...functions import get_preferred_apply_country, get_want_to_apply_similar_countries, filter_around_gpa, \
-    filter_same_want_to_apply_grades, similar_destination_Q, filter_similar_home_and_destination
+    filter_same_want_to_apply_grades, similar_destination_Q, filter_similar_majors
 
 
 class SimilarProfilesFunctionsBaseTests(SimilarProfilesBaseTests):
@@ -101,7 +101,7 @@ class SimilarProfilesFunctionsBaseTests(SimilarProfilesBaseTests):
             content_type=content_type,
             object_id=self.profile_1.id,
             university=self.university1,
-            grade=self.grade1,
+            grade=self.grade_bachelor,
             major=self.major1,
             graduate_in=2020,
             gpa=16
@@ -111,7 +111,7 @@ class SimilarProfilesFunctionsBaseTests(SimilarProfilesBaseTests):
             content_type=content_type,
             object_id=self.profile_2.id,
             university=self.university1,
-            grade=self.grade1,
+            grade=self.grade_bachelor,
             major=self.major1,
             graduate_in=2020,
             gpa=20
@@ -136,7 +136,7 @@ class SimilarProfilesFunctionsBaseTests(SimilarProfilesBaseTests):
         Admission.objects.create(
             apply_profile=self.profile_1,
             major=self.major1,
-            grade=self.grade1,
+            grade=self.grade_bachelor,
             destination=self.university1,
             accepted=True,
             scholarship=25000,
@@ -146,7 +146,7 @@ class SimilarProfilesFunctionsBaseTests(SimilarProfilesBaseTests):
         Admission.objects.create(
             apply_profile=self.profile_2,
             major=self.major1,
-            grade=self.grade2,
+            grade=self.grade_master,
             destination=self.university1,
             accepted=True,
             scholarship=25000,
@@ -154,23 +154,23 @@ class SimilarProfilesFunctionsBaseTests(SimilarProfilesBaseTests):
         )
 
         profiles = ApplyProfile.objects.filter(id=self.profile_1.id)
-        result = func(profiles, [self.grade1])
+        result = func(profiles, [self.grade_bachelor])
         self.assertQuerysetEqual(result, profiles, transform=lambda x: x)
 
         profiles = ApplyProfile.objects.filter(id=self.profile_2.id)
-        result = func(profiles, [self.grade2])
+        result = func(profiles, [self.grade_master])
         self.assertQuerysetEqual(result, profiles, transform=lambda x: x)
 
         profiles = ApplyProfile.objects.filter(id__in=[self.profile_1.id, self.profile_2.id])
-        result = func(profiles, [self.grade1, self.grade2])
+        result = func(profiles, [self.grade_bachelor, self.grade_master])
         self.assertQuerysetEqual(result, profiles, transform=lambda x: x, ordered=False)
 
         profiles = ApplyProfile.objects.none()
-        result = func(profiles, [self.grade1, self.grade2])
+        result = func(profiles, [self.grade_bachelor, self.grade_master])
         self.assertQuerysetEqual(result, profiles, transform=lambda x: x)
 
         profiles = ApplyProfile.objects.filter(id__in=[self.profile_1.id, self.profile_2.id])
-        result = func(profiles, [self.grade3])
+        result = func(profiles, [self.grade_phd])
         self.assertQuerysetEqual(result, ApplyProfile.objects.none(), transform=lambda x: x)
 
     def test_similar_home_Q(self):
@@ -182,7 +182,7 @@ class SimilarProfilesFunctionsBaseTests(SimilarProfilesBaseTests):
         Admission.objects.create(
             apply_profile=self.profile_1,
             major=self.major1,
-            grade=self.grade1,
+            grade=self.grade_bachelor,
             destination=self.university1,
             accepted=True,
             scholarship=25000,
@@ -192,7 +192,7 @@ class SimilarProfilesFunctionsBaseTests(SimilarProfilesBaseTests):
         Admission.objects.create(
             apply_profile=self.profile_2,
             major=self.major1,
-            grade=self.grade1,
+            grade=self.grade_bachelor,
             destination=self.university2,
             accepted=True,
             scholarship=25000,
@@ -227,3 +227,96 @@ class SimilarProfilesFunctionsBaseTests(SimilarProfilesBaseTests):
 
     def test_filter_similar_home_and_destination(self):
         raise NotImplementedError
+
+    def test_filter_similar_majors(self):
+        func = filter_similar_majors
+
+        majors = []
+        profiles = ApplyProfile.objects.filter(id=self.profile_1.id)
+        qs = func(profiles, majors)
+        self.assertQuerysetEqual(qs, profiles.none(), lambda x: x, ordered=False)
+
+        majors = [self.major1]
+        qs = func(profiles, majors)
+        self.assertQuerysetEqual(qs, profiles.none(), lambda x: x, ordered=False)
+
+        majors = [self.major1, self.major2]
+        qs = func(profiles, majors)
+        self.assertQuerysetEqual(qs, profiles.none(), lambda x: x, ordered=False)
+
+        content_type = ContentType.objects.get(app_label='applyprofile', model='applyprofile')
+        education = Education.objects.create(
+            content_type=content_type,
+            object_id=self.profile_1.id,
+            university=self.university1,
+            grade=self.grade_bachelor,
+            major=self.major1,
+            graduate_in=2020,
+            gpa=16
+        )
+        majors = [self.major2]
+        qs = func(profiles, majors)
+        self.assertQuerysetEqual(qs, profiles.none(), lambda x: x, ordered=False)
+
+        majors = [self.major1]
+        qs = func(profiles, majors)
+        self.assertQuerysetEqual(qs, profiles, lambda x: x, ordered=False)
+        education.delete()
+
+        admission = Admission.objects.create(
+            apply_profile=self.profile_1,
+            major=self.major1,
+            grade=self.grade_bachelor,
+            destination=self.university1,
+            accepted=True,
+            scholarship=25000,
+            enroll_year=2020
+        )
+        majors = [self.major2]
+        qs = func(profiles, majors)
+        self.assertQuerysetEqual(qs, profiles.none(), lambda x: x, ordered=False)
+
+        majors = [self.major1]
+        qs = func(profiles, majors)
+        self.assertQuerysetEqual(qs, profiles, lambda x: x, ordered=False)
+        admission.delete()
+
+        education = Education.objects.create(
+            content_type=content_type,
+            object_id=self.profile_1.id,
+            university=self.university1,
+            grade=self.grade_bachelor,
+            major=self.major1,
+            graduate_in=2020,
+            gpa=16
+        )
+        admission = Admission.objects.create(
+            apply_profile=self.profile_1,
+            major=self.major1,
+            grade=self.grade_bachelor,
+            destination=self.university1,
+            accepted=True,
+            scholarship=25000,
+            enroll_year=2020
+        )
+        majors = [self.major2]
+        qs = func(profiles, majors)
+        self.assertQuerysetEqual(qs, profiles.none(), lambda x: x, ordered=False)
+
+        majors = [self.major1]
+        qs = func(profiles, majors)
+        self.assertQuerysetEqual(qs, profiles, lambda x: x, ordered=False)
+
+        Education.objects.create(
+            content_type=content_type,
+            object_id=self.profile_2.id,
+            university=self.university1,
+            grade=self.grade_bachelor,
+            major=self.major2,
+            graduate_in=2020,
+            gpa=16
+        )
+        majors = [self.major1]
+        profiles = ApplyProfile.objects.filter(id__in=[self.profile_1.id, self.profile_2.id])
+        qs = func(profiles, majors)
+        self.assertQuerysetEqual(qs, profiles.filter(id=self.profile_1.id), lambda x: x, ordered=False)

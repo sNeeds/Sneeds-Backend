@@ -79,7 +79,7 @@ class WantToApplyChanceUserEmailVerifiedTests(EstimationBaseTest):
         self.sdi_1_want_to_apply_1.countries.set([self.country2])
         self.sdi_1_want_to_apply_1.universities.set([self.university2])
         self.sdi_1_want_to_apply_1.semester_years.set([self.semester_year1])
-        self.sdi_1_want_to_apply_1.grades.set([self.grade1])
+        self.sdi_1_want_to_apply_1.grades.set([self.grade_bachelor])
         self.sdi_1_want_to_apply_1.majors.set([self.major1])
 
     def _want_to_apply_chances(self, *args, **kwargs):

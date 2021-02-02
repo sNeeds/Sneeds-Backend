@@ -6,6 +6,7 @@ from rest_framework.test import APITestCase, APIClient
 from abroadin.apps.data.account.models import University, Major, Country
 from abroadin.apps.estimation.form.models import SemesterYear, StudentDetailedInfo, Grade
 from abroadin.base.mixins.tests import TestBriefMethodMixin
+from abroadin.apps.data.applydata.models import GradeChoices
 
 User = get_user_model()
 
@@ -118,16 +119,20 @@ class EstimationBaseTest(TestBriefMethodMixin, APITestCase):
 
         # ------- Grade Objects -------
 
-        self.grade1 = Grade.objects.create(
-            name='Grade 1'
+        self.grade_bachelor = Grade.objects.create(
+            name=GradeChoices.BACHELOR
         )
 
-        self.grade2 = Grade.objects.create(
-            name='Grade 2'
+        self.grade_master = Grade.objects.create(
+            name=GradeChoices.MASTER
         )
 
-        self.grade3 = Grade.objects.create(
-            name='Grade 3'
+        self.grade_phd = Grade.objects.create(
+            name=GradeChoices.PHD
+        )
+
+        self.grade_postdoc = Grade.objects.create(
+            name=GradeChoices.POST_DOC
         )
 
         # ----- Setup ------
