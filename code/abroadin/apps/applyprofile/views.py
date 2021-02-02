@@ -2,8 +2,8 @@ from rest_framework.pagination import PageNumberPagination
 
 from abroadin.base.api.generics import CListAPIView, CRetrieveAPIView
 
-from .serializers import ApplyProfileSerializer, FullAdmissionSerializer
-from .models import ApplyProfile, Admission
+from .serializers import ApplyProfileSerializer
+from .models import ApplyProfile
 
 
 class SmallResultsSetPagination(PageNumberPagination):

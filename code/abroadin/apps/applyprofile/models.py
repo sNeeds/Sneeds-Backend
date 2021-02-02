@@ -21,7 +21,7 @@ class ApplyProfile(models.Model):
 
     def last_education(self):
         education_qs = self.educations.all()
-        return education_qs.get_last_grade_education()
+        return education_qs.last_education()
 
     def main_admission(self):
         admission_qs = self.admissions.all()

@@ -36,7 +36,7 @@ class EducationManager(CreateM2MManagerMixin, models.QuerySet):
         majors_id_list = list(self.all().values_list('major', flat=True))
         return majors_id_list
 
-    def get_last_grade_education(self):
+    def last_education(self):
         ordered_qs = self.order_by_grade()
 
         if ordered_qs.exists():

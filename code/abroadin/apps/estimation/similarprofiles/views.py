@@ -1,4 +1,3 @@
-from django.db.models import Q
 from django.http import Http404
 
 from abroadin.base.api.generics import CListAPIView
@@ -7,9 +6,9 @@ from abroadin.apps.applyprofile.serializers import ApplyProfileSerializer
 from abroadin.apps.data.account.models import Major
 from abroadin.apps.applyprofile.models import ApplyProfile
 
-from .functions import get_want_to_apply_similar_countries,\
+from .functions import get_want_to_apply_similar_countries, \
     filter_same_want_to_apply_grades, filter_similar_majors, \
-    filter_similar_home_and_destination
+    filter_similar_home_and_destination, filter_around_gpa
 
 
 class ProfilesListAPIView(CListAPIView):
@@ -42,7 +41,7 @@ class ProfilesListAPIView(CListAPIView):
 
         form_related_majors = education_majors_qs | want_to_apply_majors_qs
         print(7)
-        form_related_majors_parents = form_related_majors.top_nth_parents(3)
+        form_related_majors_parents = form_related_majors.top_nth_parents(2)
         print(8)
         form_related_majors_all_children = form_related_majors_parents.get_all_children_majors()
         print(9)
@@ -54,6 +53,8 @@ class ProfilesListAPIView(CListAPIView):
 
         profiles = ApplyProfile.objects.all()
         print(12)
+        profiles = filter_around_gpa(profiles, education_qs.last_education().gpa, offset=1)
+        print(12.5)
         profiles = filter_same_want_to_apply_grades(profiles, grades_want_to_apply)
         print(13)
         profiles = filter_similar_majors(profiles, form_related_majors_all_children)

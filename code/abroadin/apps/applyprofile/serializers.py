@@ -230,7 +230,8 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
             return is_unlocked_apply_profile
 
         if self.cached_user_bought_apply_profiles_id is None:
-            self.cached_user_bought_apply_profiles_id = get_user_bought_apply_profiles(user=user).values_list('id', flat=True)
+            self.cached_user_bought_apply_profiles_id = get_user_bought_apply_profiles(
+                user=user).values_list('id', flat=True)
 
         if obj.id in self.cached_user_bought_apply_profiles_id:
             is_unlocked_apply_profile = True
@@ -301,7 +302,7 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
     def get_last_education(self, obj):
         return self.represent_last_education(obj, self._is_unlocked(obj))
 
-    def represent_last_education(self, obj, is_unlocked,):
+    def represent_last_education(self, obj, is_unlocked):
         if is_unlocked:
             obj = FullEducationSerializer(obj.last_education(), many=False, context=self.context).data
             accessibility_type = AccessibilityTypeChoices.UNLOCKED

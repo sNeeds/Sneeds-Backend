@@ -30,7 +30,10 @@ def filter_around_gpa(profiles, gpa, offset):
 
     high_q = Q(educations__gpa__lte=gpa_high)
     low_q = Q(educations__gpa__gte=gpa_low)
-    return profiles.filter(high_q & low_q)
+
+    filtered_profiles = profiles.filter(high_q & low_q)
+
+    return filtered_profiles
 
 
 def filter_same_want_to_apply_grades(profiles, grades):

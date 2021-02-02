@@ -143,7 +143,7 @@ class StudentDetailedInfoBase(models.Model):
 
     def last_education(self):
         education_qs = Education.objects.filter(content_type=SDI_CT, object_id=self.id)
-        return education_qs.get_last_grade_education()
+        return education_qs.last_education()
 
     def language_certificates_str(self):
         return LanguageCertificate.objects.filter(content_type=SDI_CT, object_id=self.id).brief_str()
