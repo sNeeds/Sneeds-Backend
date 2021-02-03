@@ -15,9 +15,10 @@ User = get_user_model()
 
 
 class ApplyProfileGroupSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = ApplyProfileGroup
-        fields = ['id', 'apply_profiles', 'user', 'title', 'subtitle', 'price']
+        fields = ['id', 'apply_profiles', 'user', 'title', 'subtitle', 'price', 'normal_price']
         extra_kwargs = {
             'price': {'read_only': True}
         }

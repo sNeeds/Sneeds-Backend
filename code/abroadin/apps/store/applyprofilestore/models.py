@@ -55,6 +55,10 @@ class ApplyProfileGroup(Product):
             discount = 0.7
         return int((len(apply_profiles) * APPLY_PROFILE_PRICE_IN_DOLLAR * discount) / 1000) * 1000
 
+    @property
+    def normal_price(self):
+        return int((len(self.apply_profiles.all()) * APPLY_PROFILE_PRICE_IN_DOLLAR) / 1000) * 1000
+
 
 class SoldApplyProfileGroup(SoldProduct):
     apply_profiles = models.ManyToManyField(ApplyProfile)
