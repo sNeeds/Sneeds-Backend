@@ -69,12 +69,12 @@ class SimilarProfilesForFormTests(SimilarProfilesFunctionsBaseTests):
 
         self.class_instance = SimilarProfilesForForm(self.form_1)
 
-    def test__extract_form_data_majors(self):
+    def test__extract_form_majors(self):
         def check_majors_qs_same(majors, majors_list):
             qs = Major.objects.filter(id__in=[major.id for major in majors_list])
             self.assertQuerysetEqual(majors, qs, transform=lambda x: x, ordered=False)
 
-        func = self.class_instance._extract_related_majors
+        func = self.class_instance._extract_form_majors
         result = func()
         check_majors_qs_same(result, [self.major1])
 
@@ -87,3 +87,61 @@ class SimilarProfilesForFormTests(SimilarProfilesFunctionsBaseTests):
         result = func()
         check_majors_qs_same(result, [self.major1, self.major2, self.major3])
 
+    def test__get_related_majors(self):
+        func = self.class_instance._get_related_majors
+
+        # The hierarchy
+        # m -> mb1 -> mb1b1  -> mb1b1b1 -> mb1b1b1b1
+        #                                     -> mb1b1b2 -> mb1b1b2b1
+        #                   -> mb1b2 -> mb1b2b1 -> mb1b2b1b1
+        #                                      -> mb1b2b2
+        #        -> mb2 -> mb2b1  -> mb2b1b1
+
+        m = Major.objects.create(name="m")
+        mb1 = Major.objects.create(name="mb1", parent=m)
+        mb1b1 = Major.objects.create(name="mb1b1", parent=mb1)
+        mb1b1b1 = Major.objects.create(name="mb1b1b1", parent=mb1b1)
+        mb1b1b1b1 = Major.objects.create(name="mb1b1b1b1", parent=mb1b1b1)
+        mb1b1b2 = Major.objects.create(name="mb1b1b2", parent=mb1b1)
+        mb1b1b2b1 = Major.objects.create(name="mb1b1b2b1", parent=mb1b1b2)
+        mb1b2 = Major.objects.create(name="mb1b2", parent=mb1)
+        mb1b2b1 = Major.objects.create(name="mb1b2b1", parent=mb1b2)
+        mb1b2b2 = Major.objects.create(name="mb1b2b2", parent=mb1b2)
+        mb2 = Major.objects.create(name="mb2", parent=m)
+        mb2b1 = Major.objects.create(name="mb2b1", parent=mb2)
+        mb2b1b1 = Major.objects.create(name="mb2b1b1", parent=mb2b1)
+
+        majors = Major.objects.none()
+        result = func(majors)
+        self.assertQuerysetEqual(result, Major.objects.none(), transform=lambda x: x, ordered=False)
+
+        majors = Major.objects.filter(id=mb1b1b1b1.id)
+        result = func(majors)
+        self.assertSetEqual(
+            set(result),
+            {mb1b1, mb1b1b1, mb1b1b2, mb1b1b1b1, mb1b1b2, mb1b1b2b1}
+        )
+
+        majors = Major.objects.filter(id__in=[mb1b1b1b1.id, mb2b1.id])
+        result = func(majors)
+        self.assertSetEqual(
+            set(result),
+            {mb1b1, mb1b1b1, mb1b1b2, mb1b1b1b1, mb1b1b2, mb1b1b2b1, mb2b1, mb2b1b1}
+        )
+
+        majors = Major.objects.filter(id__in=[mb1b1.id])
+        result = func(majors)
+        self.assertQuerysetEqual(
+            result,
+            func(Major.objects.filter(id=mb1b1b1b1.id)),
+            transform= lambda x:x,
+            ordered=False
+        )
+
+        majors = Major.objects.filter(id__in=[m.id])
+        result = func(majors)
+        self.assertSetEqual(
+            set(result),
+            {m, mb1, mb1b1, mb1b1b1, mb1b1b1b1, mb1b1b2, mb1b1b2b1, mb1b2,
+             mb1b2b1, mb1b2b2, mb2, mb2b1, mb2b1b1}
+        )
