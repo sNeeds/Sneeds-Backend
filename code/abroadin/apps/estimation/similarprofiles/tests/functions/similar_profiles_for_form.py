@@ -74,15 +74,16 @@ class SimilarProfilesForFormTests(SimilarProfilesFunctionsBaseTests):
             qs = Major.objects.filter(id__in=[major.id for major in majors_list])
             self.assertQuerysetEqual(majors, qs, transform=lambda x: x, ordered=False)
 
-        data = self.class_instance._extract_form_data()
-        check_majors_qs_same(data['majors'], [self.major1])
+        func = self.class_instance._extract_related_majors
+        result = func()
+        check_majors_qs_same(result, [self.major1])
 
         self.form_ed_1.major = self.major2
         self.form_ed_1.save()
-        data = self.class_instance._extract_form_data()
-        check_majors_qs_same(data['majors'], [self.major1, self.major2])
+        result = func()
+        check_majors_qs_same(result, [self.major1, self.major2])
 
         self.wta.majors.add(self.major3)
-        data = self.class_instance._extract_form_data()
-        check_majors_qs_same(data['majors'], [self.major1, self.major2, self.major3])
+        result = func()
+        check_majors_qs_same(result, [self.major1, self.major2, self.major3])
 
