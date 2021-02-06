@@ -102,7 +102,7 @@ class SimilarProfilesForForm:
 
         return data
 
-    def _similar_profiles_for_form(self, majors, applied_grades, destination_countries, gpa_around):
+    def _similar_profiles_for_data(self, majors, applied_grades, destination_countries, gpa_around):
         profiles = ApplyProfile.objects.all()
         profiles = filter_around_gpa(profiles, gpa_around, offset=1)
         profiles = filter_same_want_to_apply_grades(profiles, applied_grades)
