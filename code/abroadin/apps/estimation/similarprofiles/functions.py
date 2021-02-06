@@ -68,25 +68,33 @@ class SimilarProfilesForForm:
     def __init__(self, form):
         self.form = form
 
-    def _extract_form_data(self):
-        want_to_apply = self.form.get_want_to_apply_or_none()
+    def _extract_form_majors(self):
+        want_to_apply = self.form.want_to_apply
         education_qs = self.form.educations.all()
 
         education_major_ids = education_qs.get_majors_id_list()
         education_majors_qs = Major.objects.id_to_qs(education_major_ids)
-
         want_to_apply_majors_qs = want_to_apply.majors.all()
 
         related_majors = education_majors_qs | want_to_apply_majors_qs
-        related_majors_parents = related_majors.top_nth_parents(3)
 
-        related_majors_all_children = related_majors_parents.get_all_children_majors()
+        return related_majors
+
+    def _get_related_majors(self, majors):
+        majors_parents = majors.top_nth_parents(3)
+        related_majors_parents_children = majors_parents.get_all_children_majors()
+
+        return related_majors_parents_children
+
+    def _extract_form_data(self):
+        want_to_apply = self.form.want_to_apply
+        education_qs = self.form.educations.all()
+
         grades_want_to_apply = want_to_apply.grades_want_to_apply()
         similar_destination_countries = get_want_to_apply_similar_countries(want_to_apply)
         last_grade_gpa = education_qs.last_education().gpa
 
         data = {
-            "majors": related_majors_all_children,
             "want_to_apply_grades": grades_want_to_apply,
             "destination_countries": similar_destination_countries,
             "last_grade_gpa": last_grade_gpa
@@ -105,14 +113,16 @@ class SimilarProfilesForForm:
         return profiles
 
     def find_similar_profiles(self):
-        data = self._extract_form_data()
+        want_to_apply = self.form.want_to_apply
+        education_qs = self.form.educations.all()
 
-        majors = data['majors']
-        applied_grades = data['want_to_apply_grades']
-        destination_counties = data['destination_countries']
-        gpa_around = data['last_grade_gpa']
+        form_majors = self._extract_form_majors()
+        majors = self._get_related_majors(form_majors)
+        applied_grades = want_to_apply.grades_want_to_apply()
+        destination_counties = get_want_to_apply_similar_countries(want_to_apply)
+        gpa_around = education_qs.last_education().gpa
 
-        profiles = self._similar_profiles_for_form(
+        profiles = self._similar_profiles_for_data(
             majors, applied_grades, destination_counties, gpa_around
         )
         return profiles

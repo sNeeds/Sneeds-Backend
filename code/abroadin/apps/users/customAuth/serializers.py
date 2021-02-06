@@ -51,6 +51,8 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         fields = [
             'email',
             'password',
+            'first_name',
+            'last_name',
             'phone_number',
             'token_response',
             'receive_marketing_email',
@@ -59,7 +61,9 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'password': {'write_only': True},
             'phone_number': {'required': True},
-            'receive_marketing_email': {'required': True}
+            'receive_marketing_email': {'required': True},
+            'first_name': {'required': False},
+            'last_name': {'required': False}
         }
 
     def get_token_response(self, obj):
@@ -87,6 +91,8 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             phone_number=validated_data.get('phone_number'),
             receive_marketing_email=validated_data.get('receive_marketing_email'),
             user_type=1,  # Only student can register with serializer
+            first_name=validated_data.get('first_name'),
+            last_name=validated_data.get('last_name')
         )
         user_obj.set_password(validated_data.get('password'))
         user_obj.save()
