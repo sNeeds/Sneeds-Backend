@@ -1,7 +1,7 @@
 from django.contrib.contenttypes.models import ContentType
 
 from abroadin.apps.estimation.form.models import WantToApply
-from abroadin.apps.applyprofile.models import Admission
+from abroadin.apps.applyprofile.models import Admission, ApplyProfile
 from abroadin.apps.data.applydata.models import Education
 from abroadin.apps.data.account.models import Major
 
@@ -134,7 +134,7 @@ class SimilarProfilesForFormTests(SimilarProfilesFunctionsBaseTests):
         self.assertQuerysetEqual(
             result,
             func(Major.objects.filter(id=mb1b1b1b1.id)),
-            transform= lambda x:x,
+            transform=lambda x: x,
             ordered=False
         )
 
@@ -145,3 +145,12 @@ class SimilarProfilesForFormTests(SimilarProfilesFunctionsBaseTests):
             {m, mb1, mb1b1, mb1b1b1, mb1b1b1b1, mb1b1b2, mb1b1b2b1, mb1b2,
              mb1b2b1, mb1b2b2, mb2, mb2b1, mb2b1b1}
         )
+
+    # def test__similar_profiles_for_data(self):
+    #     func = self.class_instance._similar_profiles_for_data
+    #
+    #     profile = ApplyProfile.objects.create(
+    #
+    #     )
+    #
+    # def

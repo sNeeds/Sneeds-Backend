@@ -113,14 +113,16 @@ class SimilarProfilesForForm:
         return profiles
 
     def find_similar_profiles(self):
-        data = self._extract_form_data()
+        want_to_apply = self.form.want_to_apply
+        education_qs = self.form.educations.all()
 
-        majors = self._extract_related_majors()
-        applied_grades = data['want_to_apply_grades']
-        destination_counties = data['destination_countries']
-        gpa_around = data['last_grade_gpa']
+        form_majors = self._extract_form_majors()
+        majors = self._get_related_majors(form_majors)
+        applied_grades = want_to_apply.grades_want_to_apply()
+        destination_counties = get_want_to_apply_similar_countries(want_to_apply)
+        gpa_around = education_qs.last_education().gpa
 
-        profiles = self._similar_profiles_for_form(
+        profiles = self._similar_profiles_for_data(
             majors, applied_grades, destination_counties, gpa_around
         )
         return profiles
