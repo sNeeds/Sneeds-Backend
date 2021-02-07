@@ -221,20 +221,21 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
     def _is_unlocked(self, obj):
         assert self.context is not None, "context is None"
         assert self.context.get('request') is not None, "context['request'] is None"
-
-        user = self.context['request'].user
-        is_unlocked_apply_profile = False
-        if not user.is_authenticated:
-            is_unlocked_apply_profile = False
-            return is_unlocked_apply_profile
-
-        if self.cached_user_bought_apply_profiles_id is None:
-            self.cached_user_bought_apply_profiles_id = get_user_bought_apply_profiles(
-                user=user).values_list('id', flat=True)
-
-        if obj.id in self.cached_user_bought_apply_profiles_id:
-            is_unlocked_apply_profile = True
-        return is_unlocked_apply_profile
+        #
+        # user = self.context['request'].user
+        # is_unlocked_apply_profile = False
+        # if not user.is_authenticated:
+        #     is_unlocked_apply_profile = False
+        #     return is_unlocked_apply_profile
+        #
+        # if self.cached_user_bought_apply_profiles_id is None:
+        #     self.cached_user_bought_apply_profiles_id = get_user_bought_apply_profiles(
+        #         user=user).values_list('id', flat=True)
+        #
+        # if obj.id in self.cached_user_bought_apply_profiles_id:
+        #     is_unlocked_apply_profile = True
+        # return is_unlocked_apply_profile
+        return True
 
     def get_accessibility_type(self, obj):
         if self._is_unlocked(obj):
