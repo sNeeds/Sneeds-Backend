@@ -162,8 +162,16 @@ class LockedAdmissionSerializer(FullAdmissionSerializer):
     class Meta:
         model = Admission
         fields = [
-            'id', 'apply_profile', 'enroll_year', 'scholarship', 'accepted', 'description', 'country',
-            'destination', 'major', 'grade',
+            'id',
+            'apply_profile',
+            'enroll_year',
+            'scholarship',
+            'accepted',
+            'description',
+            'country',
+            'destination',
+            'major',
+            'grade',
             'accessibility_type',
         ]
 
@@ -202,12 +210,15 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = ApplyProfile
         fields = [
-            'id', 'name', 'gap',
+            'id',
+            'name',
+            'gap',
             'accessibility_type',
             'admissions',
             'main_admission',
             'publications',
-            'educations', 'last_education',
+            'educations',
+            'last_education',
             'language_certificates',
         ]
 
@@ -221,21 +232,20 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
     def _is_unlocked(self, obj):
         assert self.context is not None, "context is None"
         assert self.context.get('request') is not None, "context['request'] is None"
-        #
-        # user = self.context['request'].user
-        # is_unlocked_apply_profile = False
-        # if not user.is_authenticated:
-        #     is_unlocked_apply_profile = False
-        #     return is_unlocked_apply_profile
-        #
-        # if self.cached_user_bought_apply_profiles_id is None:
-        #     self.cached_user_bought_apply_profiles_id = get_user_bought_apply_profiles(
-        #         user=user).values_list('id', flat=True)
-        #
-        # if obj.id in self.cached_user_bought_apply_profiles_id:
-        #     is_unlocked_apply_profile = True
-        # return is_unlocked_apply_profile
-        return True
+
+        user = self.context['request'].user
+        is_unlocked_apply_profile = False
+        if not user.is_authenticated:
+            is_unlocked_apply_profile = False
+            return is_unlocked_apply_profile
+
+        if self.cached_user_bought_apply_profiles_id is None:
+            self.cached_user_bought_apply_profiles_id = get_user_bought_apply_profiles(
+                user=user).values_list('id', flat=True)
+
+        if obj.id in self.cached_user_bought_apply_profiles_id:
+            is_unlocked_apply_profile = True
+        return is_unlocked_apply_profile
 
     def get_accessibility_type(self, obj):
         if self._is_unlocked(obj):
