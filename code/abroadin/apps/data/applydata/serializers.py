@@ -264,7 +264,6 @@ class GMATCertificateCelerySerializer(serializers.ModelSerializer):
         model = GMATCertificate
         validators = []
         fields = '__all__'
-        # exclude = ['content_object']
 
     default_validators = []
 
@@ -312,7 +311,6 @@ class GRESubjectCertificateCelerySerializer(serializers.ModelSerializer):
         model = GRESubjectCertificate
         validators = []
         fields = '__all__'
-        # exclude = ['content_object']
 
     default_validators = []
 
