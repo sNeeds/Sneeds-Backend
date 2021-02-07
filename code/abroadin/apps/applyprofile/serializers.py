@@ -62,9 +62,8 @@ class PartialEducationSerializer(FullEducationSerializer):
 
     class Meta(ad_serializers.EducationSerializer.Meta):
         fields = [
-            'id', 'university', 'grade', 'major', 'graduate_in', 'thesis_title', 'gpa', 'country',
-            'content_type', 'object_id',
-            'accessibility_type'
+            'id', 'university', 'grade', 'major', 'graduate_in', 'thesis_title', 'gpa',
+            'country', 'content_type', 'object_id', 'accessibility_type'
         ]
 
     def validate(self, attrs):
@@ -163,8 +162,16 @@ class LockedAdmissionSerializer(FullAdmissionSerializer):
     class Meta:
         model = Admission
         fields = [
-            'id', 'apply_profile', 'enroll_year', 'scholarship', 'accepted', 'description', 'country',
-            'destination', 'major', 'grade',
+            'id',
+            'apply_profile',
+            'enroll_year',
+            'scholarship',
+            'accepted',
+            'description',
+            'country',
+            'destination',
+            'major',
+            'grade',
             'accessibility_type',
         ]
 
@@ -203,12 +210,15 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = ApplyProfile
         fields = [
-            'id', 'name', 'gap',
+            'id',
+            'name',
+            'gap',
             'accessibility_type',
             'admissions',
             'main_admission',
             'publications',
-            'educations', 'last_education',
+            'educations',
+            'last_education',
             'language_certificates',
         ]
 
@@ -245,7 +255,7 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
     def get_admissions(self, obj):
         return self.represent_admissions(obj, self._is_unlocked(obj))
 
-    def represent_admissions(self, obj, is_unlocked,):
+    def represent_admissions(self, obj, is_unlocked, ):
         if is_unlocked:
             objects = FullAdmissionSerializer(obj.admissions.all(), many=True, context=self.context).data
             accessibility_type = AccessibilityTypeChoices.UNLOCKED
@@ -273,7 +283,7 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
     def get_publications(self, obj):
         return self.represent_publications(obj, self._is_unlocked(obj))
 
-    def represent_publications(self, obj, is_unlocked,):
+    def represent_publications(self, obj, is_unlocked, ):
         if is_unlocked:
             objects = FullPublicationSerializer(obj.publications.all(), many=True, context=self.context).data
             accessibility_type = AccessibilityTypeChoices.UNLOCKED
@@ -286,7 +296,7 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
     def get_educations(self, obj):
         return self.represent_educations(obj, self._is_unlocked(obj))
 
-    def represent_educations(self, obj, is_unlocked,):
+    def represent_educations(self, obj, is_unlocked, ):
         if is_unlocked:
             objects = FullEducationSerializer(obj.educations.all(), many=True, context=self.context).data
             accessibility_type = AccessibilityTypeChoices.UNLOCKED
@@ -314,7 +324,7 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
     def get_language_certificates(self, obj):
         return self.represent_language_certificates(obj, self._is_unlocked(obj))
 
-    def represent_language_certificates(self, obj, is_unlocked,):
+    def represent_language_certificates(self, obj, is_unlocked, ):
         if is_unlocked:
             objects = serialize_language_certificates(obj.language_certificates.all(), self, RELATED_CLASSES)
             accessibility_type = AccessibilityTypeChoices.UNLOCKED
