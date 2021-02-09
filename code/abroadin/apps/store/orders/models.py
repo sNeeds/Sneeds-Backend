@@ -29,7 +29,8 @@ class OrderManager(models.QuerySet):
             subtotal=cart.subtotal,
         )
 
-        cart.sell()
+        sold_products = cart.sell()
+        order.sold_products.set(sold_products)
         cart.delete()
 
         return order
