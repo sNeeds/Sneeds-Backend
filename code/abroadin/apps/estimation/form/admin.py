@@ -100,6 +100,23 @@ class StudentDetailedInfoBaseAdmin(admin.ModelAdmin):
     list_display = ['id']
 
 
+def get_destination_universities(form):
+    return [uni.name for uni in form.want_to_apply.universities.all()] if form.is_complete else []
+
+
+def get_destination_countries(form):
+    wta_uni_countries = list(form.want_to_apply.universities.all().values_list('country__name', flat=True))\
+        if form.get_want_to_apply_or_none() else []
+    wta_countries = [uni.name for uni in form.want_to_apply.countries.all()] if form.want_to_apply else []
+    for c in wta_countries:
+        if c not in wta_uni_countries: wta_uni_countries.append(c)
+    return wta_uni_countries
+
+def get_similar_admission(form):
+    return [(a.id, a.enroll_year, a.scholarship) for a in SimilarProfilesForForm(form).find_similar_admissions()]\
+        if form.is_complete else []
+
+
 @admin.register(models.StudentDetailedInfo)
 class StudentDetailedInfoAdmin(StudentDetailedInfoBaseAdmin):
     inlines = [
@@ -116,9 +133,9 @@ class StudentDetailedInfoAdmin(StudentDetailedInfoBaseAdmin):
             "Similar Profiles CSV Export",
             fields=['id', 'updated', 'user_id', 'user__email', 'user__phone_number',
                     'last_education__gpa', 'last_education__university__country', 'last_education__university__name',
-                    lambda x: [uni.name for uni in x.want_to_apply.universities.all()] if x.is_complete else [],
-                    lambda x: list(x.want_to_apply.universities.all().values_list('country__name', flat=True)) if x.get_want_to_apply_or_none() else [],
-                    lambda x: [(a.id, a.enroll_year, a.scholarship) for a in SimilarProfilesForForm(x).find_similar_admissions_if_complete()],
+                    get_destination_countries,
+                    get_destination_universities,
+                    get_similar_admission,
                     ],
             file_name='Forms_Similar_Profiles_' + str(datetime.now()),
         )
@@ -128,3 +145,4 @@ class StudentDetailedInfoAdmin(StudentDetailedInfoBaseAdmin):
         return instance.is_complete
 
     is_complete.boolean = True
+
