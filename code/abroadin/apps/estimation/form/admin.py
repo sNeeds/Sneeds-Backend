@@ -112,6 +112,7 @@ def get_destination_countries(form):
         if c not in wta_uni_countries: wta_uni_countries.append(c)
     return wta_uni_countries
 
+
 def get_similar_admission(form):
     return [(a.id, a.enroll_year, a.scholarship) for a in SimilarProfilesForForm(form).find_similar_admissions()]\
         if form.is_complete else []
