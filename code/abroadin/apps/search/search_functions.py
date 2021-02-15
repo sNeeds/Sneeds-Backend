@@ -7,7 +7,7 @@ from django.db.models.functions import Ln, Length
 from abroadin.apps.data.account.models import Country
 from abroadin.apps.users.consultants.models import ConsultantProfile, StudyInfo
 
-UNIVERSITY_MAX_QUERY_LENGTH = 11
+UNIVERSITY_MAX_QUERY_LENGTH = 10
 
 
 def search_consultants(qs, phrase):
@@ -76,14 +76,14 @@ def shorten_query_(phrase: str):
     phrase = phrase.strip()
     if len(phrase) > UNIVERSITY_MAX_QUERY_LENGTH:
         pieces = phrase.split(' ')
-        refined_pieces = []
-        # print(pieces)
-        if len(pieces) > 1:
-            for piece in pieces:
-                if len(piece) > 0: refined_pieces.append(piece[:4])
-            phrase = ' '.join(refined_pieces)
-        else:
+        if len(pieces) == 1:
             phrase = phrase[:UNIVERSITY_MAX_QUERY_LENGTH]
+        else:
+            refined_pieces = []
+            for i in range(0, 3):
+                if len(pieces[i]) > 0: refined_pieces.append(pieces[i][:4])
+            phrase = ' '.join(refined_pieces)
+
     return phrase
 
 
