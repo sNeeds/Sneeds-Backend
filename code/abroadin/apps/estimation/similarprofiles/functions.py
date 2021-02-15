@@ -126,3 +126,14 @@ class SimilarProfilesForForm:
             majors, applied_grades, destination_counties, gpa_around
         )
         return profiles
+
+    def find_similar_admissions(self):
+        admissions = []
+        for profile in self.find_similar_profiles():
+            admissions += profile.admissions.all()
+        return admissions
+
+    def find_similar_admissions_if_complete(self):
+        if self.form.is_complete:
+            return self.find_similar_admissions()
+        return []

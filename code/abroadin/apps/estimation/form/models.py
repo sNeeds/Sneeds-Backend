@@ -365,7 +365,7 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
 
     def _has_completed_want_to_apply(self):
         want_to_apply = self.get_want_to_apply_or_none()
-        if not want_to_apply:
+        if want_to_apply is None:
             return False
         return want_to_apply.is_complete
 

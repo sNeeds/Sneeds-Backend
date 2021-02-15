@@ -1,15 +1,17 @@
-from django.contrib import admin
-from django.contrib.contenttypes.admin import GenericTabularInline
-
+from datetime import datetime
 
 from rangefilter.filter import DateTimeRangeFilter
 
+from django.contrib import admin
+from django.contrib.contenttypes.admin import GenericTabularInline
+
 from abroadin.apps.data.applydata import models as ad_models
+from abroadin.utils.custom.admin.actions import export_as_csv_action
+from abroadin.apps.estimation.similarprofiles.functions import SimilarProfilesForForm
+
 from . import models
 
-from abroadin.apps.data.applydata.models import LanguageCertificate
-
-LanguageCertificateType = LanguageCertificate.LanguageCertificateType
+LanguageCertificateType = ad_models.LanguageCertificate.LanguageCertificateType
 
 
 class EducationInline(GenericTabularInline):
@@ -41,7 +43,7 @@ class GRESubjectCertificateInline(GenericTabularInline):
         queryset = self.model.objects.filter(
             certificate_type__in=[LanguageCertificateType.GRE_CHEMISTRY,
                                   LanguageCertificateType.GRE_LITERATURE,
-                                  LanguageCertificate.LanguageCertificateType.GRE_MATHEMATICS]
+                                  LanguageCertificateType.GRE_MATHEMATICS]
         )
         if not self.has_view_or_change_permission(request):
             queryset = queryset.none()
@@ -109,6 +111,18 @@ class StudentDetailedInfoAdmin(StudentDetailedInfoBaseAdmin):
     )
     list_display = ['id', 'user', 'value', 'rank', 'updated', 'created', 'is_complete']
     search_fields = ['id', 'user__email']
+    actions = [
+        export_as_csv_action(
+            "Similar Profiles CSV Export",
+            fields=['id', 'updated', 'user_id', 'user__email', 'user__phone_number',
+                    'last_education__gpa', 'last_education__university__country', 'last_education__university__name',
+                    lambda x: [uni.name for uni in x.want_to_apply.universities.all()] if x.is_complete else [],
+                    lambda x: list(x.want_to_apply.universities.all().values_list('country__name', flat=True)) if x.get_want_to_apply_or_none() else [],
+                    lambda x: [(a.id, a.enroll_year, a.scholarship) for a in SimilarProfilesForForm(x).find_similar_admissions_if_complete()],
+                    ],
+            file_name='Forms_Similar_Profiles_' + str(datetime.now()),
+        )
+    ]
 
     def is_complete(self, instance):
         return instance.is_complete
