@@ -7,6 +7,8 @@ from django.db.models.functions import Ln, Length
 from abroadin.apps.data.account.models import Country
 from abroadin.apps.users.consultants.models import ConsultantProfile, StudyInfo
 
+UNIVERSITY_MAX_QUERY_LENGTH = 11
+
 
 def search_consultants(qs, phrase):
     if phrase is None:
@@ -50,7 +52,7 @@ def search_country(qs, phrase):
     return queryset | other_queryset
 
 
-def search_university(qs, phrase):
+def search_university(qs, phrase: str):
     other_queryset = qs.filter(search_name__istartswith='other').annotate(
         similarity=Value(0.001, output_field=FloatField()),
         search_name_length=Value(0.001, output_field=FloatField()),
@@ -65,6 +67,29 @@ def search_university(qs, phrase):
         filter(t__gt=0.4).order_by('-t')
 
     return queryset | other_queryset
+
+
+def shorten_query_(phrase: str):
+    phrase = phrase.lower()
+    phrase = phrase.replace('university', '')
+    phrase = phrase.replace('of', '')
+    phrase = phrase.strip()
+    if len(phrase) > UNIVERSITY_MAX_QUERY_LENGTH:
+        pieces = phrase.split(' ')
+        refined_pieces = []
+        # print(pieces)
+        if len(pieces) > 1:
+            for piece in pieces:
+                if len(piece) > 0: refined_pieces.append(piece[:4])
+            phrase = ' '.join(refined_pieces)
+        else:
+            phrase = phrase[:UNIVERSITY_MAX_QUERY_LENGTH]
+    return phrase
+
+
+def limited_query_search_university(qs, phrase: str):
+    phrase = shorten_query_(phrase)
+    return search_university(qs, phrase)
 
 
 def search_major(qs, phrase):
