@@ -81,7 +81,8 @@ def shorten_university_query(phrase: str):
             phrase = phrase[:UNIVERSITY_MAX_QUERY_LENGTH]
         else:
             refined_pieces = []
-            for i in range(0, 3):
+            it_limit = 3 if len(pieces) > 3 else len(pieces)
+            for i in range(0, it_limit):
                 if len(pieces[i]) > 0: refined_pieces.append(pieces[i][:4])
             phrase = ' '.join(refined_pieces)
 
@@ -120,7 +121,8 @@ def shorten_major_query(phrase: str):
             phrase = phrase[:MAJOR_MAX_QUERY_LENGTH]
         else:
             refined_pieces = []
-            for i in range(0, 3):
+            it_limit = 3 if len(pieces) > 3 else len(pieces)
+            for i in range(0, it_limit):
                 if len(pieces[i]) > 0: refined_pieces.append(pieces[i][:4])
             phrase = ' '.join(refined_pieces)
 

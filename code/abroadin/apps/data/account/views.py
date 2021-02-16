@@ -6,7 +6,7 @@ from abroadin.base.api import generics
 
 from . import models
 from . import serializers
-from ...search.search_functions import search_country, search_university, search_major, limited_query_search_university
+from ...search.search_functions import search_country, limited_query_search_major, limited_query_search_university
 
 
 class CountryDetail(generics.CRetrieveAPIView):
@@ -86,6 +86,6 @@ class MajorForFormList(generics.CListAPIView):
         request = self.request
         search_terms = request.query_params.get('search', '')
         search_term = search_terms[:16]
-        search_result = search_major(models.Major.objects.all(), search_term)
+        search_result = limited_query_search_major(models.Major.objects.all(), search_term)
 
         return search_result
