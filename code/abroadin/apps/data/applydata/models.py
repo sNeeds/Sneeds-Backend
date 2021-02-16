@@ -20,10 +20,10 @@ from abroadin.apps.data.applydata.values import VALUES_WITH_ATTRS
 from abroadin.base.mixins.validators import GenericForeignkeyUniqueTogetherValidationMixin
 from abroadin.base.models.abstracts import InheritanceCastModel
 
-try:
-    SDI_CT = ContentType.objects.get(app_label='form', model='studentdetailedinfo')
-except ContentType.DoesNotExist:
-    SDI_CT = None
+# try:
+#     SDI_CT = ContentType.objects.get(app_label='form', model='studentdetailedinfo')
+# except ContentType.DoesNotExist:
+#     SDI_CT = None
 
 
 class GradeChoices(models.TextChoices):
