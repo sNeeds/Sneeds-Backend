@@ -25,6 +25,7 @@ try:
 except ContentType.DoesNotExist:
     SDI_CT = None
 
+
 class GradeChoices(models.TextChoices):
     # Don't change order
     BACHELOR = 'Bachelor', 'Bachelor'
