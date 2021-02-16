@@ -25,7 +25,12 @@ from abroadin.apps.data.applydata import models as ad_models
 
 from abroadin.apps.data.account.validators import validate_resume_file_size
 
-SDI_CT = ContentType.objects.get(app_label='form', model='studentdetailedinfo')
+
+def get_sdi_ct_or_none():
+    try:
+        return ContentType.objects.get(app_label='form', model='studentdetailedinfo')
+    except ContentType.DoesNotExist:
+        return None
 
 
 class WantToApply(models.Model):
@@ -142,11 +147,11 @@ class StudentDetailedInfoBase(models.Model):
         return found
 
     def last_education(self):
-        education_qs = Education.objects.filter(content_type=SDI_CT, object_id=self.id)
+        education_qs = Education.objects.filter(content_type=get_sdi_ct_or_none(), object_id=self.id)
         return education_qs.last_education()
 
     def language_certificates_str(self):
-        return LanguageCertificate.objects.filter(content_type=SDI_CT, object_id=self.id).brief_str()
+        return LanguageCertificate.objects.filter(content_type=get_sdi_ct_or_none(), object_id=self.id).brief_str()
 
 
 class StudentDetailedInfo(StudentDetailedInfoBase):
@@ -290,10 +295,10 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
 
     def _compute_value(self):
         publications = Publication.objects.filter(
-            content_type=SDI_CT, object_id=self.id
+            content_type=get_sdi_ct_or_none(), object_id=self.id
         )
         languages = LanguageCertificate.objects.filter(
-            content_type=SDI_CT, object_id=self.id
+            content_type=get_sdi_ct_or_none(), object_id=self.id
         )
 
         total_value = 0
