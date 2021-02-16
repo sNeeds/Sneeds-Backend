@@ -5,7 +5,8 @@ from . import views
 app_name = "data.applydata"
 
 urlpatterns = [
-    path('choices/grades/', views.GradesListView.as_view()),
+    path('choices/grades/', views.GradesListView.as_view(),
+         name='grade-choices-list'),
 
     path('choices/apply-semester-years/', views.SemesterYearListView.as_view(),
          name="apply-semester-year-list"),

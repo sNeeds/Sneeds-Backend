@@ -1,10 +1,10 @@
 import unicodecsv
-from django.contrib.admin.utils import lookup_field
+from abroadin.base.django.contrib.admin.utils import lookup_field, lookup_field_support_nested
 from django.http import HttpResponse
 
 
 def export_as_csv_action(description="Export selected objects as CSV file",
-                         fields=None, exclude=None, header=True):
+                         fields=None, exclude=None, header=True, file_name=None):
     """
     This function returns an export csv action
     'fields' and 'exclude' work like in django ModelForm
@@ -20,7 +20,8 @@ def export_as_csv_action(description="Export selected objects as CSV file",
             field_names = fields
 
         response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=%s.csv' % str(opts).replace('.', '_')
+        res_file_name = file_name if file_name else str(opts).replace('.', '_')
+        response['Content-Disposition'] = 'attachment; filename=%s.csv' % res_file_name
 
         writer = unicodecsv.writer(response, encoding='utf-8')
         if header:
@@ -28,7 +29,7 @@ def export_as_csv_action(description="Export selected objects as CSV file",
         for obj in queryset:
             row = []
             for field in field_names:
-                _, _, value = lookup_field(field, obj, modeladmin)
+                _, _, value = lookup_field_support_nested(field, obj, modeladmin)
                 row.append(value)
             writer.writerow(row)
 

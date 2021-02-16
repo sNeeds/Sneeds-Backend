@@ -1,15 +1,17 @@
-from django.contrib import admin
-from django.contrib.contenttypes.admin import GenericTabularInline
-
+from datetime import datetime
 
 from rangefilter.filter import DateTimeRangeFilter
 
+from django.contrib import admin
+from django.contrib.contenttypes.admin import GenericTabularInline
+
 from abroadin.apps.data.applydata import models as ad_models
+from abroadin.utils.custom.admin.actions import export_as_csv_action
+from abroadin.apps.estimation.similarprofiles.functions import SimilarProfilesForForm
+
 from . import models
 
-from abroadin.apps.data.applydata.models import LanguageCertificate
-
-LanguageCertificateType = LanguageCertificate.LanguageCertificateType
+LanguageCertificateType = ad_models.LanguageCertificate.LanguageCertificateType
 
 
 class EducationInline(GenericTabularInline):
@@ -41,7 +43,7 @@ class GRESubjectCertificateInline(GenericTabularInline):
         queryset = self.model.objects.filter(
             certificate_type__in=[LanguageCertificateType.GRE_CHEMISTRY,
                                   LanguageCertificateType.GRE_LITERATURE,
-                                  LanguageCertificate.LanguageCertificateType.GRE_MATHEMATICS]
+                                  LanguageCertificateType.GRE_MATHEMATICS]
         )
         if not self.has_view_or_change_permission(request):
             queryset = queryset.none()
@@ -98,6 +100,24 @@ class StudentDetailedInfoBaseAdmin(admin.ModelAdmin):
     list_display = ['id']
 
 
+def get_destination_universities(form):
+    return [uni.name for uni in form.want_to_apply.universities.all()] if form.is_complete else []
+
+
+def get_destination_countries(form):
+    wta_uni_countries = list(form.want_to_apply.universities.all().values_list('country__name', flat=True))\
+        if form.get_want_to_apply_or_none() else []
+    wta_countries = [uni.name for uni in form.want_to_apply.countries.all()] if form.want_to_apply else []
+    for c in wta_countries:
+        if c not in wta_uni_countries: wta_uni_countries.append(c)
+    return wta_uni_countries
+
+
+def get_similar_admission(form):
+    return [(a.id, a.enroll_year, a.scholarship) for a in SimilarProfilesForForm(form).find_similar_admissions()]\
+        if form.is_complete else []
+
+
 @admin.register(models.StudentDetailedInfo)
 class StudentDetailedInfoAdmin(StudentDetailedInfoBaseAdmin):
     inlines = [
@@ -109,8 +129,21 @@ class StudentDetailedInfoAdmin(StudentDetailedInfoBaseAdmin):
     )
     list_display = ['id', 'user', 'value', 'rank', 'updated', 'created', 'is_complete']
     search_fields = ['id', 'user__email']
+    actions = [
+        export_as_csv_action(
+            "Similar Profiles CSV Export",
+            fields=['id', 'updated', 'user_id', 'user__email', 'user__phone_number',
+                    'last_education__gpa', 'last_education__university__country', 'last_education__university__name',
+                    get_destination_countries,
+                    get_destination_universities,
+                    get_similar_admission,
+                    ],
+            file_name='Forms_Similar_Profiles_' + str(datetime.now()),
+        )
+    ]
 
     def is_complete(self, instance):
         return instance.is_complete
 
     is_complete.boolean = True
+

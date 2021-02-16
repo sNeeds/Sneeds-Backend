@@ -140,7 +140,7 @@ class Product(InheritanceCastModel):
         raise NotImplementedError
 
     def sell(self):
-        self.delete()
+        raise NotImplementedError
 
 
 class TimeSlotSale(Product):
@@ -213,7 +213,7 @@ class TimeSlotSale(Product):
         ordering = ['start_time', ]
 
 
-class SoldProduct(models.Model):
+class SoldProduct(InheritanceCastModel):
     price = models.PositiveIntegerField()
     sold_to = models.ForeignKey(User, blank=True, on_delete=models.PROTECT)
 

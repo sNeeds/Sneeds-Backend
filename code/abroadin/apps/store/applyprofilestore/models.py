@@ -42,7 +42,8 @@ class ApplyProfileGroup(Product):
             price=self.price
         )
         sold_apply_profile_group.apply_profiles.set(self.apply_profiles.all())
-        super().sell()
+        self.delete()
+        return sold_apply_profile_group
 
     def update_price(self):
         self.price = self.calculate_profiles_price(self.apply_profiles.all())

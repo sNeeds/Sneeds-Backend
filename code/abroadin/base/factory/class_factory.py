@@ -5,6 +5,7 @@ def exclude_meta_fields_class_factory(base_class, exclude_fields):
     class MetaUpdatedClass(base_class):
         class Meta(base_class.Meta):
             fields = list(set(base_class.Meta.fields) - exclude_fields)
+            ref_name = base_class.__name__
 
     meta_fields = base_class.Meta.fields
     if not set(exclude_fields) <= set(meta_fields):

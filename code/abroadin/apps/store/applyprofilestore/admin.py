@@ -3,5 +3,11 @@ from django.contrib import admin
 from . import models
 
 
-admin.site.register(models.ApplyProfileGroup)
-admin.site.register(models.SoldApplyProfileGroup)
+@admin.register(models.ApplyProfileGroup)
+class ApplyProfileGroup(admin.ModelAdmin):
+    filter_horizontal = ('apply_profiles',)
+
+
+@admin.register(models.SoldApplyProfileGroup)
+class SoldApplyProfileGroup(admin.ModelAdmin):
+    filter_horizontal = ('apply_profiles',)

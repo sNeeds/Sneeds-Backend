@@ -82,3 +82,8 @@ class ApplyProfileAdmin(admin.ModelAdmin):
         GREPsychologyCertificateInline,
         DuolingoCertificateInline,
     ]
+
+
+@admin.register(Admission)
+class AdmissionAdmin(admin.ModelAdmin):
+    autocomplete_fields = ['destination', 'major']

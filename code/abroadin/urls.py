@@ -23,7 +23,7 @@ urlpatterns = [
                   path('admin/', admin.site.urls),
                   path('api-auth/', include('rest_framework.urls')),
 
-                  # path('docs/', include('abroadin.apps.docs.urls')),
+                  path('docs/', include('abroadin.apps.docs.urls')),
                   path('chat/', include('abroadin.apps.chats.urls')),
                   path('utils/', include('abroadin.apps.customUtils.urls')),
                   path('users/', include('abroadin.apps.users.urls')),

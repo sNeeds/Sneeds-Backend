@@ -5,7 +5,7 @@ from rest_framework import status, serializers
 
 from abroadin.apps.store.carts.models import Cart
 from abroadin.apps.store.discounts.models import TimeSlotSaleNumberDiscount
-from abroadin.apps.store.orders import Order
+from abroadin.apps.store.orders.models import Order
 from abroadin.apps.store.storeBase.serializers import SoldTimeSlotSaleSerializer
 from abroadin.apps.store.storePackages.serializers import SoldStorePaidPackagePhaseSerializer
 from abroadin.utils.custom.TestClasses import CustomAPITestCase

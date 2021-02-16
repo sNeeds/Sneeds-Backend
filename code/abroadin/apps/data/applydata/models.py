@@ -20,7 +20,12 @@ from abroadin.apps.data.applydata.values import VALUES_WITH_ATTRS
 from abroadin.base.mixins.validators import GenericForeignkeyUniqueTogetherValidationMixin
 from abroadin.base.models.abstracts import InheritanceCastModel
 
-SDI_CT = ContentType.objects.get(app_label='form', model='studentdetailedinfo')
+
+def get_sdi_ct_or_none():
+    try:
+        return ContentType.objects.get(app_label='form', model='studentdetailedinfo')
+    except ContentType.DoesNotExist:
+        return None
 
 
 class GradeChoices(models.TextChoices):
@@ -192,7 +197,7 @@ class Education(GenericForeignkeyUniqueTogetherValidationMixin, models.Model):
 
     @classmethod
     def get_gpa_user_store_based_positions(cls, sdi):
-        user_last_grade = cls.objects.filter(content_type=SDI_CT, object_id=sdi.id) \
+        user_last_grade = cls.objects.filter(content_type=get_sdi_ct_or_none(), object_id=sdi.id) \
             .order_by('-graduate_in').first()
         if user_last_grade is None:
             return ['0.0']
@@ -200,7 +205,7 @@ class Education(GenericForeignkeyUniqueTogetherValidationMixin, models.Model):
 
     @classmethod
     def get_gpa_user_view_based_positions(cls, sdi):
-        user_last_grade = cls.objects.filter(content_type=SDI_CT, object_id=sdi.id) \
+        user_last_grade = cls.objects.filter(content_type=get_sdi_ct_or_none(), object_id=sdi.id) \
             .order_by('-graduate_in').first()
         if user_last_grade is None:
             return None
@@ -285,12 +290,12 @@ class Publication(models.Model):
 
     @classmethod
     def get_publication_count_user_store_based_positions(cls, sdi):
-        return [str(cls.objects.filter(content_type=SDI_CT, object_id=sdi.id).count())]
+        return [str(cls.objects.filter(content_type=get_sdi_ct_or_none(), object_id=sdi.id).count())]
 
     @classmethod
     def get_publication_count_user_view_based_positions(cls, sdi):
         return [cls.convert_count_chart_store_to_view_label(
-            str(cls.objects.filter(content_type=SDI_CT, object_id=sdi.id).count()))
+            str(cls.objects.filter(content_type=get_sdi_ct_or_none(), object_id=sdi.id).count()))
         ]
 
     @classmethod
@@ -322,7 +327,7 @@ class Publication(models.Model):
 
     @classmethod
     def get_publication_type_user_store_based_positions(cls, sdi):
-        qs = cls.objects.filter(content_type=SDI_CT, object_id=sdi.id)
+        qs = cls.objects.filter(content_type=get_sdi_ct_or_none(), object_id=sdi.id)
         positions = []
 
         for obj in qs:
@@ -331,7 +336,7 @@ class Publication(models.Model):
 
     @classmethod
     def get_publication_type_user_view_based_positions(cls, sdi):
-        qs = cls.objects.filter(content_type=SDI_CT, object_id=sdi.id)
+        qs = cls.objects.filter(content_type=get_sdi_ct_or_none(), object_id=sdi.id)
         positions = []
 
         for obj in qs:
@@ -349,7 +354,7 @@ class Publication(models.Model):
 
     @classmethod
     def get_publication_impact_factor_user_store_based_positions(cls, sdi):
-        qs = cls.objects.filter(content_type=SDI_CT, object_id=sdi.id)
+        qs = cls.objects.filter(content_type=get_sdi_ct_or_none(), object_id=sdi.id)
         positions = []
 
         for obj in qs:
@@ -358,7 +363,7 @@ class Publication(models.Model):
 
     @classmethod
     def get_publication_impact_factor_user_view_based_positions(cls, sdi):
-        qs = cls.objects.filter(content_type=SDI_CT, object_id=sdi.id)
+        qs = cls.objects.filter(content_type=get_sdi_ct_or_none(), object_id=sdi.id)
         positions = []
 
         for obj in qs:
@@ -417,13 +422,13 @@ class Publication(models.Model):
 
     @classmethod
     def get_publications_score_user_store_based_positions(cls, sdi):
-        qs = cls.objects.filter(content_type=SDI_CT, object_id=sdi.id)
+        qs = cls.objects.filter(content_type=get_sdi_ct_or_none(), object_id=sdi.id)
         positions = [cls.get_publications_score__store_label(qs.total_value())]
         return positions
 
     @classmethod
     def get_publications_score_user_view_based_positions(cls, sdi):
-        qs = cls.objects.filter(content_type=SDI_CT, object_id=sdi.id)
+        qs = cls.objects.filter(content_type=get_sdi_ct_or_none(), object_id=sdi.id)
         positions = [cls.get_publications_score__view_label(qs.total_value())]
         return positions
 
@@ -611,7 +616,7 @@ class RegularLanguageCertificate(LanguageCertificate):
     @classmethod
     def get_ielts_user_store_based_positions(cls, sdi):
         positions = []
-        user_toefl_certificates = cls.objects.filter(content_type=SDI_CT, object_id=sdi.id).filter(
+        user_toefl_certificates = cls.objects.filter(content_type=get_sdi_ct_or_none(), object_id=sdi.id).filter(
             Q(certificate_type=LanguageCertificate.LanguageCertificateType.IELTS_GENERAL) |
             Q(certificate_type=LanguageCertificate.LanguageCertificateType.IELTS_ACADEMIC)
         ).distinct()
@@ -625,7 +630,7 @@ class RegularLanguageCertificate(LanguageCertificate):
     def get_ielts_user_view_based_positions(cls, sdi):
         positions = []
         user_toefl_certificates = cls.objects.filter(
-            Q(content_type=SDI_CT, object_id=sdi.id) and
+            Q(content_type=get_sdi_ct_or_none(), object_id=sdi.id) and
             (Q(certificate_type=LanguageCertificate.LanguageCertificateType.IELTS_GENERAL) or
              Q(certificate_type=LanguageCertificate.LanguageCertificateType.IELTS_ACADEMIC))
         )
@@ -667,7 +672,7 @@ class RegularLanguageCertificate(LanguageCertificate):
     @classmethod
     def get_toefl_user_store_based_positions(cls, sdi):
         positions = []
-        user_toefl_certificates = cls.objects.filter(content_type=SDI_CT, object_id=sdi.id,
+        user_toefl_certificates = cls.objects.filter(content_type=get_sdi_ct_or_none(), object_id=sdi.id,
                                                      certificate_type=LanguageCertificate.LanguageCertificateType.TOEFL
                                                      )
         for obj in user_toefl_certificates:
@@ -679,7 +684,7 @@ class RegularLanguageCertificate(LanguageCertificate):
     def get_toefl_user_view_based_positions(cls, sdi):
         positions = []
         user_toefl_certificates = cls.objects.filter(
-            content_type=SDI_CT, object_id=sdi.id,
+            content_type=get_sdi_ct_or_none(), object_id=sdi.id,
             certificate_type=LanguageCertificate.LanguageCertificateType.TOEFL
         )
         for obj in user_toefl_certificates:
@@ -739,7 +744,7 @@ class GMATCertificate(LanguageCertificate):
     @classmethod
     def get_user_store_based_positions(cls, sdi):
         positions = []
-        user_toefl_certificates = cls.objects.filter(content_type=SDI_CT, object_id=sdi.id)
+        user_toefl_certificates = cls.objects.filter(content_type=get_sdi_ct_or_none(), object_id=sdi.id)
         for obj in user_toefl_certificates:
             positions.append(obj.get_store_label())
 
@@ -748,7 +753,7 @@ class GMATCertificate(LanguageCertificate):
     @classmethod
     def get_user_view_based_positions(cls, sdi):
         positions = []
-        user_toefl_certificates = cls.objects.filter(content_type=SDI_CT, object_id=sdi.id)
+        user_toefl_certificates = cls.objects.filter(content_type=get_sdi_ct_or_none(), object_id=sdi.id)
         for obj in user_toefl_certificates:
             positions.append(obj.get_view_label())
 
@@ -808,7 +813,7 @@ class GREGeneralCertificate(LanguageCertificate):
     @classmethod
     def get_writing_user_store_based_positions(cls, sdi):
         positions = []
-        user_gre_general_certificates = cls.objects.filter(content_type=SDI_CT, object_id=sdi.id)
+        user_gre_general_certificates = cls.objects.filter(content_type=get_sdi_ct_or_none(), object_id=sdi.id)
 
         for obj in user_gre_general_certificates:
             positions.append(obj.get_writing_store_label())
@@ -818,7 +823,7 @@ class GREGeneralCertificate(LanguageCertificate):
     @classmethod
     def get_writing_user_view_based_positions(cls, sdi):
         positions = []
-        user_gre_general_certificates = cls.objects.filter(content_type=SDI_CT, object_id=sdi.id)
+        user_gre_general_certificates = cls.objects.filter(content_type=get_sdi_ct_or_none(), object_id=sdi.id)
 
         for obj in user_gre_general_certificates:
             positions.append(obj.get_writing_view_label())
@@ -857,7 +862,7 @@ class GREGeneralCertificate(LanguageCertificate):
     @classmethod
     def get_q_and_v_user_store_based_positions(cls, sdi):
         positions = []
-        user_gre_general_certificates = cls.objects.filter(content_type=SDI_CT, object_id=sdi.id)
+        user_gre_general_certificates = cls.objects.filter(content_type=get_sdi_ct_or_none(), object_id=sdi.id)
 
         for obj in user_gre_general_certificates:
             positions.append(obj.get_q_and_v_store_label())
@@ -867,7 +872,7 @@ class GREGeneralCertificate(LanguageCertificate):
     @classmethod
     def get_q_and_v_user_view_based_positions(cls, sdi):
         positions = []
-        user_gre_general_certificates = cls.objects.filter(content_type=SDI_CT, object_id=sdi.id)
+        user_gre_general_certificates = cls.objects.filter(content_type=get_sdi_ct_or_none(), object_id=sdi.id)
 
         for obj in user_gre_general_certificates:
             positions.append(obj.get_q_and_v_view_label())
@@ -935,7 +940,7 @@ class GRESubjectCertificate(LanguageCertificate):
     @classmethod
     def get_total_user_store_based_positions(cls, sdi):
         positions = []
-        user_gre_general_certificates = cls.objects.filter(content_type=SDI_CT, object_id=sdi.id)
+        user_gre_general_certificates = cls.objects.filter(content_type=get_sdi_ct_or_none(), object_id=sdi.id)
 
         for obj in user_gre_general_certificates:
             positions.append(obj.get_total_store_label())
@@ -945,7 +950,7 @@ class GRESubjectCertificate(LanguageCertificate):
     @classmethod
     def get_total_user_view_based_positions(cls, sdi):
         positions = []
-        user_gre_general_certificates = cls.objects.filter(content_type=SDI_CT, object_id=sdi.id)
+        user_gre_general_certificates = cls.objects.filter(content_type=get_sdi_ct_or_none(), object_id=sdi.id)
 
         for obj in user_gre_general_certificates:
             positions.append(obj.get_total_view_label())
@@ -1062,7 +1067,7 @@ class DuolingoCertificate(LanguageCertificate):
     @classmethod
     def get__user_store_based_positions(cls, sdi):
         positions = []
-        user_toefl_certificates = cls.objects.filter(content_type=SDI_CT, object_id=sdi.id)
+        user_toefl_certificates = cls.objects.filter(content_type=get_sdi_ct_or_none(), object_id=sdi.id)
         for obj in user_toefl_certificates:
             positions.append(obj.get_store_label())
 
@@ -1071,7 +1076,7 @@ class DuolingoCertificate(LanguageCertificate):
     @classmethod
     def get__user_view_based_positions(cls, sdi):
         positions = []
-        user_toefl_certificates = cls.objects.filter(content_type=SDI_CT, object_id=sdi.id)
+        user_toefl_certificates = cls.objects.filter(content_type=get_sdi_ct_or_none(), object_id=sdi.id)
         for obj in user_toefl_certificates:
             positions.append(obj.get_view_label())
 

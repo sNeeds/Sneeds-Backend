@@ -2,7 +2,7 @@ import time
 
 from django.db.models.signals import pre_save, pre_delete, post_save, post_delete, m2m_changed
 
-from abroadin.apps.estimation.form.models import SDI_CT
+from abroadin.apps.estimation.form.models import get_sdi_ct_or_none
 from ..models import (
     Publication,
     LanguageCertificate,
@@ -18,7 +18,7 @@ def pre_save_publication(sender, instance, *args, **kwargs):
 
 
 def post_save_publication(sender, instance, *args, **kwargs):
-    if instance.content_type == SDI_CT:
+    if instance.content_type == get_sdi_ct_or_none():
         instance.content_object.save()
     pass
 
@@ -29,7 +29,7 @@ def pre_delete_publication(sender, instance, *args, **kwargs):
 
 def post_delete_publication(sender, instance, *args, **kwargs):
     # Because of generic fk and cascade deletion
-    if instance.content_type == SDI_CT and instance.content_object:
+    if instance.content_type == get_sdi_ct_or_none() and instance.content_object:
         instance.content_object.save()
     pass
 
@@ -41,7 +41,7 @@ def pre_save_education(sender, instance, *args, **kwargs):
 def post_save_education(sender, instance, *args, **kwargs):
     # Because of generic fk and cascade deletion
     # print('start signal', time.perf_counter())
-    if instance.content_type == SDI_CT and instance.content_object:
+    if instance.content_type == get_sdi_ct_or_none() and instance.content_object:
         instance.content_object.save()
     # print('finish signal', time.perf_counter())
     pass
@@ -49,19 +49,19 @@ def post_save_education(sender, instance, *args, **kwargs):
 
 def post_delete_education(sender, instance, *args, **kwargs):
     # Because of generic fk and cascade deletion
-    if instance.content_type == SDI_CT and instance.content_object:
+    if instance.content_type == get_sdi_ct_or_none() and instance.content_object:
         instance.content_object.save()
 
 
 def post_save_language_certificate(sender, instance, *args, **kwargs):
     # Because of generic fk and cascade deletion
-    if instance.content_type == SDI_CT and instance.content_object:
+    if instance.content_type == get_sdi_ct_or_none() and instance.content_object:
         instance.content_object.save()
 
 
 def post_delete_language_certificate(sender, instance, *args, **kwargs):
     # Because of generic fk and cascade deletion
-    if instance.content_type == SDI_CT and instance.content_object:
+    if instance.content_type == get_sdi_ct_or_none() and instance.content_object:
         instance.content_object.save()
 
 

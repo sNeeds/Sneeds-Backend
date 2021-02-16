@@ -12,7 +12,7 @@ from abroadin.apps.store.storePackages.serializers import SoldStorePaidPackagePh
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name="order:order-detail", lookup_field='id', read_only=True)
+    url = serializers.HyperlinkedIdentityField(view_name="store.order:order-detail", lookup_field='id', read_only=True)
     title = serializers.SerializerMethodField()
 
     class Meta:

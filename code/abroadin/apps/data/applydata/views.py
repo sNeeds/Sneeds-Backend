@@ -19,7 +19,9 @@ class GradesListView(generics.CListAPIView):
 
 
 class LanguageCertificateTypeListView(EnumViewList):
-    enum_class = LanguageCertificate.LanguageCertificateType
+    include = [LanguageCertificate.LanguageCertificateType.IELTS_GENERAL,
+               LanguageCertificate.LanguageCertificateType.IELTS_GENERAL,
+               LanguageCertificate.LanguageCertificateType.TOEFL]
 
 
 class WhichAuthorChoicesListView(EnumViewList):
