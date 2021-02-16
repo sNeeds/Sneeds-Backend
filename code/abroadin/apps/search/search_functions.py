@@ -8,6 +8,7 @@ from abroadin.apps.data.account.models import Country
 from abroadin.apps.users.consultants.models import ConsultantProfile, StudyInfo
 
 UNIVERSITY_MAX_QUERY_LENGTH = 10
+MAJOR_MAX_QUERY_LENGTH = 10
 
 
 def search_consultants(qs, phrase):
@@ -69,7 +70,7 @@ def search_university(qs, phrase: str):
     return queryset | other_queryset
 
 
-def shorten_query_(phrase: str):
+def shorten_university_query(phrase: str):
     phrase = phrase.lower()
     phrase = phrase.replace('university', '')
     phrase = phrase.replace('of', '')
@@ -88,7 +89,7 @@ def shorten_query_(phrase: str):
 
 
 def limited_query_search_university(qs, phrase: str):
-    phrase = shorten_query_(phrase)
+    phrase = shorten_university_query(phrase)
     return search_university(qs, phrase)
 
 
@@ -107,3 +108,25 @@ def search_major(qs, phrase):
         filter(t__gt=0.4).order_by('-t')
 
     return queryset | other_queryset
+
+
+def shorten_major_query(phrase: str):
+    phrase = phrase.lower()
+    phrase = phrase.strip()
+
+    if len(phrase) > MAJOR_MAX_QUERY_LENGTH:
+        pieces = phrase.split(' ')
+        if len(pieces) == 1:
+            phrase = phrase[:MAJOR_MAX_QUERY_LENGTH]
+        else:
+            refined_pieces = []
+            for i in range(0, 3):
+                if len(pieces[i]) > 0: refined_pieces.append(pieces[i][:4])
+            phrase = ' '.join(refined_pieces)
+
+    return phrase
+
+
+def limited_query_search_major(qs, phrase: str):
+    phrase = shorten_major_query(phrase)
+    return search_major(qs, phrase)
