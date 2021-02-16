@@ -217,7 +217,7 @@ class SoldProduct(InheritanceCastModel):
     price = models.PositiveIntegerField()
     sold_to = models.ForeignKey(User, blank=True, on_delete=models.PROTECT)
 
-    created = models.DateTimeField(auto_now_add=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     objects = SoldProductQuerySet.as_manager()
