@@ -4,7 +4,6 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from abroadin.apps.store.comments.models import ConsultantComment, ConsultantAdminComment, SoldTimeSlotRate
 from abroadin.apps.store.discounts.models import Discount, CartDiscount
 from abroadin.apps.store.storeBase.models import SoldTimeSlotSale
 from abroadin.apps.store.videochats.models import Room
@@ -38,29 +37,6 @@ class VideoChatTests(CustomAPITestCase):
             discount=self.discount1
         )
 
-        self.consultant_comment1 = ConsultantComment.objects.create(
-            user=self.user1,
-            consultant=self.consultant1_profile,
-            message="Message 1"
-        )
-        self.consultant_comment2 = ConsultantComment.objects.create(
-            user=self.user1,
-            consultant=self.consultant2_profile,
-            message="Message 2"
-        )
-        self.consultant_comment3 = ConsultantComment.objects.create(
-            user=self.user2,
-            consultant=self.consultant2_profile,
-            message="Message 3"
-        )
-        self.consultant_admin_comment1 = ConsultantAdminComment.objects.create(
-            comment=self.consultant_comment1,
-            message="Admin message 1"
-        )
-        self.consultant_admin_comment2 = ConsultantAdminComment.objects.create(
-            comment=self.consultant_comment2,
-            message="Admin message 2"
-        )
         self.sold_time_slot_sale1 = SoldTimeSlotSale.objects.create(
             sold_to=self.user1,
             consultant=self.consultant1_profile,
@@ -83,15 +59,6 @@ class VideoChatTests(CustomAPITestCase):
             start_time=timezone.now() + timezone.timedelta(days=2),
             end_time=timezone.now() + timezone.timedelta(days=2, hours=1),
             price=self.consultant2_profile.time_slot_price
-        )
-
-        self.sold_time_slot_rate_1 = SoldTimeSlotRate.objects.create(
-            sold_time_slot=self.sold_time_slot_sale1,
-            rate=4
-        )
-        self.sold_time_slot_rate_2 = SoldTimeSlotRate.objects.create(
-            sold_time_slot=self.sold_time_slot_sale2,
-            rate=2.5
         )
 
         self.room1 = Room.objects.create(

@@ -52,42 +52,6 @@ class SoldProductQuerySet(models.QuerySet):
                 pass
         return result_qs
 
-    def get_sold_basic_products(self):
-        from abroadin.apps.store.basicProducts.models import SoldBasicProduct
-
-        result_qs = SoldBasicProduct.objects.none()
-        for i in self.all():
-            try:
-                sold_basic_product = i.soldbasicproduct
-                result_qs |= SoldBasicProduct.objects.filter(pk=sold_basic_product.id)
-            except SoldBasicProduct.DoesNotExist:
-                pass
-        return result_qs
-
-    def get_sold_class_products(self):
-        from abroadin.apps.store.basicProducts.models import SoldClassProduct
-
-        result_qs = SoldClassProduct.objects.none()
-        for i in self.all():
-            try:
-                sold_class_product = SoldClassProduct.objects.get(pk=i.pk)
-                result_qs |= SoldClassProduct.objects.filter(pk=sold_class_product.id)
-            except SoldClassProduct.DoesNotExist:
-                pass
-        return result_qs
-
-    def get_sold_webinar_products(self):
-        from abroadin.apps.store.basicProducts.models import SoldWebinarProduct
-
-        result_qs = SoldWebinarProduct.objects.none()
-        for i in self.all():
-            try:
-                sold_webinar_product = SoldWebinarProduct.objects.get(pk=i.pk)
-                result_qs |= SoldWebinarProduct.objects.filter(pk=sold_webinar_product.id)
-            except SoldWebinarProduct.DoesNotExist:
-                pass
-        return result_qs
-
     def get_sold_store_paid_package_phases(self):
         from abroadin.apps.store.storePackages.models import SoldStorePaidPackagePhase
 

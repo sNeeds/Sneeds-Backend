@@ -9,28 +9,18 @@ def forwards_func(apps, schema_editor):
     # if we directly import it, it'll be the wrong version
     ContentType = apps.get_model("contenttypes", "contenttype")
     SoldApplyProfileGroup = apps.get_model("applyprofilestore", "soldapplyprofilegroup")
-    SoldBasicProduct = apps.get_model("basicProducts", "soldbasicproduct")
     SoldTimeSlotSale = apps.get_model("storeBase", "soldtimeslotsale")
-    SoldStorePaidPackagePhase = apps.get_model('storePackages', 'soldstorepaidpackagephase')
     SoldProduct = apps.get_model('storeBase', 'soldproduct')
 
     sold_apply_profile_group_ct = ContentType.objects.get(app_label="applyprofilestore", model="soldapplyprofilegroup")
-    sold_basic_product_ct = ContentType.objects.get(app_label="basicProducts", model="soldbasicproduct")
     sold_time_slot_sale_ct = ContentType.objects.get(app_label="storeBase", model="soldtimeslotsale")
-    sold_store_paid_package_phase_ct = ContentType.objects.get(app_label='storePackages', model='soldstorepaidpackagephase')
     sold_product_ct = ContentType.objects.get(app_label='storeBase', model='soldproduct')
     print('start')
     for obj in SoldApplyProfileGroup.objects.all():
         obj.real_type = sold_apply_profile_group_ct
         obj.save()
-    for obj in SoldBasicProduct.objects.all():
-        obj.real_type = sold_basic_product_ct
-        obj.save()
     for obj in SoldTimeSlotSale.objects.all():
         obj.real_type = sold_time_slot_sale_ct
-        obj.save()
-    for obj in SoldStorePaidPackagePhase.objects.all():
-        obj.real_type = sold_store_paid_package_phase_ct
         obj.save()
     for obj in SoldProduct.objects.filter(real_type__isnull=True):
         obj.real_type = sold_product_ct
@@ -47,7 +37,6 @@ class Migration(migrations.Migration):
         ('storeBase', '0001_initial'),
         ('storePackages', '0001_initial'),
         ('applyprofilestore', '0001_initial'),
-        ('basicProducts', '0001_initial'),
     ]
 
     operations = [

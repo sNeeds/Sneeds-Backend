@@ -10,8 +10,7 @@ from abroadin.apps.store.discounts.models import Discount, CartDiscount, TimeSlo
 from abroadin.apps.store.discounts.serializers import ShortDiscountSerializer
 from abroadin.apps.store.orders.models import Order
 from abroadin.apps.store.storeBase.models import SoldTimeSlotSale
-from abroadin.apps.store.basicProducts.models import BasicProduct
-from abroadin.apps.store.storePackages import SoldStorePackage, SoldStoreUnpaidPackagePhase, SoldStorePaidPackagePhase
+from abroadin.apps.store.storePackages.models import SoldStorePackage, SoldStoreUnpaidPackagePhase, SoldStorePaidPackagePhase
 from abroadin.utils.custom.TestClasses import CustomAPITestCase
 
 User = get_user_model()
@@ -21,44 +20,6 @@ User = get_user_model()
 class DiscountTests(CustomAPITestCase):
     def setUp(self):
         super().setUp()
-
-        # basicProducts
-        self.basic_product1 = BasicProduct.objects.create(
-            title="basic_product1",
-            slug="basic_product1",
-            active=True,
-            price=30000,
-        )
-
-        self.basic_product2 = BasicProduct.objects.create(
-            title="basic_product2",
-            slug="basic_product2",
-            active=True,
-            price=30000,
-        )
-
-        self.basic_product3 = BasicProduct.objects.create(
-            title="basic_product3",
-            slug="basic_product3",
-            active=True,
-            price=30000,
-        )
-
-        self.basic_product4 = BasicProduct.objects.create(
-            title="basic_product4",
-            slug="basic_product4",
-            active=False,
-            price=30000,
-        )
-
-        self.cart4 = Cart.objects.create(user=self.user1)
-        self.cart4.products.set([self.basic_product1])
-
-        self.cart5 = Cart.objects.create(user=self.user1)
-        self.cart5.products.set([self.basic_product2])
-
-        self.cart6 = Cart.objects.create(user=self.user1)
-        self.cart6.products.set([self.basic_product1, self.basic_product2])
 
         # Consultant discounts
         self.discount1 = Discount.objects.create(
@@ -77,7 +38,6 @@ class DiscountTests(CustomAPITestCase):
             amount=500,
             code="discountcode3"
         )
-        self.discount3.products.set([self.basic_product1])
 
         # 100 percent consultant1 discount to user1
         self.discount4 = Discount.objects.create(
