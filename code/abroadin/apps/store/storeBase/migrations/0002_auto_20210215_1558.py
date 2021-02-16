@@ -45,6 +45,9 @@ class Migration(migrations.Migration):
     dependencies = [
         ('contenttypes', '0002_remove_content_type_name'),
         ('storeBase', '0001_initial'),
+        ('storePackages', '0001_initial'),
+        ('applyprofilestore', '0001_initial'),
+        ('basicProducts', '0001_initial'),
     ]
 
     operations = [
