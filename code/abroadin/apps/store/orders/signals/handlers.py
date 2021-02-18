@@ -1,7 +1,6 @@
 from django.db.models.signals import post_save, pre_save
 
 from ..models import Order
-from ..tasks import notify_order_created
 from ..utils import unique_order_id_generator
 from abroadin.settings.config.variables import FRONTEND_URL
 
