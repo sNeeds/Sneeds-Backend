@@ -3,7 +3,7 @@ from django.utils import timezone
 
 from abroadin.apps.notifications.models import EmailNotification, SoldTimeSlotReminderEmailNotification, \
     SoldTimeSlotChangedEmailNotification
-from abroadin.utils.mail_services import send_sold_time_slot_start_reminder_email, send_sold_time_slot_changed_email
+from abroadin.utils.sib_mail_services import send_sold_time_slot_start_reminder_email, send_sold_time_slot_changed_email
 
 
 @shared_task
