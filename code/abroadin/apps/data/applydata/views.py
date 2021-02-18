@@ -20,7 +20,7 @@ class GradesListView(generics.CListAPIView):
 
 class LanguageCertificateTypeListView(EnumViewList):
     include = [LanguageCertificate.LanguageCertificateType.IELTS_GENERAL,
-               LanguageCertificate.LanguageCertificateType.IELTS_GENERAL,
+               LanguageCertificate.LanguageCertificateType.IELTS_ACADEMIC,
                LanguageCertificate.LanguageCertificateType.TOEFL]
 
 

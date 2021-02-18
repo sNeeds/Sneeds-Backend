@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
 
@@ -6,6 +8,7 @@ from abroadin.apps.data.applydata.models import (
     Publication, Education, RegularLanguageCertificate, GMATCertificate, DuolingoCertificate,
     GRESubjectCertificate, GREGeneralCertificate, GREPsychologyCertificate, GREPhysicsCertificate,
     GREBiologyCertificate)
+from ...utils.custom.admin.actions import export_as_csv_action
 
 
 class AdmissionInline(admin.TabularInline):
@@ -83,7 +86,29 @@ class ApplyProfileAdmin(admin.ModelAdmin):
         DuolingoCertificateInline,
     ]
 
+    # actions = [
+    #     export_as_csv_action(
+    #         "Similar Profiles CSV Export",
+    #         fields=['id', 'name', 'gap', '', 'user__phone_number',
+    #                 'last_education__gpa', 'last_education__university__country', 'last_education__university__name',
+    #                 get_destination_countries,
+    #                 get_destination_universities,
+    #                 get_similar_admission,
+    #                 ],
+    #         file_name='Forms_Similar_Profiles_' + str(datetime.now()),
+    #     )
+    # ]
+
 
 @admin.register(Admission)
 class AdmissionAdmin(admin.ModelAdmin):
     autocomplete_fields = ['destination', 'major']
+    actions = [
+        export_as_csv_action(
+            "Similar Profiles CSV Export",
+            fields=['id', 'apply_profile_id', 'major', 'grade', 'destination',
+                    'accepted', 'scholarship', 'enroll_year',
+                    ],
+            file_name='Admissions_' + str(datetime.now()),
+        )
+    ]
