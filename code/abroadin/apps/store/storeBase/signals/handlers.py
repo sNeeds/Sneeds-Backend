@@ -7,7 +7,6 @@ from django.utils.datetime_safe import datetime
 from abroadin.apps.store.carts.models import Cart
 from abroadin.apps.notifications.models import SoldTimeSlotReminderEmailNotification
 from abroadin.apps.store.storeBase.models import TimeSlotSale, SoldTimeSlotSale, Product
-from abroadin.apps.store.storeBase.tasks import notify_sold_time_slot
 from abroadin.apps.chats.models import Chat
 from abroadin.settings.config.variables import FRONTEND_URL
 
@@ -39,13 +38,14 @@ def post_save_time_slot_sold_receiver(sender, instance, created, *args, **kwargs
     }
 
     if created:
-        notify_sold_time_slot.delay(
-            send_to=instance.consultant.user.email,
-            name=instance.consultant.user.get_full_name(),
-            sold_time_slot_url=sold_time_slot_url,
-            start_time=str(start_time),
-            end_time=str(end_time)
-        )
+        pass
+        # notify_sold_time_slot.delay(
+        #     send_to=instance.consultant.user.email,
+        #     name=instance.consultant.user.get_full_name(),
+        #     sold_time_slot_url=sold_time_slot_url,
+        #     start_time=str(start_time),
+        #     end_time=str(end_time)
+        # )
 
     else:
         SoldTimeSlotReminderEmailNotification.objects.filter(sold_time_slot_id=instance.id).delete()
