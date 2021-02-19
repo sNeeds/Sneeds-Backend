@@ -4,11 +4,13 @@ from django.contrib.auth import get_user_model
 
 from verification.conf import VERIFICATION_CODE_FIELD
 
-from abroadin.utils.mail_services import (send_verification_code_email,
-                                          create_sib_contact,
-                                          update_sib_contact,
-                                          create_sib_doi_contact, perform_appropriate_lists,
-                                          MARKETING_LIST, DOI_LIST)
+from abroadin.utils.pakat_mail_services import (send_verification_code_email,
+                                                create_pakat_contact,
+                                                update_pakat_contact,
+                                                WEBSITE_LIST,
+                                                SUBSCRIBE_DOI_LIST,
+                                                create_pakat_doi_contact
+                                                )
 
 User = get_user_model()
 
@@ -23,7 +25,7 @@ def user_update_handle_contact(instance: User, db_instance: User):
     if instance.receive_marketing_email != db_instance.receive_marketing_email:
         create_contact_inductor(instance)
         update_contact_inductor(instance)
-    if instance.is_email_verified != db_instance.is_email_verified:
+    elif instance.is_email_verified != db_instance.is_email_verified:
         create_contact_inductor(instance)
         update_contact_inductor(instance)
 
@@ -33,7 +35,7 @@ def create_contact_inductor(user):
     create_contact.delay(user.email, first_name=user.first_name, last_name=user.last_name,
                          phone_number=phone_number, opt_in=user.is_email_verified,
                          receive_marketing_email=user.receive_marketing_email,
-                         lists=perform_appropriate_lists(user))
+                         lists=[WEBSITE_LIST])
 
 
 @shared_task()
@@ -45,7 +47,7 @@ def create_contact(email, *args, **kwargs):
     assert phone_number is None or (isinstance(phone_number, str) and phone_number != 'None'), (
         'Phone number should be None or string'
     )
-    return create_sib_contact(email, *args, **kwargs)
+    return create_pakat_contact(email, *args, **kwargs)
 
 
 def update_contact_inductor(user):
@@ -55,14 +57,14 @@ def update_contact_inductor(user):
     update_contact.delay(user.email, first_name=user.first_name, last_name=user.last_name,
                          phone_number=phone_number, opt_in=user.is_email_verified,
                          receive_marketing_email=user.receive_marketing_email,
-                         lists=perform_appropriate_lists(user))
+                         lists=[WEBSITE_LIST])
 
 
 @shared_task()
 def update_contact(email, *args, **kwargs):
     # print('update_contact')
     # print(kwargs.get('receive_marketing_email'))
-    return update_sib_contact(email, *args, **kwargs)
+    return update_pakat_contact(email, *args, **kwargs)
 
 
 @shared_task()
@@ -76,7 +78,7 @@ def create_doi_contact(email, phone_number, **kwargs):
     assert phone_number is None or (isinstance(phone_number, str) and phone_number != 'None'), (
         'Phone number should be None or string'
     )
-    return create_sib_doi_contact(email, phone_number=phone_number, lists=[MARKETING_LIST, DOI_LIST], **kwargs)
+    return create_pakat_doi_contact(email, phone_number=phone_number, lists=[SUBSCRIBE_DOI_LIST], **kwargs)
 
 
 def check_email_assigned_to_user(email):
