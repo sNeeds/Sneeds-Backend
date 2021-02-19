@@ -16,9 +16,10 @@ from abroadin.apps.data.applydata.managers import EducationManager, GradeManager
     PublicationManager, LanguageCertificateManager
 from abroadin.apps.data.applydata.validators import validate_ielts_score, validate_toefl_overall_score, \
     validate_toefl_section_score
-from abroadin.apps.data.applydata.values import VALUES_WITH_ATTRS
 from abroadin.base.mixins.validators import GenericForeignkeyUniqueTogetherValidationMixin
 from abroadin.base.models.abstracts import InheritanceCastModel
+
+from .values.values import VALUES_WITH_ATTRS
 
 
 def get_sdi_ct_or_none():
@@ -145,21 +146,34 @@ class Education(GenericForeignkeyUniqueTogetherValidationMixin, models.Model):
 
     @property
     def gpa_value(self):
-        if self.gpa < 13:
-            val = 0
-        elif 13 <= self.gpa < 16:
-            val = self.gpa / 28
-        elif 16 <= self.gpa < 18:
-            val = self.gpa / 23
+        value = None
+        grade = self.grade
+
+        if grade == GradeChoices.PHD or grade == GradeChoices.POST_DOC:
+            value = self.gpa / 20
+
+        elif grade == GradeChoices.MASTER:
+            value_range = ValueRange(VALUES_WITH_ATTRS['education']['master'])
+            gpa_data = value_range.find_value_attrs(self.university.rank, 'gpa_data')
+            value_range = ValueRange(gpa_data)
+            value = value_range.find_value_attrs(self.gpa, 'value')
+
+        elif grade == GradeChoices.BACHELOR:
+            value_range = ValueRange(VALUES_WITH_ATTRS['education']['bachelor'])
+            gpa_data = value_range.find_value_attrs(self.university.rank, 'gpa_data')
+            value_range = ValueRange(gpa_data)
+            value = value_range.find_value_attrs(self.gpa, 'value')
+
         else:
-            val = self.gpa / 20
-        return float(val)
+            raise ValueError("No valid value found for this education.")
+
+        return value
 
     def compute_value(self):
         return round(self.university.value * self.gpa_value, 2)
 
     def get_value_label(self):
-        value_range = ValueRange(VALUES_WITH_ATTRS["university_through"])
+        value_range = ValueRange(VALUES_WITH_ATTRS["education"]['label'])
         label = value_range.find_value_attrs(self.value, 'label')
 
         return label
@@ -521,7 +535,7 @@ class LanguageCertificate(
 
         overall = self.regularlanguagecertificate.overall
 
-        value_range = ValueRange(VALUES_WITH_ATTRS[key])
+        value_range = ValueRange(VALUES_WITH_ATTRS['language'][key])
         label = value_range.find_value_attrs(overall, 'label')
 
         return label
@@ -533,7 +547,7 @@ class LanguageCertificate(
 
         overall = self.regularlanguagecertificate.overall
 
-        value_range = ValueRange(VALUES_WITH_ATTRS[key])
+        value_range = ValueRange(VALUES_WITH_ATTRS['language'][key])
         value = value_range.find_value_attrs(overall, 'value')
 
         return value

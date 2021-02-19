@@ -9,7 +9,7 @@ from rest_framework.settings import api_settings
 from rest_framework.exceptions import ValidationError as DRFValidationError
 
 from abroadin.apps.data.applydata.models import Education, LanguageCertificate, Publication, Grade, SemesterYear
-from abroadin.apps.data.applydata.values import LANGUAGE_B_VALUE
+from abroadin.apps.data.applydata.values.language import LANGUAGE_B_VALUE
 from abroadin.apps.estimation.form.variables import MISSING_LABEL, REWARDED_LABEL
 from abroadin.apps.estimation.form.managers import StudentDetailedInfoManager, WantToApplyManager
 
@@ -134,16 +134,16 @@ class StudentDetailedInfoBase(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    def _university_through_has_this_major(self, major):
+    def _education_has_this_major(self, major):
         return Education.objects.filter(
             student_detailed_info__id=self.id,
             major=major
         ).exists()
 
-    def university_through_has_these_majors(self, majors_list):
+    def education_has_these_majors(self, majors_list):
         found = False
         for major in majors_list:
-            found = found or self._university_through_has_this_major(major)
+            found = found or self._education_has_this_major(major)
         return found
 
     def last_education(self):
