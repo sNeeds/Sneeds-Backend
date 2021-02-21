@@ -1,10 +1,24 @@
+from datetime import datetime
+
 from django.contrib import admin
 
+from abroadin.utils.custom.admin.actions import export_as_csv_action
 from . import models
 
 admin.site.register(models.Grade)
 admin.site.register(models.SemesterYear)
-admin.site.register(models.Education)
+
+
+@admin.register(models.Education)
+class EducationAdmin(admin.ModelAdmin):
+    actions = [
+        export_as_csv_action(
+            "CSV Export",
+            fields=['id', 'content_type', 'object_id', 'gpa', 'graduate_in',
+                    'major', 'grade', 'university__name',
+                    ],
+            file_name='Educations_' + str(datetime.now()),
+        )]
 
 
 @admin.register(models.Publication)

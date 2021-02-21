@@ -74,7 +74,6 @@ psycopg2==2.8.3
 psycopg2-binary==2.8.4
 pycodestyle==2.5.0
 pycoin==0.90.20190630
-pygraphviz==1.6
 PyJWT==1.7.1
 pyparsing==2.4.5
 python-bidi==0.4.2
