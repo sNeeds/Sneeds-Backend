@@ -160,6 +160,7 @@ from .secure import APIs
 SKYROOM_API_KEY = APIs.skyroom
 SENDINBLUE_API_KEY = APIs.sendinblue
 ZARINPAL_MERCHANT = APIs.zarinpal_merchant
+PAKAT_API_KEY = APIs.pakat
 
 # Keys
 ALL_SKYROOM_USERS_PASSWORD = keys.ALL_SKYROOM_USERS_PASSWORD
@@ -241,3 +242,4 @@ PHONENUMBER_DB_FORMAT = 'E164'
 INTERNAL_IPS = [
     '127.0.0.1',
 ]
+

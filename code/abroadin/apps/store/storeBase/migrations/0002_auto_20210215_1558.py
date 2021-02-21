@@ -5,17 +5,31 @@ import django.db.models.deletion
 
 
 def forwards_func(apps, schema_editor):
+    print("OOO")
+
     # We get the model from the versioned app registry;
     # if we directly import it, it'll be the wrong version
     ContentType = apps.get_model("contenttypes", "contenttype")
+    print("OOO1")
+
     SoldApplyProfileGroup = apps.get_model("applyprofilestore", "soldapplyprofilegroup")
+    print("OOO2")
+
+    SoldBasicProduct = apps.get_model("basicProducts", "soldbasicproduct")
+    print("OOO3")
+
     SoldTimeSlotSale = apps.get_model("storeBase", "soldtimeslotsale")
+    print("OOO4")
+
+    SoldStorePaidPackagePhase = apps.get_model('storePackages', 'soldstorepaidpackagephase')
     SoldProduct = apps.get_model('storeBase', 'soldproduct')
+
+
 
     sold_apply_profile_group_ct = ContentType.objects.get(app_label="applyprofilestore", model="soldapplyprofilegroup")
     sold_time_slot_sale_ct = ContentType.objects.get(app_label="storeBase", model="soldtimeslotsale")
     sold_product_ct = ContentType.objects.get(app_label='storeBase', model='soldproduct')
-    print('start')
+
     for obj in SoldApplyProfileGroup.objects.all():
         obj.real_type = sold_apply_profile_group_ct
         obj.save()
@@ -25,7 +39,6 @@ def forwards_func(apps, schema_editor):
     for obj in SoldProduct.objects.filter(real_type__isnull=True):
         obj.real_type = sold_product_ct
         obj.save()
-        print(obj)
 
     print('real type is now set')
 

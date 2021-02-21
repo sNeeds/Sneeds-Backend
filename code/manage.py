@@ -5,9 +5,9 @@ import sys
 
 
 def main():
-    DEPLOYMENT = int(os.environ.get('DJANGO_DEPLOYMENT', default=0))
+    development = int(os.environ.get('DJANGO_DEPLOYMENT', default=0))
 
-    if DEPLOYMENT == 0:
+    if development == 0:
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'abroadin.settings.development')
     else:
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'abroadin.settings.deployment')

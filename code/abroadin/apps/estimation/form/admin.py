@@ -114,7 +114,7 @@ def get_destination_countries(form):
 
 
 def get_similar_admission(form):
-    return [(a.id, a.enroll_year, a.scholarship) for a in SimilarProfilesForForm(form).find_similar_admissions()]\
+    return [a.id for a in SimilarProfilesForForm(form).find_similar_admissions()]\
         if form.is_complete else []
 
 
@@ -139,6 +139,7 @@ class StudentDetailedInfoAdmin(StudentDetailedInfoBaseAdmin):
                     get_similar_admission,
                     ],
             file_name='Forms_Similar_Profiles_' + str(datetime.now()),
+            multi_row_field=get_similar_admission,
         )
     ]
 
