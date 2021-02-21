@@ -1,13 +1,10 @@
 from drf_yasg.utils import swagger_auto_schema
 
-from django.contrib.contenttypes.models import ContentType
 
 from rest_framework import permissions
-from rest_framework.response import Response
 
 from abroadin.base.api import generics
 from abroadin.base.api.permissions import permission_class_factory
-from abroadin.apps.data.applydata.serializers import LanguageCertificateInheritedSerializer
 
 from .models import StudentDetailedInfo
 from .serializers import StudentDetailedInfoSerializer, StudentDetailedInfoRequestSerializer

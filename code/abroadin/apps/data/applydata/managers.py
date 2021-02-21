@@ -2,8 +2,9 @@ from django.db import models
 from django.db.models import When, Q, Value, IntegerField, Case
 
 from abroadin.apps.data.applydata.classes import ValueRange
-from abroadin.apps.data.applydata.values import VALUES_WITH_ATTRS
 from abroadin.base.mixins.validators import CreateM2MManagerMixin
+
+from .values.values import VALUES_WITH_ATTRS
 
 
 class GradeManager(models.QuerySet):
@@ -66,7 +67,7 @@ class PublicationManager(CreateM2MManagerMixin, models.QuerySet):
         return self.calculate_value(qs)
 
     def total_value_label(self):
-        value_range = ValueRange(VALUES_WITH_ATTRS["publication_qs"])
+        value_range = ValueRange(VALUES_WITH_ATTRS['publication']['publication_qs'])
         label = value_range.find_value_attrs(self.total_value(), 'label')
 
         return label

@@ -1,0 +1,1 @@
+NO_POWERFUL_RECOMMENDATION = "Since you say you do not have a strong letter of recommendation, try to get a great letter of recommendation from less experienced professors with whom you have a closer relationship. "

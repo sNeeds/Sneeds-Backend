@@ -98,6 +98,7 @@ class StudentDetailedInfoBaseAdmin(admin.ModelAdmin):
     ]
 
     list_display = ['id']
+    readonly_fields = ['rank', 'value']
 
 
 def get_destination_universities(form):
