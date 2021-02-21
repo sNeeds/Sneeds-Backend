@@ -7,7 +7,6 @@ from django.utils.timezone import make_aware
 
 from abroadin.apps.store.carts.models import Cart
 from abroadin.apps.store.storeBase.models import SoldProduct
-from abroadin.apps.store.storePackages.models import SoldStorePaidPackagePhase
 
 User = get_user_model()
 

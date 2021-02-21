@@ -6,7 +6,6 @@ from rest_framework import status, serializers
 from abroadin.apps.store.carts.models import Cart
 from abroadin.apps.store.orders.models import Order
 from abroadin.apps.store.storeBase.serializers import SoldTimeSlotSaleSerializer
-from abroadin.apps.store.storePackages.serializers import SoldStorePaidPackagePhaseSerializer
 from abroadin.utils.custom.TestClasses import CustomAPITestCase
 
 User = get_user_model()
@@ -173,12 +172,6 @@ class OrderTests(CustomAPITestCase):
             response_data.get("sold_time_slot_sales"),
             SoldTimeSlotSaleSerializer(
                 order1.sold_products.all().get_sold_time_slot_sales(), context={"request": request}, many=True
-            ).data
-        )
-        self.assertEqual(
-            response_data.get("sold_store_paid_package_phases"),
-            SoldStorePaidPackagePhaseSerializer(
-                order1.sold_products.all().get_sold_store_paid_package_phases(), context={"request": request}, many=True
             ).data
         )
         self.assertEqual(
