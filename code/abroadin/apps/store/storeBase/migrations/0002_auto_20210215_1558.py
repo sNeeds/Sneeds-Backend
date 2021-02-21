@@ -5,9 +5,8 @@ import django.db.models.deletion
 from django.db import connection
 
 
-
 def forwards_func(apps, schema_editor):
-    db_name :str = connection.settings_dict['NAME']
+    db_name: str = connection.settings_dict['NAME']
 
     if db_name.startswith('test'):
         return
@@ -20,18 +19,11 @@ def forwards_func(apps, schema_editor):
     SoldApplyProfileGroup = apps.get_model("applyprofilestore", "soldapplyprofilegroup")
     print("OOO2")
 
-    SoldTimeSlotSale = apps.get_model("storeBase", "soldtimeslotsale")
-    print("OOO4")
-
     sold_apply_profile_group_ct = ContentType.objects.get(app_label="applyprofilestore", model="soldapplyprofilegroup")
-    sold_time_slot_sale_ct = ContentType.objects.get(app_label="storeBase", model="soldtimeslotsale")
     sold_product_ct = ContentType.objects.get(app_label='storeBase', model='soldproduct')
 
     for obj in SoldApplyProfileGroup.objects.all():
         obj.real_type = sold_apply_profile_group_ct
-        obj.save()
-    for obj in SoldTimeSlotSale.objects.all():
-        obj.real_type = sold_time_slot_sale_ct
         obj.save()
 
     print('real type is now set')

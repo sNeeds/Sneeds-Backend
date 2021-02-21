@@ -1,9 +1,8 @@
 from django.db import models, transaction
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ValidationError
-from django.db.models import Sum, Count
+from django.db.models import Sum
 
-from abroadin.apps.store.storeBase.models import TimeSlotSale, SoldTimeSlotSale, Product
+from abroadin.apps.store.storeBase.models import Product
 
 User = get_user_model()
 
