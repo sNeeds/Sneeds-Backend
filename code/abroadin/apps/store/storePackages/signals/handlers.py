@@ -1,7 +1,6 @@
 from django.db.models.signals import pre_save, post_delete, post_save, m2m_changed
 
 from abroadin.apps.chats.models import Chat, TextMessage
-from abroadin.apps.store.discounts.models import Discount
 from abroadin.apps.store.storePackages.models import (
     StorePackage, StorePackagePhaseThrough, StorePackagePhase, SoldStorePackage,
     SoldStorePaidPackagePhase, SoldStoreUnpaidPackagePhase, ConsultantSoldStorePackageAcceptRequest
@@ -88,28 +87,6 @@ def post_save_sold_store_paid_package_phase(sender, instance, *args, **kwargs):
         pass
 
 
-def post_save_consultant_sold_store_package_accept_request(sender, instance, created, *args, **kwargs):
-    if created:
-        chat, created = Chat.objects.get_or_create(
-            user=instance.sold_store_package.sold_to,
-            consultant=instance.consultant
-        )
-        text_message = "سلام. برای شما یک تخفیف صادر شده  تا بتونید با مشاور گفت و گو کنید و اگر تمایل داشتید برای ادامه روند انتخاب کنید." \
-                       "\n\r توجه کنید که این کد تخفیف قابل استفاده برای رزرو زمان گفت و گو و مشاوره برای همین مشاور است." \
-                       "\n\r مدت زمان مشاوره نیز 30 دقیقه می باشد."
-
-        TextMessage.objects.create(chat=chat,
-                                   sender=instance.consultant.user,
-                                   text_message=text_message,
-                                   )
-
-        discount = Discount.objects.create_consultant_100_discount(
-            consultant=instance.consultant,
-            user=instance.sold_store_package.sold_to,
-            use_limit=1
-        )
-
-
 def post_delete_sold_store_paid_package_phase(sender, instance, *args, **kwargs):
     # Update SoldStorePackage price
     instance.sold_store_package.update_price()
@@ -133,10 +110,7 @@ post_save.connect(post_save_sold_store_package, sender=SoldStorePackage)
 post_save.connect(post_save_store_package_phase_through, sender=StorePackagePhaseThrough)
 post_save.connect(post_save_sold_store_paid_package_phase, sender=SoldStorePaidPackagePhase)
 post_save.connect(post_save_sold_store_unpaid_package_phase, sender=SoldStoreUnpaidPackagePhase)
-post_save.connect(
-    post_save_consultant_sold_store_package_accept_request,
-    sender=ConsultantSoldStorePackageAcceptRequest
-)
+
 
 post_delete.connect(post_delete_store_package_phase_through, sender=StorePackagePhaseThrough)
 post_delete.connect(post_delete_sold_store_paid_package_phase, sender=SoldStorePaidPackagePhase)

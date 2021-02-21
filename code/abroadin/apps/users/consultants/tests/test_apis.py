@@ -4,7 +4,6 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from abroadin.apps.users.consultants.models import ConsultantProfile, StudyInfo
-from abroadin.apps.store.discounts.models import Discount, CartDiscount
 
 from abroadin.utils.custom.TestClasses import CustomAPITestCase
 
@@ -17,26 +16,6 @@ class ConsultantTests(CustomAPITestCase):
 
     def setUp(self):
         super().setUp()
-
-
-        # Consultant discounts
-        self.discount1 = Discount.objects.create(
-            amount=10,
-            code="discountcode1",
-        )
-        self.discount1.consultants.set([self.consultant1_profile, self.consultant2_profile])
-
-        self.discount2 = Discount.objects.create(
-            amount=20,
-            code="discountcode2",
-        )
-        self.discount2.consultants.set([self.consultant1_profile, ])
-
-        # Cart consultant discounts
-        self.cart_discount1 = CartDiscount.objects.create(
-            cart=self.cart1,
-            discount=self.discount1
-        )
 
         # Setup ------
         self.client = APIClient()

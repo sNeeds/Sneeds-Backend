@@ -26,7 +26,6 @@ INSTALLED_APPS = [
     'abroadin.apps.store.carts',
     'abroadin.apps.store.orders',
     'abroadin.apps.store.payments',
-    'abroadin.apps.store.discounts',
     'abroadin.apps.store.videochats',
     'abroadin.apps.store.storePackages',
     'abroadin.apps.store.applyprofilestore',

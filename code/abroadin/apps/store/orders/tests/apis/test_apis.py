@@ -4,12 +4,10 @@ from django.urls import reverse
 from rest_framework import status, serializers
 
 from abroadin.apps.store.carts.models import Cart
-from abroadin.apps.store.discounts.models import TimeSlotSaleNumberDiscount
 from abroadin.apps.store.orders.models import Order
 from abroadin.apps.store.storeBase.serializers import SoldTimeSlotSaleSerializer
 from abroadin.apps.store.storePackages.serializers import SoldStorePaidPackagePhaseSerializer
 from abroadin.utils.custom.TestClasses import CustomAPITestCase
-from abroadin.apps.store.discounts.models import Discount, CartDiscount
 
 User = get_user_model()
 
@@ -17,41 +15,6 @@ User = get_user_model()
 class OrderTests(CustomAPITestCase):
     def setUp(self):
         super().setUp()
-
-        # Consultant discounts
-        self.discount1 = Discount.objects.create(
-            amount=10,
-            code="discountcode1",
-        )
-        self.discount1.consultants.set([self.consultant1_profile, self.consultant2_profile])
-
-        self.discount2 = Discount.objects.create(
-            amount=20,
-            code="discountcode2",
-        )
-        self.discount2.consultants.set([self.consultant1_profile, ])
-
-        # Cart consultant discounts
-        self.cart_discount1 = CartDiscount.objects.create(
-            cart=self.cart1,
-            discount=self.discount1
-        )
-
-        self.time_slot_sale_number_discount = TimeSlotSaleNumberDiscount.objects.create(
-            number=2,
-            discount=50
-        )
-
-        # 100 percent consultant1 discount to user1
-        self.discount4 = Discount.objects.create(
-            amount=self.consultant1_profile.time_slot_price,
-            code="discount4",
-        )
-        self.discount4.consultants.set([self.consultant1_profile])
-        self.discount4.users.set([self.user1])
-        self.discount4.creator = "consultant"
-        self.discount4.use_limit = 1
-        self.discount4.save()
 
     def test_selling_cart_deletes_sold_products_from_other_carts(self):
         cart1_time_slot_sales = self.cart1.products.all().get_time_slot_sales()
@@ -99,15 +62,6 @@ class OrderTests(CustomAPITestCase):
                 TempTimeSlotSale(obj.consultant, obj.price, obj.start_time, obj.end_time)
             )
 
-        try:
-            cart1_discount = CartDiscount.objects.get(cart=self.cart1).discount
-        except CartDiscount.DoesNotExist:
-            cart1_discount = None
-
-        cart1_time_slot_sale_number_discount = TimeSlotSaleNumberDiscount.objects.get_discount_or_zero(
-            self.cart1.products.all().get_time_slot_sales().count()
-        )
-
         cart1_user = self.cart1.user
         cart1_total = self.cart1.total
         cart1_subtotal = self.cart1.subtotal
@@ -130,8 +84,6 @@ class OrderTests(CustomAPITestCase):
 
         self.assertEqual(order.user, cart1_user)
         self.assertEqual(order.status, "paid")
-        self.assertEqual(order.used_discount, cart1_discount)
-        self.assertEqual(order.time_slot_sales_number_discount, cart1_time_slot_sale_number_discount)
         self.assertEqual(order.total, cart1_total)
         self.assertEqual(order.subtotal, cart1_subtotal)
 
@@ -237,11 +189,6 @@ class OrderTests(CustomAPITestCase):
             response.data.get("updated"),
             serializers.DateTimeField().to_representation(order1.updated)
         )
-        self.assertEqual(
-            response_data.get("used_discount"),
-            {"code": order1.used_discount.code, "amount": order1.used_discount.amount}
-        )
-        self.assertEqual(response_data.get("time_slot_sales_number_discount"), order1.time_slot_sales_number_discount)
         self.assertEqual(response_data.get("subtotal"), order1.subtotal)
         self.assertEqual(response_data.get("total"), order1.total)
 
@@ -268,40 +215,6 @@ class OrderTests(CustomAPITestCase):
         response = client.post(url, payload)
 
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-
-    def test_just_one_time_slot_100_percent_consultant_discount_order_create_success(self):
-
-        cart = Cart.objects.create(user=self.user1)
-        cart.products.set([self.time_slot_sale1])
-
-        CartDiscount.objects.create(cart=cart, discount=self.discount4)
-
-        cart.refresh_from_db()
-
-        self.assertEqual(cart.subtotal, self.time_slot_sale1.price)
-        self.assertEqual(cart.total, 0)
-
-        url = reverse('payment:request')
-        client = self.client
-        client.force_login(self.user1)
-        payload = {
-            "cartid": cart.id
-        }
-
-        response = client.post(url, payload)
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertDictEqual(response.data, {"detail": "Success", "ReflD": "00000000"})
-
-        order_qs = Order.objects.filter(used_discount=self.discount4)
-
-        self.assertTrue(order_qs.exists())
-        self.assertEqual(order_qs.count(), 1)
-
-        order = order_qs.first()
-
-        self.assertEqual(order.subtotal, self.time_slot_sale1.price)
-        self.assertEqual(order.total, 0)
 
     def test_order_detail_put_patch_delete_post_denied(self):
         client = self.client
