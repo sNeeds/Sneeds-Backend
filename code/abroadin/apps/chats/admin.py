@@ -9,5 +9,5 @@ admin.site.register(models.ImageMessage)
 
 
 @admin.register(models.Chat)
-class StorePackageAdmin(admin.ModelAdmin):
+class ChatAdmin(admin.ModelAdmin):
     list_display = ["id", "user", "consultant"]
