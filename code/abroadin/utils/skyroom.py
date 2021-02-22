@@ -30,7 +30,7 @@ class SkyroomAPI(object):
         return "skyroom.SkyroomAPI({!s})".format(self.apikey)
 
     def _request(self, action, params=None):
-        url = 'https://' + self.host + '/skyroom/api/' + self.apikey
+        url = 'https://' + self.host + '/skyroom/apis/' + self.apikey
 
         data = {
             'action': action

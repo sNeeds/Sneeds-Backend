@@ -6,7 +6,7 @@ from django.conf import settings
 headers = {
     'accept': "application/json",
     'content-type': "application/json",
-    'api-key': settings.SENDINBLUE_API_KEY
+    'apis-key': settings.SENDINBLUE_API_KEY
 }
 
 MARKETING_LIST = 3

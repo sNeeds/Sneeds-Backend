@@ -6,7 +6,7 @@ from django.conf import settings
 headers = {
     'accept': "application/json",
     'content-type': "application/json",
-    'api-key': settings.PAKAT_API_KEY,
+    'apis-key': settings.PAKAT_API_KEY,
 }
 
 
