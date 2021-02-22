@@ -98,7 +98,7 @@ def update_pakat_contact(email, *args, **kwargs):
     }
     json_data = json.dumps(payload)
     response = requests.request("PUT", url, data=json_data, headers=headers)
-    return response.text
+    return 'pakat_mail_service_response:' + response.text
 
 
 def create_pakat_doi_contact(email, *args, **kwargs):
