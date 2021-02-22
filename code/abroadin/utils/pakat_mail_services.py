@@ -32,7 +32,7 @@ def send_verification_code_email(send_to, full_name, code):
               'full_name_exists': True if full_name is not None and len(full_name) > 2 else False}
 
     payload = {
-        "sender": {"name": "abroadin", "email": 'marketing@gmail.com'},
+        "sender": {"name": "abroadin", "email": 'marketing@abroadin.com'},
         "to": [{"email": send_to}],
         "replyTo": {'email': 'abroadin.marketing@gmail.com'},
         "params": params,
@@ -53,9 +53,9 @@ def send_reset_password_email(send_to, full_name, reset_password_link):
               "full_name": full_name,
               'full_name_exists': True if full_name is not None and len(full_name) > 2 else False}
     payload = {
-        "sender": {"name": "abroadin", "email": 'abroadin.dev@gmail.com'},
+        "sender": {"name": "abroadin", "email": 'marketing@abroadin.com'},
         "to": [{"email": send_to}],
-        "replyTo": {'email': 'abroadin.dev@gmail.com'},
+        "replyTo": {'email': 'abroadin.marketing@gmail.com'},
         "params": params,
         "templateId": 71,
     }
@@ -127,7 +127,7 @@ def send_order_created_email(send_to, name, order_url):
     url = "https://api.sendinblue.com/v3/smtp/email"
 
     payload = {
-        "sender": {"name": "abroadin", "email": 'noreply.abroadin@gmail.com'},
+        "sender": {"name": "abroadin", "email": 'marketing@abroadin.com'},
         "to": [{"email": send_to}],
         "replyTo": {'email': 'noreply.abroadin@gmail.com'},
         "params": {"name": name, "order_url": order_url},
