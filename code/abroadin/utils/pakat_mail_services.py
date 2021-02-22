@@ -6,7 +6,7 @@ from django.conf import settings
 headers = {
     'accept': "application/json",
     'content-type': "application/json",
-    'apis-key': settings.PAKAT_API_KEY,
+    'api-key': settings.PAKAT_API_KEY,
 }
 
 
@@ -98,6 +98,7 @@ def update_pakat_contact(email, *args, **kwargs):
     }
     json_data = json.dumps(payload)
     response = requests.request("PUT", url, data=json_data, headers=headers)
+    print(settings.PAKAT_API_KEY)
     return 'pakat_mail_service_response:' + response.text
 
 
