@@ -37,6 +37,7 @@ class ApplyProfileGroup(Product):
 
     @transaction.atomic
     def sell(self):
+        self.update_price()
         sold_apply_profile_group = SoldApplyProfileGroup.objects.create(
             sold_to=self.user,
             price=self.price

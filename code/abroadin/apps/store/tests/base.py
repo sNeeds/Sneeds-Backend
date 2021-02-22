@@ -7,7 +7,7 @@ from abroadin.base.mixins.tests import TestBriefMethodMixin
 User = get_user_model()
 
 
-class StoreBaseTest(TestBriefMethodMixin, APITestCase):
+class StoreBaseTest(APITestCase, TestBriefMethodMixin):
     def setUp(self):
         # ------- Users -------
 
