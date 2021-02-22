@@ -5,7 +5,7 @@ from ...models import ApplyProfileGroup
 from ...values import MAX_ALLOWED_APPLY_PROFILES
 
 
-class ApplyProfileGroupDetailTest(ApplyProfileStoreAPITestBase):
+class SoldApplyProfileGroupDetailTest(ApplyProfileStoreAPITestBase):
 
     def setUp(self):
         super().setUp()
