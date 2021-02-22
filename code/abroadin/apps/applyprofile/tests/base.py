@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase, APIClient
 
 from abroadin.base.mixins.tests import TestBriefMethodMixin
@@ -7,6 +8,8 @@ from abroadin.apps.data.applydata.models import GradeChoices
 from ...data.account.models import Major, University, Country
 from ...data.applydata.models import RegularLanguageCertificate, GREGeneralCertificate, LanguageCertificate, \
     Publication, Education, GradeChoices, Grade, SemesterYear
+
+User = get_user_model()
 
 
 class ApplyProfileTestBase(APITestCase, TestBriefMethodMixin):
