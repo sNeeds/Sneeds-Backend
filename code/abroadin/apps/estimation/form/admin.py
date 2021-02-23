@@ -149,8 +149,3 @@ class StudentDetailedInfoAdmin(StudentDetailedInfoBaseAdmin):
         return instance.is_complete
 
     is_complete.boolean = True
-
-    qs = models.StudentDetailedInfo.objects.all()
-    for obj in qs:
-        if not obj.is_complete:
-            obj.delete()
