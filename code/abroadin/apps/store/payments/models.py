@@ -2,7 +2,6 @@ from django.contrib.auth import get_user_model
 from django.db import models
 
 from abroadin.apps.store.carts.models import Cart
-from abroadin.apps.users.consultants.models import ConsultantProfile
 
 User = get_user_model()
 

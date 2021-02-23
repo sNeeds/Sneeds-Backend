@@ -14,15 +14,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RemoveField(
             model_name='soldtimeslotsale',
-            name='consultant',
-        ),
-        migrations.RemoveField(
-            model_name='soldtimeslotsale',
             name='soldproduct_ptr',
-        ),
-        migrations.RemoveField(
-            model_name='timeslotsale',
-            name='consultant',
         ),
         migrations.RemoveField(
             model_name='timeslotsale',

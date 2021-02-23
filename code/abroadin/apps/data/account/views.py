@@ -20,13 +20,8 @@ class CountryList(generics.CListAPIView):
 
     def get_queryset(self):
         request = self.request
-        with_time_slot_consultants = request.query_params.get('with-time-slot-consultants', None)
         search_terms = request.query_params.get('search', '')
-
-        if with_time_slot_consultants == 'true':
-            qs = models.Country.objects.with_active_time_slot_consultants().exclude(slug="iran")
-        else:
-            qs = models.Country.objects.all()
+        qs = models.Country.objects.all()
 
         search_term = search_terms[:16]
         search_result = search_country(qs, search_term)
@@ -44,10 +39,7 @@ class UniversityList(generics.CListAPIView):
     serializer_class = serializers.UniversitySerializer
 
     def get_queryset(self):
-        from abroadin.apps.users.consultants.models import StudyInfo
-        study_info_with_active_consultant_qs = StudyInfo.objects.all().with_active_consultants()
-        university_list = list(study_info_with_active_consultant_qs.values_list('university_id', flat=True))
-        return models.University.objects.filter(id__in=university_list)
+        return models.University.objects.all()
 
 
 class UniversityForFormList(generics.CListAPIView):
@@ -72,10 +64,7 @@ class MajorList(generics.CListAPIView):
     serializer_class = serializers.MajorSerializer
 
     def get_queryset(self):
-        from abroadin.apps.users.consultants.models import StudyInfo
-        study_info_with_active_consultant_qs = StudyInfo.objects.all().with_active_consultants()
-        major_list = list(study_info_with_active_consultant_qs.values_list('major__id', flat=True))
-        return models.Major.objects.filter(id__in=major_list)
+        return models.Major.objects.all()
 
 
 class MajorForFormList(generics.CListAPIView):

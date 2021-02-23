@@ -1,12 +1,9 @@
 from itertools import chain
 
 from django.contrib.contenttypes.models import ContentType
-from django.db import models, transaction
+from django.db import models
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
 
-from abroadin.apps.users.consultants.models import ConsultantProfile
 from abroadin.base.models.abstracts import InheritanceCastModel
 
 User = get_user_model()
