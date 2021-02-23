@@ -2,35 +2,28 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-from django.db import connection
+from django.contrib.contenttypes.management import create_contenttypes
 
 
 def forwards_func(apps, schema_editor):
-    db_name: str = connection.settings_dict['NAME']
+    app_config = apps.get_app_config('applyprofilestore')
+    app_config.models_module = app_config.models_module or True
 
-    if db_name.startswith('test'):
-        return
+    create_contenttypes(app_config)
 
     # We get the model from the versioned app registry;
     # if we directly import it, it'll be the wrong version
     ContentType = apps.get_model("contenttypes", "contenttype")
-    print("OOO1")
-
     SoldApplyProfileGroup = apps.get_model("applyprofilestore", "soldapplyprofilegroup")
-    print("OOO2")
 
     sold_apply_profile_group_ct = ContentType.objects.get(app_label="applyprofilestore", model="soldapplyprofilegroup")
-    sold_product_ct = ContentType.objects.get(app_label='storeBase', model='soldproduct')
 
     for obj in SoldApplyProfileGroup.objects.all():
         obj.real_type = sold_apply_profile_group_ct
         obj.save()
 
-    print('real type is now set')
-
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('contenttypes', '0002_remove_content_type_name'),
         ('storeBase', '0001_initial'),
