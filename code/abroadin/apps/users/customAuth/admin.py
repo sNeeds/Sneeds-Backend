@@ -44,7 +44,7 @@ class CustomUserAdmin(UserAdmin):
     actions = [
         export_as_csv_action(
             "CSV Export",
-            fields=['email', 'phone_number', 'get_full_name', 'is_email_verified', 'user_type', 'is_staff',
+            fields=['id', 'email', 'phone_number', 'get_full_name', 'is_email_verified', 'user_type', 'is_staff',
                     'date_last_action', 'date_joined', 'has_form', 'home_university']
         )
     ]
