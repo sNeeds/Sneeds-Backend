@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 
-from abroadin.apps.store.storeBase.models import SoldTimeSlotSale, SoldProduct
+from abroadin.apps.store.storeBase.models import SoldProduct
 
 User = get_user_model()
 

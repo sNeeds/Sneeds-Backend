@@ -20,7 +20,6 @@ class Migration(migrations.Migration):
                 ('status', models.CharField(choices=[('paid', 'Paid'), ('canceled_not_refunded', 'Canceled but not refunded'), ('canceled_refunded', 'Canceled and refunded')], default='paid', max_length=256)),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('updated', models.DateTimeField(auto_now=True)),
-                ('time_slot_sales_number_discount', models.FloatField(default=0, validators=[django.core.validators.MinValueValidator(0), django.core.validators.MaxValueValidator(100)])),
                 ('subtotal', models.PositiveIntegerField()),
                 ('total', models.PositiveIntegerField()),
             ],

@@ -9,7 +9,7 @@ class StudyInfoInline(admin.TabularInline):
 
 
 @admin.register(ConsultantProfile)
-class StorePackageAdmin(admin.ModelAdmin):
+class ConsultantProfileAdmin(admin.ModelAdmin):
     inlines = (StudyInfoInline,)
     readonly_fields = ["rate", ]
     list_display = ["id", "__str__", "user", "time_slot_price", "rate", "active", ]

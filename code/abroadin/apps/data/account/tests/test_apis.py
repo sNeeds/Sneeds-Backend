@@ -3,7 +3,6 @@ from rest_framework.test import APITestCase, APIClient
 from abroadin.apps.data.account.models import StudentDetailedInfo, Major, University, Country
 from abroadin.apps.users.consultants.models import ConsultantProfile
 from abroadin.apps.store.storeBase.models import SoldTimeSlotSale
-from abroadin.apps.store.storePackages import SoldStorePackage
 
 from django.contrib.auth import get_user_model
 from django.urls import reverse
@@ -483,9 +482,6 @@ class StudentDetailedInfoTests(APITestCase):
         url = reverse('account:student-detailed-info-detail', args=(self.student_detailed_info1.id,))
         client = self.client
         client.force_login(self.consultant1)
-
-        SoldStorePackage.objects.create(consultant=self.consultant1_profile, sold_to=self.user1,
-                                        paid_price=5000, total_price=15000, title="Hello")
 
         response = client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)

@@ -5,10 +5,6 @@ from rest_framework.exceptions import ValidationError
 from .models import Order
 
 from abroadin.apps.store.carts.models import Cart
-from abroadin.apps.store.storeBase.serializers import SoldTimeSlotSaleSerializer
-from abroadin.apps.store.basicProducts.serializers import SoldBasicProductSerializer, SoldClassProductSerializer, \
-    SoldWebinarProductSerializer
-from abroadin.apps.store.storePackages.serializers import SoldStorePaidPackagePhaseSerializer
 
 
 class OrderSerializer(serializers.ModelSerializer):

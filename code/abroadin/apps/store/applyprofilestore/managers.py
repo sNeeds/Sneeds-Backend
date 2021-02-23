@@ -14,6 +14,8 @@ class ApplyProfileGroupManager(QuerySet):
         except Exception as e:
             raise ValidationError({'apply_profiles': _(e.message)})
 
+        kwargs.pop('price', None)
+
         obj = self.create(**kwargs, price=APPLY_PROFILE_PRICE_IN_DOLLAR)
         obj.apply_profiles.set(apply_profiles)
         obj.update_price()
