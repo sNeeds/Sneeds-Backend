@@ -61,7 +61,6 @@ kiwisolver==1.1.0
 kombu==4.6.11
 lxml==4.5.0
 MarkupSafe==1.1.1
-matplotlib==3.0.3
 monotonic==1.5
 numpy==1.17.4
 packaging==20.4
