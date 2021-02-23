@@ -1,5 +1,5 @@
 from abroadin.apps.estimation.estimations.classes import ValueRange
-from abroadin.apps.data.applydata.values import VALUES_WITH_ATTRS
+from abroadin.apps.data.applydata.values.values import VALUES_WITH_ATTRS
 
 
 class AdmissionChance:
@@ -7,7 +7,7 @@ class AdmissionChance:
         self.form = student_detailed_info
 
     def _get_label_chance(self, value, value_with_attr_key, label):
-        value_range = ValueRange(VALUES_WITH_ATTRS[value_with_attr_key])
+        value_range = ValueRange(VALUES_WITH_ATTRS['admission_chance'][value_with_attr_key])
         return value_range.find_value_attrs(value, label)
 
     def _get_all_chances(self, value, value_with_attr_key):
@@ -57,7 +57,7 @@ class AdmissionChance:
     def get_university_chance_with_label(self, university):
         data = self.get_university_chance(university)
 
-        value_range = ValueRange(VALUES_WITH_ATTRS["admission_chance_value_to_label"])
+        value_range = ValueRange(VALUES_WITH_ATTRS['admission_chance']['label'])
         for key, value in data.copy().items():
             data[key + "_label"] = value_range.find_value_attrs(value, 'label')
 

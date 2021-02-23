@@ -8,20 +8,20 @@ class StudentDetailedFormReview(
     review_mixins.ReviewAgeAndAcademicBreakMixin,
     review_mixins.ReviewOthersMixin,
 ):
-    def __init__(self, student_detailed_form):
-        self.student_detailed_form = student_detailed_form
+    def __init__(self, form):
+        self.form = form
         self.last_grade = None
         self.last_education = None
 
     def _set_grade(self):
-        self.last_grade = self.student_detailed_form.get_last_university_grade()
-        self.last_education = self.student_detailed_form.last_education()
+        self.last_grade = self.form.get_last_university_grade()
+        self.last_education = self.form.last_education()
 
     def _rank(self):
-        return self.student_detailed_form.rank
+        return self.form.rank
 
     def _rank_among(self):
-        return self.student_detailed_form.__class__.objects.all().count()
+        return self.form.__class__.objects.all().count()
 
     def _better_than_percent(self):
         return int((1 - self._rank() / self._rank_among()) * 100)
@@ -29,7 +29,7 @@ class StudentDetailedFormReview(
     def review_all(self):
         self._set_grade()
         data = {
-            "student_detailed_info": self.student_detailed_form.id,
+            "student_detailed_info": self.form.id,
 
             "university_and_gpa": {
                 "comment": self.review_universities(),
@@ -52,10 +52,10 @@ class StudentDetailedFormReview(
 
             "others": {
                 "comment": self.review_others(),
-                "value": self.student_detailed_form.others_value
+                "value": self.form.others_value
             },
 
-            "total_value": self.student_detailed_form.value,
+            "total_value": self.form.value,
             "rank": self._rank(),
             "better_than_percent": self._better_than_percent(),
             "rank_among": self._rank_among()

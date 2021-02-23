@@ -2,7 +2,8 @@ from django.db import models
 from django.contrib.auth import get_user_model
 
 from .managers import CountryManager, UniversityManager, MajorManager
-from abroadin.apps.data.applydata import values
+from ..applydata.values.education import GREAT_UNIVERSITY_RANK, GOOD_UNIVERSITY_RANK, AVERAGE_UNIVERSITY_RANK, \
+    BAD_UNIVERSITY_RANK
 
 User = get_user_model()
 
@@ -54,15 +55,15 @@ class University(models.Model):
     def value(self):
         rank = self.rank
         value = None
-        if rank < values.GREAT_UNIVERSITY_RANK:
+        if rank < GREAT_UNIVERSITY_RANK:
             value = 1
-        elif values.GREAT_UNIVERSITY_RANK <= rank < values.GOOD_UNIVERSITY_RANK:
+        elif GREAT_UNIVERSITY_RANK <= rank < GOOD_UNIVERSITY_RANK:
             value = 0.96
-        elif values.GOOD_UNIVERSITY_RANK <= rank < values.AVERAGE_UNIVERSITY_RANK:
+        elif GOOD_UNIVERSITY_RANK <= rank < AVERAGE_UNIVERSITY_RANK:
             value = 0.91
-        elif values.AVERAGE_UNIVERSITY_RANK <= rank < values.BAD_UNIVERSITY_RANK:
+        elif AVERAGE_UNIVERSITY_RANK <= rank < BAD_UNIVERSITY_RANK:
             value = 0.75
-        elif values.BAD_UNIVERSITY_RANK <= rank:
+        elif BAD_UNIVERSITY_RANK <= rank:
             value = 0.6
 
         return value

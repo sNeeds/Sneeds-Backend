@@ -1,13 +1,16 @@
+from abroadin.apps.data.applydata.comments.education import *
+from abroadin.apps.data.applydata.comments.language import *
+from abroadin.apps.data.applydata.comments.age_and_gap import *
+from abroadin.apps.data.applydata.comments.recommendation import *
 from abroadin.apps.data.applydata.models import LanguageCertificate, Education, GradeChoices, Publication
 from abroadin.apps.estimation.estimations.classes import ValueRange
-from abroadin.apps.estimation.estimations.review_comments import *
-from abroadin.apps.data.applydata.values import VALUES_WITH_ATTRS
+from abroadin.apps.data.applydata.values.values import VALUES_WITH_ATTRS
 
 
 class ReviewAgeAndAcademicBreakMixin:
     def review_age_and_academic_break(self):
-        age = self.student_detailed_form.age
-        academic_break = self.student_detailed_form.academic_break
+        age = self.form.age
+        academic_break = self.form.academic_break
 
         if age is None:
             return NO_AGE_ENTERED_MESSAGE
@@ -64,7 +67,7 @@ class ReviewLanguageMixin:
             "total_value_label": None,
         }
 
-        form = self.student_detailed_form
+        form = self.form
         language_certificates = LanguageCertificate.objects.filter(student_detailed_info__id=form.id)
 
         for certificate_title in certificate_titles:
@@ -109,7 +112,7 @@ class ReviewLanguageMixin:
 
         if language_type:
             obj = language_type.regularlanguagecertificate
-            value_range = ValueRange(VALUES_WITH_ATTRS[label])
+            value_range = ValueRange(VALUES_WITH_ATTRS['language'][label])
             comment = value_range.find_value_attrs(obj.overall, 'comment')
             data = {
                 "comment": comment,
@@ -123,17 +126,10 @@ class ReviewLanguageMixin:
 
 class ReviewUniversityMixin:
     def review_universities(self):
-        university_through = Education.objects.filter(
-            student_detailed_info__id=self.student_detailed_form.id
-        )
+        educations_qs = Education.objects.filter(student_detailed_info__id=self.form.id)
+        last_education = self.last_education
+        last_grade = last_education.grade
 
-        self._set_grade()
-
-        # User has previous university
-        if self.last_grade:
-            last_grade_university = university_through.get(grade=self.last_grade)
-
-        last_grade = self.last_grade
         data = {
             'post_doc': None,
             'phd': None,
@@ -144,80 +140,32 @@ class ReviewUniversityMixin:
 
         if last_grade == GradeChoices.POST_DOC:
             data['post_doc'] = POST_DOC_NO_SUPPORT
+
         elif last_grade == GradeChoices.PHD:
             data['phd'] = PHD_NO_SUPPORT
+
         elif last_grade == GradeChoices.MASTER:
-            if last_grade_university.university.rank < 850:
-                if last_grade_university.gpa <= 14:
-                    data['master'] = MASTER_LAST_GRADE_TOP_850_COMMENTS_GPA_UNDER_14
-                if 14 < last_grade_university.gpa <= 16:
-                    data['master'] = MASTER_LAST_GRADE_TOP_850_COMMENTS_GPA_BETWEEN_14_16
-                if 16 < last_grade_university.gpa <= 18:
-                    data['master'] = MASTER_LAST_GRADE_TOP_850_COMMENTS_GPA_BETWEEN_16_18
-                if 18 < last_grade_university.gpa:
-                    data['master'] = MASTER_LAST_GRADE_TOP_850_COMMENTS_GPA_ABOVE_18
+            value_range = ValueRange(VALUES_WITH_ATTRS['education']['master'])
+            gpa_data = value_range.find_value_attrs(last_education.university.rank, 'gpa_data')
 
-            elif 850 <= last_grade_university.university.rank <= 1100:
-                if last_grade_university.gpa <= 14:
-                    data['master'] = MASTER_LAST_GRADE_BETWEEN_850_1100_COMMENTS_GPA_UNDER_14
-                if 14 < last_grade_university.gpa <= 16:
-                    data['master'] = MASTER_LAST_GRADE_BETWEEN_850_1100_COMMENTS_GPA_BETWEEN_14_16
-                if 16 < last_grade_university.gpa <= 18:
-                    data['master'] = MASTER_LAST_GRADE_BETWEEN_850_1100_COMMENTS_GPA_BETWEEN_16_18
-                if 18 < last_grade_university.gpa:
-                    data['master'] = MASTER_LAST_GRADE_BETWEEN_850_1100_COMMENTS_GPA_ABOVE_18
+            value_range = ValueRange(gpa_data)
+            comment = value_range.find_value_attrs(last_education.gpa, 'comment')
+            data['master'] = comment
 
-            elif 1100 < last_grade_university.university.rank:
-                if last_grade_university.gpa <= 14:
-                    data['master'] = MASTER_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_UNDER_14
-                if 14 < last_grade_university.gpa <= 16:
-                    data['master'] = MASTER_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_BETWEEN_14_16
-                if 16 < last_grade_university.gpa <= 18:
-                    data['master'] = MASTER_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_BETWEEN_16_18
-                if 18 < last_grade_university.gpa:
-                    data['master'] = MASTER_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_ABOVE_18
-
-            bachelor = university_through.get_grade_or_none(grade=GradeChoices.BACHELOR)
+            bachelor = educations_qs.get_grade_or_none(grade=GradeChoices.BACHELOR)
             if bachelor is not None:
-                if bachelor.gpa <= 14:
-                    data['bachelor'] = MASTER_WITH_BACHELOR_BAD_GPA
-                elif 14 < bachelor.gpa <= 16:
-                    data['bachelor'] = MASTER_WITH_BACHELOR_MODERATE_GPA
-                elif 16 < bachelor.gpa <= 18:
-                    data['bachelor'] = MASTER_WITH_BACHELOR_GOOD_GPA
-                elif 18 < bachelor.gpa:
-                    data['bachelor'] = MASTER_WITH_BACHELOR_EXCELLENT_GPA
+                value_range = ValueRange(VALUES_WITH_ATTRS['education']['bachelor_with_master_short_comment'])
+                comment = value_range.find_value_attrs(bachelor.gpa, 'comment')
+                data['bachelor'] = comment
 
         elif last_grade == GradeChoices.BACHELOR:
-            if last_grade_university.university.rank < 850:
-                if last_grade_university.gpa <= 14:
-                    data['bachelor'] = BACHELOR_LAST_GRADE_TOP_850_COMMENTS_GPA_UNDER_14
-                if 14 < last_grade_university.gpa <= 16:
-                    data['bachelor'] = BACHELOR_LAST_GRADE_TOP_850_COMMENTS_GPA_BETWEEN_14_16
-                if 16 < last_grade_university.gpa <= 18:
-                    data['bachelor'] = BACHELOR_LAST_GRADE_TOP_850_COMMENTS_GPA_BETWEEN_16_18
-                if 18 < last_grade_university.gpa:
-                    data['bachelor'] = BACHELOR_LAST_GRADE_TOP_850_COMMENTS_GPA_ABOVE_18
+            value_range = ValueRange(VALUES_WITH_ATTRS['education']['bachelor'])
+            gpa_data = value_range.find_value_attrs(last_education.university.rank, 'gpa_data')
 
-            elif 850 <= last_grade_university.university.rank <= 1100:
-                if last_grade_university.gpa <= 14:
-                    data['bachelor'] = BACHELOR_LAST_GRADE_BETWEEN_850_1100_COMMENTS_GPA_UNDER_14
-                if 14 < last_grade_university.gpa <= 16:
-                    data['bachelor'] = BACHELOR_LAST_GRADE_BETWEEN_850_1100_COMMENTS_GPA_BETWEEN_14_16
-                if 16 < last_grade_university.gpa <= 18:
-                    data['bachelor'] = BACHELOR_LAST_GRADE_BETWEEN_850_1100_COMMENTS_GPA_BETWEEN_16_18
-                if 18 < last_grade_university.gpa:
-                    data['bachelor'] = BACHELOR_LAST_GRADE_BETWEEN_850_1100_COMMENTS_GPA_ABOVE_18
+            value_range = ValueRange(gpa_data)
+            comment = value_range.find_value_attrs(last_education.gpa, 'comment')
 
-            elif 1100 < last_grade_university.university.rank:
-                if last_grade_university.gpa <= 14:
-                    data['bachelor'] = BACHELOR_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_UNDER_14
-                if 14 < last_grade_university.gpa <= 16:
-                    data['bachelor'] = BACHELOR_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_BETWEEN_14_16
-                if 16 < last_grade_university.gpa <= 18:
-                    data['bachelor'] = BACHELOR_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_BETWEEN_16_18
-                if 18 < last_grade_university.gpa:
-                    data['bachelor'] = BACHELOR_LAST_GRADE_ABOVE_1100_COMMENTS_GPA_ABOVE_18
+            data['bachelor'] = comment
         else:
             data['total_comment'] = "Please enter your previous degree to get comment in this section. "
 
@@ -271,7 +219,7 @@ class ReviewPublicationMixin:
             "total_value": None,
             "total_value_label": None
         }
-        publications_qs = Publication.objects.filter(student_detailed_info__id=self.student_detailed_form.id)
+        publications_qs = Publication.objects.filter(student_detailed_info__id=self.form.id)
 
         excellent_publications = publications_qs.filter(value__gte=0.7)
         great_publications = publications_qs.filter(value__gte=0.6, value__lt=0.7)
@@ -412,17 +360,17 @@ class ReviewPublicationMixin:
 
 class ReviewOthersMixin:
     def _review_recommendation(self):
-        if not self.student_detailed_form.powerful_recommendation:
+        if not self.form.powerful_recommendation:
             return NO_POWERFUL_RECOMMENDATION
 
         return ""
 
     def _review_work_experience(self):
-        form = self.student_detailed_form
+        form = self.form
         comment = ""
         if form.related_work_experience:
             # TODO:Change
-            value_range = ValueRange(VALUES_WITH_ATTRS["work_experience_comments"])
+            value_range = ValueRange(VALUES_WITH_ATTRS["work_experience"])
             comment = value_range.find_value_attrs(form.related_work_experience, 'comment')
         return comment
 

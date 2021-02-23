@@ -9,7 +9,7 @@ from rest_framework.settings import api_settings
 from rest_framework.exceptions import ValidationError as DRFValidationError
 
 from abroadin.apps.data.applydata.models import Education, LanguageCertificate, Publication, Grade, SemesterYear
-from abroadin.apps.data.applydata.values import LANGUAGE_B_VALUE
+from abroadin.apps.data.applydata.values.language import LANGUAGE_B_VALUE
 from abroadin.apps.estimation.form.variables import MISSING_LABEL, REWARDED_LABEL
 from abroadin.apps.estimation.form.managers import StudentDetailedInfoManager, WantToApplyManager
 
@@ -134,16 +134,16 @@ class StudentDetailedInfoBase(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    def _university_through_has_this_major(self, major):
+    def _education_has_this_major(self, major):
         return Education.objects.filter(
             student_detailed_info__id=self.id,
             major=major
         ).exists()
 
-    def university_through_has_these_majors(self, majors_list):
+    def education_has_these_majors(self, majors_list):
         found = False
         for major in majors_list:
-            found = found or self._university_through_has_this_major(major)
+            found = found or self._education_has_this_major(major)
         return found
 
     def last_education(self):
@@ -236,10 +236,12 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         null=True,
     )
 
-    value = models.FloatField(
+    value = models.DecimalField(
         validators=[MinValueValidator(0), MaxValueValidator(1)],
+        max_digits=3,
+        decimal_places=2,
         null=True,
-        editable=False
+        blank=True
     )
 
     rank = models.IntegerField(
@@ -291,7 +293,7 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
 
     def _compute_rank(self):
         better_rank_qs = self.__class__.objects.filter(value__gt=self.value)
-        return better_rank_qs.count()
+        return better_rank_qs.count() + 1
 
     def _compute_value(self):
         publications = Publication.objects.filter(
@@ -300,11 +302,10 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         languages = LanguageCertificate.objects.filter(
             content_type=get_sdi_ct_or_none(), object_id=self.id
         )
-
         total_value = 0
 
         if self.last_education():
-            total_value += 2 * self.last_education().value
+            total_value += 3.75 * self.last_education().value
 
         if languages.exists():
             total_value += languages.get_total_value()
@@ -313,7 +314,9 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
 
         total_value += publications.total_value()
 
-        total_value += self.others_value
+        total_value += 0.25 * self.others_value
+
+        total_value = min(total_value, 5)
 
         total_value = total_value / 5
 
