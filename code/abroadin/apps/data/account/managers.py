@@ -2,16 +2,6 @@ from django.db import models
 
 
 class CountryManager(models.QuerySet):
-    def with_active_time_slot_consultants(self):
-        from abroadin.apps.users.consultants.models import StudyInfo
-
-        active_consultant_study_infos = StudyInfo.objects.all().with_active_consultants()
-        country_list = list(
-            active_consultant_study_infos.values_list('university__country_id', flat=True)
-        )
-        qs = self.filter(id__in=country_list).exclude(slug="iran")
-
-        return qs
 
     def list(self):
         return [obj for obj in self._chain()]

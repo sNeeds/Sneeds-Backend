@@ -6,23 +6,12 @@ from django.urls import reverse
 
 from django_rest_passwordreset.signals import reset_password_token_created
 
-from abroadin.apps.users.consultants.models import ConsultantProfile
 from abroadin.apps.users.customAuth.tasks import send_reset_password_email
 from abroadin.settings.config.variables import FRONTEND_URL
 
 from ..utils import user_creation_handle_contact, user_update_handle_contact
 
 User = get_user_model()
-
-
-def post_save_consultant_profile(sender, instance, created, *args, **kwargs):
-    users_qs = User.objects.all()
-
-    for user in users_qs:
-        user.save()
-
-
-post_save.connect(post_save_consultant_profile, sender=ConsultantProfile)
 
 
 def pre_save_user(sender, instance, *args, **kwargs):

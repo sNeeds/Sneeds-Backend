@@ -18,11 +18,3 @@ class EmailNotification(Notification):
 
     def get_data_dict(self):
         return json.loads(self.data_json)
-
-
-class SoldTimeSlotReminderEmailNotification(EmailNotification):
-    sold_time_slot_id = models.PositiveIntegerField()
-
-
-class SoldTimeSlotChangedEmailNotification(EmailNotification):
-    sold_time_slot_id = models.PositiveIntegerField()
