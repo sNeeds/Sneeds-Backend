@@ -16,7 +16,6 @@ INSTALLED_APPS = [
     'rangefilter',
 
     'abroadin.apps.docs',
-    'abroadin.apps.chats',
     'abroadin.apps.customUtils',
     'abroadin.apps.notifications',
     'abroadin.apps.users.userFiles',
