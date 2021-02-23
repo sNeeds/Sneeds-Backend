@@ -5,6 +5,7 @@ TEMPLATE_DIR = os.path.join(BASE_DIR, "..", "templates")
 
 INSTALLED_APPS = [
     'rest_framework',
+    'rest_framework.authtoken',
     'django_filters',  # for filtering get queries in DRF
     'drf_yasg',  # for filtering get queries in DRF
     'django_rest_passwordreset',
@@ -50,9 +51,10 @@ INSTALLED_APPS = [
     'debug_toolbar',  # should go after staticfiles
     'allauth',
     'allauth.account',
+    'dj_rest_auth.registration',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.twitter',
 ]
 # Imported key to prevent circular imports.
 from .secure import keys
@@ -137,11 +139,6 @@ REST_FRAMEWORK = {
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
     'EXCEPTION_HANDLER': 'abroadin.utils.custom.exception_handler.exception_handler',
 }
-
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
-]
 
 DATABASES = {
     'default': {
@@ -252,18 +249,5 @@ INTERNAL_IPS = [
     '127.0.0.1',
 ]
 
-# Allauth
+# Social login
 SITE_ID = 1
-
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        # For each OAuth based provider, either add a ``SocialApp``
-        # (``socialaccount`` app) containing the required client
-        # credentials, or list them here:
-        'APP': {
-            'client_id': '123',
-            'secret': '456',
-            'key': ''
-        }
-    }
-}
