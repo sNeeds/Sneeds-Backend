@@ -8,8 +8,7 @@ from .models import Order
 class OrderAdmin(admin.ModelAdmin):
     list_display = ["id", "order_id", "user", "total", "subtotal", "created"]
     fields = (
-        ("order_id", "status"), "user", "sold_products", ("used_discount",
-                                                          "time_slot_sales_number_discount"), ("subtotal", "total"),
+        ("order_id", "status"), "user", "sold_products", ("subtotal", "total"),
         "created", "updated",
 
     )

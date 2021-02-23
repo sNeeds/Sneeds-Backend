@@ -5,14 +5,10 @@ from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase, APIClient
 from django.conf import settings
 
-from abroadin.apps.data.account import Country, University, Major, StudentDetailedInfo
+from abroadin.apps.data.account.models import Country, University, Major
 from abroadin.apps.store.carts.models import Cart
 from abroadin.apps.users.consultants.models import ConsultantProfile, StudyInfo
 from abroadin.apps.store.storeBase.models import TimeSlotSale, SoldTimeSlotSale
-from abroadin.apps.store.storePackages import (
-    StorePackagePhase, StorePackagePhaseThrough, StorePackage,
-    SoldStorePackage, SoldStorePaidPackagePhase, SoldStoreUnpaidPackagePhase,
-    SoldStorePackagePhaseDetail)
 
 USER_DETAILED_INFO_BASE_PAYLOAD = {
     "first_name": "u1",
@@ -219,148 +215,9 @@ class CustomAPITestCase(APITestCase):
             price=self.consultant2_profile.time_slot_price
         )
 
-        # StorePackages ------
-        self.store_package_1 = StorePackage.objects.create(
-            title="Math Gold Package",
-            slug="math-gold-package"
-        )
-
-        self.store_package_2 = StorePackage.objects.create(
-            title="College Package",
-            slug="college-package"
-        )
-
-        self.store_package_phase_1 = StorePackagePhase.objects.create(
-            title="General Package Phase 1",
-            detailed_title="General Package Phase",
-            price=100
-        )
-        self.store_package_1_phase_2 = StorePackagePhase.objects.create(
-            title="Math Gold Package Phase 2",
-            detailed_title="Math Gold Phase",
-            price=200
-        )
-        self.store_package_1_phase_3 = StorePackagePhase.objects.create(
-            title="Math Gold Package Phase 3",
-            detailed_title="Math Gold Phase",
-            price=400
-        )
-        self.store_package_2_phase_2 = StorePackagePhase.objects.create(
-            title="College Package Phase 2",
-            detailed_title="College Phase",
-            price=200
-        )
-
-        self.store_package_1_phase_through_1 = StorePackagePhaseThrough.objects.create(
-            store_package=self.store_package_1,
-            store_package_phase=self.store_package_phase_1,
-            phase_number=1
-        )
-        self.store_package_1_phase_through_2 = StorePackagePhaseThrough.objects.create(
-            store_package=self.store_package_1,
-            store_package_phase=self.store_package_1_phase_2,
-            phase_number=2
-        )
-        self.store_package_1_phase_through_3 = StorePackagePhaseThrough.objects.create(
-            store_package=self.store_package_1,
-            store_package_phase=self.store_package_1_phase_3,
-            phase_number=3
-        )
-        self.store_package_2_phase_through_1 = StorePackagePhaseThrough.objects.create(
-            store_package=self.store_package_2,
-            store_package_phase=self.store_package_phase_1,
-            phase_number=1
-        )
-        self.store_package_2_phase_through_2 = StorePackagePhaseThrough.objects.create(
-            store_package=self.store_package_2,
-            store_package_phase=self.store_package_2_phase_2,
-            phase_number=2
-        )
-
-        self.sold_store_package_1 = SoldStorePackage.objects.create(
-            title="Math Gold Package",
-            sold_to=self.user1,
-            consultant=self.consultant1_profile
-        )
-
-        self.sold_store_paid_package_1_phase_1 = SoldStorePaidPackagePhase.objects.create(
-            title=self.store_package_phase_1.title,
-            detailed_title=self.store_package_phase_1.detailed_title,
-            phase_number=1,
-            consultant_done=True,
-            sold_store_package=self.sold_store_package_1,
-            price=self.store_package_phase_1.price
-        )
-        self.sold_store_paid_package_1_phase_2 = SoldStorePaidPackagePhase.objects.create(
-            title=self.store_package_1_phase_2.title,
-            detailed_title=self.store_package_1_phase_2.detailed_title,
-            phase_number=2,
-            consultant_done=False,
-            sold_store_package=self.sold_store_package_1,
-            price=self.store_package_1_phase_2.price
-        )
-        self.sold_store_unpaid_package_1_phase_3 = SoldStoreUnpaidPackagePhase.objects.create(
-            title=self.store_package_1_phase_3.title,
-            detailed_title=self.store_package_1_phase_3.detailed_title,
-            phase_number=3,
-            sold_store_package=self.sold_store_package_1,
-            price=self.store_package_1_phase_3.price
-        )
-
-        self.sold_store_package_1_phase_detail_1 = SoldStorePackagePhaseDetail.objects.create(
-            title='title 1',
-            status='in_progress',
-            content_type=ContentType.objects.get(app_label='storePackages', model='soldstorepaidpackagephase'),
-            object_id=self.sold_store_paid_package_1_phase_1.id
-        )
-        self.sold_store_package_1_phase_detail_2 = SoldStorePackagePhaseDetail.objects.create(
-            title='title 2',
-            status='done',
-            content_type=ContentType.objects.get(app_label='storePackages', model='soldstorepaidpackagephase'),
-            object_id=self.sold_store_paid_package_1_phase_1.id
-        )
-        self.sold_store_package_1_phase_detail_3 = SoldStorePackagePhaseDetail.objects.create(
-            title='title 3',
-            status='in_progress',
-            content_type=ContentType.objects.get(app_label='storePackages', model='soldstorepaidpackagephase'),
-            object_id=self.sold_store_paid_package_1_phase_2.id
-        )
-
-        self.sold_store_package_2 = SoldStorePackage.objects.create(
-            title="Math Gold Package",
-            sold_to=self.user2,
-            consultant=None
-        )
-
-        self.sold_store_paid_package_2_phase_1 = SoldStorePaidPackagePhase.objects.create(
-            title=self.store_package_phase_1.title,
-            detailed_title=self.store_package_phase_1.detailed_title,
-            phase_number=1,
-            consultant_done=False,
-            sold_store_package=self.sold_store_package_2,
-            price=self.store_package_phase_1.price
-        )
-        self.sold_store_paid_package_2_phase_2 = SoldStoreUnpaidPackagePhase.objects.create(
-            title=self.store_package_1_phase_2.title,
-            detailed_title=self.store_package_1_phase_2.detailed_title,
-            phase_number=2,
-            sold_store_package=self.sold_store_package_2,
-            price=self.store_package_1_phase_2.price
-        )
-        self.sold_store_unpaid_package_2_phase_3 = SoldStoreUnpaidPackagePhase.objects.create(
-            title=self.store_package_1_phase_3.title,
-            detailed_title=self.store_package_1_phase_3.detailed_title,
-            phase_number=3,
-            sold_store_package=self.sold_store_package_2,
-            price=self.store_package_1_phase_3.price
-        )
-
         # Carts -------
         self.cart1 = Cart.objects.create(user=self.user1)
         self.cart1.products.set([self.time_slot_sale1, self.time_slot_sale2])
-
-        self.cart2 = Cart.objects.create(user=self.user1)
-        self.cart2.products.set([self.time_slot_sale1, self.time_slot_sale3, self.store_package_1])
 
         self.cart3 = Cart.objects.create(user=self.user2)
         self.cart3.products.set([self.time_slot_sale1, self.time_slot_sale5])

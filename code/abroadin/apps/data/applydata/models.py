@@ -480,6 +480,7 @@ class LanguageCertificate(
         'content_type': {
             'form__studentdetailedinfo': ['object_id', 'certificate_type'],
             'form__studentdetailedinfobase': ['object_id', 'certificate_type'],
+            'applyprofile__applyprofile': ['object_id', 'certificate_type'],
         }
     }
 

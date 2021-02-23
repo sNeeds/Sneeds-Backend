@@ -26,6 +26,11 @@ class ApplyProfileGroupSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         return super().validate(attrs)
 
+    def validate_user(self, value):
+        if self.context['request'].user != value:
+            raise ValidationError(_("Client can't use other user ids."))
+        return value
+
     def create(self, validated_data):
         instance = ApplyProfileGroup.objects.create_with_apply_profiles(**validated_data)
         return instance

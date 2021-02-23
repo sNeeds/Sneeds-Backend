@@ -68,6 +68,22 @@ class PublicationInline(GenericTabularInline):
     extra = 1
 
 
+def apply_profile_publications(apply_profile):
+    return list(apply_profile.publications.all().only('id'))
+
+
+def apply_profile_publications_count(apply_profile):
+    return apply_profile.publications.all().count()
+
+
+def apply_profile_language(apply_profile):
+    return list(apply_profile.language_certificates.all().values_list('certificate_type'))
+
+
+def apply_profile_admissions(apply_profile):
+    return list(apply_profile.admissions.all().values_list('id', flat=True))
+
+
 @admin.register(ApplyProfile)
 class ApplyProfileAdmin(admin.ModelAdmin):
     inlines = [
@@ -86,18 +102,19 @@ class ApplyProfileAdmin(admin.ModelAdmin):
         DuolingoCertificateInline,
     ]
 
-    # actions = [
-    #     export_as_csv_action(
-    #         "Similar Profiles CSV Export",
-    #         fields=['id', 'name', 'gap', '', 'user__phone_number',
-    #                 'last_education__gpa', 'last_education__university__country', 'last_education__university__name',
-    #                 get_destination_countries,
-    #                 get_destination_universities,
-    #                 get_similar_admission,
-    #                 ],
-    #         file_name='Forms_Similar_Profiles_' + str(datetime.now()),
-    #     )
-    # ]
+    actions = [
+        export_as_csv_action(
+            "CSV Export",
+            fields=['id', 'name', 'gap',
+                    'last_education__id', 'main_admission__id',
+                    apply_profile_admissions,
+                    apply_profile_publications_count,
+                    apply_profile_publications,
+                    apply_profile_language,
+                    ],
+            file_name='Apply_Profiles_' + str(datetime.now()),
+        )
+    ]
 
 
 @admin.register(Admission)
@@ -105,7 +122,7 @@ class AdmissionAdmin(admin.ModelAdmin):
     autocomplete_fields = ['destination', 'major']
     actions = [
         export_as_csv_action(
-            "Similar Profiles CSV Export",
+            "CSV Export",
             fields=['id', 'apply_profile_id', 'major', 'grade', 'destination',
                     'accepted', 'scholarship', 'enroll_year',
                     ],

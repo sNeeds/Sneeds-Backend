@@ -1,7 +1,6 @@
 from rest_framework import permissions
 
 from abroadin.apps.users.consultants.models import ConsultantProfile
-from abroadin.apps.store.storeBase.models import SoldTimeSlotSale
 
 
 class UserFileOwnerPermission(permissions.BasePermission):
@@ -14,11 +13,6 @@ class UserFileOwnerPermission(permissions.BasePermission):
         # Checks if user has bought a time slot from this consultant
         if request.method in permissions.SAFE_METHODS and consultant_profile_qs.exists():
             consultant_profile = consultant_profile_qs.first()
-            sold_time_sale_qs = SoldTimeSlotSale.objects.filter(
-                consultant=consultant_profile,
-            )
-            if sold_time_sale_qs.exists():
-                return True
 
         if user == obj.user:
             return True

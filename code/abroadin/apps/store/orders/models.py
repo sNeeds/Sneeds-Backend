@@ -6,9 +6,7 @@ from django.utils.datetime_safe import datetime
 from django.utils.timezone import make_aware
 
 from abroadin.apps.store.carts.models import Cart
-from abroadin.apps.store.discounts.models import Discount, CartDiscount, TimeSlotSaleNumberDiscount
 from abroadin.apps.store.storeBase.models import SoldProduct
-from abroadin.apps.store.storePackages.models import SoldStorePaidPackagePhase
 
 User = get_user_model()
 
@@ -55,10 +53,6 @@ class Order(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     # TODO:Change to code.
-    used_discount = models.ForeignKey(Discount, null=True, blank=True, on_delete=models.SET_NULL)
-    time_slot_sales_number_discount = models.FloatField(
-        default=0, validators=[MinValueValidator(0), MaxValueValidator(100)],
-    )
     subtotal = models.PositiveIntegerField()
     total = models.PositiveIntegerField()
 
