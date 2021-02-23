@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'abroadin.apps.users.userFiles',
     'abroadin.apps.users.customAuth',
     'abroadin.apps.users.consultants',
+    'abroadin.apps.users.socialauth',
     'abroadin.apps.store.storeBase',
     'abroadin.apps.store.carts',
     'abroadin.apps.store.orders',
@@ -33,8 +34,8 @@ INSTALLED_APPS = [
     'abroadin.apps.estimation.analyze',
     'abroadin.apps.estimation.similarprofiles',
     'abroadin.apps.data.globaldata',
-    'abroadin.apps.analytics.events',
     'abroadin.apps.data.applydata',
+    'abroadin.apps.analytics.events',
     'abroadin.apps.applyprofile',
 
     'django.contrib.auth',
