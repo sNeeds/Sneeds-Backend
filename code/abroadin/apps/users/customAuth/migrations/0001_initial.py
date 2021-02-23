@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
                 ('phone_number', phonenumber_field.modelfields.PhoneNumberField(blank=True, max_length=128, null=True, region=None)),
                 ('first_name', models.CharField(blank=True, max_length=30, null=True, verbose_name='first name')),
                 ('last_name', models.CharField(blank=True, max_length=150, null=True, verbose_name='last name')),
-                ('user_type', models.CharField(choices=[('Student', 'Student'), ('Consultant', 'Consultant'), ('Admin consultant', 'Admin Consultant')], default='Student', max_length=128)),
+                ('user_type', models.CharField(choices=[('Student', 'Student'), ('Admin', 'Admin')], default='Student', max_length=128)),
                 ('is_staff', models.BooleanField(default=False, help_text='Designates whether the user can log into this admin site.', verbose_name='staff status')),
                 ('is_admin', models.BooleanField(default=False)),
                 ('is_active', models.BooleanField(default=True, help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.', verbose_name='active')),

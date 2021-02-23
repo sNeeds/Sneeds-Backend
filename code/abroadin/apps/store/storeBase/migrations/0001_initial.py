@@ -10,7 +10,6 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('consultants', '0002_auto_20210201_1003'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('contenttypes', '0002_remove_content_type_name'),
     ]
@@ -44,7 +43,6 @@ class Migration(migrations.Migration):
                 ('product_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='storeBase.product')),
                 ('start_time', models.DateTimeField()),
                 ('end_time', models.DateTimeField()),
-                ('consultant', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='consultants.consultantprofile')),
             ],
             options={
                 'abstract': False,
@@ -58,7 +56,6 @@ class Migration(migrations.Migration):
                 ('used', models.BooleanField(default=False)),
                 ('start_time', models.DateTimeField()),
                 ('end_time', models.DateTimeField()),
-                ('consultant', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='consultants.consultantprofile')),
             ],
             bases=('storeBase.soldproduct',),
         ),
