@@ -3,7 +3,7 @@ from django.contrib.contenttypes.models import ContentType
 from abroadin.apps.estimation.form.models import WantToApply
 from abroadin.apps.applyprofile.models import Admission, ApplyProfile
 from abroadin.apps.data.applydata.models import Education
-from abroadin.apps.data.account.models import Major
+from abroadin.apps.data.globaldata.models import Major
 
 from .base import SimilarProfilesFunctionsBaseTests
 from ...functions import SimilarProfilesForForm

@@ -1,6 +1,6 @@
 from rest_framework.test import APITestCase, APIClient
 
-from abroadin.apps.data.account.models import StudentDetailedInfo, Major, University, Country
+from abroadin.apps.data.globaldata.models import StudentDetailedInfo, Major, University, Country
 from abroadin.apps.users.consultants.models import ConsultantProfile
 from abroadin.apps.store.storeBase.models import SoldTimeSlotSale
 
@@ -128,7 +128,7 @@ class StudentDetailedInfoTests(APITestCase):
         self.client = APIClient()
 
     def test_list_post_success_valid_credentials_set_user_correct(self):
-        url = reverse('account:student-detailed-info-list')
+        url = reverse('globaldata:student-detailed-info-list')
         client = self.client
         # client.login(email=self.user1.email, password=self.user1.password)
         client.force_login(self.user2)
@@ -161,7 +161,7 @@ class StudentDetailedInfoTests(APITestCase):
         self.assertEqual(response.data.get('user'), self.user2.id)
 
     def test_list_post_fail_invalid_marital_status(self):
-        url = reverse('account:student-detailed-info-list')
+        url = reverse('globaldata:student-detailed-info-list')
         client = self.client
         # client.login(email=self.user1.email, password=self.user1.password)
         client.force_login(self.user2)
@@ -193,7 +193,7 @@ class StudentDetailedInfoTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_list_post_fail_invalid_grade_status(self):
-        url = reverse('account:student-detailed-info-list')
+        url = reverse('globaldata:student-detailed-info-list')
         client = self.client
         # client.login(email=self.user1.email, password=self.user1.password)
         client.force_login(self.user2)
@@ -225,7 +225,7 @@ class StudentDetailedInfoTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_list_post_fail_invalid_language_speaking(self):
-        url = reverse('account:student-detailed-info-list')
+        url = reverse('globaldata:student-detailed-info-list')
         client = self.client
         # client.login(email=self.user1.email, password=self.user1.password)
         client.force_login(self.user2)
@@ -257,7 +257,7 @@ class StudentDetailedInfoTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_list_multi_student_info_fail(self):
-        url = reverse('account:student-detailed-info-list')
+        url = reverse('globaldata:student-detailed-info-list')
         client = self.client
         # client.login(email=self.user1.email, password=self.user1.password)
         client.force_login(self.user1)
@@ -288,7 +288,7 @@ class StudentDetailedInfoTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_list_consultant_post_method_fail(self):
-        url = reverse('account:student-detailed-info-list')
+        url = reverse('globaldata:student-detailed-info-list')
         client = self.client
         # client.login(email=self.user1.email, password=self.user1.password)
         client.force_login(self.consultant1)
@@ -319,14 +319,14 @@ class StudentDetailedInfoTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_list_consultant_get_fail(self):
-        url = reverse('account:student-detailed-info-list')
+        url = reverse('globaldata:student-detailed-info-list')
         client = self.client
         client.force_login(self.consultant1)
         response = client.get(url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_list_put_patch_delete_denied(self):
-        url = reverse('account:student-detailed-info-list')
+        url = reverse('globaldata:student-detailed-info-list')
         client = self.client
         # client.login(email=self.user1.email, password=self.user1.password)
         client.force_login(self.user2)
@@ -362,7 +362,7 @@ class StudentDetailedInfoTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_detail_owner_patch_success(self):
-        url = reverse('account:student-detailed-info-detail', args=(self.student_detailed_info1.id,))
+        url = reverse('globaldata:student-detailed-info-detail', args=(self.student_detailed_info1.id,))
         client = self.client
         client.force_login(self.user1)
         payload = {
@@ -392,7 +392,7 @@ class StudentDetailedInfoTests(APITestCase):
         self.assertEqual(response.data.get("language_speaking"), payload.get("language_speaking"))
 
     def test_detail_owner_update_success(self):
-        url = reverse('account:student-detailed-info-detail', args=(self.student_detailed_info1.id,))
+        url = reverse('globaldata:student-detailed-info-detail', args=(self.student_detailed_info1.id,))
         client = self.client
         client.force_login(self.user1)
         payload = {
@@ -426,7 +426,7 @@ class StudentDetailedInfoTests(APITestCase):
         self.assertEqual(response.data.get("language_speaking"), payload.get("language_speaking"))
 
     def test_detail_patch_change_user_denied(self):
-        url = reverse('account:student-detailed-info-detail', args=(self.student_detailed_info1.id,))
+        url = reverse('globaldata:student-detailed-info-detail', args=(self.student_detailed_info1.id,))
         client = self.client
         client.force_login(self.user1)
         # print(self.student_detailed_info1.user.id)
@@ -441,7 +441,7 @@ class StudentDetailedInfoTests(APITestCase):
         self.assertEqual(self.student_detailed_info1.user.id, self.user1.id)
 
     def test_detail_other_users_detail_get_patch_put_fail(self):
-        url = reverse('account:student-detailed-info-detail', args=(self.student_detailed_info1.id,))
+        url = reverse('globaldata:student-detailed-info-detail', args=(self.student_detailed_info1.id,))
         client = self.client
         client.force_login(self.user2)
 
@@ -460,7 +460,7 @@ class StudentDetailedInfoTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_detail_interactive_consultant_time_slot_get_success_patch_fail(self):
-        url = reverse('account:student-detailed-info-detail', args=(self.student_detailed_info1.id,))
+        url = reverse('globaldata:student-detailed-info-detail', args=(self.student_detailed_info1.id,))
         client = self.client
         client.force_login(self.consultant1)
 
@@ -479,7 +479,7 @@ class StudentDetailedInfoTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_detail_interactive_consultant_store_package_get_success_patch_fail(self):
-        url = reverse('account:student-detailed-info-detail', args=(self.student_detailed_info1.id,))
+        url = reverse('globaldata:student-detailed-info-detail', args=(self.student_detailed_info1.id,))
         client = self.client
         client.force_login(self.consultant1)
 
@@ -494,7 +494,7 @@ class StudentDetailedInfoTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_not_interactive_consultant_get_patch_method_fail(self):
-        url = reverse('account:student-detailed-info-detail', args=(self.student_detailed_info1.id,))
+        url = reverse('globaldata:student-detailed-info-detail', args=(self.student_detailed_info1.id,))
         client = self.client
         client.force_login(self.consultant1)
 

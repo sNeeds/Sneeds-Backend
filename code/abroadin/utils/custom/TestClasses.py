@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase, APIClient
 from django.conf import settings
 
-from abroadin.apps.data.account.models import Country, University, Major
+from abroadin.apps.data.globaldata.models import Country, University, Major
 from abroadin.apps.store.carts.models import Cart
 from abroadin.apps.users.consultants.models import ConsultantProfile, StudyInfo
 from abroadin.apps.store.storeBase.models import TimeSlotSale, SoldTimeSlotSale

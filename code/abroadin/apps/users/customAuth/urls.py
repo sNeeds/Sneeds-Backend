@@ -7,6 +7,7 @@ from . import views
 app_name = "auth"
 
 urlpatterns = [
+    path('social/', include('allauth.urls')),
     path('jwt/token/', views.CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('jwt/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
 
@@ -19,5 +20,4 @@ urlpatterns = [
 
     path('generate-verification/', views.GenerateVerificationAPIView.as_view(), name='generate-verification'),
     path('verify-verification/', views.VerifyVerificationAPIView.as_view(), name='verify-verification'),
-
 ]

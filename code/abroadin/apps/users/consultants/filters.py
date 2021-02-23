@@ -2,7 +2,7 @@ from django.db.models import Q
 from django_filters.rest_framework import filters, FilterSet
 # import django_filters
 from .models import StudyInfo, ConsultantProfile
-from abroadin.apps.data.account.models import University, Country, Major
+from abroadin.apps.data.globaldata.models import University, Country, Major
 
 
 class UniversityModelMultipleChoiceFilter(filters.ModelMultipleChoiceFilter):

@@ -1,6 +1,6 @@
 from abroadin.apps.applyprofile.models import ApplyProfile, Admission
 from abroadin.apps.applyprofile.tests.base import ApplyProfileTestBase
-from abroadin.apps.data.account.models import Major, University, Country
+from abroadin.apps.data.globaldata.models import Major, University, Country
 from abroadin.apps.data.applydata.models import GREGeneralCertificate, RegularLanguageCertificate, LanguageCertificate, \
     Publication, Education, GradeChoices, Grade, SemesterYear
 

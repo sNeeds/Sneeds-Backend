@@ -3,7 +3,7 @@ from django.urls import reverse
 
 from rest_framework.test import APITestCase, APIClient
 
-from abroadin.apps.data.account.models import University, Major, Country
+from abroadin.apps.data.globaldata.models import University, Major, Country
 from abroadin.apps.estimation.form.models import SemesterYear, StudentDetailedInfo, Grade
 from abroadin.base.mixins.tests import TestBriefMethodMixin
 from abroadin.apps.data.applydata.models import GradeChoices

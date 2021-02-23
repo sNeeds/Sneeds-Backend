@@ -9,11 +9,11 @@ User = get_user_model()
 
 
 def get_image_upload_path(sub_dir):
-    return "account/images/" + sub_dir
+    return "globaldata/images/" + sub_dir
 
 
 def get_student_resume_path(instance, filename):
-    return "account/files/form/{}/resume/{}".format(instance.id, filename)
+    return "globaldata/files/form/{}/resume/{}".format(instance.id, filename)
 
 
 class BasicFormField(models.Model):

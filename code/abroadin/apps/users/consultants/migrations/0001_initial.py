@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('account', '0001_initial'),
+        ('globaldata', '0001_initial'),
     ]
 
     operations = [
@@ -38,8 +38,8 @@ class Migration(migrations.Migration):
                 ('grade', models.CharField(choices=[('bachelor', 'Bachelor'), ('master', 'Master'), ('phd', 'PhD'), ('postdoc', 'Post Doc'), ('unknown', 'Unknown')], max_length=256)),
                 ('order', models.PositiveIntegerField(help_text='Enter number above 0')),
                 ('consultant', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='consultants.consultantprofile')),
-                ('major', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='account.major')),
-                ('university', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='account.university')),
+                ('major', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='globaldata.major')),
+                ('university', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='globaldata.university')),
             ],
             options={
                 'ordering': ['order'],
@@ -48,6 +48,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='consultantprofile',
             name='universities',
-            field=models.ManyToManyField(blank=True, through='consultants.StudyInfo', to='account.University'),
+            field=models.ManyToManyField(blank=True, through='consultants.StudyInfo', to='globaldata.University'),
         ),
     ]

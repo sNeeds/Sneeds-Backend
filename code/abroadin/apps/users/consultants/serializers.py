@@ -1,9 +1,9 @@
 from rest_framework import serializers
 
 import abroadin.apps
-from abroadin.apps.data.account.serializers import UniversitySerializer, MajorSerializer, CountrySerializer
+from abroadin.apps.data.globaldata.serializers import UniversitySerializer, MajorSerializer, CountrySerializer
 from abroadin.apps.users.consultants.models import StudyInfo, ConsultantProfile
-from abroadin.apps.data.account.models import Country
+from abroadin.apps.data.globaldata.models import Country
 
 
 class VeryShortConsultantProfileSerializer(serializers.ModelSerializer):

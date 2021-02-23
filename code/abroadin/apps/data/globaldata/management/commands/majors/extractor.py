@@ -26,7 +26,7 @@ current_h2_node = None
 current_h3_node = None
 current_h4_h5_node = None
 
-html_dir = os.path.join(BASE_DIR, "apps/data/account/management/commands/majors/majors.html")
+html_dir = os.path.join(BASE_DIR, "apps/data/globaldata/management/commands/majors/majors.html")
 with open(html_dir, 'r') as f:
     content = f.read()
 

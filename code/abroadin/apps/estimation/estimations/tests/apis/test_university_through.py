@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import status
 
-from abroadin.apps.data.account.models import University
+from abroadin.apps.data.globaldata.models import University
 from abroadin.apps.estimation.form.models import (
     StudentDetailedInfo,
     Education,

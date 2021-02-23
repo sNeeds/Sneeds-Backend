@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     'abroadin.apps.estimation.estimations',
     'abroadin.apps.estimation.analyze',
     'abroadin.apps.estimation.similarprofiles',
-    'abroadin.apps.data.account',
+    'abroadin.apps.data.globaldata',
     'abroadin.apps.analytics.events',
     'abroadin.apps.data.applydata',
     'abroadin.apps.applyprofile',
@@ -43,10 +43,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.postgres',
+    'django.contrib.sites',
 
     'dbbackup',
     'django_cleanup',  # should go after your apps
     'debug_toolbar',  # should go after staticfiles
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.facebook',
 ]
 # Imported key to prevent circular imports.
 from .secure import keys
@@ -131,6 +137,11 @@ REST_FRAMEWORK = {
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
     'EXCEPTION_HANDLER': 'abroadin.utils.custom.exception_handler.exception_handler',
 }
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
 
 DATABASES = {
     'default': {
@@ -241,3 +252,18 @@ INTERNAL_IPS = [
     '127.0.0.1',
 ]
 
+# Allauth
+SITE_ID = 1
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        # For each OAuth based provider, either add a ``SocialApp``
+        # (``socialaccount`` app) containing the required client
+        # credentials, or list them here:
+        'APP': {
+            'client_id': '123',
+            'secret': '456',
+            'key': ''
+        }
+    }
+}

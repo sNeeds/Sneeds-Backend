@@ -1,4 +1,3 @@
-from abroadin.apps.data.account import StudentDetailedInfo
 
 from django.contrib.auth import get_user_model
 

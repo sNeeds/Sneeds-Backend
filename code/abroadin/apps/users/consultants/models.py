@@ -2,7 +2,7 @@ from ckeditor.fields import RichTextField
 
 from django.db import models
 
-from abroadin.apps.data.account.models import University, Major
+from abroadin.apps.data.globaldata.models import University, Major
 from abroadin.apps.users.customAuth.models import CustomUser
 
 STUDY_GRADE_CHOICES = [
@@ -15,11 +15,11 @@ STUDY_GRADE_CHOICES = [
 
 
 def get_consultant_image_path(instance, filename):
-    return "account/images/consultants/{}/image/{}".format(instance.user.id, filename)
+    return "globaldata/images/consultants/{}/image/{}".format(instance.user.id, filename)
 
 
 def get_consultant_resume_path(instance, filename):
-    return "account/files/consultants/{}/resume/{}".format(instance.user.id, filename)
+    return "globaldata/files/consultants/{}/resume/{}".format(instance.user.id, filename)
 
 
 class ConsultantProfileManager(models.QuerySet):

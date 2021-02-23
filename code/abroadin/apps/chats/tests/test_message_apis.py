@@ -7,7 +7,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 
-from abroadin.apps.data.account import Country, University, major
+from abroadin.apps.data.globaldata import Country, University, major
 from abroadin.apps.store.carts.models import Cart
 from abroadin.apps.users.consultants.models import ConsultantProfile
 from abroadin.apps.store.storeBase.models import TimeSlotSale, SoldTimeSlotSale
