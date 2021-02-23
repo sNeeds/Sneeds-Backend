@@ -106,7 +106,7 @@ def get_destination_universities(form):
 
 
 def get_destination_countries(form):
-    wta_uni_countries = list(form.want_to_apply.universities.all().values_list('country__name', flat=True))\
+    wta_uni_countries = list(form.want_to_apply.universities.all().values_list('country__name', flat=True)) \
         if form.get_want_to_apply_or_none() else []
     wta_countries = [uni.name for uni in form.want_to_apply.countries.all()] \
         if (hasattr(form, 'want_to_apply') and form.want_to_apply is not None) else []
@@ -116,7 +116,7 @@ def get_destination_countries(form):
 
 
 def get_similar_admission(form):
-    return [a.id for a in SimilarProfilesForForm(form).find_similar_admissions()]\
+    return [a.id for a in SimilarProfilesForForm(form).find_similar_admissions()] \
         if form.is_complete else []
 
 
@@ -149,4 +149,3 @@ class StudentDetailedInfoAdmin(StudentDetailedInfoBaseAdmin):
         return instance.is_complete
 
     is_complete.boolean = True
-
