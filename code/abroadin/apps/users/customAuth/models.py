@@ -62,10 +62,19 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         CONSULTANT = "Consultant"
         ADMIN_CONSULTANT = "Admin consultant"  # For automatic chat and ...
 
+    class AuthProviderTypeChoices(models.TextChoices):
+        EMAIL = "Email"
+        GOOGLE = "Google"
+        FACEBOOK = "Facebook"
+
     email = models.EmailField(_('email address'), unique=True, max_length=256)
     phone_number = PhoneNumberField(null=True, blank=True)
     first_name = models.CharField(_('first name'), null=True, max_length=30, blank=True)
     last_name = models.CharField(_('last name'), null=True, max_length=150, blank=True)
+    auth_provider = models.CharField(
+        max_length=255, blank=False, null=False,
+        default=AuthProviderTypeChoices.EMAIL
+    )
 
     user_type = models.CharField(
         max_length=128,

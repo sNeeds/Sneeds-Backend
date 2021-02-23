@@ -49,12 +49,6 @@ INSTALLED_APPS = [
     'dbbackup',
     'django_cleanup',  # should go after your apps
     'debug_toolbar',  # should go after staticfiles
-    'allauth',
-    'allauth.account',
-    'dj_rest_auth.registration',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.facebook',
-    'allauth.socialaccount.providers.twitter',
 ]
 # Imported key to prevent circular imports.
 from .secure import keys
@@ -248,6 +242,3 @@ PHONENUMBER_DB_FORMAT = 'E164'
 INTERNAL_IPS = [
     '127.0.0.1',
 ]
-
-# Social login
-SITE_ID = 1
