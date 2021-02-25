@@ -18,11 +18,9 @@ class StudentDetailedInfoTests(APITestCase):
         # Users -------
         self.user1 = User.objects.create_user(email="u1@g.com", password="user1234")
         self.user1.is_admin = False
-        self.user1.set_user_type_student()
 
         self.user2 = User.objects.create_user(email="u2@g.com", password="user1234")
         self.user2.is_admin = False
-        self.user2.set_user_type_student()
 
         # Countries -------
         self.country1 = Country.objects.create(
