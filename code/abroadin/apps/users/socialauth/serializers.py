@@ -1,23 +1,27 @@
+from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
+
+from abroadin.settings.secure.APIs import GOOGLE_CLIENT_ID
 
 from .register import register_social_user
 from .google import Google
+
 
 class GoogleSocialAuthSerializer(serializers.Serializer):
     auth_token = serializers.CharField()
 
     def validate_auth_token(self, auth_token):
-        user_data = google.Google.validate(auth_token)
+        user_data = Google.validate(auth_token)
+
         try:
             user_data['sub']
-        except:
+        except Exception as e:
             raise serializers.ValidationError(
                 'The token is invalid or expired. Please login again.'
             )
 
-        if user_data['aud'] != os.environ.get('GOOGLE_CLIENT_ID'):
-
-            raise AuthenticationFailed('oops, who are you?')
+        if user_data['aud'] != GOOGLE_CLIENT_ID:
+            raise AuthenticationFailed('Wrong Google Client ID')
 
         user_id = user_data['sub']
         email = user_data['email']

@@ -1,5 +1,7 @@
 from abroadin.base.api.generics import CGenericAPIView
 
+from .serializers import GoogleSocialAuthSerializer
+
 
 class GoogleSocialAuthView(CGenericAPIView):
 
