@@ -62,4 +62,20 @@ class RegisterFunctionsTests(SocialAuthFunctionTestBase):
 
         self.assertIsNotNone(tokens['access'])
         self.assertIsNotNone(tokens['refresh'])
-        self.assertEqual(User.objects.filter(email='a@b.com'), 1)
+        self.assertTrue(User.objects.filter(email='a@b.com').exists())
+
+    def test_login_register_social_user__new_user_wrong_provider(self):
+        func = login_register_social_user
+
+        user = self.user1
+
+        self.assertRaises(
+            AssertionError,
+            func,
+            email=user.email,
+            provider="wrong_provider",
+            first_name='foo',
+            last_name='bar'
+        )
+
+
