@@ -1,46 +1,30 @@
-import os
+from django.contrib.auth import get_user_model
+from rest_framework_simplejwt.tokens import RefreshToken
 
-from django.contrib.auth import authenticate, get_user_model
-
-from rest_framework.exceptions import AuthenticationFailed
+from abroadin.apps.users.customAuth.serializers import UserSerializer
 
 User = get_user_model()
-
-
-def _authenticate_user(user):
-    user = authenticate(
-        email=user.email,
-        password=os.environ.get('SOCIAL_SECRET')
-    )
-    return user
 
 
 def _register_user(data):
     user = User.objects.create_user(**data)
     user.is_verified = True
     user.save()
+
     return user
 
 
-def _handle_existed_user(user, auth_provider):
+def get_user_jwt_tokens(user):
+    data = {}
+    refresh = RefreshToken.for_user(user)
 
-    if auth_provider == user.auth_provider:
-        authenticated_user = _authenticate_user(user)
-    else:
-        raise AuthenticationFailed(
-            detail='User is registered, Please continue your \
-            login using ' + user.auth_provider
-        )
-    return authenticated_user
+    data['refresh'] = str(refresh)
+    data['access'] = str(refresh.access_token)
+
+    return data
 
 
-def _handle_new_user(data):
-    user = _register_user(data)
-    authenticated_user = _authenticate_user(user)
-    return authenticated_user
-
-
-def register_social_user(email, provider, first_name, last_name ):
+def login_register_social_user(email, provider, first_name, last_name):
     assert provider in User.AuthProviderTypeChoices.values
 
     filtered_user = User.objects.filter(email=email)
@@ -50,16 +34,19 @@ def register_social_user(email, provider, first_name, last_name ):
         'email': email,
         'first_name': first_name,
         'last_name': last_name,
-        'aut_provider': provider
+        'auth_provider': provider
     }
 
     if user_exists:
         user = filtered_user[0]
-        user = _handle_existed_user(user, data['email'])
     else:
-        user = _handle_new_user(data)
+        user = _register_user(data)
+
+    user_serializer = UserSerializer(user)
+    tokens = get_user_jwt_tokens(user)
 
     return {
-        'email': user.email,
-        'tokens': user.tokens()
+        'user': user_serializer.data,
+        'access': tokens['access'],
+        'refresh': tokens['refresh']
     }

@@ -5,7 +5,7 @@ from rest_framework.exceptions import AuthenticationFailed
 
 from abroadin.settings.secure.APIs import GOOGLE_CLIENT_ID
 
-from .register import register_social_user
+from .register import login_register_social_user
 from .google import Google
 
 User = get_user_model()
@@ -35,7 +35,7 @@ class GoogleSocialAuthSerializer(serializers.Serializer):
         provider = User.AuthProviderTypeChoices.GOOGLE
 
         print("**", provider)
-        return register_social_user(
+        return login_register_social_user(
             provider=provider, email=email, name=name, first_name = first_name,
             last_name = last_name
         )
