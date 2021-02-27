@@ -13,7 +13,7 @@ def _register_user(*args, **kwargs):
     return user
 
 
-def get_user_jwt_tokens(user):
+def get_jwt_tokens(user):
     data = {}
     refresh = RefreshToken.for_user(user)
 
@@ -37,7 +37,7 @@ def login_register_social_user(email, provider, first_name, last_name):
             auth_provider=provider
         )
 
-    tokens = get_user_jwt_tokens(user)
+    tokens = get_jwt_tokens(user)
 
     return {
         'access': tokens['access'],
