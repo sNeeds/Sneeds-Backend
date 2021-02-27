@@ -2,23 +2,21 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import status
 
-from .test_base import EstimationsAppAPITests
+from .test_base import EstimationsAppAPITestBase
 from abroadin.apps.estimation.form.models import (
     StudentDetailedInfo,
     Grade,
     WantToApply,
     SemesterYear,
     Education,
-    GradeChoices,
     Publication,
-    RegularLanguageCertificate,
-    LanguageCertificate, GREGeneralCertificate, DuolingoCertificate
+    LanguageCertificate
 )
 
 User = get_user_model()
 
 
-class LanguageCertificateAPITests(EstimationsAppAPITests):
+class LanguageCertificateAPITests(EstimationsAppAPITestBase):
 
     def setUp(self):
         self.local_form1 = StudentDetailedInfo.objects.create()

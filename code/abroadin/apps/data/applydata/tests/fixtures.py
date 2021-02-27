@@ -1,10 +1,10 @@
-from abroadin.apps.data.account.tests.fixtures import UniversityFixtures, MajorFixtures
+from abroadin.apps.data.account.tests.fixtures import UniversityFixturesMixin, MajorFixturesMixin
 from abroadin.apps.data.applydata.models import SemesterYear, Grade, GradeChoices, Education, Publication, \
     RegularLanguageCertificate, LanguageCertificate, GREGeneralCertificate
 from abroadin.base.django.tests.generics import SampleGFKObjectMixIn
 
 
-class SemesterYearFixtures:
+class SemesterYearFixturesMixin:
     def setUp(self) -> None:
         super().setUp()
 
@@ -22,7 +22,7 @@ class SemesterYearFixtures:
         )
 
 
-class GradeFixtures:
+class GradeFixturesMixin:
 
     def setUp(self) -> None:
         super().setUp()
@@ -40,7 +40,7 @@ class GradeFixtures:
         )
 
 
-class EducationFixtures:
+class EducationFixturesMixin:
 
     def setUp(self) -> None:
         super().setUp()
@@ -85,8 +85,28 @@ class EducationFixtures:
             content_object=self.gfk_sample_object4,
         )
 
+        self.education5 = Education.objects.create(
+            university=self.university2,
+            grade=GradeChoices.BACHELOR,
+            major=self.major2,
+            graduate_in=2022,
+            thesis_title='education5',
+            gpa=16.60,
+            content_object=self.gfk_sample_object5,
+        )
 
-class PublicationFixtures:
+        self.education6 = Education.objects.create(
+            university=self.university1,
+            grade=GradeChoices.BACHELOR,
+            major=self.major3,
+            graduate_in=2026,
+            thesis_title='education6',
+            gpa=14.70,
+            content_object=self.gfk_sample_object6,
+        )
+
+
+class PublicationFixturesMixin:
 
     def setUp(self) -> None:
         super().setUp()
@@ -118,8 +138,35 @@ class PublicationFixtures:
             content_object=self.gfk_sample_object3,
         )
 
+        self.publication4 = Publication.objects.create(
+            title="pub4",
+            publish_year=2030,
+            which_author=Publication.WhichAuthorChoices.THIRD,
+            type=Publication.PublicationChoices.CONFERENCE,
+            journal_reputation=Publication.JournalReputationChoices.ABOVE_TEN,
+            content_object=self.gfk_sample_object4,
+        )
 
-class RegularLCFixtures:
+        self.publication5 = Publication.objects.create(
+            title="pub5",
+            publish_year=2025,
+            which_author=Publication.WhichAuthorChoices.SECOND,
+            type=Publication.PublicationChoices.CONFERENCE,
+            journal_reputation=Publication.JournalReputationChoices.FOUR_TO_TEN,
+            content_object=self.gfk_sample_object5,
+        )
+
+        self.publication6 = Publication.objects.create(
+            title="pub6",
+            publish_year=2021,
+            which_author=Publication.WhichAuthorChoices.FIRST,
+            type=Publication.PublicationChoices.CONFERENCE,
+            journal_reputation=Publication.JournalReputationChoices.ABOVE_TEN,
+            content_object=self.gfk_sample_object6,
+        )
+
+
+class RegularLCFixturesMixin:
 
     def setUp(self) -> None:
         super().setUp()
@@ -154,8 +201,38 @@ class RegularLCFixtures:
             content_object=self.gfk_sample_object3,
         )
 
+        self.ielts4 = RegularLanguageCertificate.objects.create(
+            certificate_type=LanguageCertificate.LanguageCertificateType.IELTS_GENERAL,
+            speaking=6.0,
+            reading=5.5,
+            writing=7.0,
+            listening=8,
+            overall=8,
+            content_object=self.gfk_sample_object4,
+        )
 
-class GREGeneralFixtures:
+        self.ielts5 = RegularLanguageCertificate.objects.create(
+            certificate_type=LanguageCertificate.LanguageCertificateType.IELTS_GENERAL,
+            speaking=6.0,
+            reading=5.5,
+            writing=7.0,
+            listening=8,
+            overall=8,
+            content_object=self.gfk_sample_object5,
+        )
+
+        self.toefl1 = RegularLanguageCertificate.objects.create(
+            certificate_type=LanguageCertificate.LanguageCertificateType.TOEFL,
+            speaking=25,
+            reading=24,
+            writing=28,
+            listening=21,
+            overall=103,
+            content_object=self.gfk_sample_object6,
+        )
+
+
+class GREGeneralFixturesMixin:
 
     def setUp(self) -> None:
         super().setUp()
@@ -166,4 +243,12 @@ class GREGeneralFixtures:
             verbal=145,
             analytical_writing=5,
             content_object=self.gfk_sample_object1,
+        )
+
+        self.gre2 = GREGeneralCertificate.objects.create(
+            certificate_type=LanguageCertificate.LanguageCertificateType.GRE_GENERAL,
+            quantitative=145,
+            verbal=145,
+            analytical_writing=5,
+            content_object=self.gfk_sample_object2,
         )

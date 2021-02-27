@@ -2,13 +2,13 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import status
 
-from abroadin.apps.estimation.tests.base import EstimationBaseTest
+from abroadin.apps.estimation.tests.base import EstimationTestBase
 from abroadin.apps.estimation.form.models import StudentDetailedInfo, Grade, WantToApply, SemesterYear
 
 User = get_user_model()
 
 
-class FormAPITests(EstimationBaseTest):
+class FormAPITests(EstimationTestBase):
 
     def setUp(self):
         super().setUp()

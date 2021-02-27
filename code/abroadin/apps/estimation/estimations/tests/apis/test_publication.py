@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import status
 
-from .test_base import EstimationsAppAPITests
+from .test_base import EstimationsAppAPITestBase
 from abroadin.apps.estimation.form.models import (
     StudentDetailedInfo,
     Publication,
@@ -11,7 +11,7 @@ from abroadin.apps.estimation.form.models import (
 User = get_user_model()
 
 
-class PublicationAPITests(EstimationsAppAPITests):
+class PublicationAPITests(EstimationsAppAPITestBase):
 
     def setUp(self):
         self.local_form1 = StudentDetailedInfo.objects.create()

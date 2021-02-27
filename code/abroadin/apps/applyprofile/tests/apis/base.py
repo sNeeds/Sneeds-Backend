@@ -1,9 +1,9 @@
 from ..base import ApplyProfileTestBase
-from ..fixtures import AdmissionFixtures, ApplyProfileFixtures
+from ..fixtures import AdmissionFixturesMixin, ApplyProfileFixturesMixin
 from ...models import Admission, ApplyProfile
 
 
-class ApplyProfileAPIsTestBase(AdmissionFixtures, ApplyProfileFixtures, ApplyProfileTestBase,):
+class ApplyProfileAPIsTestBase(AdmissionFixturesMixin, ApplyProfileFixturesMixin, ApplyProfileTestBase,):
 
     def setUp(self) -> None:
         # print('ApplyProfileAPIsTestBase setup')

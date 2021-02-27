@@ -4,7 +4,7 @@ from abroadin.apps.data.applydata.models import SemesterYear
 from abroadin.base.django.tests.generics import TestFixtureMixIn
 
 
-class MajorFixtures:
+class MajorFixturesMixin:
 
     def setUp(self) -> None:
         super().setUp()
@@ -46,7 +46,7 @@ class MajorFixtures:
         )
 
 
-class CountryFixtures:
+class CountryFixturesMixin:
 
     def setUp(self) -> None:
         super().setUp()
@@ -101,7 +101,7 @@ class CountryFixtures:
         )
 
 
-class UniversityFixtures:
+class UniversityFixturesMixin:
 
     def setUp(self) -> None:
         super().setUp()

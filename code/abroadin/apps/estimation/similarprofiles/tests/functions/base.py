@@ -5,12 +5,12 @@ from abroadin.apps.estimation.form.models import WantToApply, StudentDetailedInf
 from abroadin.apps.applyprofile.models import Admission, ApplyProfile
 from abroadin.apps.data.applydata.models import Education
 
-from ..base import SimilarProfilesBaseTests
+from ..base import SimilarProfilesTestsBase
 from ...functions import get_preferred_apply_country, get_want_to_apply_similar_countries, filter_around_gpa, \
     filter_same_want_to_apply_grades, similar_destination_Q, filter_similar_majors, filter_similar_home_and_destination
 
 
-class SimilarProfilesFunctionsBaseTests(SimilarProfilesBaseTests):
+class SimilarProfilesFunctionsBaseTests(SimilarProfilesTestsBase):
     def setUp(self):
         super().setUp()
 

@@ -3,18 +3,21 @@ from django.contrib.auth import get_user_model
 from rest_framework import status
 
 from abroadin.apps.data.account.models import University
+from abroadin.apps.data.applydata.models import GradeChoices
 from abroadin.apps.estimation.form.models import (
     StudentDetailedInfo,
     Education,
-    GradeChoices,
 )
 
-from .test_base import EstimationsAppAPITests
+from .test_base import EstimationsAppAPITestBase
 
 User = get_user_model()
 
 
-class UniversityThroughAPITests(EstimationsAppAPITests):
+class EducationAPITests(EstimationsAppAPITestBase):
+    
+    def _test_form_comments_detail(self, *args, **kwargs):
+        return self._endpoint_test_method('estimation.estimations:form-comments', *args, **kwargs)
 
     def setUp(self):
         self.local_form1 = StudentDetailedInfo.objects.create()
@@ -33,7 +36,7 @@ class UniversityThroughAPITests(EstimationsAppAPITests):
                     rank=rank
                 )
 
-                university_through = UniversityThrough.objects.create(
+                university_through = Education.objects.create(
                     student_detailed_info=self.local_form1,
                     university=university,
                     grade=GradeChoices.BACHELOR,
@@ -49,7 +52,7 @@ class UniversityThroughAPITests(EstimationsAppAPITests):
 
     def test_university_through_get_form_review_200_2(self):
         for grade in GradeChoices:
-            UniversityThrough.objects.create(
+            Education.objects.create(
                 student_detailed_info=self.local_form1,
                 university=self.university1,
                 grade=grade,

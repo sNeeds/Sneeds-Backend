@@ -1,10 +1,10 @@
 from abroadin.apps.applyprofile.models import Admission, ApplyProfile
-from abroadin.apps.data.account.tests.fixtures import MajorFixtures, UniversityFixtures
-from abroadin.apps.data.applydata.tests.fixtures import GradeFixtures
+from abroadin.apps.data.account.tests.fixtures import MajorFixturesMixin, UniversityFixturesMixin
+from abroadin.apps.data.applydata.tests.fixtures import GradeFixturesMixin
 from abroadin.base.django.tests.generics import TestFixtureMixIn
 
 
-class ApplyProfileFixtures:
+class ApplyProfileFixturesMixin:
 
     def setUp(self) -> None:
         # print('apply profile fixture setup')
@@ -56,7 +56,7 @@ class ApplyProfileFixtures:
         )
 
 
-class AdmissionFixtures:
+class AdmissionFixturesMixin:
 
     def setUp(self) -> None:
         # print('admission fixture setup')

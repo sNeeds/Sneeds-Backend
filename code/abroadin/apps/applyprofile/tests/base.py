@@ -7,18 +7,19 @@ from abroadin.base.mixins.tests import TestBriefMethodMixin
 from abroadin.apps.data.applydata.models import GradeChoices
 
 from ...data.account.models import Major, University, Country
-from ...data.account.tests.fixtures import UniversityFixtures, MajorFixtures, CountryFixtures
+from ...data.account.tests.fixtures import UniversityFixturesMixin, MajorFixturesMixin, CountryFixturesMixin
 from ...data.applydata.models import RegularLanguageCertificate, GREGeneralCertificate, LanguageCertificate, \
     Publication, Education, GradeChoices, Grade, SemesterYear
-from ...data.applydata.tests.fixtures import SemesterYearFixtures, GradeFixtures, EducationFixtures, \
-    PublicationFixtures, RegularLCFixtures, GREGeneralFixtures
+from ...data.applydata.tests.fixtures import SemesterYearFixturesMixin, GradeFixturesMixin, EducationFixturesMixin, \
+    PublicationFixturesMixin, RegularLCFixturesMixin, GREGeneralFixturesMixin
 
 User = get_user_model()
 
 
-class ApplyProfileTestBase(SemesterYearFixtures, GradeFixtures, EducationFixtures, PublicationFixtures,
-                           RegularLCFixtures, GREGeneralFixtures,
-                           UniversityFixtures, CountryFixtures, MajorFixtures,
+class ApplyProfileTestBase(EducationFixturesMixin, PublicationFixturesMixin,
+                           RegularLCFixturesMixin, GREGeneralFixturesMixin,
+                           UniversityFixturesMixin, CountryFixturesMixin, MajorFixturesMixin,
+                           SemesterYearFixturesMixin, GradeFixturesMixin,
                            SampleGFKObjectMixIn,
                            TestBriefMethodMixin,
                            APITestCase,

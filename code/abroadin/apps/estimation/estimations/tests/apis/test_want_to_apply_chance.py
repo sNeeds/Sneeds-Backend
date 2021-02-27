@@ -2,18 +2,19 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import status
 
+from abroadin.apps.data.applydata.models import GradeChoices
 from abroadin.apps.estimation.form.models import (
     StudentDetailedInfo,
-    Education, WantToApply, GradeChoices)
-from abroadin.apps.estimation.tests.base import EstimationBaseTest
+    Education, WantToApply)
+from abroadin.apps.estimation.tests.base import EstimationTestBase
 
-from .test_base import EstimationsAppAPITests
-from abroadin.apps.estimation.form.tests.apis.form_completion.base import BaseTests as FormCompletionBaseTests
+from .test_base import EstimationsAppAPITestBase
+from abroadin.apps.estimation.form.tests.apis.form_completion.base import FormCompletionBaseTestsMixin
 
 User = get_user_model()
 
 
-class WantToApplyChanceAPITests(EstimationsAppAPITests):
+class WantToApplyChanceAPITests(EstimationsAppAPITestBase):
     def setUp(self):
         super().setUp()
 
@@ -21,29 +22,27 @@ class WantToApplyChanceAPITests(EstimationsAppAPITests):
         return self._endpoint_test_method('estimation.estimations:want-to-apply-chance', *args, **kwargs)
 
     def test_want_to_apply_chance_200_1(self):
-        self._test_want_to_apply_chance("get", None, status.HTTP_200_OK, reverse_args=self.app_form_1.id)
+        self._test_want_to_apply_chance("get", None, status.HTTP_200_OK, reverse_args=self.student_detailed_info1.id)
 
     def test_want_to_apply_chance_200_2(self):
         form = StudentDetailedInfo.objects.create()
         self._test_want_to_apply_chance("get", None, status.HTTP_200_OK, reverse_args=form.id)
 
 
-class EndpointMethodMixin:
+class WantToApplyChanceFormCompletionTests(EstimationsAppAPITestBase, FormCompletionBaseTestsMixin):
+    include_in_test = True
+
     def _want_to_apply(self, *args, **kwargs):
         return self._endpoint_test_method('estimation.estimations:want-to-apply-chance', *args, **kwargs)
 
-    def _endpoint_method(self, *args, **kwargs):
+    def _fc_mixin_endpoint_method(self, *args, **kwargs):
         return self._want_to_apply(*args, **kwargs)
-
-
-class WantToApplyChanceFormCompletionTests(EndpointMethodMixin, FormCompletionBaseTests):
-    include_in_test = True
 
     def setUp(self) -> None:
         super().setUp()
 
 
-class WantToApplyChanceUserEmailVerifiedTests(EstimationBaseTest):
+class WantToApplyChanceUserEmailVerifiedTests(EstimationTestBase):
 
     def setUp(self):
         super().setUp()
@@ -79,7 +78,7 @@ class WantToApplyChanceUserEmailVerifiedTests(EstimationBaseTest):
         self.sdi_1_want_to_apply_1.countries.set([self.country2])
         self.sdi_1_want_to_apply_1.universities.set([self.university2])
         self.sdi_1_want_to_apply_1.semester_years.set([self.semester_year1])
-        self.sdi_1_want_to_apply_1.grades.set([self.grade_bachelor])
+        self.sdi_1_want_to_apply_1.grades.set([self.bachelor_grade])
         self.sdi_1_want_to_apply_1.majors.set([self.major1])
 
     def _want_to_apply_chances(self, *args, **kwargs):

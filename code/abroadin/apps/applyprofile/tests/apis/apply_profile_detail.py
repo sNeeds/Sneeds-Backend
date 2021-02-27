@@ -5,7 +5,6 @@ from .base import ApplyProfileAPIsTestBase
 
 class ApplyProfileDetailAPITest(ApplyProfileAPIsTestBase):
     def setUp(self) -> None:
-        print('ApplyProfileDetailAPITest setup')
         super().setUp()
 
     def _test_apply_profile_detail(self, *args, **kwargs):
