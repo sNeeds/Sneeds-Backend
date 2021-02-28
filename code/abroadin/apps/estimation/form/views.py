@@ -8,7 +8,7 @@ from abroadin.base.api.permissions import permission_class_factory
 
 from .models import StudentDetailedInfo
 from .serializers import StudentDetailedInfoSerializer, StudentDetailedInfoRequestSerializer
-from .permissions import OnlyOneFormPermission, SameUserOrNone, UserAlreadyHasForm
+from .permissions import OnlyOneFormPermission, SameUserOrNone, UserAlreadyHasForm, IsFormOwner
 
 
 class StudentDetailedInfoListCreateView(generics.CListCreateAPIView):
@@ -16,7 +16,7 @@ class StudentDetailedInfoListCreateView(generics.CListCreateAPIView):
     serializer_class = StudentDetailedInfoSerializer
     request_serializer_class = StudentDetailedInfoSerializer
     permission_classes = [
-        permission_class_factory(OnlyOneFormPermission, ["POST"])
+        permission_class_factory(OnlyOneFormPermission, ["POST"]),
     ]
 
     def get_queryset(self):
@@ -53,7 +53,7 @@ class StudentDetailedInfoRetrieveUpdateView(generics.CRetrieveAPIView):
 
     permission_classes = [
         permission_class_factory(SameUserOrNone, ["GET", "PUT", "PATCH"]),
-        permission_class_factory(UserAlreadyHasForm, ["PUT", "PATCH"])
+        permission_class_factory(UserAlreadyHasForm, ["PUT", "PATCH"]),
     ]
 
     @swagger_auto_schema(

@@ -1,0 +1,2 @@
+from .apply_profile_detail import ApplyProfileDetailAPITest
+from .apply_profile_list import ApplyProfileListAPITest

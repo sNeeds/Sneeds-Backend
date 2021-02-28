@@ -37,3 +37,23 @@ class PublicationChartsUserEmailVerifiedTests(AnalyzeAPITestBase):
         data = self._publication_charts(
             'get', self.user1, status.HTTP_403_FORBIDDEN, reverse_args=self.student_detailed_info1.id
         )
+
+
+class PublicationChartsFormOwnershipTests(AnalyzeAPITestBase):
+
+    def setUp(self):
+        super().setUp()
+
+    def _publication_charts(self, *args, **kwargs):
+        return self._endpoint_test_method('estimation.analyze:publication-charts', *args, **kwargs)
+
+    def test_user_is_owner_get_200(self):
+        data = self._publication_charts(
+            'get', self.user1, status.HTTP_200_OK, reverse_args=self.student_detailed_info1.id
+        )
+
+    def test_user_is_not_owner_get_403(self):
+        data = self._publication_charts(
+            'get', self.user2, status.HTTP_403_FORBIDDEN, reverse_args=self.student_detailed_info1.id
+        )
+
