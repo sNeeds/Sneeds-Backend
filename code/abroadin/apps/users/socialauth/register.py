@@ -8,6 +8,7 @@ User = get_user_model()
 def _register_user(*args, **kwargs):
     user = User.objects.create_user(**kwargs)
     user.is_verified = True
+    user.is_email_verified = True
     user.save()
 
     return user

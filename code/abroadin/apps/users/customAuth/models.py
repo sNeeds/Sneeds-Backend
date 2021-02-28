@@ -69,13 +69,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     email = models.EmailField(_('email address'), unique=True, max_length=256)
     phone_number = PhoneNumberField(null=True, blank=True)
-    first_name = models.CharField(_('first name'), null=True, max_length=30, blank=True)
-    last_name = models.CharField(_('last name'), null=True, max_length=150, blank=True)
+    first_name = models.CharField(_('first name'), null=True, max_length=128, blank=True)
+    last_name = models.CharField(_('last name'), null=True, max_length=128, blank=True)
     auth_provider = models.CharField(
         max_length=255, blank=False, null=False,
+        choices=AuthProviderTypeChoices.choices,
         default=AuthProviderTypeChoices.EMAIL
     )
-
     user_type = models.CharField(
         max_length=128,
         choices=UserTypeChoices.choices,
