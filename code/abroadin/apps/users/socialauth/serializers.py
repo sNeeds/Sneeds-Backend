@@ -53,6 +53,10 @@ class TokenObtainPairWithoutPasswordSerializer(TokenObtainPairSerializer):
 class GoogleSocialAuthSerializer(serializers.Serializer):
     auth_token = serializers.CharField()
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = None
+
     def validate_auth_token(self, auth_token):
         try:
             user_data = Google.validate(auth_token)
@@ -67,8 +71,12 @@ class GoogleSocialAuthSerializer(serializers.Serializer):
         last_name = user_data['family_name']
         provider = User.AuthProviderTypeChoices.GOOGLE
 
-        user = login_register_social_user(
+        self.user = login_register_social_user(
             provider=provider, email=email, first_name=first_name, last_name=last_name
         )
-        return {'email' : user.email}
+        return auth_token
 
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        data['user'] = self.user
+        return data

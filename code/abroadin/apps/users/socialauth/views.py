@@ -5,31 +5,19 @@ from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from abroadin.base.api.generics import CGenericAPIView
 
 from .serializers import GoogleSocialAuthSerializer, TokenObtainPairWithoutPasswordSerializer
-from ..customAuth.serializers import CustomTokenObtainPairSerializer
 
 
 class GoogleSocialAuthView(CGenericAPIView):
     serializer_class = GoogleSocialAuthSerializer
+    token_serializer_class = TokenObtainPairWithoutPasswordSerializer
 
     def post(self, request):
-        """
-        POST with "auth_token"
-        Send an idtoken as from google to get user information
-        """
-
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        data = (serializer.validated_data)['auth_token']
+        user = (serializer.validated_data)['user']
 
-        print("->>", data)
-
-        data = {
-            'email': "bartararya@gmail.com"
-        }
-
-        token_serializer = TokenObtainPairWithoutPasswordSerializer(
-            data=data
-        )
+        data = {'email': user.email}
+        token_serializer = self.token_serializer_class(data=data)
 
         try:
             token_serializer.is_valid(raise_exception=True)
