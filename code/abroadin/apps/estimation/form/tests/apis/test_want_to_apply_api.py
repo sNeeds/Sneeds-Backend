@@ -5,12 +5,12 @@ from rest_framework import status
 
 from abroadin.apps.estimation.form.models import StudentDetailedInfo, Grade, WantToApply, SemesterYear
 from abroadin.apps.data.account.models import Country, University, Major
-from abroadin.apps.estimation.form.tests.apis.test_base import FormAPITests
+from abroadin.apps.estimation.form.tests.apis.test_base import FormAPITestBase
 
 User = get_user_model()
 
 
-class WantToApplyAPITest(FormAPITests):
+class WantToApplyAPITest(FormAPITestBase):
 
     def setUp(self):
         super().setUp()

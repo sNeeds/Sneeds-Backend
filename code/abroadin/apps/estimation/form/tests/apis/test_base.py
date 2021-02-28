@@ -2,16 +2,86 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import status
 
+from abroadin.apps.data.applydata.models import GradeChoices
 from abroadin.apps.estimation.tests.base import EstimationTestBase
-from abroadin.apps.estimation.form.models import StudentDetailedInfo, Grade, WantToApply, SemesterYear
+from abroadin.apps.estimation.form.models import StudentDetailedInfo
 
 User = get_user_model()
 
 
-class FormAPITests(EstimationTestBase):
+class FormAPITestBase(EstimationTestBase):
 
     def setUp(self):
         super().setUp()
+
+        self.payload = {
+            "age": 22,
+            "gender": "Male",
+            "is_married": None,
+            "resume": None,
+            "related_work_experience": 22,
+            "academic_break": 19,
+            "olympiad": None,
+            "want_to_apply": {
+                "countries": [self.country1.id, self.country2.id],
+                "universities": [self.university1.id, self.university2.id],
+                "grades": [self.master_grade, self.phd_grade],
+                "majors": [self.major1, self.major2],
+                "semester_years": [16]
+            },
+            "educations": [
+                {
+                    "graduate_in": 2020,
+                    "thesis_title": None,
+                    "major": self.major3,
+                    "grade": GradeChoices.BACHELOR,
+                    "university": self.university2,
+                    "gpa": "19.00"
+                },
+                {
+                    "graduate_in": 2018,
+                    "thesis_title": "Be to che",
+                    "major": self.major4,
+                    "grade": GradeChoices.MASTER,
+                    "university": self.university5,
+                    "gpa": "18.00"
+                }
+            ],
+            "publications": [
+                {
+                    "journal_reputation": "Four to ten",
+                    "publish_year": 2020,
+                    "which_author": "Second",
+                    "type": "Journal",
+                    "title": "sdfsdf"
+                },
+                {
+                    "journal_reputation": "Four to ten",
+                    "publish_year": 2018,
+                    "which_author": "Fourth or more",
+                    "type": "Journal",
+                    "title": "ffff"
+                }
+            ],
+            "language_certificates": [
+                {
+                    "is_mock": false,
+                    "certificate_type": "TOEFL"
+                },
+                {
+                    "is_mock": true,
+                    "certificate_type": "IELTS General"
+                }
+            ],
+            "payment_affordability": None,
+            "prefers_full_fund": None,
+            "prefers_half_fund": None,
+            "prefers_self_fund": None,
+            "comment": "",
+            "powerful_recommendation": false,
+            "linkedin_url": None,
+            "homepage_url": None
+        }
 
     def _test_form_list(self, *args, **kwargs):
         return self._endpoint_test_method('estimation.form:student-detailed-info-list', *args, **kwargs)
@@ -31,7 +101,7 @@ class FormAPITests(EstimationTestBase):
         self._test_form_list("post", self.user1, status.HTTP_403_FORBIDDEN)
 
     def test_form_detail_get_200(self):
-        data = self._test_form_list("post", None, status.HTTP_201_CREATED)
+        data = self._test_form_list("post", self.user1, status.HTTP_201_CREATED)
         self._test_form_detail("get", self.user1, status.HTTP_200_OK, reverse_args=data['id'])
         self._test_form_detail("get", None, status.HTTP_200_OK, reverse_args=data['id'])
 

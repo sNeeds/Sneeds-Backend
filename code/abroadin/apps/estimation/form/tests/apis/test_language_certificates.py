@@ -4,14 +4,14 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import status
 
-from abroadin.apps.estimation.form import models
+from abroadin.apps.data.applydata import models
 from abroadin.apps.estimation.form.models import StudentDetailedInfo
-from abroadin.apps.estimation.form.tests.apis.test_base import FormAPITests
+from abroadin.apps.estimation.form.tests.apis.test_base import FormAPITestBase
 
 User = get_user_model()
 
 
-class LanguageCertificatesAPITest(FormAPITests):
+class LanguageCertificatesAPITest(FormAPITestBase):
 
     def setUp(self):
         super().setUp()
@@ -20,6 +20,7 @@ class LanguageCertificatesAPITest(FormAPITests):
 
         self.local_user = User.objects.create_user(email="t1@g.com", password="user1234")
 
+        # id for each case will be generated in create_objects method
         self.info = [
             {'name': 'toefl', 'model': models.RegularLanguageCertificate,
              'list_url_name': 'estimation.form:regular-certificate-list',
@@ -195,35 +196,35 @@ class LanguageCertificatesAPITest(FormAPITests):
 
     def delete_objects(self):
         for case in self.info:
-            del(case['object'])
+            del (case['object'])
 
-    def test_list_get_200_1(self):
+    def deprecated_test_list_get_200_1(self):
         self.create_objects()
         for case in self.info:
             data = self._endpoint_test_method(case['list_url_name'],
-                                   "get", None, status.HTTP_200_OK,
+                                              "get", None, status.HTTP_200_OK,
                                               data={"student-detailed-info": self.local_student_detailed_info.id}
                                               )
             self.assertEqual(len(data), case['response_length'])
         self.delete_objects()
 
-    def test_list_get_200_2(self):
+    def deprecated_test_list_get_200_2(self):
         self.create_objects()
         for case in self.info:
             data = self._endpoint_test_method(case['list_url_name'],
-                                   "get", self.local_user, status.HTTP_200_OK,
+                                              "get", self.local_user, status.HTTP_200_OK,
                                               data={"student-detailed-info": self.local_student_detailed_info.id}
                                               )
             self.assertEqual(len(data), case['response_length'])
         self.delete_objects()
 
-    def test_list_get_200_3(self):
+    def deprecated_test_list_get_200_3(self):
         self.create_objects()
         self.local_student_detailed_info.user = self.local_user
         self.local_student_detailed_info.save()
         for case in self.info:
             data = self._endpoint_test_method(case['list_url_name'],
-                                   "get", self.local_user, status.HTTP_200_OK,
+                                              "get", self.local_user, status.HTTP_200_OK,
                                               data={"student-detailed-info": self.local_student_detailed_info.id}
                                               )
             self.assertEqual(len(data), case['response_length'])
@@ -231,174 +232,122 @@ class LanguageCertificatesAPITest(FormAPITests):
 
     # TODO sdi with user and it's related things should be protected to not be accessible by other users or
     #  not authenticated clients.
-    def test_list_get_200_4(self):
+    def deprecated_test_list_get_200_4(self):
         self.local_student_detailed_info.user = self.local_user
         self.local_student_detailed_info.save()
         self.create_objects()
         for case in self.info:
             data = self._endpoint_test_method(case['list_url_name'],
-                                   "get", None, status.HTTP_200_OK,
+                                              "get", None, status.HTTP_200_OK,
                                               data={"student-detailed-info": self.local_student_detailed_info.id}
                                               )
         self.delete_objects()
 
-    def test_list_post_201_1(self):
+    def deprecated_test_list_post_201_1(self):
         for case in self.info:
             request_data = case['payload']
             request_data['student_detailed_info'] = request_data['student_detailed_info'].id
             data = self._endpoint_test_method(case['list_url_name'],
-                                   "post", None, status.HTTP_201_CREATED,
+                                              "post", None, status.HTTP_201_CREATED,
                                               data=request_data
                                               )
 
-    def test_list_post_201_2(self):
-        self.local_student_detailed_info.user = self.local_user
-        self.local_student_detailed_info.save()
-        for case in self.info:
-            request_data = case['payload']
-            request_data['student_detailed_info'] = request_data['student_detailed_info'].id
-            data = self._endpoint_test_method(case['list_url_name'],
-                                   "post", self.local_user, status.HTTP_201_CREATED,
-                                              data=request_data
-                                              )
-
-    def test_list_post_400_1(self):
-        for case in self.info:
-            request_data = case['payload']
-            request_data['student_detailed_info'] = request_data['student_detailed_info'].id
-            data = self._endpoint_test_method(case['list_url_name'],
-                                   "post", self.local_user, status.HTTP_400_BAD_REQUEST,
-                                              data=request_data
-                                              )
-
-    def test_list_post_400_2(self):
+    def deprecated_test_list_post_201_2(self):
         self.local_student_detailed_info.user = self.local_user
         self.local_student_detailed_info.save()
         for case in self.info:
             request_data = case['payload']
             request_data['student_detailed_info'] = request_data['student_detailed_info'].id
             data = self._endpoint_test_method(case['list_url_name'],
-                                   "post", None, status.HTTP_400_BAD_REQUEST,
+                                              "post", self.local_user, status.HTTP_201_CREATED,
                                               data=request_data
                                               )
 
-    def test_detail_get_200_1(self):
-        self.create_objects()
-        for case in self.info:
-            data = self._endpoint_test_method(case['detail_url_name'],
-                                   "get", None, status.HTTP_200_OK,
-                                              reverse_args=case['object'].id,
-                                              )
-        self.delete_objects()
-
-    def test_detail_get_200_2(self):
-        self.local_student_detailed_info.user = self.local_user
-        self.local_student_detailed_info.save()
-        self.create_objects()
-        for case in self.info:
-            data = self._endpoint_test_method(case['detail_url_name'],
-                                   "get", self.local_user, status.HTTP_200_OK,
-                                              reverse_args=case['object'].id,
-                                              )
-        self.delete_objects()
-
-    def test_detail_get_403_1(self):
-        self.create_objects()
-        for case in self.info:
-            data = self._endpoint_test_method(case['detail_url_name'],
-                                   "get", self.local_user, status.HTTP_403_FORBIDDEN,
-                                              reverse_args=case['object'].id,
-                                              )
-        self.delete_objects()
-
-    def test_detail_get_403_2(self):
-        self.local_student_detailed_info.user = self.local_user
-        self.local_student_detailed_info.save()
-        self.create_objects()
-        for case in self.info:
-            data = self._endpoint_test_method(case['detail_url_name'],
-                                   "get", None, status.HTTP_401_UNAUTHORIZED,
-                                              reverse_args=case['object'].id,
-                                              )
-        self.delete_objects()
-
-    def test_detail_put_405_1(self):
-        self.create_objects()
+    def deprecated_test_list_post_400_1(self):
         for case in self.info:
             request_data = case['payload']
             request_data['student_detailed_info'] = request_data['student_detailed_info'].id
-            data = self._endpoint_test_method(case['detail_url_name'],
-                                   "put", None, status.HTTP_405_METHOD_NOT_ALLOWED,
-                                              reverse_args=case['object'].id,
-                                              data=request_data,
-                                              )
-        self.delete_objects()
-
-    def test_detail_put_405_2(self):
-        self.create_objects()
-        for case in self.info:
-            request_data = case['payload']
-            request_data['student_detailed_info'] = request_data['student_detailed_info'].id
-            data = self._endpoint_test_method(case['detail_url_name'],
-                                   "put", self.local_user, status.HTTP_405_METHOD_NOT_ALLOWED,
-                                              reverse_args=case['object'].id,
-                                              data=request_data,
-                                              )
-        self.delete_objects()
-
-    def test_detail_put_405_3(self):
-        self.local_student_detailed_info.user = self.local_user
-        self.local_student_detailed_info.save()
-        self.create_objects()
-        for case in self.info:
-            request_data = case['payload']
-            request_data['student_detailed_info'] = request_data['student_detailed_info'].id
-            data = self._endpoint_test_method(case['detail_url_name'],
-                                   "put", None, status.HTTP_405_METHOD_NOT_ALLOWED,
-                                              reverse_args=case['object'].id,
-                                              data=request_data,
-                                              )
-        self.delete_objects()
-
-    def test_detail_put_405_4(self):
-        self.local_student_detailed_info.user = self.local_user
-        self.local_student_detailed_info.save()
-        self.create_objects()
-        for case in self.info:
-            request_data = case['payload']
-            request_data['student_detailed_info'] = request_data['student_detailed_info'].id
-            data = self._endpoint_test_method(case['detail_url_name'],
-                                   "put", self.local_user, status.HTTP_405_METHOD_NOT_ALLOWED,
-                                              reverse_args=case['object'].id,
+            data = self._endpoint_test_method(case['list_url_name'],
+                                              "post", self.local_user, status.HTTP_400_BAD_REQUEST,
                                               data=request_data
                                               )
+
+    def deprecated_test_list_post_400_2(self):
+        self.local_student_detailed_info.user = self.local_user
+        self.local_student_detailed_info.save()
+        for case in self.info:
+            request_data = case['payload']
+            request_data['student_detailed_info'] = request_data['student_detailed_info'].id
+            data = self._endpoint_test_method(case['list_url_name'],
+                                              "post", None, status.HTTP_400_BAD_REQUEST,
+                                              data=request_data
+                                              )
+
+    def deprecated_test_detail_get_200_1(self):
+        self.create_objects()
+        for case in self.info:
+            data = self._endpoint_test_method(case['detail_url_name'],
+                                              "get", None, status.HTTP_200_OK,
+                                              reverse_args=case['object'].id,
+                                              )
         self.delete_objects()
 
-    def test_detail_patch_405_1(self):
+    def deprecated_test_detail_get_200_2(self):
+        self.local_student_detailed_info.user = self.local_user
+        self.local_student_detailed_info.save()
+        self.create_objects()
+        for case in self.info:
+            data = self._endpoint_test_method(case['detail_url_name'],
+                                              "get", self.local_user, status.HTTP_200_OK,
+                                              reverse_args=case['object'].id,
+                                              )
+        self.delete_objects()
+
+    def deprecated_test_detail_get_403_1(self):
+        self.create_objects()
+        for case in self.info:
+            data = self._endpoint_test_method(case['detail_url_name'],
+                                              "get", self.local_user, status.HTTP_403_FORBIDDEN,
+                                              reverse_args=case['object'].id,
+                                              )
+        self.delete_objects()
+
+    def deprecated_test_detail_get_403_2(self):
+        self.local_student_detailed_info.user = self.local_user
+        self.local_student_detailed_info.save()
+        self.create_objects()
+        for case in self.info:
+            data = self._endpoint_test_method(case['detail_url_name'],
+                                              "get", None, status.HTTP_401_UNAUTHORIZED,
+                                              reverse_args=case['object'].id,
+                                              )
+        self.delete_objects()
+
+    def deprecated_test_detail_put_405_1(self):
         self.create_objects()
         for case in self.info:
             request_data = case['payload']
             request_data['student_detailed_info'] = request_data['student_detailed_info'].id
             data = self._endpoint_test_method(case['detail_url_name'],
-                                   "patch", None, status.HTTP_405_METHOD_NOT_ALLOWED,
+                                              "put", None, status.HTTP_405_METHOD_NOT_ALLOWED,
                                               reverse_args=case['object'].id,
                                               data=request_data,
                                               )
         self.delete_objects()
 
-    def test_detail_patch_405_2(self):
+    def deprecated_test_detail_put_405_2(self):
         self.create_objects()
         for case in self.info:
             request_data = case['payload']
             request_data['student_detailed_info'] = request_data['student_detailed_info'].id
             data = self._endpoint_test_method(case['detail_url_name'],
-                                   "patch", self.local_user, status.HTTP_405_METHOD_NOT_ALLOWED,
+                                              "put", self.local_user, status.HTTP_405_METHOD_NOT_ALLOWED,
                                               reverse_args=case['object'].id,
                                               data=request_data,
                                               )
         self.delete_objects()
 
-    def test_detail_patch_405_3(self):
+    def deprecated_test_detail_put_405_3(self):
         self.local_student_detailed_info.user = self.local_user
         self.local_student_detailed_info.save()
         self.create_objects()
@@ -406,13 +355,13 @@ class LanguageCertificatesAPITest(FormAPITests):
             request_data = case['payload']
             request_data['student_detailed_info'] = request_data['student_detailed_info'].id
             data = self._endpoint_test_method(case['detail_url_name'],
-                                   "patch", None, status.HTTP_405_METHOD_NOT_ALLOWED,
+                                              "put", None, status.HTTP_405_METHOD_NOT_ALLOWED,
                                               reverse_args=case['object'].id,
                                               data=request_data,
                                               )
         self.delete_objects()
 
-    def test_detail_patch_405_4(self):
+    def deprecated_test_detail_put_405_4(self):
         self.local_student_detailed_info.user = self.local_user
         self.local_student_detailed_info.save()
         self.create_objects()
@@ -420,44 +369,96 @@ class LanguageCertificatesAPITest(FormAPITests):
             request_data = case['payload']
             request_data['student_detailed_info'] = request_data['student_detailed_info'].id
             data = self._endpoint_test_method(case['detail_url_name'],
-                                   "patch", self.local_user, status.HTTP_405_METHOD_NOT_ALLOWED,
+                                              "put", self.local_user, status.HTTP_405_METHOD_NOT_ALLOWED,
                                               reverse_args=case['object'].id,
                                               data=request_data
                                               )
         self.delete_objects()
 
-    def test_detail_delete_204_1(self):
+    def deprecated_test_detail_patch_405_1(self):
+        self.create_objects()
+        for case in self.info:
+            request_data = case['payload']
+            request_data['student_detailed_info'] = request_data['student_detailed_info'].id
+            data = self._endpoint_test_method(case['detail_url_name'],
+                                              "patch", None, status.HTTP_405_METHOD_NOT_ALLOWED,
+                                              reverse_args=case['object'].id,
+                                              data=request_data,
+                                              )
+        self.delete_objects()
+
+    def deprecated_test_detail_patch_405_2(self):
+        self.create_objects()
+        for case in self.info:
+            request_data = case['payload']
+            request_data['student_detailed_info'] = request_data['student_detailed_info'].id
+            data = self._endpoint_test_method(case['detail_url_name'],
+                                              "patch", self.local_user, status.HTTP_405_METHOD_NOT_ALLOWED,
+                                              reverse_args=case['object'].id,
+                                              data=request_data,
+                                              )
+        self.delete_objects()
+
+    def deprecated_test_detail_patch_405_3(self):
+        self.local_student_detailed_info.user = self.local_user
+        self.local_student_detailed_info.save()
+        self.create_objects()
+        for case in self.info:
+            request_data = case['payload']
+            request_data['student_detailed_info'] = request_data['student_detailed_info'].id
+            data = self._endpoint_test_method(case['detail_url_name'],
+                                              "patch", None, status.HTTP_405_METHOD_NOT_ALLOWED,
+                                              reverse_args=case['object'].id,
+                                              data=request_data,
+                                              )
+        self.delete_objects()
+
+    def deprecated_test_detail_patch_405_4(self):
+        self.local_student_detailed_info.user = self.local_user
+        self.local_student_detailed_info.save()
+        self.create_objects()
+        for case in self.info:
+            request_data = case['payload']
+            request_data['student_detailed_info'] = request_data['student_detailed_info'].id
+            data = self._endpoint_test_method(case['detail_url_name'],
+                                              "patch", self.local_user, status.HTTP_405_METHOD_NOT_ALLOWED,
+                                              reverse_args=case['object'].id,
+                                              data=request_data
+                                              )
+        self.delete_objects()
+
+    def deprecated_test_detail_delete_204_1(self):
         self.create_objects()
         for case in self.info:
             data = self._endpoint_test_method(case['detail_url_name'],
-                                   "delete", None, status.HTTP_204_NO_CONTENT,
+                                              "delete", None, status.HTTP_204_NO_CONTENT,
                                               reverse_args=case['object'].id,
                                               )
 
-    def test_detail_delete_204_2(self):
+    def deprecated_test_detail_delete_204_2(self):
         self.local_student_detailed_info.user = self.local_user
         self.local_student_detailed_info.save()
         self.create_objects()
         for case in self.info:
             data = self._endpoint_test_method(case['detail_url_name'],
-                                   "delete", self.local_user, status.HTTP_204_NO_CONTENT,
+                                              "delete", self.local_user, status.HTTP_204_NO_CONTENT,
                                               reverse_args=case['object'].id,
                                               )
 
-    def test_detail_delete_403_1(self):
+    def deprecated_test_detail_delete_403_1(self):
         self.create_objects()
         for case in self.info:
             data = self._endpoint_test_method(case['detail_url_name'],
-                                   "delete", self.local_user, status.HTTP_403_FORBIDDEN,
+                                              "delete", self.local_user, status.HTTP_403_FORBIDDEN,
                                               reverse_args=case['object'].id,
                                               )
 
-    def test_detail_delete_401_1(self):
+    def deprecated_test_detail_delete_401_1(self):
         self.local_student_detailed_info.user = self.local_user
         self.local_student_detailed_info.save()
         self.create_objects()
         for case in self.info:
             data = self._endpoint_test_method(case['detail_url_name'],
-                                   "delete", None, status.HTTP_401_UNAUTHORIZED,
+                                              "delete", None, status.HTTP_401_UNAUTHORIZED,
                                               reverse_args=case['object'].id,
                                               )

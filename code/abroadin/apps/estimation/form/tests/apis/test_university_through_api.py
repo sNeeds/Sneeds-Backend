@@ -3,14 +3,15 @@ from django.urls import reverse
 
 from rest_framework import status
 
-from abroadin.apps.estimation.form.models import StudentDetailedInfo, Grade, WantToApply, SemesterYear, GradeChoices, \
+from abroadin.apps.data.applydata.models import GradeChoices
+from abroadin.apps.estimation.form.models import StudentDetailedInfo, Grade, WantToApply, SemesterYear, \
     Education
-from abroadin.apps.estimation.form.tests.apis.test_base import FormAPITests
+from abroadin.apps.estimation.form.tests.apis.test_base import FormAPITestBase
 
 User = get_user_model()
 
 
-class EducationAPITest(FormAPITests):
+class EducationAPITest(FormAPITestBase):
 
     def setUp(self):
         super().setUp()
@@ -45,14 +46,14 @@ class EducationAPITest(FormAPITests):
     def _university_through_detail(self, *args, **kwargs):
         return self._endpoint_test_method('estimation.form:university-through-detail', *args, **kwargs)
 
-    def test_university_through_list_get_200_1(self):
+    def deprecated_test_university_through_list_get_200_1(self):
         data = self._university_through_list(
             "get", None, status.HTTP_200_OK,
             data={"student-detailed-info": self.local_student_detailed_info.id}
         )
         self.assertEqual(len(data), 1)
 
-    def test_university_through_list_get_200_2(self):
+    def deprecated_test_university_through_list_get_200_2(self):
         # TODO Change coed to be consistence with new form structure
         self.local_university_through.student_detailed_info.user = self.local_user
         # TODO Change coed to be consistence with new form structure
@@ -64,7 +65,7 @@ class EducationAPITest(FormAPITests):
         )
         self.assertEqual(len(data), 1)
 
-    def test_university_through_list_get_200_3(self):
+    def deprecated_test_university_through_list_get_200_3(self):
         self._university_through_list("post", None, status.HTTP_201_CREATED, data=self.university_through_payload)
         data = self._university_through_list(
             "get", None, status.HTTP_200_OK,
@@ -73,7 +74,7 @@ class EducationAPITest(FormAPITests):
         )
         self.assertEqual(len(data), 2)
 
-    def test_university_through_list_get_200_4(self):
+    def deprecated_test_university_through_list_get_200_4(self):
         student_detailed_info = StudentDetailedInfo.objects.create(user=self.local_user)
         data = self._university_through_list(
             "get", self.local_user, status.HTTP_200_OK,
@@ -81,7 +82,7 @@ class EducationAPITest(FormAPITests):
         )
         self.assertEqual(len(data), 0)
 
-    def test_university_through_list_get_200_5(self):
+    def deprecated_test_university_through_list_get_200_5(self):
         student_detailed_info = StudentDetailedInfo.objects.create()
         data = self._university_through_list(
             "get", None, status.HTTP_200_OK,
@@ -89,22 +90,22 @@ class EducationAPITest(FormAPITests):
         )
         self.assertEqual(len(data), 0)
 
-    def test_university_through_list_post_201_1(self):
+    def deprecated_test_university_through_list_post_201_1(self):
         self._university_through_list("post", None, status.HTTP_201_CREATED, data=self.university_through_payload)
 
-    def test_university_through_list_post_201_2(self):
+    def deprecated_test_university_through_list_post_201_2(self):
         self.local_student_detailed_info.user = self.user1
         self.local_student_detailed_info.save()
         self._university_through_list("post", self.user1, status.HTTP_201_CREATED, data=self.university_through_payload)
 
-    def test_university_through_list_post_400(self):
+    def deprecated_test_university_through_list_post_400(self):
         self.university_through_payload["grade"] = GradeChoices.MASTER
         self._university_through_list("post", None, status.HTTP_400_BAD_REQUEST, data=self.university_through_payload)
 
-    def test_university_through_detail_get_200_1(self):
+    def deprecated_test_university_through_detail_get_200_1(self):
         self._university_through_detail("get", None, status.HTTP_200_OK, reverse_args=self.local_university_through.id)
 
-    def test_university_through_detail_get_200_2(self):
+    def deprecated_test_university_through_detail_get_200_2(self):
         # TODO Change coed to be consistence with new form structure
         self.local_university_through.student_detailed_info.user = self.user1
         # TODO Change coed to be consistence with new form structure
@@ -113,13 +114,13 @@ class EducationAPITest(FormAPITests):
             "get", self.user1, status.HTTP_200_OK, reverse_args=self.local_university_through.id
         )
 
-    def test_university_through_detail_delete_200_1(self):
+    def deprecated_test_university_through_detail_delete_200_1(self):
         self._university_through_detail(
             "delete", None, status.HTTP_204_NO_CONTENT, reverse_args=self.local_university_through.id
         )
         self.assertEqual(Education.objects.filter(id=self.local_university_through.id).count(), 0)
 
-    def test_university_through_detail_delete_200_2(self):
+    def deprecated_test_university_through_detail_delete_200_2(self):
         # TODO Change coed to be consistence with new form structure
         self.local_university_through.student_detailed_info.user = self.user1
         # TODO Change coed to be consistence with new form structure
