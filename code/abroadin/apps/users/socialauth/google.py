@@ -1,3 +1,4 @@
+from google.auth.exceptions import GoogleAuthError
 from google.auth.transport import requests
 from google.oauth2 import id_token
 
@@ -12,10 +13,12 @@ class Google:
         """
         try:
             idinfo = id_token.verify_oauth2_token(
-                auth_token, requests.Request())
-            if 'accounts.google.com' in idinfo['iss']:
-                return idinfo
-
+                auth_token, requests.Request()
+            )
         except Exception as e:
-            print("->>>" , e)
-            return "The token is either invalid or has expired"
+            raise GoogleAuthError(e.__str__())
+
+        if 'accounts.google.com' not in idinfo['iss']:
+            raise GoogleAuthError('Wrong iss in idinfo')
+
+        return idinfo

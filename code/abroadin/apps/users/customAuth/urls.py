@@ -3,6 +3,7 @@ from django.urls import path, include
 from rest_framework_simplejwt import views as jwt_views
 
 from . import views
+from ..socialauth.views import GoogleSocialAuthView
 
 app_name = "auth"
 

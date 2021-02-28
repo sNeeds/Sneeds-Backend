@@ -37,9 +37,4 @@ def login_register_social_user(email, provider, first_name, last_name):
             auth_provider=provider
         )
 
-    tokens = get_jwt_tokens(user)
-
-    return {
-        'access': tokens['access'],
-        'refresh': tokens['refresh']
-    }
+    return user

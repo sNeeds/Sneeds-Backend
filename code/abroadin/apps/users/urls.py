@@ -4,7 +4,7 @@ from .customAuth.views import SubscribeAPIView
 
 urlpatterns = [
     path('auth/', include('abroadin.apps.users.customAuth.urls')),
-    path('social-auth/', include('abroadin.apps.users.socialauth.urls')),
+    path('auth/social/', include('abroadin.apps.users.socialauth.urls')),
     path('consultants/', include('abroadin.apps.users.consultants.urls')),
     path('files/', include('abroadin.apps.users.userFiles.urls')),
 
