@@ -26,11 +26,11 @@ class Google:
             data=data
         ).json()
 
-        access_token = exchange['access_token']
+        id_token_code = exchange['id_token']
 
         try:
             idinfo = id_token.verify_oauth2_token(
-                access_token, transport_requests.Request()
+                id_token_code, transport_requests.Request()
             )
         except Exception as e:
             raise GoogleAuthError(e.__str__())

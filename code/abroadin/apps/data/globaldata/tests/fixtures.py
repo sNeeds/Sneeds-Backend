@@ -1,5 +1,5 @@
 from abroadin.apps.applyprofile.models import Admission
-from abroadin.apps.data.account.models import Country, Major, University
+from abroadin.apps.data.globaldata.models import Country, Major, University
 from abroadin.apps.data.applydata.models import SemesterYear
 from abroadin.base.django.tests.generics import TestFixtureMixIn
 
