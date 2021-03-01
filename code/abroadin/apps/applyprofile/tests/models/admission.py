@@ -1,11 +1,13 @@
-from .base import ApplyProfileModelsTestBase
-from ...models import ApplyProfile, Admission
+from rest_framework.test import APITestCase
+
+from abroadin.apps.applyprofile.tests.models.base import ApplyProfileModelsTestBase
+from abroadin.apps.applyprofile.models import ApplyProfile, Admission
 
 
 class AdmissionModelTests(ApplyProfileModelsTestBase):
 
     def setUp(self) -> None:
-        super(ApplyProfileModelsTestBase, self).setUp()
+        super().setUp()
 
         self.apply_profile1 = ApplyProfile.objects.create(
             name='apply profile 1',

@@ -12,9 +12,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from phonenumber_field.serializerfields import PhoneNumberField
 
-from abroadin.apps.users.consultants.serializers import ShortConsultantProfileSerializer
-from abroadin.apps.users.consultants.models import ConsultantProfile
-
 from .utils import create_doi_contact
 
 User = get_user_model()
@@ -172,17 +169,9 @@ class SafeUserDataSerializer(serializers.ModelSerializer):
 
 
 class MyAccountSerializer(UserSerializer):
-    consultant = serializers.SerializerMethodField()
 
     class Meta(UserSerializer.Meta):
-        fields = UserSerializer.Meta.fields + ['user_type', 'consultant', ]
-
-    def get_consultant(self, obj):
-        try:
-            consultant = ConsultantProfile.objects.get(user=obj)
-            return ShortConsultantProfileSerializer(consultant, context={"request": self.context.get('request')}).data
-        except ConsultantProfile.DoesNotExist:
-            return None
+        fields = UserSerializer.Meta.fields + ['user_type', ]
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):

@@ -42,12 +42,6 @@ class CustomUserManager(BaseUserManager):
             email, password, True, True, True, False, **extra_fields
         )
 
-    def get_admin_consultant_or_none(self):
-        try:
-            return self.get(user_type=CustomUser.UserTypeChoices.ADMIN_CONSULTANT)
-        except CustomUser.DoesNotExist:
-            return None
-
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     """
@@ -59,8 +53,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     class UserTypeChoices(models.TextChoices):
         STUDENT = "Student"
-        CONSULTANT = "Consultant"
-        ADMIN_CONSULTANT = "Admin consultant"  # For automatic chat and ...
+        ADMIN = "Admin"  # For automatic chat and ...
 
     class AuthProviderTypeChoices(models.TextChoices):
         EMAIL = "Email"
@@ -124,19 +117,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = _('users')
 
     def clean(self):
-        from abroadin.apps.users.consultants.models import ConsultantProfile
 
         super().clean()
 
-        if self.user_type == self.UserTypeChoices.ADMIN_CONSULTANT:
-            if CustomUser.objects.filter(user_type=CustomUser.UserTypeChoices.ADMIN_CONSULTANT).exclude(
-                    id=self.id).exists():
-                raise ValidationError("User with admin_consultant type exists.")
-            if not ConsultantProfile.objects.filter(user__id=self.id).exists():
-                raise ValidationError("No consultant profile for user with admin_consultant exists.")
 
     def save(self, *args, **kwargs):
-        self.user_type = self.compute_user_type()
 
         self.email = self.__class__.objects.normalize_email(self.email)
         self.email = self.email.lower()
@@ -147,27 +132,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         self.date_last_action = timezone.now()
         self.save()
 
-    def compute_user_type(self):
-        from abroadin.apps.users.consultants.models import ConsultantProfile
-        if self.user_type == self.UserTypeChoices.ADMIN_CONSULTANT:
-            return
-        elif ConsultantProfile.objects.filter(user__id=self.id).exists():
-            return self.UserTypeChoices.CONSULTANT
-        else:
-            return self.UserTypeChoices.STUDENT
-
-    def is_consultant(self):
-        if self.user_type == self.UserTypeChoices.CONSULTANT:
-            return True
-        return False
-
     def is_student(self):
         if self.user_type == self.UserTypeChoices.STUDENT:
-            return True
-        return False
-
-    def is_admin_consultant(self):
-        if self.user_type == self.UserTypeChoices.ADMIN_CONSULTANT:
             return True
         return False
 

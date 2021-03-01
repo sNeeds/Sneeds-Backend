@@ -4,6 +4,7 @@ from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 
 
 from abroadin.base.api import generics
@@ -17,7 +18,7 @@ from abroadin.apps.users.customAuth.permissions import UserEmailIsVerified
 # TODO Add Email Verified permission
 class BaseChartsAPIView(generics.CGenericAPIView):
     lookup_url_kwarg = 'form_id'
-    permission_classes = [CompletedForm] #TODO: Add is form owner (Temporary removed because of front bug)
+    permission_classes = [IsAuthenticated, CompletedForm, IsFormOwner]
     charts_data = {}
 
     def get(self, request, *args, **kwargs):

@@ -1,11 +1,6 @@
-import itertools
-
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector, TrigramSimilarity
 from django.db.models import Value, FloatField, F
 from django.db.models.functions import Ln, Length
-
-from abroadin.apps.data.globaldata.models import Country
-from abroadin.apps.users.consultants.models import ConsultantProfile, StudyInfo
 
 UNIVERSITY_MAX_QUERY_LENGTH = 10
 MAJOR_MAX_QUERY_LENGTH = 10

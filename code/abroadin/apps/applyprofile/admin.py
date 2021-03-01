@@ -117,13 +117,17 @@ class ApplyProfileAdmin(admin.ModelAdmin):
     ]
 
 
+def get_admission_major(admission):
+    return admission.major.name.strip()
+
+
 @admin.register(Admission)
 class AdmissionAdmin(admin.ModelAdmin):
     autocomplete_fields = ['destination', 'major']
     actions = [
         export_as_csv_action(
             "CSV Export",
-            fields=['id', 'apply_profile_id', 'major', 'grade', 'destination',
+            fields=['id', 'apply_profile_id', get_admission_major, 'grade', 'destination',
                     'accepted', 'scholarship', 'enroll_year',
                     ],
             file_name='Admissions_' + str(datetime.now()),

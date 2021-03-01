@@ -1,10 +1,10 @@
 from abroadin.apps.applyprofile.models import ApplyProfile
 
 from ...form.models import StudentDetailedInfo
-from ...tests.base import EstimationBaseTest
+from ...tests.base import EstimationTestBase
 
 
-class SimilarProfilesBaseTests(EstimationBaseTest):
+class SimilarProfilesTestsBase(EstimationTestBase):
     def setUp(self):
         super().setUp()
 
