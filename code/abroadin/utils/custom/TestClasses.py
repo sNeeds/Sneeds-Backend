@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.test import APITestCase, APIClient
 from django.conf import settings
 
-from abroadin.apps.data.account.models import Country, University, Major
+from abroadin.apps.data.globaldata.models import Country, University, Major
 from abroadin.apps.store.carts.models import Cart
 
 USER_DETAILED_INFO_BASE_PAYLOAD = {
@@ -43,15 +43,12 @@ class CustomAPITestCase(APITestCase):
         # Users -------
         self.user1 = User.objects.create_user(email="u1@g.com", password="user1234", first_name="User 1")
         self.user1.is_admin = False
-        self.user1.set_user_type_student()
 
         self.user2 = User.objects.create_user(email="u2@g.com", password="user1234", first_name="User 2")
         self.user2.is_admin = False
-        self.user2.set_user_type_student()
 
         self.user3 = User.objects.create_user(email="u3@g.com", password="user1234", first_name="User 3")
         self.user3.is_admin = False
-        self.user3.set_user_type_student()
 
         # Countries -------
         self.country1 = Country.objects.create(

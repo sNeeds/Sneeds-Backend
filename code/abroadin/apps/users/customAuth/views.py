@@ -89,3 +89,4 @@ class SubscribeAPIView(generics.CCreateAPIView):
             data['message'] = "A confirmation email has been sent. please check your inbox, Spam and Promotions" \
                               " folders also."
         return Response(data, status=status.HTTP_201_CREATED)
+

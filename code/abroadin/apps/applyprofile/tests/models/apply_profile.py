@@ -1,8 +1,10 @@
+from rest_framework.test import APITestCase
+
 from .base import ApplyProfileModelsTestBase
 from ...models import ApplyProfile, Admission
 
 
-class ApplyProfileModelTests(ApplyProfileModelsTestBase):
+class ApplyProfileModelTests(ApplyProfileModelsTestBase, APITestCase):
 
     def setUp(self) -> None:
         return super(ApplyProfileModelsTestBase, self).setUp()

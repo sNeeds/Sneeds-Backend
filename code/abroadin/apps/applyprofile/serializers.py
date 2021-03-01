@@ -1,12 +1,12 @@
 from rest_framework import serializers
 
 from abroadin.apps.data.applydata import serializers as ad_serializers
-from abroadin.apps.data.account import serializers as account_serializers
+from abroadin.apps.data.globaldata import serializers as globaldata_serializers
 
 from abroadin.apps.store.applyprofilestore.utils import get_user_bought_apply_profiles
 
 from .models import ApplyProfile, Admission
-from ..data.account.serializers import LockedUniversitySerializer, LockedMajorSerializer, UniversitySerializer \
+from ..data.globaldata.serializers import LockedUniversitySerializer, LockedMajorSerializer, UniversitySerializer \
     , MajorSerializer, CountrySerializer
 from ..data.applydata.serializers import LockedGradeSerializer
 from ...base.values import AccessibilityTypeChoices
@@ -102,8 +102,8 @@ class FullAdmissionSerializer(serializers.ModelSerializer):
     """
     accessibility_type = serializers.CharField(read_only=True, default=AccessibilityTypeChoices.UNLOCKED, source=' ')
 
-    destination = account_serializers.UniversitySerializer()
-    major = account_serializers.MajorSerializer()
+    destination = globaldata_serializers.UniversitySerializer()
+    major = globaldata_serializers.MajorSerializer()
     grade = ad_serializers.GradeSerializer()
     country = serializers.SerializerMethodField(method_name='get_country')
 

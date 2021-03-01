@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import QuerySet
 
 from abroadin.apps.applyprofile.managers import AdmissionQuerySet
-from abroadin.apps.data.account.models import University, Major, Country
+from abroadin.apps.data.globaldata.models import University, Major, Country
 from abroadin.apps.data.applydata.models import Publication, Education, LanguageCertificate, Grade
 from abroadin.apps.store.storeBase.models import Product
 

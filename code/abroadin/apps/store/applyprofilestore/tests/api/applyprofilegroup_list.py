@@ -15,8 +15,13 @@ class ApplyProfileGroupListTest(ApplyProfileStoreAPITestBase):
     def test_apply_profile_group_list_get_200(self):
         res = self._test_apply_profile_group_list('get', self.user1, status.HTTP_200_OK)
         self.assertEqual(len(res), 2)
-        self.assertEqual(len(res[0]['apply_profiles']), 2)
-        self.assertEqual(len(res[1]['apply_profiles']), 3)
+        len_apply_profiles = [1, 2]
+
+        self.assertIn(len(res[0]['apply_profiles']), len_apply_profiles)
+        len_apply_profiles.remove(len(res[0]['apply_profiles']))
+
+        self.assertIn(len(res[1]['apply_profiles']), len_apply_profiles)
+        len_apply_profiles.remove(len(res[1]['apply_profiles']))
 
     def test_apply_profile_group_list_get_200_2(self):
         res = self._test_apply_profile_group_list('get', self.user2, status.HTTP_200_OK)
@@ -32,7 +37,7 @@ class ApplyProfileGroupListTest(ApplyProfileStoreAPITestBase):
 
         data = {
             'user': self.user2.id,
-            'apply_profiles': [self.applyprofile1.id, self.applyprofile2.id]
+            'apply_profiles': [self.applyprofile3.id, self.applyprofile4.id]
         }
 
         res = self._test_apply_profile_group_list('post', self.user2, status.HTTP_201_CREATED, data=data)
@@ -115,8 +120,3 @@ class ApplyProfileGroupListTest(ApplyProfileStoreAPITestBase):
 
         res = self._test_apply_profile_group_list('get', self.user2, status.HTTP_200_OK)
         self.assertEqual(len(res), 1)
-
-
-
-
-

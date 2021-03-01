@@ -6,8 +6,8 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from abroadin.apps.data.account.models import BasicFormField
-from abroadin.apps.data.account.serializers import UniversitySerializer, MajorSerializer
+from abroadin.apps.data.globaldata.models import BasicFormField
+from abroadin.apps.data.globaldata.serializers import UniversitySerializer, MajorSerializer
 from abroadin.base.api.fields import GenericContentTypeRelatedField, _get_content_type_identifier
 from abroadin.base.values import AccessibilityTypeChoices
 from abroadin.base.factory.class_factory import exclude_meta_fields_class_factory

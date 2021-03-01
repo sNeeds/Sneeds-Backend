@@ -65,8 +65,6 @@ class IsWantToApplyOwnerOrDetailedInfoWithoutUser(permissions.BasePermission):
 class CompletedForm(permissions.BasePermission):
 
     def has_permission(self, request, view):
-        # TODO change to original state
-        return True
         assert hasattr(view, 'lookup_url_kwarg'), \
             _('Missing form id lookup_url_kwarg in view: {}'.format(str(view)))
         assert view.kwargs.get(view.lookup_url_kwarg, None) is not None, \
@@ -78,8 +76,6 @@ class CompletedForm(permissions.BasePermission):
         return True
 
     def has_object_permission(self, request, view, obj):
-        # TODO change to original state
-        return True
         assert hasattr(view, 'lookup_url_kwarg'), \
             _('Missing form id lookup_url_kwarg in view: {}'.format(str(view)))
         assert view.kwargs.get(view.lookup_url_kwarg, None) is not None, \

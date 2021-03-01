@@ -10,7 +10,7 @@ from abroadin.base.factory.class_factory import exclude_meta_fields_class_factor
 from abroadin.apps.users.customAuth.serializers import SafeUserDataSerializer
 from abroadin.base.mixins.validators import CreateM2MManagerMixin
 from abroadin.apps.data.applydata.models import Education, Publication
-from abroadin.apps.data.account.serializers import CountrySerializer, UniversitySerializer, MajorSerializer
+from abroadin.apps.data.globaldata.serializers import CountrySerializer, UniversitySerializer, MajorSerializer
 
 from .models import WantToApply, StudentDetailedInfo
 

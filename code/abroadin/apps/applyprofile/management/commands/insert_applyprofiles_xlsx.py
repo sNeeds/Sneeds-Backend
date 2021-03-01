@@ -7,7 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 
 from ...models import ApplyProfile, Admission
 
-from abroadin.apps.data.account.models import University, Country, Major
+from abroadin.apps.data.globaldata.models import University, Country, Major
 from abroadin.apps.data.applydata.models import Education, RegularLanguageCertificate, Grade, LanguageCertificate, \
     GradeChoices, Publication
 from abroadin.apps.data.applydata.utils import convert_pbt_overall_to_ibt_overall, \

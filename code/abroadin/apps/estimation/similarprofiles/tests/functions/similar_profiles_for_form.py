@@ -3,7 +3,7 @@ from django.contrib.contenttypes.models import ContentType
 from abroadin.apps.estimation.form.models import WantToApply
 from abroadin.apps.applyprofile.models import Admission, ApplyProfile
 from abroadin.apps.data.applydata.models import Education
-from abroadin.apps.data.account.models import Major
+from abroadin.apps.data.globaldata.models import Major
 
 from .base import SimilarProfilesFunctionsBaseTests
 from ...functions import SimilarProfilesForForm
@@ -20,7 +20,7 @@ class SimilarProfilesForFormTests(SimilarProfilesFunctionsBaseTests):
             content_type=form_ct,
             object_id=self.form_1.id,
             university=self.university1,
-            grade=self.grade_bachelor.name,
+            grade=self.bachelor_grade.name,
             major=self.major1,
             graduate_in=2016,
             gpa=17
@@ -29,21 +29,21 @@ class SimilarProfilesForFormTests(SimilarProfilesFunctionsBaseTests):
             content_type=form_ct,
             object_id=self.form_1.id,
             university=self.university1,
-            grade=self.grade_master.name,
+            grade=self.master_grade.name,
             major=self.major1,
             graduate_in=2020,
             gpa=18
         )
         self.wta = WantToApply.objects.create(student_detailed_info=self.form_1)
         self.wta.majors.add(self.major1)
-        self.wta.grades.add(self.grade_phd)
+        self.wta.grades.add(self.phd_grade)
         self.wta.semester_years.add(self.semester_year1)
 
         self.profile_ed_1 = Education.objects.create(
             content_type=profile_ct,
             object_id=self.profile_1.id,
             university=self.university1,
-            grade=self.grade_bachelor.name,
+            grade=self.bachelor_grade.name,
             major=self.major1,
             graduate_in=2016,
             gpa=17
@@ -52,7 +52,7 @@ class SimilarProfilesForFormTests(SimilarProfilesFunctionsBaseTests):
             content_type=profile_ct,
             object_id=self.profile_1.id,
             university=self.university1,
-            grade=self.grade_master.name,
+            grade=self.master_grade.name,
             major=self.major1,
             graduate_in=2020,
             gpa=18
@@ -60,7 +60,7 @@ class SimilarProfilesForFormTests(SimilarProfilesFunctionsBaseTests):
         self.profile_admission_1 = Admission.objects.create(
             apply_profile=self.profile_1,
             major=self.major1,
-            grade=self.grade_phd,
+            grade=self.phd_grade,
             destination=self.university2,
             accepted=True,
             scholarship=20000,
