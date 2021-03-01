@@ -4,11 +4,11 @@ from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 
 from abroadin.base.api.generics import CGenericAPIView
 
-from .serializers import GoogleSocialAuthSerializer, TokenObtainPairWithoutPasswordSerializer
+from .serializers import GoogleSocialAuthSerializer, TokenObtainPairWithoutPasswordSerializer, \
+    FacebookSocialAuthSerializer
 
 
-class GoogleSocialAuthView(CGenericAPIView):
-    serializer_class = GoogleSocialAuthSerializer
+class SocialAuthView(CGenericAPIView):
     token_serializer_class = TokenObtainPairWithoutPasswordSerializer
 
     def post(self, request):
@@ -25,3 +25,11 @@ class GoogleSocialAuthView(CGenericAPIView):
             raise InvalidToken(e.args[0])
 
         return Response(token_serializer.validated_data, status=status.HTTP_200_OK)
+
+
+class GoogleSocialAuthView(SocialAuthView):
+    serializer_class = GoogleSocialAuthSerializer
+
+
+class FacebookSocialAuthView(SocialAuthView):
+    serializer_class = FacebookSocialAuthSerializer

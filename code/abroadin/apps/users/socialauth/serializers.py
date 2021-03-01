@@ -1,14 +1,14 @@
 from google.auth.exceptions import GoogleAuthError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, login_rule, user_eligible_for_login
 
-from django.contrib.auth import get_user_model, authenticate
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import update_last_login
 
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed, ValidationError
 
-from . import facebook
 from .register import login_register_social_user
+from .facebook import Facebook
 from .google import Google
 
 User = get_user_model()
@@ -90,7 +90,7 @@ class FacebookSocialAuthSerializer(serializers.Serializer):
         self.user = None
 
     def validate_auth_token(self, auth_token):
-        user_data = facebook.Facebook.validate(auth_token)
+        user_data = Facebook.validate(auth_token)
 
         try:
             email = user_data['email']
