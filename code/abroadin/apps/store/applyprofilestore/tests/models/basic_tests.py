@@ -37,11 +37,20 @@ class ApplyProfileStoreModelBasicTests(ApplyProfileStoreModelTestBase):
         self.assertEqual(res, 16000)
 
     def test_normal_price(self):
-        self.assertEqual(self.app_profile_group2.normal_price, 24000)
+        apply_profile_group = ApplyProfileGroup.objects.create_with_apply_profiles(
+            user=self.user1,
+            apply_profiles=[self.applyprofile1, self.applyprofile2, self.applyprofile3]
+        )
+        self.assertEqual(apply_profile_group.normal_price, 24000)
 
     def test_sell_apply_profile_group(self):
-        sold_apply_profile_group = self.app_profile_group1.sell()
+        apply_profile_group = ApplyProfileGroup.objects.create_with_apply_profiles(
+            user=self.user1,
+            apply_profiles=[self.applyprofile1, self.applyprofile2]
+        )
+
+        sold_apply_profile_group = apply_profile_group.sell()
         self.assertEqual(sold_apply_profile_group.price, 11000)
         self.assertEqual(sold_apply_profile_group.apply_profiles.count(), 2)
-        self.assertEqual(sold_apply_profile_group.sold_to, self.app_profile_group1.user)
-        self.assertFalse(ApplyProfileGroup.objects.filter(pk=self.app_profile_group1.id).exists())
+        self.assertEqual(sold_apply_profile_group.sold_to, apply_profile_group.user)
+        self.assertFalse(ApplyProfileGroup.objects.filter(pk=apply_profile_group.id).exists())

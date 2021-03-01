@@ -16,9 +16,20 @@ class ApplyProfileDetailAPITest(ApplyProfileStoreAPITestBase):
         res = self._test_apply_profile_detail('get', self.user1, status.HTTP_200_OK,
                                               sample_ap_id)
         self.assertEqual(res['accessibility_type'], AccessibilityTypeChoices.PARTIAL)
+
+        self.assertEqual(res['educations']['accessibility_type'], AccessibilityTypeChoices.PARTIAL)
+        self.assertEqual(res['publications']['accessibility_type'], AccessibilityTypeChoices.LOCKED)
+        self.assertEqual(res['language_certificates']['accessibility_type'], AccessibilityTypeChoices.LOCKED)
+        self.assertEqual(res['admissions']['accessibility_type'], AccessibilityTypeChoices.PARTIAL)
+
         self.app_profile_group1.sell()
 
         res = self._test_apply_profile_detail('get', self.user1, status.HTTP_200_OK,
                                               sample_ap_id)
         self.assertEqual(res['accessibility_type'], AccessibilityTypeChoices.UNLOCKED)
+
+        self.assertEqual(res['educations']['accessibility_type'], AccessibilityTypeChoices.UNLOCKED)
+        self.assertEqual(res['publications']['accessibility_type'], AccessibilityTypeChoices.UNLOCKED)
+        self.assertEqual(res['language_certificates']['accessibility_type'], AccessibilityTypeChoices.UNLOCKED)
+        self.assertEqual(res['admissions']['accessibility_type'], AccessibilityTypeChoices.UNLOCKED)
 
