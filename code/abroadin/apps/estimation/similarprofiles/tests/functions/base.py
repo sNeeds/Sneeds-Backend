@@ -3,7 +3,7 @@ from django.contrib.contenttypes.models import ContentType
 from abroadin.apps.data.account.models import Country
 from abroadin.apps.estimation.form.models import WantToApply, StudentDetailedInfo
 from abroadin.apps.applyprofile.models import Admission, ApplyProfile
-from abroadin.apps.data.applydata.models import Education
+from abroadin.apps.data.applydata.models import Education, GradeChoices
 
 from ..base import SimilarProfilesTestsBase
 from ...functions import get_preferred_apply_country, get_want_to_apply_similar_countries, filter_around_gpa, \
@@ -101,7 +101,7 @@ class SimilarProfilesFunctionsBaseTests(SimilarProfilesTestsBase):
             content_type=content_type,
             object_id=self.profile_1.id,
             university=self.university1,
-            grade=self.bachelor_grade,
+            grade=GradeChoices.BACHELOR,
             major=self.major1,
             graduate_in=2020,
             gpa=16
@@ -111,7 +111,7 @@ class SimilarProfilesFunctionsBaseTests(SimilarProfilesTestsBase):
             content_type=content_type,
             object_id=self.profile_2.id,
             university=self.university1,
-            grade=self.bachelor_grade,
+            grade=GradeChoices.BACHELOR,
             major=self.major1,
             graduate_in=2020,
             gpa=20

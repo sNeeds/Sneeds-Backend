@@ -1,7 +1,7 @@
 from ..base import SimilarProfilesTestsBase
 
 
-class SimilarProfilesFunctionsBaseTests(SimilarProfilesTestsBase):
+class SimilarProfilesModelsTestBase(SimilarProfilesTestsBase):
     def setUp(self):
         super().setUp()
 

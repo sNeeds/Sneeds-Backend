@@ -2,6 +2,7 @@ from drf_yasg.utils import swagger_auto_schema
 
 
 from rest_framework import permissions
+from rest_framework.permissions import IsAuthenticated
 
 from abroadin.base.api import generics
 from abroadin.base.api.permissions import permission_class_factory
@@ -17,6 +18,7 @@ class StudentDetailedInfoListCreateView(generics.CListCreateAPIView):
     request_serializer_class = StudentDetailedInfoSerializer
     permission_classes = [
         permission_class_factory(OnlyOneFormPermission, ["POST"]),
+        permission_class_factory(IsAuthenticated, ['POST', 'GET']),
     ]
 
     def get_queryset(self):
