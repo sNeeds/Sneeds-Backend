@@ -7,6 +7,7 @@ from django.contrib.auth.models import update_last_login
 from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed, ValidationError
 
+from abroadin.settings.secure.APIs import GOOGLE_CLIENT_ID
 from .register import login_register_social_user
 from .facebook import Facebook
 from .google import Google
@@ -63,8 +64,8 @@ class GoogleSocialAuthSerializer(serializers.Serializer):
         except GoogleAuthError as e:
             raise ValidationError(e.__str__())
 
-        # if user_data['aud'] != GOOGLE_CLIENT_ID:
-        #     raise AuthenticationFailed('Wrong Google Client ID')
+        if user_data['aud'] != GOOGLE_CLIENT_ID:
+            raise AuthenticationFailed('Wrong Google Client ID')
 
         email = user_data['email']
         first_name = user_data['given_name']

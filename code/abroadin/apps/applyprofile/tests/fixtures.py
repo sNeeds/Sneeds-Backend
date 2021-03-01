@@ -1,5 +1,5 @@
 from abroadin.apps.applyprofile.models import Admission, ApplyProfile
-from abroadin.apps.data.account.tests.fixtures import MajorFixturesMixin, UniversityFixturesMixin
+from abroadin.apps.data.globaldata.tests.fixtures import MajorFixturesMixin, UniversityFixturesMixin
 from abroadin.apps.data.applydata.tests.fixtures import GradeFixturesMixin
 from abroadin.base.django.tests.generics import TestFixtureMixIn
 
