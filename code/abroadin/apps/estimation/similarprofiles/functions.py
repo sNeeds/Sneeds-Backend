@@ -1,8 +1,8 @@
 from django.db.models import Q
 
-from abroadin.apps.data.account.models import Major
+from abroadin.apps.data.globaldata.models import Major
 from abroadin.apps.applyprofile.models import ApplyProfile
-from abroadin.apps.data.account.models import Country
+from abroadin.apps.data.globaldata.models import Country
 
 
 def get_preferred_apply_country():

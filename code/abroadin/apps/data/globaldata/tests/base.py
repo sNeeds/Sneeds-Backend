@@ -3,7 +3,7 @@ from rest_framework.test import APITestCase
 from ..models import Major, University, Country
 
 
-class AccountTestBase(APITestCase):
+class GlobalDataTestBase(APITestCase):
 
     def setUp(self) -> None:
 

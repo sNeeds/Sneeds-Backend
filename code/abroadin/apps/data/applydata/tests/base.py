@@ -3,11 +3,11 @@ from rest_framework.test import APITestCase
 
 from ..models import Publication, Education, RegularLanguageCertificate, GREGeneralCertificate, Grade, SemesterYear, \
     GradeChoices, LanguageCertificate
-from ...account.models import Major, University, Country
-from ...account.tests.base import AccountTestBase
+from ...globaldata.models import Major, University, Country
+from ...globaldata.tests.base import GlobalDataTestBase
 
 
-class ApplyDataTestBase(AccountTestBase):
+class ApplyDataTestBase(GlobalDataTestBase):
 
     def setUp(self) -> None:
 

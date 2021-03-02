@@ -5,6 +5,7 @@ TEMPLATE_DIR = os.path.join(BASE_DIR, "..", "templates")
 
 INSTALLED_APPS = [
     'rest_framework',
+    'rest_framework.authtoken',
     'django_filters',  # for filtering get queries in DRF
     'drf_yasg',  # for filtering get queries in DRF
     'django_rest_passwordreset',
@@ -19,6 +20,7 @@ INSTALLED_APPS = [
     'abroadin.apps.customUtils',
     'abroadin.apps.notifications',
     'abroadin.apps.users.customAuth',
+    'abroadin.apps.users.socialauth',
     'abroadin.apps.store.storeBase',
     'abroadin.apps.store.carts',
     'abroadin.apps.store.orders',
@@ -28,9 +30,9 @@ INSTALLED_APPS = [
     'abroadin.apps.estimation.estimations',
     'abroadin.apps.estimation.analyze',
     'abroadin.apps.estimation.similarprofiles',
-    'abroadin.apps.data.account',
-    'abroadin.apps.analytics.events',
+    'abroadin.apps.data.globaldata',
     'abroadin.apps.data.applydata',
+    'abroadin.apps.analytics.events',
     'abroadin.apps.applyprofile',
 
     'django.contrib.auth',
@@ -40,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.postgres',
+    'django.contrib.sites',
 
     'dbbackup',
     'django_cleanup',  # should go after your apps

@@ -1,12 +1,8 @@
-from abroadin.apps.applyprofile.models import ApplyProfile, Admission
 from abroadin.apps.applyprofile.tests.fixtures import AdmissionFixturesMixin, ApplyProfileFixturesMixin
-
-from abroadin.apps.data.account.tests.fixtures import CountryFixturesMixin, MajorFixturesMixin, UniversityFixturesMixin
-
+from abroadin.apps.data.globaldata.tests.fixtures import CountryFixturesMixin, MajorFixturesMixin, UniversityFixturesMixin
 from abroadin.base.django.tests.generics import SampleGFKObjectMixIn
 
 from ...tests.base import StoreBaseTest
-from ..models import ApplyProfileGroup, SoldApplyProfileGroup
 
 from abroadin.apps.data.applydata.tests.fixtures import SemesterYearFixturesMixin, GradeFixturesMixin, \
     EducationFixturesMixin, PublicationFixturesMixin, RegularLCFixturesMixin, GREGeneralFixturesMixin

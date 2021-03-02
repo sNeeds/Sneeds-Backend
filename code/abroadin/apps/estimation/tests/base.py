@@ -3,14 +3,11 @@ from django.urls import reverse
 
 from rest_framework.test import APITestCase, APIClient
 
-from abroadin.apps.data.account.models import University, Major, Country
-from abroadin.apps.data.account.tests.fixtures import UniversityFixturesMixin, CountryFixturesMixin, MajorFixturesMixin
+from abroadin.apps.data.globaldata.tests.fixtures import UniversityFixturesMixin, CountryFixturesMixin, MajorFixturesMixin
 from abroadin.apps.data.applydata.tests.fixtures import EducationFixturesMixin, RegularLCFixturesMixin, \
     SemesterYearFixturesMixin, PublicationFixturesMixin, GREGeneralFixturesMixin, GradeFixturesMixin
-from abroadin.apps.estimation.form.models import SemesterYear, StudentDetailedInfo, Grade
 from abroadin.base.django.tests.generics import SampleGFKObjectMixIn
 from abroadin.base.mixins.tests import TestBriefMethodMixin
-from abroadin.apps.data.applydata.models import GradeChoices
 
 User = get_user_model()
 

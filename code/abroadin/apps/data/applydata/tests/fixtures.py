@@ -1,4 +1,4 @@
-from abroadin.apps.data.account.tests.fixtures import UniversityFixturesMixin, MajorFixturesMixin
+from abroadin.apps.data.globaldata.tests.fixtures import UniversityFixturesMixin, MajorFixturesMixin
 from abroadin.apps.data.applydata.models import SemesterYear, Grade, GradeChoices, Education, Publication, \
     RegularLanguageCertificate, LanguageCertificate, GREGeneralCertificate
 from abroadin.base.django.tests.generics import SampleGFKObjectMixIn

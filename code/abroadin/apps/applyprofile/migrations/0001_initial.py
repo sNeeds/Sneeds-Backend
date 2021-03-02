@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('account', '0001_initial'),
+        ('globaldata', '0001_initial'),
         ('applydata', '0001_initial'),
     ]
 
@@ -31,9 +31,9 @@ class Migration(migrations.Migration):
                 ('enroll_year', models.PositiveSmallIntegerField()),
                 ('description', models.TextField(blank=True, max_length=4096, null=True)),
                 ('apply_profile', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='admissions', related_query_name='admission', to='applyprofile.applyprofile')),
-                ('destination', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='account.university')),
+                ('destination', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='globaldata.university')),
                 ('grade', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='applydata.grade')),
-                ('major', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='account.major')),
+                ('major', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='globaldata.major')),
             ],
         ),
     ]

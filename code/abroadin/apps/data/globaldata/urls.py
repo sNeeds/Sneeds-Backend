@@ -2,7 +2,7 @@ from django.urls import path
 
 from . import views
 
-app_name = "account"
+app_name = "globaldata"
 
 urlpatterns = [
     path('countries/', views.CountryList.as_view(), name="country-list"),

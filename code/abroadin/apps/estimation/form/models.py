@@ -13,7 +13,7 @@ from abroadin.apps.data.applydata.values.language import LANGUAGE_B_VALUE
 from abroadin.apps.estimation.form.variables import MISSING_LABEL, REWARDED_LABEL
 from abroadin.apps.estimation.form.managers import StudentDetailedInfoManager, WantToApplyManager
 
-from abroadin.apps.data.account.models import \
+from abroadin.apps.data.globaldata.models import \
     (Country,
      University,
      Major,
@@ -23,7 +23,7 @@ from abroadin.apps.data.account.models import \
 
 from abroadin.apps.data.applydata import models as ad_models
 
-from abroadin.apps.data.account.validators import validate_resume_file_size
+from abroadin.apps.data.globaldata.validators import validate_resume_file_size
 
 
 def get_sdi_ct_or_none():

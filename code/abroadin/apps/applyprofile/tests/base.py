@@ -6,8 +6,8 @@ from abroadin.base.mixins.tests import TestBriefMethodMixin
 
 from abroadin.apps.data.applydata.models import GradeChoices
 
-from ...data.account.models import Major, University, Country
-from ...data.account.tests.fixtures import UniversityFixturesMixin, MajorFixturesMixin, CountryFixturesMixin
+from ...data.globaldata.models import Major, University, Country
+from ...data.globaldata.tests.fixtures import UniversityFixturesMixin, MajorFixturesMixin, CountryFixturesMixin
 from ...data.applydata.models import RegularLanguageCertificate, GREGeneralCertificate, LanguageCertificate, \
     Publication, Education, GradeChoices, Grade, SemesterYear
 from ...data.applydata.tests.fixtures import SemesterYearFixturesMixin, GradeFixturesMixin, EducationFixturesMixin, \

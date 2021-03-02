@@ -3,7 +3,7 @@ import os
 
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
-from abroadin.apps.data.account.models import Country
+from abroadin.apps.data.globaldata.models import Country
 
 
 class Command(BaseCommand):
@@ -17,7 +17,7 @@ class Command(BaseCommand):
         existed_count = 0
         entries_count = 0
         added_countries = []
-        csv_path = os.path.join(settings.BASE_DIR, "apps/data/account/management/commands/countries/countries.csv")
+        csv_path = os.path.join(settings.BASE_DIR, "apps/data/globaldata/management/commands/countries/countries.csv")
         with open(csv_path) as f:
             reader = csv.reader(f, delimiter=',')
             for row in reader:

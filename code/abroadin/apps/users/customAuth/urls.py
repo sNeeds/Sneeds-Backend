@@ -3,6 +3,7 @@ from django.urls import path, include
 from rest_framework_simplejwt import views as jwt_views
 
 from . import views
+from ..socialauth.views import GoogleSocialAuthView
 
 app_name = "auth"
 
@@ -19,5 +20,4 @@ urlpatterns = [
 
     path('generate-verification/', views.GenerateVerificationAPIView.as_view(), name='generate-verification'),
     path('verify-verification/', views.VerifyVerificationAPIView.as_view(), name='verify-verification'),
-
 ]

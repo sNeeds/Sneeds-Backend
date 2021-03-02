@@ -8,8 +8,8 @@ from django.db import models
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
 
-from abroadin.apps.data.account.models import University, Major, Country
-from abroadin.apps.data.account.validators import ten_factor_validator
+from abroadin.apps.data.globaldata.models import University, Major, Country
+from abroadin.apps.data.globaldata.validators import ten_factor_validator
 from abroadin.apps.data.applydata.classes import ValueRange
 from abroadin.apps.data.applydata.decorators import regular_certificate_or_none
 from abroadin.apps.data.applydata.managers import EducationManager, GradeManager, \

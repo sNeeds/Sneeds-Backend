@@ -1,6 +1,6 @@
 from django.contrib.contenttypes.models import ContentType
 
-from abroadin.apps.data.account.models import Country
+from abroadin.apps.data.globaldata.models import Country
 from abroadin.apps.estimation.form.models import WantToApply, StudentDetailedInfo
 from abroadin.apps.applyprofile.models import Admission, ApplyProfile
 from abroadin.apps.data.applydata.models import Education, GradeChoices

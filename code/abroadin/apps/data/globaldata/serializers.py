@@ -9,7 +9,7 @@ User = get_user_model()
 
 class CountrySerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(
-        view_name="account:country-detail",
+        view_name="globaldata:country-detail",
         lookup_field='slug',
         read_only=True
     )
@@ -33,13 +33,13 @@ class LockedCountrySerializer(serializers.ModelSerializer):
 
 class UniversitySerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(
-        view_name="account:university-detail",
+        view_name="globaldata:university-detail",
         lookup_field='id',
         read_only=True
     )
     country = serializers.HyperlinkedRelatedField(
         read_only=True,
-        view_name="account:country-detail",
+        view_name="globaldata:country-detail",
         lookup_field='slug',
     )
 
@@ -65,10 +65,9 @@ class LockedUniversitySerializer(serializers.ModelSerializer):
                   )
 
 
-
 class MajorSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField(
-        view_name="account:field-of-study-detail",
+        view_name="globaldata:field-of-study-detail",
         lookup_field='id',
         read_only=True
     )

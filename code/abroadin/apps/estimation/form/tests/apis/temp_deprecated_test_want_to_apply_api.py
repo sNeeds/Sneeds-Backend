@@ -1,10 +1,9 @@
 from django.contrib.auth import get_user_model
-from django.urls import reverse
 
 from rest_framework import status
 
 from abroadin.apps.estimation.form.models import StudentDetailedInfo, Grade, WantToApply, SemesterYear
-from abroadin.apps.data.account.models import Country, University, Major
+from abroadin.apps.data.globaldata.models import Country, University, Major
 from abroadin.apps.estimation.form.tests.apis.test_base import FormAPITestBase
 
 User = get_user_model()

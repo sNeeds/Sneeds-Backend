@@ -4,7 +4,7 @@ import os
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
-from abroadin.apps.data.account.models import University, Country
+from abroadin.apps.data.globaldata.models import University, Country
 
 
 class Command(BaseCommand):
@@ -21,7 +21,7 @@ class Command(BaseCommand):
         added_countries = []
 
         csv_path = os.path.join(settings.BASE_DIR,
-                                "apps/data/account/management/commands/universities/az_universities.csv"
+                                "apps/data/globaldata/management/commands/universities/az_universities.csv"
                                 )
         with open(csv_path) as f:
             reader = csv.reader(f, delimiter=',')

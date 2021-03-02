@@ -2,12 +2,9 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import status
 
-from abroadin.apps.data.account.models import University
+from abroadin.apps.data.globaldata.models import University
 from abroadin.apps.data.applydata.models import GradeChoices
-from abroadin.apps.estimation.form.models import (
-    StudentDetailedInfo,
-    Education,
-)
+from abroadin.apps.estimation.form.models import Education
 
 from .test_base import EstimationsAppAPITestBase
 
@@ -15,7 +12,7 @@ User = get_user_model()
 
 
 class EducationAPITests(EstimationsAppAPITestBase):
-    
+
     def _test_form_comments_detail(self, *args, **kwargs):
         return self._endpoint_test_method('estimation.estimations:form-comments', *args, **kwargs)
 
