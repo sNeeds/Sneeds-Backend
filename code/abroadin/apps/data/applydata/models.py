@@ -170,7 +170,7 @@ class Education(GenericForeignkeyUniqueTogetherValidationMixin, models.Model):
         return value
 
     def compute_value(self):
-        return round(self.university.value * self.gpa_value, 2)
+        return round(self.university.value * float(self.gpa_value), 2)
 
     def get_value_label(self):
         value_range = ValueRange(VALUES_WITH_ATTRS["education"]['label'])

@@ -84,6 +84,10 @@ def apply_profile_admissions(apply_profile):
     return list(apply_profile.admissions.all().values_list('id', flat=True))
 
 
+def apply_profile_educations_ordered(apply_profile):
+    return list(apply_profile.educations.all().order_by_grade().values_list('id', flat=True))
+
+
 @admin.register(ApplyProfile)
 class ApplyProfileAdmin(admin.ModelAdmin):
     inlines = [
@@ -107,6 +111,7 @@ class ApplyProfileAdmin(admin.ModelAdmin):
             "CSV Export",
             fields=['id', 'name', 'gap',
                     'last_education__id', 'main_admission__id',
+                    apply_profile_educations_ordered,
                     apply_profile_admissions,
                     apply_profile_publications_count,
                     apply_profile_publications,
