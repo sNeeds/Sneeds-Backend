@@ -111,7 +111,7 @@ class ApplyProfileAdmin(admin.ModelAdmin):
             "CSV Export",
             fields=['id', 'name', 'gap',
                     'last_education__id', 'main_admission__id',
-                    apply_profile_educations_ordered,
+                    'bachelor_education__id', 'master_education__id', 'phd_education__id', 'post_doc_education__id',
                     apply_profile_admissions,
                     apply_profile_publications_count,
                     apply_profile_publications,

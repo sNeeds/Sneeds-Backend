@@ -6,7 +6,7 @@ from django.db.models import QuerySet
 
 from abroadin.apps.applyprofile.managers import AdmissionQuerySet
 from abroadin.apps.data.globaldata.models import University, Major, Country
-from abroadin.apps.data.applydata.models import Publication, Education, LanguageCertificate, Grade
+from abroadin.apps.data.applydata.models import Publication, Education, LanguageCertificate, Grade, GradeChoices
 from abroadin.apps.store.storeBase.models import Product
 
 User = get_user_model()
@@ -18,6 +18,42 @@ class ApplyProfile(models.Model):
     publications = GenericRelation(Publication, related_query_name='apply_profile')
     educations = GenericRelation(Education, related_query_name='apply_profile')
     language_certificates = GenericRelation(LanguageCertificate, related_query_name='apply_profile')
+
+    @property
+    def bachelor_education(self):
+        try:
+            return self.educations.all().get(grade=GradeChoices.BACHELOR)
+        except Education.DoesNotExist:
+            return None
+        except Education.MultipleObjectsReturned:
+            return list(self.educations.all().filter(grade=GradeChoices.BACHELOR))
+
+    @property
+    def master_education(self):
+        try:
+            return self.educations.all().get(grade=GradeChoices.MASTER)
+        except Education.DoesNotExist:
+            return None
+        except Education.MultipleObjectsReturned:
+            return list(self.educations.all().filter(grade=GradeChoices.MASTER))
+
+    @property
+    def phd_education(self):
+        try:
+            return self.educations.all().get(grade=GradeChoices.PHD)
+        except Education.DoesNotExist:
+            return None
+        except Education.MultipleObjectsReturned:
+            return list(self.educations.all().filter(grade=GradeChoices.PHD))
+
+    @property
+    def post_doc_education(self):
+        try:
+            return self.educations.all().get(grade=GradeChoices.POST_DOC)
+        except Education.DoesNotExist:
+            return None
+        except Education.MultipleObjectsReturned:
+            return list(self.educations.all().filter(grade=GradeChoices.POST_DOC))
 
     def last_education(self):
         education_qs = self.educations.all()
