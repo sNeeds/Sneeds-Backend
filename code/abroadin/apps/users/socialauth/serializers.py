@@ -67,11 +67,16 @@ class GoogleSocialAuthSerializer(serializers.Serializer):
         if user_data['aud'] != GOOGLE_CLIENT_ID:
             raise AuthenticationFailed('Wrong Google Client ID')
 
-        email = user_data['email']
-        first_name = user_data['given_name']
-        last_name = user_data['family_name']
-        provider = User.AuthProviderTypeChoices.GOOGLE
+        try:
+            email = user_data['email']
+            first_name = user_data['given_name']
+            last_name = user_data['family_name']
+        except KeyError as e:
+            raise ValidationError(
+                "Error getting user data from google, Key error was:" + e.__str__()
+            )
 
+        provider = User.AuthProviderTypeChoices.GOOGLE
         self.user = login_register_social_user(
             provider=provider, email=email, first_name=first_name, last_name=last_name
         )
