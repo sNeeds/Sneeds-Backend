@@ -170,9 +170,6 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         {'function_name': "_has_age",
          'information': {'section': 'personal', 'model': 'StudentDetailedInfo', 'fields': ['age'], 'id': 1},
          },
-        {'function_name': "_has_is_married",
-         'information': {'section': 'personal', 'model': 'StudentDetailedInfo', 'fields': ['is_married'], 'id': 2},
-         },
         {'function_name': "_has_gender",
          'information': {'section': 'personal', 'model': 'StudentDetailedInfo', 'fields': ['gender'], 'id': 3},
          },
@@ -347,11 +344,6 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
 
     def _has_age(self):
         if self.age is not None:
-            return True
-        return False
-
-    def _has_is_married(self):
-        if self.is_married is not None:
             return True
         return False
 
