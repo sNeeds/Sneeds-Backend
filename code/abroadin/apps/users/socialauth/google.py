@@ -1,4 +1,3 @@
-import google.oauth2.credentials
 import google_auth_oauthlib.flow
 
 from google.auth.exceptions import GoogleAuthError
@@ -47,7 +46,7 @@ class Google:
                 'openid'
             ],
         )
-        flow.redirect_uri = 'https://abroadin.com/auth/login'
+        flow.redirect_uri = 'https://abroadin.com/auth/oauth2/google'
 
         try:
             flow.fetch_token(code=auth_token)
