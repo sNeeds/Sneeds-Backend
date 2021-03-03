@@ -136,6 +136,7 @@ class StudentDetailedInfoAdmin(StudentDetailedInfoBaseAdmin):
             "Similar Profiles CSV Export",
             fields=['id', 'updated', 'user_id', 'user__email', 'user__phone_number',
                     'last_education__gpa', 'last_education__university__country', 'last_education__university__name',
+                    'bachelor_education__id', 'master_education__id', 'phd_education__id', 'post_doc_education__id',
                     get_destination_countries,
                     get_destination_universities,
                     get_similar_admission,

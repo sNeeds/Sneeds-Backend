@@ -8,7 +8,8 @@ from django.db import models
 from rest_framework.settings import api_settings
 from rest_framework.exceptions import ValidationError as DRFValidationError
 
-from abroadin.apps.data.applydata.models import Education, LanguageCertificate, Publication, Grade, SemesterYear
+from abroadin.apps.data.applydata.models import Education, LanguageCertificate, Publication, Grade, SemesterYear, \
+    GradeChoices
 from abroadin.apps.data.applydata.values.language import LANGUAGE_B_VALUE
 from abroadin.apps.estimation.form.variables import MISSING_LABEL, REWARDED_LABEL
 from abroadin.apps.estimation.form.managers import StudentDetailedInfoManager, WantToApplyManager
@@ -287,6 +288,42 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
 
     RELATED_WORK_EXPERIENCE_STORE_LABEL_RANGE = 2
     RELATED_WORK_EXPERIENCE_VIEW_LABEL_RANGE = 6
+
+    @property
+    def bachelor_education(self):
+        try:
+            return self.educations.all().get(grade=GradeChoices.BACHELOR)
+        except Education.DoesNotExist:
+            return None
+        except Education.MultipleObjectsReturned:
+            return list(self.educations.all().filter(grade=GradeChoices.BACHELOR))
+
+    @property
+    def master_education(self):
+        try:
+            return self.educations.all().get(grade=GradeChoices.MASTER)
+        except Education.DoesNotExist:
+            return None
+        except Education.MultipleObjectsReturned:
+            return list(self.educations.all().filter(grade=GradeChoices.MASTER))
+
+    @property
+    def phd_education(self):
+        try:
+            return self.educations.all().get(grade=GradeChoices.PHD)
+        except Education.DoesNotExist:
+            return None
+        except Education.MultipleObjectsReturned:
+            return list(self.educations.all().filter(grade=GradeChoices.PHD))
+
+    @property
+    def post_doc_education(self):
+        try:
+            return self.educations.all().get(grade=GradeChoices.POST_DOC)
+        except Education.DoesNotExist:
+            return None
+        except Education.MultipleObjectsReturned:
+            return list(self.educations.all().filter(grade=GradeChoices.POST_DOC))
 
     def _compute_rank(self):
         better_rank_qs = self.__class__.objects.filter(value__gt=self.value)
