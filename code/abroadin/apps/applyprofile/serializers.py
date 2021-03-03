@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from abroadin.apps.data.applydata import serializers as ad_serializers
-from abroadin.apps.data.globaldata import serializers as globaldata_serializers
+from abroadin.apps.data.globaldata import serializers as account_serializers
 
 from abroadin.apps.store.applyprofilestore.utils import get_user_bought_apply_profiles
 
@@ -102,8 +102,8 @@ class FullAdmissionSerializer(serializers.ModelSerializer):
     """
     accessibility_type = serializers.CharField(read_only=True, default=AccessibilityTypeChoices.UNLOCKED, source=' ')
 
-    destination = globaldata_serializers.UniversitySerializer()
-    major = globaldata_serializers.MajorSerializer()
+    destination = account_serializers.UniversitySerializer()
+    major = account_serializers.MajorSerializer()
     grade = ad_serializers.GradeSerializer()
     country = serializers.SerializerMethodField(method_name='get_country')
 
@@ -195,12 +195,12 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
         method_name="get_publications"
     )
 
-    educations = serializers.SerializerMethodField(
-        method_name="get_educations"
-    )
-
     last_education = serializers.SerializerMethodField(
         method_name="get_last_education"
+    )
+
+    educations = serializers.SerializerMethodField(
+        method_name="get_educations"
     )
 
     language_certificates = serializers.SerializerMethodField(
@@ -257,12 +257,15 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
 
     def represent_admissions(self, obj, is_unlocked, ):
         if is_unlocked:
-            objects = FullAdmissionSerializer(obj.admissions.all(), many=True, context=self.context).data
+            objects = FullAdmissionSerializer(obj.admissions.all().order_by_grade_and_des_rank(),
+                                              many=True, context=self.context).data
             accessibility_type = AccessibilityTypeChoices.UNLOCKED
         else:
             free_admissions, locked_admissions = obj.get_free_locked_admissions()
-            objects = PartialAdmissionSerializer(free_admissions, many=True, context=self.context).data + \
-                      LockedAdmissionSerializer(locked_admissions, many=True, context=self.context).data
+            objects = PartialAdmissionSerializer(free_admissions.order_by_grade_and_des_rank(),
+                                                 many=True, context=self.context).data + \
+                      LockedAdmissionSerializer(locked_admissions.order_by_grade_and_des_rank(),
+                                                many=True, context=self.context).data
             accessibility_type = AccessibilityTypeChoices.PARTIAL
 
         return {'accessibility_type': accessibility_type, 'objects': objects}
@@ -298,12 +301,15 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
 
     def represent_educations(self, obj, is_unlocked, ):
         if is_unlocked:
-            objects = FullEducationSerializer(obj.educations.all(), many=True, context=self.context).data
+            objects = FullEducationSerializer(obj.educations.all().order_by_grade(), many=True,
+                                              context=self.context).data
             accessibility_type = AccessibilityTypeChoices.UNLOCKED
         else:
             free_educations, locked_educations = obj.get_free_locked_educations()
-            objects = PartialEducationSerializer(free_educations, many=True, context=self.context).data + \
-                      LockedEducationSerializer(locked_educations, many=True, context=self.context).data
+            objects = PartialEducationSerializer(free_educations.order_by_grade(),
+                                                 many=True, context=self.context).data + \
+                      LockedEducationSerializer(locked_educations.order_by_grade(),
+                                                many=True, context=self.context).data
             accessibility_type = AccessibilityTypeChoices.PARTIAL
 
         return {'accessibility_type': accessibility_type, 'objects': objects}

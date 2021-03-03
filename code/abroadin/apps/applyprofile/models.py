@@ -61,9 +61,9 @@ class ApplyProfile(models.Model):
 
     def main_admission(self):
         admission_qs = self.admissions.all()
-        qs = admission_qs.order_by('-destination__rank').order_by_grade()
+        qs = admission_qs.order_by_grade_and_des_rank()
         if qs.exists():
-            return qs.last()
+            return qs.first()
         return None
 
     def get_free_locked_admissions(self) -> tuple:
