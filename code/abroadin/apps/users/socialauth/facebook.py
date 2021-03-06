@@ -4,7 +4,6 @@ from abroadin.settings.secure.APIs import FACEBOOK_CLIENT_ID, FACEBOOK_CLIENT_SE
 
 
 class Facebook:
-
     @staticmethod
     def validate(auth_token):
         graph = facebook.GraphAPI()
