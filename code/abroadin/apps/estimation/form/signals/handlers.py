@@ -9,3 +9,9 @@ def post_save_student_detailed_info(sender, instance, *args, **kwargs):
 
 
 post_save.connect(post_save_student_detailed_info, sender=StudentDetailedInfo)
+
+for obj in StudentDetailedInfo.objects.all():
+    print("hh")
+    if not obj.is_complete:
+        obj.print("Sss")
+        obj.delete()
