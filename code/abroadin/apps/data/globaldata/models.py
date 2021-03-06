@@ -1,3 +1,4 @@
+from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.contrib.auth import get_user_model
 
@@ -25,7 +26,10 @@ class BasicFormField(models.Model):
 class Country(models.Model):
     name = models.CharField(max_length=256, unique=True)
     search_name = models.CharField(max_length=256, unique=True)
-    picture = models.ImageField(null=True, blank=True, upload_to=get_image_upload_path("country-pictures"))
+    picture = models.FileField(
+        null=True, blank=True, upload_to=get_image_upload_path("country-pictures"),
+        validators=[FileExtensionValidator(['svg'])]
+    )
     slug = models.SlugField(unique=True, help_text="Lowercase pls")
 
     objects = CountryManager.as_manager()
