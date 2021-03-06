@@ -1,4 +1,5 @@
 from google.auth.exceptions import GoogleAuthError
+from facebook import GraphAPIError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, login_rule, user_eligible_for_login
 
 from django.contrib.auth import get_user_model
@@ -67,11 +68,16 @@ class GoogleSocialAuthSerializer(serializers.Serializer):
         if user_data['aud'] != GOOGLE_CLIENT_ID:
             raise AuthenticationFailed('Wrong Google Client ID')
 
-        email = user_data['email']
-        first_name = user_data['given_name']
-        last_name = user_data['family_name']
-        provider = User.AuthProviderTypeChoices.GOOGLE
+        try:
+            email = user_data['email']
+            first_name = user_data['given_name']
+            last_name = user_data['family_name']
+        except KeyError as e:
+            raise ValidationError(
+                "Error getting user data from Google, Key error was:" + e.__str__()
+            )
 
+        provider = User.AuthProviderTypeChoices.GOOGLE
         self.user = login_register_social_user(
             provider=provider, email=email, first_name=first_name, last_name=last_name
         )
@@ -91,7 +97,10 @@ class FacebookSocialAuthSerializer(serializers.Serializer):
         self.user = None
 
     def validate_auth_token(self, auth_token):
-        user_data = Facebook.validate(auth_token)
+        try:
+            user_data = Facebook.validate(auth_token)
+        except GraphAPIError as e:
+            raise ValidationError(e.__str__())
 
         try:
             email = user_data['email']
@@ -99,7 +108,7 @@ class FacebookSocialAuthSerializer(serializers.Serializer):
             last_name = user_data['last_name']
         except KeyError as e:
             raise ValidationError(
-                "Error getting user data from facebook, Key error was:" + e.__str__()
+                "Error getting user data from Facebook, Key error was:" + e.__str__()
             )
 
         provider = User.AuthProviderTypeChoices.FACEBOOK
@@ -107,3 +116,8 @@ class FacebookSocialAuthSerializer(serializers.Serializer):
             provider=provider, email=email, first_name=first_name, last_name=last_name
         )
         return auth_token
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        data['user'] = self.user
+        return data
