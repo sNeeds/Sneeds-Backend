@@ -1,0 +1,28 @@
+from abroadin.apps.estimation.form.models import StudentDetailedInfo
+from abroadin.apps.estimation.similarprofiles.tags import SimilarGPA, ExactGPA
+
+
+class Tagger:
+
+    def __init__(self, tag_classes: iter):
+        self.tag_classes = tag_classes
+        self.tags_field_title = {}
+        self.set_field_title()
+
+    def set_field_title(self):
+        for tag_class in self.tag_classes:
+            assert tag_class.annotation_field not in self.tags_field_title, 'Duplicate tags found! {}'.format(tag_class.annotation_field)
+            self.tags_field_title[tag_class.annotation_field] = tag_class.title
+
+    def tag_queryset(self, queryset, sdi: StudentDetailedInfo):
+        for tag_class in self.tag_classes:
+            queryset = tag_class().tag_queryset(queryset, sdi)
+        return queryset
+
+    def tag_object(self, obj, sdi: StudentDetailedInfo):
+        for tag_class in self.tag_classes:
+            obj = tag_class().tag_object(obj, sdi)
+        return obj
+
+
+SimilarProfilesTagger = Tagger(tag_classes=[SimilarGPA, ExactGPA])

@@ -3,6 +3,7 @@ from django.db.models import Q
 from abroadin.apps.data.globaldata.models import Major
 from abroadin.apps.applyprofile.models import ApplyProfile
 from abroadin.apps.data.globaldata.models import Country
+from abroadin.apps.estimation.similarprofiles.constraints import SIMILAR_GPA_OFFSET
 
 
 def get_preferred_apply_country():
@@ -104,7 +105,7 @@ class SimilarProfilesForForm:
 
     def _similar_profiles_for_data(self, majors, applied_grades, destination_countries, gpa_around):
         profiles = ApplyProfile.objects.all()
-        profiles = filter_around_gpa(profiles, gpa_around, offset=1)
+        profiles = filter_around_gpa(profiles, gpa_around, offset=SIMILAR_GPA_OFFSET)
         profiles = filter_same_want_to_apply_grades(profiles, applied_grades)
         profiles = filter_similar_majors(profiles, majors)
         profiles = filter_similar_home_and_destination(profiles, destination_countries)

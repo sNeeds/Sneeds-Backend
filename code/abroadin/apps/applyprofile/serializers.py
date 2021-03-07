@@ -9,6 +9,7 @@ from .models import ApplyProfile, Admission
 from ..data.globaldata.serializers import LockedUniversitySerializer, LockedMajorSerializer, UniversitySerializer \
     , MajorSerializer, CountrySerializer
 from ..data.applydata.serializers import LockedGradeSerializer
+from ..estimation.similarprofiles.taggers import SimilarProfilesTagger
 from ...base.values import AccessibilityTypeChoices
 
 RELATED_CLASSES = [
@@ -20,6 +21,30 @@ RELATED_CLASSES = [
         'hyperlink_format': None
     },
 ]
+
+
+class TagsSerializer(serializers.Serializer):
+
+    tags = serializers.SerializerMethodField(method_name='get_tags')
+
+    class Meta:
+        fields = ['tags']
+
+    def get_tags(self, instance):
+        tags = []
+        for field in SimilarProfilesTagger.tags_field_title.keys():
+            try:
+                if getattr(instance, field):
+                    tags.append(SimilarProfilesTagger.tags_field_title[field])
+            except Exception:
+                pass
+        return tags
+
+    def update(self, instance, validated_data):
+        raise NotImplementedError
+
+    def create(self, validated_data):
+        raise NotImplementedError
 
 
 class FullPublicationSerializer(ad_serializers.PublicationSerializer):
@@ -207,6 +232,10 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
         method_name='get_language_certificates',
     )
 
+    tags = serializers.SerializerMethodField(
+        method_name='get_tags',
+    )
+
     class Meta:
         model = ApplyProfile
         fields = [
@@ -220,6 +249,7 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
             'educations',
             'last_education',
             'language_certificates',
+            'tags',
         ]
 
     def to_representation(self, instance):
@@ -339,6 +369,16 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
             accessibility_type = AccessibilityTypeChoices.LOCKED
 
         return {'accessibility_type': accessibility_type, 'objects': objects}
+
+    def get_tags(self, obj):
+        tags = []
+        for field in SimilarProfilesTagger.tags_field_title.keys():
+            try:
+                if getattr(obj, field):
+                    tags.append(SimilarProfilesTagger.tags_field_title[field])
+            except AttributeError:
+                pass
+        return tags
 
 
 def serialize_language_certificates(queryset, parent_serializer, related_classes):

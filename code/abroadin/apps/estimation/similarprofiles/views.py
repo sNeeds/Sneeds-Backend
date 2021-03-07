@@ -4,7 +4,8 @@ from abroadin.base.api.generics import CListAPIView
 from abroadin.apps.estimation.form.models import StudentDetailedInfo
 from abroadin.apps.applyprofile.serializers import ApplyProfileSerializer
 
-from .functions import  SimilarProfilesForForm
+from .functions import SimilarProfilesForForm
+from .taggers import SimilarProfilesTagger
 
 
 class ProfilesListAPIView(CListAPIView):
@@ -22,4 +23,5 @@ class ProfilesListAPIView(CListAPIView):
         form = self.get_form()
         similar_profiles_for_form = SimilarProfilesForForm(form)
         profiles = similar_profiles_for_form.find_similar_profiles()
-        return profiles[:7]
+        tagged_profiles = SimilarProfilesTagger.tag_queryset(profiles, form)
+        return tagged_profiles[:7]
