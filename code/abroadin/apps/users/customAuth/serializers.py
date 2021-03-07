@@ -57,7 +57,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
         extra_kwargs = {
             'password': {'write_only': True},
-            'phone_number': {'required': True},
+            'phone_number': {'required': False},
             'receive_marketing_email': {'required': True},
             'first_name': {'required': False},
             'last_name': {'required': False}
@@ -79,6 +79,8 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         return value.lower()
 
     def validate_phone_number(self, value):
+        if value is '':
+            return None
         validate_phone_number(value)
         return value
 
@@ -87,7 +89,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             email=validated_data.get('email'),
             phone_number=validated_data.get('phone_number'),
             receive_marketing_email=validated_data.get('receive_marketing_email'),
-            user_type=1,  # Only student can register with serializer
+            user_type=User.UserTypeChoices.STUDENT,
             first_name=validated_data.get('first_name'),
             last_name=validated_data.get('last_name')
         )
@@ -169,7 +171,6 @@ class SafeUserDataSerializer(serializers.ModelSerializer):
 
 
 class MyAccountSerializer(UserSerializer):
-
     class Meta(UserSerializer.Meta):
         fields = UserSerializer.Meta.fields + ['user_type', ]
 
