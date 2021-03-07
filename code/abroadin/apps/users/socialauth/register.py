@@ -32,6 +32,8 @@ def login_register_social_user(email, provider, first_name, last_name):
 
     if user_exists:
         user = filtered_user[0]
+        user.auth_provider = provider
+        user.save()
     else:
         user = _register_user(
             email=email, first_name=first_name, last_name=last_name,
