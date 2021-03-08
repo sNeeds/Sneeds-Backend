@@ -1,8 +1,12 @@
 from django.http import Http404
+from rest_framework.permissions import IsAuthenticated
 
 from abroadin.base.api.generics import CListAPIView
 from abroadin.apps.estimation.form.models import StudentDetailedInfo
 from abroadin.apps.applyprofile.serializers import ApplyProfileSerializer
+
+from abroadin.apps.estimation.form.permissions import IsFormOwner, CompletedForm
+from abroadin.apps.users.customAuth.permissions import UserEmailIsVerified
 
 from .functions import SimilarProfilesForForm
 from .taggers import SimilarProfilesTagger
@@ -11,6 +15,7 @@ from .taggers import SimilarProfilesTagger
 class ProfilesListAPIView(CListAPIView):
     lookup_url_kwarg = 'form_id'
     serializer_class = ApplyProfileSerializer
+    permission_classes = [IsAuthenticated, IsFormOwner, CompletedForm, UserEmailIsVerified]
 
     def get_form(self):
         form_id = self.kwargs[self.lookup_url_kwarg]
@@ -33,6 +38,6 @@ class ProfilesListAPIView(CListAPIView):
         # print(tagged_profiles.values_list('educations__university__name'))
         print(tagged_profiles.filter(exact_home_university=True, educations__major__name='Nanomaterials').count())
         print(tagged_profiles.filter(exact_home_university=True, exact_home_major=True).count())
-        print('aaa', tagged_profiles.filter(aaa=False).count())
-        print('aaa', tagged_profiles.filter(aaa=True).count())
+        # print('aaa', tagged_profiles.filter(aaa=False).count())
+        # print('aaa', tagged_profiles.filter(aaa=True).count())
         return tagged_profiles[:7]

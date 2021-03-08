@@ -69,17 +69,18 @@ class SimilarProfilesForForm:
     def __init__(self, form):
         self.form = form
 
-    def _extract_form_majors(self):
-        want_to_apply = self.form.want_to_apply
-        education_qs = self.form.educations.all()
+    def _extract_form_home_majors(self, form):
+        education_qs = form.educations.all()
 
         education_major_ids = education_qs.get_majors_id_list()
-        education_majors_qs = Major.objects.id_to_qs(education_major_ids)
-        want_to_apply_majors_qs = want_to_apply.majors.all()
+        return Major.objects.id_to_qs(education_major_ids)
 
-        related_majors = education_majors_qs | want_to_apply_majors_qs
+    def _extract_form_wta_majors(self, form):
+        want_to_apply = form.want_to_apply
+        return want_to_apply.majors.all()
 
-        return related_majors
+    def _extract_form_majors(self):
+        return self._extract_form_home_majors(self.form) | self._extract_form_wta_majors(self.form)
 
     def _get_related_majors(self, majors):
         majors_parents = majors.top_nth_parents(3)

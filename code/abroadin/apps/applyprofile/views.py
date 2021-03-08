@@ -30,7 +30,7 @@ class ApplyProfileDetailAPIView(CRetrieveAPIView):
         obj = super().get_object()
 
         # qs = self.get_queryset().filter(pk=obj.pk)
-        comparison_sdi = self.request.query_params.get('comparison_student_detailed_info', None)
+        comparison_sdi = self.request.query_params.get('comparison-student-detailed-info', None)
         if comparison_sdi:
             # obj.similar_gpa = True
             try:
