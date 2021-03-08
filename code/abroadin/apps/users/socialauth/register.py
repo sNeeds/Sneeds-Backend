@@ -9,8 +9,9 @@ def _register_user(*args, **kwargs):
     user = User.objects.create_user(**kwargs)
     user.is_verified = True
     user.is_email_verified = True
+    user.set_unusable_password()
     user.save()
-
+    print('**->> user registered, Password is: ' , user.password)
     return user
 
 

@@ -79,7 +79,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         return value.lower()
 
     def validate_phone_number(self, value):
-        if value is '':
+        if value == '':
             return None
         validate_phone_number(value)
         return value
@@ -176,17 +176,19 @@ class MyAccountSerializer(UserSerializer):
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-
     def validate(self, attrs):
-        attrs[self.username_field] = attrs[self.username_field].lower()
-
+        attrs['email'] = attrs['email'].lower()
         try:
-            user = User.objects.get(email=attrs[self.username_field])
-            if not user.check_password(attrs['password']):
-                raise AuthenticationFailed({"detail": "Password is incorrect."})
-
+            user = User.objects.get(email=attrs['email'])
         except User.DoesNotExist:
             raise AuthenticationFailed({"detail": "No user found with this email."})
+
+        if not user.has_usable_password():
+            raise AuthenticationFailed(
+                {'detail': f'You have logged in with {user.auth_provider}, Please login with {user.auth_provider}'})
+
+        if not user.check_password(attrs['password']):
+            raise AuthenticationFailed({"detail": "Password is incorrect."})
 
         data = super().validate(attrs)
         return data

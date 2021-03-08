@@ -10,10 +10,8 @@ from abroadin.base.api.viewsets import CAPIView
 from abroadin.base.api import generics
 
 from . import serializers
-from .serializers import (UserRegisterSerializer,
-                          SubscribeSerializer)
-from .permissions import (NotLoggedInPermission,
-                          SameUserPermission)
+from .serializers import (UserRegisterSerializer, SubscribeSerializer)
+from .permissions import (NotLoggedInPermission, SameUserPermission)
 from .utils import send_verification_code, check_email_assigned_to_user, set_user_receive_marketing_email
 
 User = get_user_model()
@@ -89,4 +87,3 @@ class SubscribeAPIView(generics.CCreateAPIView):
             data['message'] = "A confirmation email has been sent. please check your inbox, Spam and Promotions" \
                               " folders also."
         return Response(data, status=status.HTTP_201_CREATED)
-
