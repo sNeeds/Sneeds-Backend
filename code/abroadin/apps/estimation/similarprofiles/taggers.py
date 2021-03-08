@@ -1,5 +1,5 @@
 from abroadin.apps.estimation.form.models import StudentDetailedInfo
-from abroadin.apps.estimation.similarprofiles.tags import SimilarGPA, ExactGPA
+from abroadin.apps.estimation.similarprofiles.tags import SimilarGPA, ExactGPA, ExactHomeUniversity, ExactHomeMajor
 
 
 class Tagger:
@@ -11,12 +11,21 @@ class Tagger:
 
     def set_field_title(self):
         for tag_class in self.tag_classes:
-            assert tag_class.annotation_field not in self.tags_field_title, 'Duplicate tags found! {}'.format(tag_class.annotation_field)
+            assert tag_class.annotation_field not in self.tags_field_title,\
+                'Duplicate tag annotation field found! {} from {} class'.format(tag_class.annotation_field, tag_class)
+            assert tag_class.title not in self.tags_field_title.values(),\
+                'Duplicate tag title found! {} from {} class'.format(tag_class.title, tag_class)
             self.tags_field_title[tag_class.annotation_field] = tag_class.title
 
     def tag_queryset(self, queryset, sdi: StudentDetailedInfo):
         for tag_class in self.tag_classes:
             queryset = tag_class().tag_queryset(queryset, sdi)
+        return queryset
+
+    def tag_queryset2(self, queryset, sdi: StudentDetailedInfo):
+        annotation_dict = {}
+        for tag_class in self.tag_classes:
+            annotation_dict.update(tag_class().get_annotation_dict(queryset, sdi))
         return queryset
 
     def tag_object(self, obj, sdi: StudentDetailedInfo):
@@ -25,4 +34,4 @@ class Tagger:
         return obj
 
 
-SimilarProfilesTagger = Tagger(tag_classes=[SimilarGPA, ExactGPA])
+SimilarProfilesTagger = Tagger(tag_classes=[SimilarGPA, ExactGPA, ExactHomeUniversity, ExactHomeMajor])
