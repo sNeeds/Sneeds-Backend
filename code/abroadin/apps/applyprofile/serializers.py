@@ -230,6 +230,8 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
         self.cached_user_bought_apply_profiles_id = None
 
     def _is_unlocked(self, obj):
+        return True #Temporary for Norooz campaign
+
         assert self.context is not None, "context is None"
         assert self.context.get('request') is not None, "context['request'] is None"
 
