@@ -57,7 +57,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
         extra_kwargs = {
             'password': {'write_only': True},
-            'phone_number': {'required': True},
+            'phone_number': {'required': False},
             'receive_marketing_email': {'required': True},
             'first_name': {'required': False},
             'last_name': {'required': False}
@@ -79,6 +79,8 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         return value.lower()
 
     def validate_phone_number(self, value):
+        if value == '':
+            return None
         validate_phone_number(value)
         return value
 
@@ -87,7 +89,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             email=validated_data.get('email'),
             phone_number=validated_data.get('phone_number'),
             receive_marketing_email=validated_data.get('receive_marketing_email'),
-            user_type=1,  # Only student can register with serializer
+            user_type=User.UserTypeChoices.STUDENT,
             first_name=validated_data.get('first_name'),
             last_name=validated_data.get('last_name')
         )
@@ -169,23 +171,24 @@ class SafeUserDataSerializer(serializers.ModelSerializer):
 
 
 class MyAccountSerializer(UserSerializer):
-
     class Meta(UserSerializer.Meta):
         fields = UserSerializer.Meta.fields + ['user_type', ]
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-
     def validate(self, attrs):
-        attrs[self.username_field] = attrs[self.username_field].lower()
-
+        attrs['email'] = attrs['email'].lower()
         try:
-            user = User.objects.get(email=attrs[self.username_field])
-            if not user.check_password(attrs['password']):
-                raise AuthenticationFailed({"detail": "Password is incorrect."})
-
+            user = User.objects.get(email=attrs['email'])
         except User.DoesNotExist:
             raise AuthenticationFailed({"detail": "No user found with this email."})
+
+        if not user.has_usable_password():
+            raise AuthenticationFailed(
+                {'detail': f'You have logged in with {user.auth_provider}, Please login with {user.auth_provider}'})
+
+        if not user.check_password(attrs['password']):
+            raise AuthenticationFailed({"detail": "Password is incorrect."})
 
         data = super().validate(attrs)
         return data

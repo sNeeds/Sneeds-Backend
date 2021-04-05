@@ -50,7 +50,7 @@ class WantToApply(models.Model):
 
     @property
     def is_complete(self):
-        check_fields = ['countries', 'grades', 'semester_years']
+        check_fields = ['countries', 'grades']
         if not self:
             return False
         completed = True
@@ -171,15 +171,23 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         {'function_name': "_has_age",
          'information': {'section': 'personal', 'model': 'StudentDetailedInfo', 'fields': ['age'], 'id': 1},
          },
-        {'function_name': "_has_gender",
-         'information': {'section': 'personal', 'model': 'StudentDetailedInfo', 'fields': ['gender'], 'id': 3},
+        {'function_name': "_has_academic_break",
+         'information': {'section': 'personal', 'model': 'StudentDetailedInfo', 'fields': ['academic_break'], 'id': 2},
+         },
+        {'function_name': "_has_powerful_recommendation",
+         'information': {'section': 'personal', 'model': 'StudentDetailedInfo', 'fields': ['powerful_recommendation'],
+                         'id': 3},
+         },
+        {'function_name': "_has_related_work_experience",
+         'information': {'section': 'personam', 'model': 'StudentDetailedInfo', 'fields': ['related_work_experience'],
+                         'id': 4},
          },
         {'function_name': "_has_education",
-         'information': {'section': 'academic_degree', 'model': 'Education', 'fields': [], 'id': 4},
+         'information': {'section': 'academic_degree', 'model': 'Education', 'fields': [], 'id': 5},
          },
         {'function_name': "_has_completed_want_to_apply",
          'information': {'section': 'apply_destination', 'model': 'WantToApply',
-                         'fields': ['countries', 'grades', 'semester_years'], 'id': 5},
+                         'fields': ['countries', 'grades'], 'id': 6},
          },
     ]
 
@@ -387,19 +395,22 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         return value
 
     def _has_age(self):
-        if self.age is not None:
-            return True
-        return False
+        return self.age is not None
+
+    def _has_academic_break(self):
+        return self.academic_break is not None
 
     def _has_gender(self):
-        if self.gender is not None:
-            return True
-        return False
+        return self.gender is not None
+
+    def _has_powerful_recommendation(self):
+        return self.powerful_recommendation is not None
+
+    def _has_related_work_experience(self):
+        return self.related_work_experience is not None
 
     def _has_education(self):
-        if self.educations.all().exists():
-            return True
-        return False
+        return self.educations.all().exists()
 
     def get_want_to_apply_or_none(self):
         try:

@@ -57,8 +57,6 @@ class FullPublicationSerializer(ad_serializers.PublicationSerializer):
     related_fields = ad_serializers.PublicationSerializer.related_fields
     accessibility_type = serializers.CharField(read_only=True, default=AccessibilityTypeChoices.UNLOCKED, source=' ')
 
-    # content_type = GenericContentTypeRelatedField(related_classes=RELATED_CLASSES)
-
     class Meta(ad_serializers.PublicationSerializer.Meta):
         fields = ad_serializers.PublicationSerializer.Meta.fields + ['accessibility_type']
 

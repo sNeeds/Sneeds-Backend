@@ -1,19 +1,19 @@
 import facebook
 
+from abroadin.settings.secure.APIs import FACEBOOK_CLIENT_ID, FACEBOOK_CLIENT_SECRET
+
 
 class Facebook:
-    """
-    Facebook class to fetch the user info and return it
-    """
-
     @staticmethod
     def validate(auth_token):
-        """
-        validate method Queries the facebook GraphAPI to fetch the user info
-        """
-        try:
-            graph = facebook.GraphAPI(access_token=auth_token)
-            profile = graph.request('/me?fields=name,email')
-            return profile
-        except:
-            return "The token is invalid or expired."
+        graph = facebook.GraphAPI()
+        access_token = graph.get_access_token_from_code(
+            code=auth_token,
+            redirect_uri='https://abroadin.com/auth/oauth2/facebook',
+            app_id=FACEBOOK_CLIENT_ID,
+            app_secret=FACEBOOK_CLIENT_SECRET
+        )['access_token']
+
+        graph = facebook.GraphAPI(access_token=access_token)
+        profile = graph.request('/me?fields=first_name,last_name,email')
+        return profile

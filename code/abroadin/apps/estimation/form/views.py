@@ -9,7 +9,7 @@ from abroadin.base.api.permissions import permission_class_factory
 
 from .models import StudentDetailedInfo
 from .serializers import StudentDetailedInfoSerializer, StudentDetailedInfoRequestSerializer
-from .permissions import OnlyOneFormPermission, SameUserOrNone, UserAlreadyHasForm, IsFormOwner
+from .permissions import OnlyOneFormPermission, SameUserOrNone, UserAlreadyHasForm
 
 
 class StudentDetailedInfoListCreateView(generics.CListCreateAPIView):
