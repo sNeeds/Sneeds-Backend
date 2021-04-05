@@ -1,6 +1,7 @@
+import time
+
 from abroadin.apps.estimation.form.models import StudentDetailedInfo
-from abroadin.apps.estimation.similarprofiles.tags import SimilarGPA, ExactGPA, ExactHomeUniversity, ExactHomeMajor, \
-    SimilarHomeMajor
+from . import tags
 
 
 class Tagger:
@@ -19,14 +20,27 @@ class Tagger:
             self.tags_field_title[tag_class.annotation_field] = tag_class.title
 
     def tag_queryset(self, queryset, sdi: StudentDetailedInfo):
+        start_time_ = time.time()
         for tag_class in self.tag_classes:
+            start_time = time.time()
             queryset = tag_class().tag_queryset(queryset, sdi)
+            print(tag_class.title, time.time() - start_time)
+        print('end of loop', time.time() - start_time_)
         return queryset
 
     def tag_queryset2(self, queryset, sdi: StudentDetailedInfo):
         annotation_dict = {}
         for tag_class in self.tag_classes:
             annotation_dict.update(tag_class().get_annotation_dict(queryset, sdi))
+        return queryset.annotate(**annotation_dict)
+
+    def tag_queryset3(self, queryset, sdi: StudentDetailedInfo):
+        start_time_ = time.time()
+        for tag_class in self.tag_classes:
+            start_time = time.time()
+            queryset = tag_class().tag_queryset2(queryset, sdi)
+            print(tag_class.title, time.time() - start_time)
+        print('end of loop', time.time() - start_time_)
         return queryset
 
     def tag_object(self, obj, sdi: StudentDetailedInfo):
@@ -42,9 +56,17 @@ class Tagger:
         return object_queryset.annotate(annotation_dict).first()
 
 
-SimilarProfilesTagger = Tagger(tag_classes=[SimilarGPA,
-                                            ExactGPA,
-                                            ExactHomeUniversity,
-                                            ExactHomeMajor,
-                                            SimilarHomeMajor,
-                                            ])
+SimilarProfilesTagger = Tagger(tag_classes=[
+    tags.SimilarGPA,
+    tags.ExactGPA,
+
+    tags.ExactHomeUniversity,
+    tags.SimilarHomeUniversity,
+
+    tags.ExactHomeMajor,
+    tags.SimilarHomeMajor,
+
+    tags.ExactDestinationMajor,
+    tags.SimilarDestinationMajor,
+
+])

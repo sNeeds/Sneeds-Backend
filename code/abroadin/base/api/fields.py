@@ -1,3 +1,5 @@
+import time
+
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import gettext_lazy as _
 
@@ -6,7 +8,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SerializerMethodField
 
-from abroadin.base.api.serializers import generic_hyperlinked_related_method
+from abroadin.base.api.serializers.serializers import generic_hyperlinked_related_method
 
 APP_MODEL_SEPARATOR = '__'
 
@@ -58,7 +60,7 @@ class GenericRelatedField(serializers.RelatedField):
         raise AssertionError("ContentTypeRelatedField wrong instance.")
 
 
-class GenericContentTypeRelatedField(serializers.RelatedField):
+class GenericContentTypeRelatedField(serializers.Field):
     """
     Sample right definition of related_classes
     related_classes = [
@@ -82,15 +84,26 @@ class GenericContentTypeRelatedField(serializers.RelatedField):
     allowed_content_types = None
 
     def __init__(self, **kwargs):
+        # start_time = time.time()
         self.related_classes = kwargs.pop('related_classes', None)
         assert self.related_classes is None or isinstance(self.related_classes, list), \
             _("related classes should be an object of list")
+        # print('init called')
 
         self.queryset = []
+        # finish_time_1 = time.time()
         super().__init__(**kwargs)
+        # finish_time_2 = time.time()
+
+        # print('init with super calling elapsed ', finish_time_2 - start_time)
+        # print('init elapsed ', finish_time_1 - start_time)
 
     def bind(self, field_name, parent):
+
+        # print('bind called')
+        # start_time_1 = time.time()
         super().bind(field_name, parent)
+        # start_time_2 = time.time()
         # TODO iterate over parents to discover related classes
         if self.related_classes is None or len(self.related_classes) == 0:
             self.related_classes = self.parent.related_classes
@@ -103,6 +116,10 @@ class GenericContentTypeRelatedField(serializers.RelatedField):
         if len(self.queryset) == 0:
             self.queryset = self.perform_query_set()
 
+        t = time.time()
+        # print('bind with super calling elapsed ', t - start_time_1)
+        # print('bind elapsed ', t - start_time_2)
+
     def to_internal_value(self, data):
         if data not in self.allowed_content_types:
             raise serializers.ValidationError({"content_type": _("ContentTypeRelatedField wrong instance.")}, code=400)
@@ -110,23 +127,33 @@ class GenericContentTypeRelatedField(serializers.RelatedField):
         return ContentType.objects.get(app_label=app_label, model=model)
 
     def to_representation(self, value):
+        start_time = time.time()
         ret = _get_content_type_identifier(value)
         assert ret in self.allowed_content_types, _("Object is not allowed to be serialized through this"
                                                     " related serializer.\n"
                                                     "object type: {}  allowed_content_types: {}"
                                                     .format(ret, self.allowed_content_types))
+        # print('to_representation elapsed', time.time() - start_time)
         return ret
 
     def perform_query_set(self):
-        query_set = ContentType.objects.none()
+        l = []
         for module in self.related_classes:
-            content_type = ContentType.objects.get_for_model(model=module['model_class'])
-            query_set |= ContentType.objects.filter(app_label=content_type.app_label, model=content_type.model)
-        return query_set
+            l.append(ContentType.objects.get_for_model(model=module['model_class']).id)
+        return ContentType.objects.filter(id__in=l)
 
     def perform_allowed_content_types(self):
         return [_get_content_type_identifier(ContentType.objects.get_for_model(module['model_class']))
                 for module in self.related_classes]
+
+    # def get_attribute(self, instance):
+    #     start_time = time.time()
+    #     # ret = super().get_attribute(instance)
+    #     ret = getattr(instance, self.source)
+    #     print('get attribute elapsed: ', time.time() - start_time)
+    #     print('ret ret ret ret', ret)
+    #     print('ret type', type(ret))
+    #     return ret
 
 
 class GenericContentObjectRelatedURL(SerializerMethodField):
