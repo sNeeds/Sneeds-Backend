@@ -267,17 +267,18 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
             'tags',
         ]
 
-    # def to_representation(self, instance):
-    #     self.clear_local_cache()
-    #     return super().to_representation(instance)
+    def to_representation(self, instance):
+        self.clear_local_cache()
+        return super().to_representation(instance)
 
     def clear_local_cache(self):
         self.cached_user_bought_apply_profiles_id = None
 
     def _is_unlocked(self, obj):
         path = resolve(self.context['request'].path)
-        return True
         if path.url_name == 'similar-profiles-list' and path.app_name == 'estimation.similarprofiles':
+            return True
+        if path.url_name == 'similar-profiles-list-v2' and path.app_name == 'estimation.similarprofiles':
             return True
 
         assert self.context is not None, "context is None"
@@ -333,19 +334,6 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
             accessibility_type = AccessibilityTypeChoices.PARTIAL
 
         return {'accessibility_type': accessibility_type, 'objects': objects}
-
-    def get_main_admission(self, obj):
-        return self.represent_main_admission(obj, self._is_unlocked(obj))
-
-    def represent_main_admission(self, obj, is_unlocked):
-        if is_unlocked:
-            obj = FullAdmissionSerializer(obj.main_admission(), many=False, context=self.context).data
-            accessibility_type = AccessibilityTypeChoices.UNLOCKED
-        else:
-            obj = PartialAdmissionSerializer(obj.main_admission(), many=False, context=self.context).data
-            accessibility_type = AccessibilityTypeChoices.PARTIAL
-
-        return {'accessibility_type': accessibility_type, 'object': obj}
 
     def get_publications(self, obj):
         return self.represent_publications(obj, self._is_unlocked(obj))
@@ -421,25 +409,13 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
 
         return ret
 
-    def get_last_education(self, obj):
-        return self.represent_last_education(obj, self._is_unlocked(obj))
-
-    def represent_last_education(self, obj, is_unlocked):
-        if is_unlocked:
-            obj = FullEducationSerializer(obj.last_education(), many=False, context=self.context).data
-            accessibility_type = AccessibilityTypeChoices.UNLOCKED
-        else:
-            obj = PartialEducationSerializer(obj.last_education(), many=False, context=self.context).data
-            accessibility_type = AccessibilityTypeChoices.PARTIAL
-
-        return {'accessibility_type': accessibility_type, 'object': obj}
-
     def get_language_certificates(self, obj):
         return self.represent_language_certificates(obj, self._is_unlocked(obj))
 
     def represent_language_certificates(self, obj, is_unlocked, ):
         if is_unlocked:
-            objects = serialize_language_certificates(obj.language_certificates.all(), self, RELATED_CLASSES)
+            objects = serialize_language_certificates(obj.language_certificates.select_related('content_type').all(),
+                                                      self, RELATED_CLASSES)
             accessibility_type = AccessibilityTypeChoices.UNLOCKED
         else:
             objects = []
