@@ -40,7 +40,7 @@ class ProfilesListAPIView(CListAPIView):
         similar_profiles_for_form = SimilarProfilesForForm(form)
         profiles = similar_profiles_for_form.find_similar_profiles()
         # print('count', profiles.aggregate(Count('educations')))
-        tagged_profiles = SimilarProfilesTagger.tag_queryset3(profiles, form)
+        # tagged_profiles = SimilarProfilesTagger.tag_queryset3(profiles, form)
         # print(tagged_profiles.count())
         # print(tagged_profiles.values_list('educations__major__name', flat=True))
         # print(tagged_profiles.filter(educations__major__name='Materials engineering').count())
@@ -58,7 +58,7 @@ class ProfilesListAPIView(CListAPIView):
         # s = 'similar_gpa'
         # print(s, True, tagged_profiles.filter(**{s: True}).count())
         # print(s, False, tagged_profiles.filter(**{s: False}).count())
-        return tagged_profiles.all()
+        return profiles[:7]
 
 
 class ProfilesListAPIViewVersion2(ProfilesListAPIView):
@@ -82,7 +82,7 @@ class ProfilesListAPIViewVersion2(ProfilesListAPIView):
             res['filters'][title] = querysets[title].only('id').values_list('id', flat=True)
             all_ids = all_ids.union(set(res['filters'][title]))
 
-        print('all_ids', len(all_ids))
+        # print('all_ids', len(all_ids))
 
         queryset = ApplyProfile.objects.prefetch_related('educations', 'publications', 'language_certificates')\
             .filter(id__in=all_ids)
