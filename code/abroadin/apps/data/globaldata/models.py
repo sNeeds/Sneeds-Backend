@@ -1,3 +1,5 @@
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.contrib.auth import get_user_model
@@ -42,6 +44,19 @@ class Country(models.Model):
 
 
 class University(models.Model):
+    class EstablishmentTypeChoices(models.TextChoices):
+        COLLEGE = 'College'
+        ENGLISH_INSTITUTE = 'English Institute'
+        UNIVERSITY = 'University'
+        HIGH_SCHOOL = 'High School'
+
+    class AccommodationTypesChoices(models.TextChoices):
+        OFF_CAMPUS_ON_CAMPUS = 'off-campus and on-campus'
+
+    class InstitutionTypeChoices(models.TextChoices):
+        PUBLIC = 'Public'
+        PRIVATE = 'Private'
+
     name = models.CharField(max_length=256, unique=True)
     search_name = models.CharField(blank=False, max_length=1024, unique=True)
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
@@ -49,6 +64,23 @@ class University(models.Model):
     picture = models.ImageField(null=True, blank=True, upload_to=get_image_upload_path("university-pictures"))
     rank = models.PositiveIntegerField()
     is_college = models.BooleanField(default=False)
+
+    submission_through = models.CharField(max_length=128, null=True, blank=True)
+    submission_path_note = models.CharField(max_length=256, null=True, blank=True)
+    currency = models.CharField(max_length=4, null=True, blank=True)
+    institution_type = models.CharField(max_length=16, null=True, blank=True)
+    accommodation_types = models.CharField(max_length=32, null=True, blank=True)
+    accommodation_information = models.TextField(null=True, blank=True)
+    coop_participating = models.BooleanField(null=True, blank=True)
+    coop_length = models.IntegerField(null=True, blank=True)
+    esl_is_academic_dependant = models.BooleanField(null=True, blank=True)
+    establishment_type = models.CharField(max_length=32, null=True, blank=True)
+    founded_year = models.IntegerField(null=True, blank=True)
+    living_cost = models.IntegerField(null=True, blank=True)
+    avg_tuition = models.IntegerField(null=True, blank=True)
+    total_students = models.IntegerField(null=True, blank=True)
+    international_students = models.IntegerField(null=True, blank=True)
+    conditional_acceptance = models.TextField(null=True, blank=True)
 
     objects = UniversityManager.as_manager()
 
@@ -112,3 +144,36 @@ class Major(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Address(models.Model):
+    street = models.CharField(max_length=128, null=True, blank=True)
+    city = models.CharField(max_length=32, null=True, blank=True)
+    province = models.CharField(max_length=32, null=True, blank=True)
+    postal = models.CharField(max_length=16, null=True, blank=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6)
+    content_type = models.ForeignKey(
+        ContentType, on_delete=models.CASCADE
+    )
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey(
+        'content_type', 'object_id',
+    )
+
+
+class Social(models.Model):
+    content_type = models.ForeignKey(
+        ContentType, on_delete=models.CASCADE
+    )
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey(
+        'content_type', 'object_id',
+    )
+
+    video = models.URLField(null=True, blank=True)
+    website = models.URLField(null=True, blank=True)
+    facebook = models.URLField(null=True, blank=True)
+    twitter = models.URLField(null=True, blank=True)
+    linkedin = models.URLField(null=True, blank=True)
+    instagram = models.URLField(null=True, blank=True)
