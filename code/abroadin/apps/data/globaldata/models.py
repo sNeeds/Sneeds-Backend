@@ -68,13 +68,16 @@ class University(models.Model):
     submission_through = models.CharField(max_length=128, null=True, blank=True)
     submission_path_note = models.CharField(max_length=256, null=True, blank=True)
     currency = models.CharField(max_length=4, null=True, blank=True)
-    institution_type = models.CharField(max_length=16, null=True, blank=True)
-    accommodation_types = models.CharField(max_length=32, null=True, blank=True)
+    institution_type = models.CharField(choices=InstitutionTypeChoices.choices,
+                                        max_length=16, null=True, blank=True)
+    accommodation_types = models.CharField(choices=AccommodationTypesChoices.choices,
+                                           max_length=32, null=True, blank=True)
     accommodation_information = models.TextField(null=True, blank=True)
     coop_participating = models.BooleanField(null=True, blank=True)
     coop_length = models.IntegerField(null=True, blank=True)
     esl_is_academic_dependant = models.BooleanField(null=True, blank=True)
-    establishment_type = models.CharField(max_length=32, null=True, blank=True)
+    establishment_type = models.CharField(choices=EstablishmentTypeChoices.choices,
+                                          max_length=32, null=True, blank=True)
     founded_year = models.IntegerField(null=True, blank=True)
     living_cost = models.IntegerField(null=True, blank=True)
     avg_tuition = models.IntegerField(null=True, blank=True)
