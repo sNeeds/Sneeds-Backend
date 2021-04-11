@@ -19,7 +19,7 @@ class Program(models.Model):
     max_length = models.IntegerField()
     coop_length = models.IntegerField(default=0)
 
-    length_breakdown = models.CharField(null=True, blank=True)
+    length_breakdown = models.CharField(max_length=1024, null=True, blank=True)
     tuition = models.IntegerField()
     application_fee = models.IntegerField()
     other_fees = models.ManyToManyField(ProgramOtherFee)
