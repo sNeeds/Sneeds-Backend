@@ -298,6 +298,13 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
     RELATED_WORK_EXPERIENCE_VIEW_LABEL_RANGE = 6
 
     @property
+    def last_education(self):
+        if not hasattr(self, '_last_education'):
+            self._last_education = self.educations.last_education()
+        return self._last_education
+
+
+    @property
     def bachelor_education(self):
         try:
             return self.educations.all().get(grade=GradeChoices.BACHELOR)
