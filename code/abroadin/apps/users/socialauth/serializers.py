@@ -52,13 +52,23 @@ class TokenObtainPairWithoutPasswordSerializer(TokenObtainPairSerializer):
         return data
 
 
-class GoogleSocialAuthSerializer(serializers.Serializer):
+class BaseSocialAuthSerizlier(serializers.Serializer):
     auth_token = serializers.CharField()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.user = None
 
+    def validate_auth_token(self, auth_token):
+        raise NotImplementedError
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        data['user'] = self.user
+        return data
+
+
+class GoogleSocialAuthSerializer(BaseSocialAuthSerizlier):
     def validate_auth_token(self, auth_token):
         try:
             user_data = Google.validate(auth_token)
@@ -83,19 +93,8 @@ class GoogleSocialAuthSerializer(serializers.Serializer):
         )
         return auth_token
 
-    def validate(self, attrs):
-        data = super().validate(attrs)
-        data['user'] = self.user
-        return data
 
-
-class FacebookSocialAuthSerializer(serializers.Serializer):
-    auth_token = serializers.CharField()
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.user = None
-
+class FacebookSocialAuthSerializer(BaseSocialAuthSerizlier):
     def validate_auth_token(self, auth_token):
         try:
             user_data = Facebook.validate(auth_token)
