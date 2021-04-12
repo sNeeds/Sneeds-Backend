@@ -290,7 +290,7 @@ class Command(BaseCommand):
                 raise CommandError('text_file_path has not correct path end to the file.')
 
         if export_text:
-            text_output_file = open(text_file_path, 'w')
+            text_output_file = open(text_file_path, 'w+')
         if export_csv:
             csv_output_file = open(csv_file_path, 'w')
             csv_writer = csv.writer(csv_output_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
@@ -389,11 +389,6 @@ class Command(BaseCommand):
                             dissimilars.append((school, obj))
                         else:
                             dissimilars.append((school, None))
-
-        message = 'similars are : %s .\n' % str(success_schools)
-        self.stdout.write(message, ending='')
-        if export_text:
-            text_output_file.write(message)
 
         self.stdout.write(self.style.SUCCESS(
             'Start editing data base'
@@ -529,12 +524,12 @@ class Command(BaseCommand):
         #     if doubt[0] != 'search::':
         #         print()
         #     print(doubt)
-        message = '\n \n"%s" files checked out and "%s" school detected. "%s" school were ok to add to db,' \
+        message = '\n"%s" files checked out and "%s" school detected. "%s" school were ok to add to db,' \
                   ' based on terms considered in "is_school_ok_to_add" function.\n' \
-                  '"%s" university edited successfully and ' \
+                  '"%s" university matched and edited successfully and ' \
                   '"%s" universities was not existed in db or not similar enough to edit.' \
-                  ' so they need to insert or edit manually.\n For assurance check matched section again.' \
-                  ' "%s objects faced failure. Check failure section!!!' \
+                  ' so they need to insert or edit manually.\n FOR ASSURANCE CHECK MATCHED SECTION TOO!.\n' \
+                  '"%s objects faced failure. Check failure section!!!' \
                   'Also "%s" countries added:' % (str(all_files_num),
                                                   str(processable_files_num),
                                                   str(entries_count),
@@ -545,10 +540,17 @@ class Command(BaseCommand):
                                                   )
 
         if export_text:
-            text_output_file.write(message)
+            text_output_file.close()
+            with open(text_file_path, 'r+') as text_output_file2:
+                content = text_output_file2.read()
+                text_output_file2.seek(0, 0)
+                text_output_file2.write(message + '\n\n' + content)
+            # content = text_output_file.read()
+            # f.seek(0)
+            # text_output_file.write(message + '\n\n' + content)
+            # text_output_file2.close()
+
         self.stdout.write(self.style.SUCCESS(message))
 
-        if export_text:
-            text_output_file.close()
         if export_csv:
             csv_output_file.close()
