@@ -1,6 +1,7 @@
 import csv
 import json
 import os
+from argparse import ArgumentParser
 from pprint import pprint
 import random
 
@@ -120,93 +121,227 @@ class School:
         return self.name
 
 
+def get_school_from_main_dict(loaded_dict):
+    data = loaded_dict['data']['attributes']
+
+    address = Address(
+        street=data['address']['street'],
+        city=data['address']['city'],
+        province=data['address']['province'],
+        postal=data['address']['postal'],
+        country=data['address']['country'],
+        latitude=data['geo_location']['latitude'],
+        longitude=data['geo_location']['longitude'],
+    )
+
+    social = Social(
+        video=data['social_urls']['video'],
+        website=data['social_urls']['website'],
+        facebook=data['social_urls']['facebook'],
+        twitter=data['social_urls']['twitter'],
+        linkedin=data['social_urls']['linkedin'],
+    )
+
+    school = School(
+        id=loaded_dict['data']['id'],
+        name=data['name'],
+        slug=data['slug'],
+        submission_through=data['submission_through'],
+        submission_path_note=data['submission_path_note'],
+        currency=data['currency'],
+        institution_type=data['institution_type'],
+        accommodation_information=data['accommodation_information'],
+        coop_participating=data['coop_participating'],
+        esl_is_academic_dependant=data['esl_is_academic_dependant'],
+        description=data['description'],
+        establishment_type=data['establishment_type'],
+        founded_year=data['founded_year'],
+        living_cost=float(data['living_cost']) if data['living_cost'] is not None else None,
+        avg_tuition=float(data['avg_tuition']) if data['avg_tuition'] is not None else None,
+        total_students=data['total_students'],
+        international_students=data['international_students'],
+        coop_length=data['coop_length'],
+        accommodation_types=data['accommodation_types'],
+        conditional_acceptance=data['conditional_acceptance'],
+
+        social=social,
+        address=address,
+        country_code=data['country_code']
+    )
+
+    return school
+
+
+def edit_university(input_object: School, db_object: models.University):
+    models.University.objects.filter(pk=db_object.pk).update(
+        submission_through=input_object.submission_through,
+        submission_path_note=input_object.submission_path_note,
+        currency=input_object.currency,
+        institution_type=input_object.institution_type,
+        accommodation_types=input_object.accommodation_types,
+        accommodation_information=input_object.accommodation_information,
+        coop_participating=input_object.coop_participating,
+        coop_length=input_object.coop_length,
+        esl_is_academic_dependant=input_object.esl_is_academic_dependant,
+        description=input_object.description,
+        establishment_type=input_object.establishment_type,  # University, College or ...,
+        founded_year=input_object.founded_year,
+        living_cost=int(input_object.living_cost),
+        avg_tuition=int(input_object.avg_tuition),
+        total_students=input_object.total_students,
+        international_students=input_object.international_students,
+        conditional_acceptance=input_object.conditional_acceptance,
+    )
+
+    models.Address.objects.get_or_create(content_type__model='university', object_id=db_object.pk,
+                                         defaults={
+                                             'content_type': ContentType.objects.get_for_model(
+                                                 models.University),
+                                             'object_id': db_object.pk,
+                                             'street': input_object.address.street,
+                                             'city': input_object.address.city,
+                                             'province': input_object.address.province,
+                                             'postal': input_object.address.postal,
+                                             'latitude': input_object.address.latitude,
+                                             'longitude': input_object.address.longitude,
+                                         })
+
+    models.Social.objects.get_or_create(content_type__model='university', object_id=db_object.pk,
+                                        defaults={
+                                            'content_type': ContentType.objects.get_for_model(
+                                                models.University),
+                                            'object_id': db_object.pk,
+                                            'video': input_object.social.video,
+                                            'website': input_object.social.website,
+                                            'facebook': input_object.social.facebook,
+                                            'twitter': input_object.social.twitter,
+                                            'linkedin': input_object.social.linkedin,
+                                        })
+
+
 def is_school_ok_to_add(school: School):
     if school.establishment_type in ['University'] and school.country == 'Canada':
         return True
 
 
-class Command(BaseCommand):
-    help = "For insert universities from csv file. QS Ranking universities should be at top of file."
+def get_csv_row(match_status, input_case, db_case, fields, extra_detail='') -> list:
+    row = [match_status]
+    for field in fields:
 
-    def add_arguments(self, parser):
-        parser.add_argument('path', nargs='?', default='')
+        if input_case is not None:
+            row.append(str(getattr(input_case, field)))
+        else:
+            row.append('NO_OBJECT')
+
+        if db_case is not None:
+            row.append(str(getattr(db_case, field)))
+        else:
+            row.append('NO_OBJECT')
+
+    row.append(extra_detail)
+    return row
+
+
+class Command(BaseCommand):
+    help = "For insert universities from folder contains json files."
+
+    def add_arguments(self, parser: ArgumentParser):
+
+        parser.add_argument('path', help='Absolute path of json containing dir.')
+        parser.add_argument('--export_csv', action='store_true', help='Demonstrates export csv or not.')
+        parser.add_argument('--csv_file_path', action='store', help='Absolute path of csv file.Note that he file'
+                                                                    ' will be over writen if it exists.')
+        parser.add_argument('--csv_fields', nargs='+')
+        parser.add_argument('--export_text', action='store_true', help='Demonstrates export text or not.')
+        parser.add_argument('--text_file_path', action='store', help='Absolute path of output text file.'
+                                                                     'Note that the file will be '
+                                                                     'over writen if it exists.')
 
     def handle(self, *args, **options):
+        pprint(options)
+        input_folder_path = options['path']
+        export_csv = options['export_csv']
+        csv_file_path = options['csv_file_path']
+        csv_fields = options['csv_fields']
+        export_text = options['export_text']
+        text_file_path = options['text_file_path']
+
+        if not input_folder_path or not os.path.isdir(input_folder_path):
+            raise CommandError('The files containing directory is not valid.')
+
+        if export_csv and not csv_file_path:
+            raise CommandError('Export csv is enabled but csv path is not defined.')
+
+        if export_csv:
+            head, tail = os.path.split(csv_file_path)
+            if not tail.endswith('.csv'):
+                raise CommandError('No csv file is specified. Please specify a file in addition to dir.')
+            if not os.path.isdir(head):
+                raise CommandError('csv_file_path has not correct path end to the file.')
+
+        if export_text and not text_file_path:
+            raise CommandError('Export text is enabled but text path is not defined.')
+
+        if export_text:
+            head, tail = os.path.split(text_file_path)
+            if not tail.endswith('.txt'):
+                raise CommandError('No text file is specified. Please specify a file in addition to dir.')
+            if not os.path.isdir(head):
+                raise CommandError('text_file_path has not correct path end to the file.')
+
+        if export_text:
+            text_output_file = open(text_file_path, 'w')
+        if export_csv:
+            csv_output_file = open(csv_file_path, 'w')
+            csv_writer = csv.writer(csv_output_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
+            first_row = ['match_status']
+            for field in csv_fields:
+                first_row.append(f'{field}(input)')
+                first_row.append(f'{field}(db)')
+            first_row.append('extra_details')
+            csv_writer.writerow(first_row)
+
+        all_files_num = 0
+        processable_files_num = 0
         edited_count = 0
         existed_count = 0
         entries_count = 0
         added_countries = []
         success_schools = 0
         edit_unis = []
-        unsim = []
-        not_mathced_count = 0
-        unsim_names = []
+        dissimilars = []
+        not_matched_count = 0
         doubt_objects = []
-        failure_cases = []
-        input_folder_path = options['path']
-        if not input_folder_path:
-            input_folder_path = settings.BASE_DIR + '/' + 'apps/data/globaldata/management/commands/schools'
+        failure_cases = []  # (type, description)
 
-        for i in range(3):
-            entries_count += 1
-
-            if entries_count % 200 == 0:
-                self.stdout.write(
-                    self.style.WARNING(' %s schools are processed until now.' % str(entries_count))
-                )
-            with open(input_folder_path + f'/{i}.json') as f:
-                loaded_object = json.load(f)
-                if loaded_object.get('errors'):
+        for dirpath, dirs, files in os.walk(input_folder_path):
+            for file_name in files:
+                all_files_num += 1
+                if all_files_num % 200 == 0:
+                    self.stdout.write(
+                        self.style.WARNING(' %s files are processed until now.' % str(all_files_num))
+                    )
+                if not file_name.endswith('json'):
                     continue
 
-                data = loaded_object['data']['attributes']
+                with open(os.path.join(input_folder_path, file_name)) as f:
+                    loaded_object = json.load(f)
+                    if loaded_object.get('errors') or not loaded_object.get('data'):
+                        failure_cases.append((None, None,
+                                              f'Not University File: The file {file_name} does not'
+                                              f' contain valuable data.'))
+                        continue
 
-                address = Address(
-                    street=data['address']['street'],
-                    city=data['address']['city'],
-                    province=data['address']['province'],
-                    postal=data['address']['postal'],
-                    country=data['address']['country'],
-                    latitude=data['geo_location']['latitude'],
-                    longitude=data['geo_location']['longitude'],
-                )
+                    school = get_school_from_main_dict(loaded_dict=loaded_object)
 
-                social = Social(
-                    video=data['social_urls']['video'],
-                    website=data['social_urls']['website'],
-                    facebook=data['social_urls']['facebook'],
-                    twitter=data['social_urls']['twitter'],
-                    linkedin=data['social_urls']['linkedin'],
-                )
+                    processable_files_num += 1
 
-                school = School(
-                    id=i,
-                    name=data['name'],
-                    slug=data['slug'],
-                    submission_through=data['submission_through'],
-                    submission_path_note=data['submission_path_note'],
-                    currency=data['currency'],
-                    institution_type=data['institution_type'],
-                    accommodation_information=data['accommodation_information'],
-                    coop_participating=data['coop_participating'],
-                    esl_is_academic_dependant=data['esl_is_academic_dependant'],
-                    description=data['description'],
-                    establishment_type=data['establishment_type'],
-                    founded_year=data['founded_year'],
-                    living_cost=float(data['living_cost']),
-                    avg_tuition=float(data['avg_tuition']),
-                    total_students=data['total_students'],
-                    international_students=data['international_students'],
-                    coop_length=data['coop_length'],
-                    accommodation_types=data['accommodation_types'],
-                    conditional_acceptance=data['conditional_acceptance'],
+                    if not is_school_ok_to_add(school):
+                        continue
 
-                    social=social,
-                    address=address,
-                    country_code=data['country_code']
-                )
+                    entries_count += 1
 
-                if is_school_ok_to_add(school):
                     vector = SearchVector('name', weight='A')
                     country = models.Country.objects.get(name=school.country)
                     qs = models.University.objects.filter(country=country).annotate(
@@ -231,7 +366,7 @@ class Command(BaseCommand):
                             # print('similar found')
                             success_schools += 1
                             db_university = qs3.first()
-                            edit_unis.append((school, db_university, address, social))
+                            edit_unis.append((school, db_university, f'similarity: {db_university.factor}'))
 
                             qs4 = qs3.filter(factor__lte=0.97)
 
@@ -241,34 +376,39 @@ class Command(BaseCommand):
                                                       ' factor: ', obj.factor))
                         else:
                             obj = qs.first()
-                            not_mathced_count += 1
+                            not_matched_count += 1
                             if obj:
-                                unsim.append((school.id, obj.id, school.name, obj.name, country))
+                                dissimilars.append((school, obj))
                             else:
-                                unsim.append((school.id, school.name, country))
+                                dissimilars.append((school, None))
 
                     else:
                         obj = qs.first()
-                        not_mathced_count += 1
+                        not_matched_count += 1
                         if obj:
-                            unsim.append((school.id, obj.id, school.name, obj.name, country))
+                            dissimilars.append((school, obj))
                         else:
-                            unsim.append((school.id, school.name, country))
+                            dissimilars.append((school, None))
 
-        self.stdout.write(
-            'similars are : %s .' % str(success_schools)
-        )
+        message = 'similars are : %s .\n' % str(success_schools)
+        self.stdout.write(message, ending='')
+        if export_text:
+            text_output_file.write(message)
+
         self.stdout.write(self.style.SUCCESS(
             'Start editing data base'
         ))
 
-        # qs = University.objects.filter(rank__lte=1005)
-        # for obj in qs:
-        #     new_rank = random.randint(1000 + int(obj.rank / 5), 1200 + int(obj.rank / 5))
-        #     University.objects.filter(pk=obj.pk).update(rank=new_rank)
         processed_count = -1
         for case in edit_unis:
-
+            if processed_count == -1:
+                message = '\n\nMatched cases were:\n\n\n'
+                if export_text:
+                    text_output_file.write(message)
+                else:
+                    self.stdout.write(self.style.WARNING(message), ending='')
+            # if processed_count == 0:
+            #     break
             # print(edited_count)
             processed_count += 1
             if processed_count % 10 == 0:
@@ -277,104 +417,109 @@ class Command(BaseCommand):
                 )
             try:
                 with transaction.atomic():
-                    models.University.objects.filter(pk=case[1].pk).update(
-                        submission_through=case[0].submission_through,
-                        submission_path_note=case[0].submission_path_note,
-                        currency=case[0].currency,
-                        institution_type=case[0].institution_type,
-                        accommodation_types=case[0].accommodation_types,
-                        accommodation_information=case[0].accommodation_information,
-                        coop_participating=case[0].coop_participating,
-                        coop_length=case[0].coop_length,
-                        esl_is_academic_dependant=case[0].esl_is_academic_dependant,
-                        description=case[0].description,
-                        establishment_type=case[0].establishment_type,  # University, College or ...,
-                        founded_year=case[0].founded_year,
-                        living_cost=int(case[0].living_cost),
-                        avg_tuition=int(case[0].avg_tuition),
-                        total_students=case[0].total_students,
-                        international_students=case[0].international_students,
-                        conditional_acceptance=case[0].conditional_acceptance,
-                    )
-
-                    models.Address.objects.get_or_create(content_type__model='university', object_id=case[1].pk,
-                                                         defaults={
-                                                             'content_type': ContentType.objects.get_for_model(
-                                                                 models.University),
-                                                             'object_id': case[1].pk,
-                                                             'street': case[0].address.street,
-                                                             'city': case[0].address.city,
-                                                             'province': case[0].address.province,
-                                                             'postal': case[0].address.postal,
-                                                             'latitude': case[0].address.latitude,
-                                                             'longitude': case[0].address.longitude,
-                                                         })
-
-                    models.Social.objects.get_or_create(content_type__model='university', object_id=case[1].pk,
-                                                        defaults={
-                                                            'content_type': ContentType.objects.get_for_model(
-                                                                models.University),
-                                                            'object_id': case[1].pk,
-                                                            'video': case[0].social.video,
-                                                            'website': case[0].social.website,
-                                                            'facebook': case[0].social.facebook,
-                                                            'twitter': case[0].social.twitter,
-                                                            'linkedin': case[0].social.linkedin,
-                                                        })
-
+                    edit_university(input_object=case[0], db_object=case[1])
                     edited_count += 1
-                    print('Matched and edited successfully.')
-                    print('applyboard id:     ', case[0].id)
-                    print('abroadin id:       ', case[1].id)
-                    print('applyboard name:   ', case[0].name)
-                    print('abroadin name:     ', case[1].name)
-                    print('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-            except IntegrityError:
-                failure_cases.append({'id': case[0],
-                                      'similar_name': case[1],
-                                      'qs_name': case[2],
-                                      'country': case[5],
-                                      'similar_rank': case[3],
-                                      'qs_rank': case[4],
-                                      })
+                    message = f'Matched and edited successfully.\n' \
+                              f'applyboard id:     {case[0].id}\n' \
+                              f'abroadin id:       {case[1].id}\n' \
+                              f'applyboard name:   {case[0].name}\n' \
+                              f'abroadin name:     {case[1].name}\n' \
+                              '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n'
+                    if export_text:
+                        text_output_file.write(message)
+                    else:
+                        print(message)
+                    if export_csv:
+                        csv_writer.writerow(get_csv_row('MATCHED', case[0], case[1], csv_fields, case[2]))
+
+            except IntegrityError as e:
+                failure_cases.append((school, db_university, 'Error in DB editing\n' + str(e)))
+
         self.stdout.write(self.style.SUCCESS(
             'Editing data base finished'
         ))
-        # pprint(edit_unis)
-        print('------------------------------------------------------------\n'
-              '------------------------------------------------------------\n'
-              # '------------------------------------------------------------\n'
-              # '------------------------------------------------------------\n'
-              # '------------------------------------------------------------\n'
-              '------------------------------------------------------------\n'
-              '------------------------------------------------------------\n')
-        self.stdout.write(self.style.WARNING('Not matched cases were:'))
-        # pprint(unsim)
-        for case in unsim:
-            if len(case) > 3:
-                print('Potential case presents.')
-                print('applyboard id:     ', case[0])
-                print('abroadin id:       ', case[1])
-                print('applyboard name:   ', case[2])
-                print('abroadin name:     ', case[3])
-                print('country:           ', case[4])
+
+        if export_text:
+            text_output_file.write(
+                '------------------------------------------------------------\n'
+                '------------------------------------------------------------\n'
+                '------------------------------------------------------------\n'
+                '------------------------------------------------------------\n')
+            print('------------------------------------------------------------')
+        else:
+            print('------------------------------------------------------------\n'
+                  '------------------------------------------------------------\n'
+                  '------------------------------------------------------------\n'
+                  '------------------------------------------------------------\n')
+
+        message = '\n\nNot matched cases were:\n\n\n'
+        if export_text:
+            text_output_file.write(message)
+        else:
+            self.stdout.write(self.style.WARNING(message), ending='')
+
+        for case in dissimilars:
+            if case[1]:
+                message = f'Potential similar case presents.\n' \
+                          f'applyboard id:      {case[0].id}\n' \
+                          f'abroadin id:        {case[1].id}\n' \
+                          f'applyboard name:    {case[0].name}\n' \
+                          f'abroadin name:      {case[1].name}\n' \
+                          f'country:            {case[0].country}\n'
             else:
-                print('Potential case Not Found!')
-                print('applyboard id:     ', case[0])
-                print('applyboard name:   ', case[1])
-                print('country:           ', case[2])
-            print('-----------------------------------------------------------------------------------------')
+                message = f'Potential similar case Not Found!' \
+                          f'applyboard id:     {case[0].id}\n' \
+                          f'applyboard name:   {case[0].name}\n' \
+                          f'country:           {case[0].country}\n'
+            message += '-----------------------------------------------------------------------------------------\n'
 
-        print('------------------------------------------------------------\n'
-              '------------------------------------------------------------\n'
-              # '------------------------------------------------------------\n'
-              # '------------------------------------------------------------\n'
-              # '------------------------------------------------------------\n'
-              '------------------------------------------------------------\n'
-              '------------------------------------------------------------\n')
+            if export_text:
+                text_output_file.write(message)
+            else:
+                print(message, end='')
+            if export_csv:
+                csv_writer.writerow(get_csv_row('JUST_SIMILAR', case[0], case[1], csv_fields, ))
 
-        self.stdout.write(self.style.NOTICE('Failure cases were:'))
-        self.stdout.write(self.style.NOTICE(str(failure_cases)))
+        if export_text:
+            text_output_file.write(
+                '------------------------------------------------------------\n'
+                '------------------------------------------------------------\n'
+                '------------------------------------------------------------\n'
+                '------------------------------------------------------------\n')
+            print('------------------------------------------------------------')
+        else:
+            print('------------------------------------------------------------\n'
+                  '------------------------------------------------------------\n'
+                  '------------------------------------------------------------\n'
+                  '------------------------------------------------------------\n')
+
+        message = '\n\nFailure cases were:\n\n\n'
+        if export_text:
+            text_output_file.write(message)
+        else:
+            self.stdout.write(self.style.NOTICE(message), ending='')
+
+        for case in failure_cases:
+            message = f''
+            if case[0] is not None:
+                message += f'applyboard id:     {case[0].id}\n' \
+                           f'applyboard name:   {case[0].name}\n'
+
+            if case[1] is not None:
+                message += f'abroadin id:       {case[1].id}\n' \
+                           f'abroadin name:     {case[1].name}\n'
+
+            message += f'Error detail:      {case[2]}\n'
+            if case[0] is not None or case[1] is not None:
+                message += '----------------------------------------------------------'
+
+            if export_text:
+                text_output_file.write(message)
+            else:
+                self.stdout.write(self.style.NOTICE(message), ending='')
+
+            if export_csv:
+                csv_writer.writerow(get_csv_row('FAILURE', case[0], case[1], csv_fields, case[2]))
         # pprint(failure_cases)
         # print('doubts are:')
         # pprint(doubt_objects)
@@ -386,15 +531,26 @@ class Command(BaseCommand):
         #     if doubt[0] != 'search::':
         #         print()
         #     print(doubt)
-        self.stdout.write(self.style.SUCCESS('"%s" universities imported from file. "%s" university edited and "%s" '
-                                             'universities was not existed in db so they need to insert or edit '
-                                             'manually.\n'
-                                             ' "%s objects failed to update and they need to insert manually.!!!'
-                                             'Also "%s" countries added:' % (str(entries_count),
-                                                                             str(edited_count),
-                                                                             str(not_mathced_count),
-                                                                             str(len(failure_cases)),
-                                                                             str(len(added_countries)),
-                                                                             )
-                                             )
-                          )
+        message = '\n \n"%s" files checked out and "%s" school detected. "%s" school were ok to add to db,' \
+                  ' based on terms considered in "is_school_ok_to_add" function.\n' \
+                  '"%s" university edited successfully and ' \
+                  '"%s" universities was not existed in db or not similar enough to edit.' \
+                  ' so they need to insert or edit manually.\n For assurance check matched section again.' \
+                  ' "%s objects faced failure. Check failure section!!!' \
+                  'Also "%s" countries added:' % (str(all_files_num),
+                                                  str(processable_files_num),
+                                                  str(entries_count),
+                                                  str(edited_count),
+                                                  str(not_matched_count),
+                                                  str(len(failure_cases)),
+                                                  str(len(added_countries)),
+                                                  )
+
+        if export_text:
+            text_output_file.write(message)
+        self.stdout.write(self.style.SUCCESS(message))
+
+        if export_text:
+            text_output_file.close()
+        if export_csv:
+            csv_output_file.close()
