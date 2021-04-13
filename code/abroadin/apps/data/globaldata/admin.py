@@ -30,6 +30,8 @@ class UniversityAdmin(admin.ModelAdmin):
         # https://github.com/froala/django-froala-editor/
         TextField: {'widget': FroalaEditor},
     }
+    list_filter = ('country',)
+    ordering = ('rank',)
 
 
 @admin.register(models.Country)

@@ -48,6 +48,7 @@ class ProgramOtherRequirement(models.Model):
 
 
 class ProgramRequirement(models.Model):
+    program = models.OneToOneField(Program, on_delete=models.PROTECT)
     grade = models.ForeignKey(Grade, on_delete=models.PROTECT)
     grade_text = models.CharField(max_length=1024, blank=True, null=True)
     min_gpa = models.FloatField()

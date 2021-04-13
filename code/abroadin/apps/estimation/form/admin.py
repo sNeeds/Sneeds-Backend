@@ -77,9 +77,9 @@ class PublicationInline(GenericTabularInline):
 
 class WantToApplyInline(admin.TabularInline):
     model = models.WantToApply
-    extra = 1
     filter_horizontal = ['universities']
     autocomplete_fields = ['countries', 'universities', 'majors']
+    extra = 1
 
 
 class StudentDetailedInfoBaseAdmin(admin.ModelAdmin):
