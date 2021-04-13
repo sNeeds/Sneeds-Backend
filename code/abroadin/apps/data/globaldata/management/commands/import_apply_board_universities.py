@@ -325,7 +325,7 @@ class Command(BaseCommand):
                 if not file_name.endswith('json'):
                     continue
 
-                with open(os.path.join(input_folder_path, file_name)) as f:
+                with open(os.path.join(dirpath, file_name)) as f:
                     loaded_object = json.load(f)
                     if loaded_object.get('errors') or not loaded_object.get('data'):
                         failure_cases.append((None, None,
