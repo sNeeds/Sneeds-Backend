@@ -15,8 +15,6 @@ INSTALLED_APPS = [
     'verification',
     'phonenumber_field',
     'rangefilter',
-    'tinymce',
-    'djrichtextfield',
     'froala_editor',
 
     'abroadin.apps.docs',
@@ -245,59 +243,6 @@ INTERNAL_IPS = [
     '127.0.0.1',
 ]
 
-# TINYMCE_DEFAULT_CONFIG = {
-#     "height": 800,
-#     "width": 700,
-# }
-
-TINYMCE_DEFAULT_CONFIG = {
-    "height": "800px",
-    "width": "700px",
-    # "menubar": "file edit view insert format tools table help",
-    # advlist autolink lists link image charmap print preview anchor searchreplace visualblocks code "
-    #     "fullscreen insertdatetime media table paste code help wordcount spellchecker
-    "plugins": "advlist ",
-    "toolbar": "undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft "
-               "aligncenter alignright alignjustify | outdent indent |  numlist bullist checklist | forecolor "
-               "backcolor casechange permanentpen formatpainter removeformat | pagebreak | charmap emoticons | "
-               "fullscreen  preview save print | insertfile image media pageembed template link anchor codesample | "
-               "a11ycheck ltr rtl | showcomments addcomment code",
-    # "custom_undo_redo_levels": 10,
-    # "language": "es_ES",  # To force a specific language instead of the Django current language.
-}
-
-QUILL_CONFIGS = {
-    'default': {
-        'theme': 'snow',
-        'modules': {
-            'syntax': True,
-            'toolbar': [
-                [
-                    {'font': []},
-                    {'header': []},
-                    {'align': []},
-                    'bold', 'italic', 'underline', 'strike', 'blockquote',
-                    {'color': []},
-                    {'background': []},
-                ],
-                ['code-block', 'link'],
-                ['clean'],
-            ]
-        }
-    }
-}
-
-DJRICHTEXTFIELD_CONFIG = {
-    'js': ['//cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js'],
-    'init_template': 'djrichtextfield/init/tinymce.js',
-    'settings': {
-        'menubar': False,
-        'plugins': 'link image',
-        'toolbar': 'bold italic | link image | removeformat',
-        'width': 700
-    }
-}
-
 FROALA_EDITOR_PLUGINS = ('align', 'char_counter', 'code_beautifier', 'code_view', 'colors', 'draggable', 'emoticons',
                          'entities', 'file', 'font_family', 'font_size', 'fullscreen', 'image_manager', 'image',
                          'inline_style',
@@ -305,4 +250,5 @@ FROALA_EDITOR_PLUGINS = ('align', 'char_counter', 'code_beautifier', 'code_view'
                          'quote', 'save', 'table',
                          'url', 'video'
                          )
+
 FRAOLA_EDITOR_THIRD_PARTY = ('font_awesome', 'spell_checker')

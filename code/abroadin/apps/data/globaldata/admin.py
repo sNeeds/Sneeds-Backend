@@ -2,9 +2,6 @@ from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.db.models import TextField
 
-from ckeditor.widgets import CKEditorWidget
-from tinymce.widgets import TinyMCE
-from djrichtextfield.widgets import RichTextWidget
 # https://github.com/froala/django-froala-editor/
 from froala_editor.widgets import FroalaEditor
 
@@ -30,9 +27,6 @@ class UniversityAdmin(admin.ModelAdmin):
         SocialInline,
     ]
     formfield_overrides = {
-        # TextField: {'widget': TinyMCE},
-        # TextField: {'widget': CKEditorWidget},
-        # TextField: {'widget': RichTextWidget},
         # https://github.com/froala/django-froala-editor/
         TextField: {'widget': FroalaEditor},
 
