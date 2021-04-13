@@ -252,3 +252,6 @@ FROALA_EDITOR_PLUGINS = ('align', 'char_counter', 'code_beautifier', 'code_view'
                          )
 
 FRAOLA_EDITOR_THIRD_PARTY = ('font_awesome', 'spell_checker')
+
+USE_FROALA_EDITOR = True
+
