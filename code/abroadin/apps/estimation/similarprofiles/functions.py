@@ -3,6 +3,7 @@ from django.db.models import Q
 from abroadin.apps.data.globaldata.models import Major
 from abroadin.apps.applyprofile.models import ApplyProfile
 from abroadin.apps.data.globaldata.models import Country
+from abroadin.apps.estimation.similarprofiles.constraints import SIMILAR_GPA_OFFSET
 
 
 def get_preferred_apply_country():
@@ -68,17 +69,18 @@ class SimilarProfilesForForm:
     def __init__(self, form):
         self.form = form
 
-    def _extract_form_majors(self):
-        want_to_apply = self.form.want_to_apply
-        education_qs = self.form.educations.all()
+    def _extract_form_home_majors(self, form):
+        education_qs = form.educations.all()
 
         education_major_ids = education_qs.get_majors_id_list()
-        education_majors_qs = Major.objects.id_to_qs(education_major_ids)
-        want_to_apply_majors_qs = want_to_apply.majors.all()
+        return Major.objects.id_to_qs(education_major_ids)
 
-        related_majors = education_majors_qs | want_to_apply_majors_qs
+    def _extract_form_wta_majors(self, form):
+        want_to_apply = form.want_to_apply
+        return want_to_apply.majors.all()
 
-        return related_majors
+    def _extract_form_majors(self):
+        return self._extract_form_home_majors(self.form) | self._extract_form_wta_majors(self.form)
 
     def _get_related_majors(self, majors):
         majors_parents = majors.top_nth_parents(3)
@@ -104,7 +106,7 @@ class SimilarProfilesForForm:
 
     def _similar_profiles_for_data(self, majors, applied_grades, destination_countries, gpa_around):
         profiles = ApplyProfile.objects.all()
-        profiles = filter_around_gpa(profiles, gpa_around, offset=1)
+        profiles = filter_around_gpa(profiles, gpa_around, offset=SIMILAR_GPA_OFFSET)
         profiles = filter_same_want_to_apply_grades(profiles, applied_grades)
         profiles = filter_similar_majors(profiles, majors)
         profiles = filter_similar_home_and_destination(profiles, destination_countries)

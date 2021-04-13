@@ -1,3 +1,5 @@
+import time
+
 from django.db import models
 from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.contenttypes.models import ContentType
@@ -80,9 +82,10 @@ class ApplyProfile(models.Model):
         return self.admissions.all()
 
     def get_locked_admissions(self, free_admissions) -> QuerySet:
-        free_ids = free_admissions.values_list('id', flat=True)
-        locked = self.admissions.exclude(id__in=free_ids)
-        return locked
+        return self.admissions.none()
+        # free_ids = free_admissions.values_list('id', flat=True)
+        # locked = self.admissions.exclude(id__in=free_ids)
+        # return locked
 
     def get_free_locked_publications(self) -> tuple:
         """
@@ -106,18 +109,20 @@ class ApplyProfile(models.Model):
         """
         @returns a tuple which contains two query sets. first unlocked education and second locked educations
         """
+        # t = time.time()
         free = self.get_free_educations()
         locked = self.get_locked_educations(free)
+        # print('get_free_locked_educations lasted', (time.time() - t))
         return free, locked
 
     def get_free_educations(self) -> QuerySet:
-        free = self.educations.all()
-        return free
+        return self.educations.all()
 
     def get_locked_educations(self, free_educations: QuerySet) -> QuerySet:
-        free_ids = free_educations.values_list('id', flat=True)
-        locked = self.educations.exclude(id__in=free_ids)
-        return locked
+        return self.educations.none()
+        # free_ids = free_educations.values_list('id', flat=True)
+        # locked = self.educations.exclude(id__in=free_ids)
+        # return locked
 
     def get_free_locked_language_certificates(self) -> tuple:
         """

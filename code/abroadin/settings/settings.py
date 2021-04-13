@@ -15,6 +15,7 @@ INSTALLED_APPS = [
     'verification',
     'phonenumber_field',
     'rangefilter',
+    'froala_editor',
 
     'abroadin.apps.docs',
     'abroadin.apps.customUtils',
@@ -32,6 +33,7 @@ INSTALLED_APPS = [
     'abroadin.apps.estimation.similarprofiles',
     'abroadin.apps.data.globaldata',
     'abroadin.apps.data.applydata',
+    'abroadin.apps.data.programs',
     'abroadin.apps.analytics.events',
     'abroadin.apps.applyprofile',
 
@@ -241,3 +243,12 @@ INTERNAL_IPS = [
     '127.0.0.1',
 ]
 
+FROALA_EDITOR_PLUGINS = ('align', 'char_counter', 'code_beautifier', 'code_view', 'colors', 'draggable', 'emoticons',
+                         'entities', 'file', 'font_family', 'font_size', 'fullscreen', 'image_manager', 'image',
+                         'inline_style',
+                         'line_breaker', 'link', 'lists', 'paragraph_format', 'paragraph_style', 'quick_insert',
+                         'quote', 'save', 'table',
+                         'url', 'video'
+                         )
+
+FRAOLA_EDITOR_THIRD_PARTY = ('font_awesome', 'spell_checker')

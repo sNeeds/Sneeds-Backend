@@ -34,6 +34,7 @@ django-debug-toolbar==3.2
 django-extensions==3.0.3
 django-filter==2.4.0
 django-formtools==2.2
+django-froala-editor==3.2.2
 django-js-asset==1.2.2
 django-phonenumber-field==5.0.0
 django-polymorphic==3.0.0
@@ -41,7 +42,6 @@ django-rest-passwordreset==1.1.0
 django-rest-polymorphic==0.1.8
 django-rest-verification==0.42
 django-storages==1.9.1
-django-tinymce==2.8.0
 djangorestframework==3.12.1
 djangorestframework-simplejwt==4.5.0
 drf-yasg==1.20.0
@@ -85,6 +85,7 @@ pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pycodestyle==2.5.0
 pycoin==0.90.20190630
+pycountry==20.7.3
 PyJWT==1.7.1
 pyparsing==2.4.5
 python-bidi==0.4.2

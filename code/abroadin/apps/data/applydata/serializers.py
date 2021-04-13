@@ -9,6 +9,7 @@ from rest_framework.exceptions import ValidationError
 from abroadin.apps.data.globaldata.models import BasicFormField
 from abroadin.apps.data.globaldata.serializers import UniversitySerializer, MajorSerializer
 from abroadin.base.api.fields import GenericContentTypeRelatedField, _get_content_type_identifier
+from abroadin.base.api.serializers.serializers_mixin import RelatedFieldsForQueryMixin
 from abroadin.base.values import AccessibilityTypeChoices
 from abroadin.base.factory.class_factory import exclude_meta_fields_class_factory
 
@@ -123,8 +124,9 @@ class BasicFormFieldSerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 
-class PublicationSerializer(serializers.ModelSerializer):
+class PublicationSerializer(serializers.ModelSerializer, RelatedFieldsForQueryMixin):
     related_classes = []
+    related_fields = ['content_type']
 
     content_type = GenericContentTypeRelatedField()
 
@@ -133,12 +135,14 @@ class PublicationSerializer(serializers.ModelSerializer):
         abstract = True
         fields = [
             'id', 'title', 'publish_year', 'which_author', 'type', 'journal_reputation',
-            'content_type', 'object_id',
+            'content_type',
+            'object_id',
         ]
 
 
-class EducationSerializer(serializers.ModelSerializer):
+class EducationSerializer(serializers.ModelSerializer, RelatedFieldsForQueryMixin):
     related_classes = []
+    related_fields = ['content_type']
 
     content_type = GenericContentTypeRelatedField()
 
