@@ -1,9 +1,9 @@
+# https://github.com/froala/django-froala-editor/
+from froala_editor.widgets import FroalaEditor
+
 from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.db.models import TextField
-
-# https://github.com/froala/django-froala-editor/
-from froala_editor.widgets import FroalaEditor
 
 from . import models
 
@@ -29,7 +29,6 @@ class UniversityAdmin(admin.ModelAdmin):
     formfield_overrides = {
         # https://github.com/froala/django-froala-editor/
         TextField: {'widget': FroalaEditor},
-
     }
 
 
