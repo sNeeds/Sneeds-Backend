@@ -444,7 +444,7 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         return completed, errors
 
     def get_last_university_grade(self):
-        return None if self.last_education() is None else self.last_education().grade
+        return None if self.last_education is None else self.last_education.grade
 
     #################################
     # Powerful Recommendation methods
