@@ -14,16 +14,16 @@ from abroadin.apps.data.applydata.values.language import LANGUAGE_B_VALUE
 from abroadin.apps.estimation.form.variables import MISSING_LABEL, REWARDED_LABEL
 from abroadin.apps.estimation.form.managers import StudentDetailedInfoManager, WantToApplyManager
 
-from abroadin.apps.data.globaldata.models import \
-    (Country,
-     University,
-     Major,
-     get_student_resume_path,
-     User,
-     BasicFormField)
+from abroadin.apps.data.globaldata.models import (
+    Country,
+    University,
+    Major,
+    get_student_resume_path,
+    User,
+    BasicFormField
+)
 
 from abroadin.apps.data.applydata import models as ad_models
-
 from abroadin.apps.data.globaldata.validators import validate_resume_file_size
 
 
@@ -303,7 +303,6 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
             self._last_education = self.educations.last_education()
         return self._last_education
 
-
     @property
     def bachelor_education(self):
         try:
@@ -353,8 +352,8 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         )
         total_value = 0
 
-        if self.last_education():
-            total_value += 3.75 * self.last_education().value
+        if self.last_education:
+            total_value += 3.75 * self.last_education.value
 
         if languages.exists():
             total_value += languages.get_total_value()
