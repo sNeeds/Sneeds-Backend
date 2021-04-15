@@ -9,7 +9,7 @@ from abroadin.apps.data.applydata.serializers import SemesterYearSerializer, Gra
 from abroadin.base.factory.class_factory import exclude_meta_fields_class_factory
 from abroadin.apps.users.customAuth.serializers import SafeUserDataSerializer
 from abroadin.base.mixins.validators import CreateM2MManagerMixin
-from abroadin.apps.data.applydata.models import Education, Publication
+from abroadin.apps.data.applydata.models import Education, Publication, LanguageCertificate
 from abroadin.apps.data.globaldata.serializers import CountrySerializer, UniversitySerializer, MajorSerializer
 
 from .models import WantToApply, StudentDetailedInfo
@@ -112,6 +112,60 @@ class StudentDetailedInfoSerializer(
             CertificateClass.objects.create_with_m2m(**data)
 
         return form
+
+    @transaction.atomic()
+    def update(self, instance, validated_data):
+        want_to_apply_data = validated_data.pop('want_to_apply', None)
+        educations_data = validated_data.pop('educations', None)
+        publications_data = validated_data.pop('publications', None)
+        language_certificates_data = validated_data.pop('language_certificates', None)
+
+        sdi_content_type = ContentType.objects.get(app_label="form", model="studentdetailedinfo")
+
+        if want_to_apply_data:
+            # print(want_to_apply_data)
+            # WantToApply.objects.get(student_detailed_info=instance)
+            # want_to_apply_data['student_detailed_info'] = instance
+            # sdi_wta = instance.want_to_apply
+            # want_to_apply_serializer = WantToApplyBaseSerializer(
+            #     sdi_wta, data=want_to_apply_data, partial=True
+            # )
+            # if want_to_apply_serializer.is_valid(raise_exception=True):
+            #     want_to_apply_serializer.save()
+            sdi_wta = instance.want_to_apply
+            sdi_wta.delete()
+            want_to_apply_data['student_detailed_info'] = instance
+            WantToApply.objects.create_with_m2m(**want_to_apply_data)
+
+        if educations_data:
+            Education.objects.filter(content_type=sdi_content_type, object_id=instance.id).delete()
+            for data in educations_data:
+                data['object_id'] = instance.id
+                data['content_type'] = sdi_content_type
+                Education.objects.create_with_m2m(**data)
+
+        if publications_data:
+            Publication.objects.filter(content_type=sdi_content_type, object_id=instance.id).delete()
+            for data in publications_data:
+                data['object_id'] = instance.id
+                data['content_type'] = sdi_content_type
+                Publication.objects.create_with_m2m(**data)
+
+        if language_certificates_data:
+            LanguageCertificate.objects.filter(content_type=sdi_content_type, object_id=instance.id).delete()
+            for type_data in language_certificates_data:
+                content_type = type_data['class_type']
+                data = type_data['data']
+                data['object_id'] = instance.id
+                data['content_type'] = sdi_content_type
+                CertificateClass = content_type.model_class()
+                CertificateClass.objects.create_with_m2m(**data)
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+        return instance
 
 
 class StudentDetailedInfoRequestSerializer(serializers.ModelSerializer):

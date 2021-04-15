@@ -47,11 +47,11 @@ class StudentDetailedInfoListCreateView(generics.CListCreateAPIView):
         return super().post(request, *args, **kwargs)
 
 
-class StudentDetailedInfoRetrieveUpdateView(generics.CRetrieveAPIView):
+class StudentDetailedInfoRetrieveUpdateView(generics.CRetrieveUpdateAPIView):
     lookup_field = 'id'
     queryset = StudentDetailedInfo.objects.all()
     serializer_class = StudentDetailedInfoSerializer
-    request_serializer_class = StudentDetailedInfoRequestSerializer
+    request_serializer_class = StudentDetailedInfoSerializer
 
     permission_classes = [
         permission_class_factory(SameUserOrNone, ["GET", "PUT", "PATCH"]),
@@ -80,6 +80,7 @@ class StudentDetailedInfoRetrieveUpdateView(generics.CRetrieveAPIView):
             super().perform_update(serializer)
 
     def partial_update(self, request, *args, **kwargs):
+        kwargs['partial'] = True
         user = self.request.user
         if user.is_authenticated:
             request.data.update({"user": user.id})
