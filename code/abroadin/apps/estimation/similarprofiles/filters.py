@@ -14,6 +14,8 @@ class Filter:
     def filter(self, profiles, sdi: StudentDetailedInfo):
         return profiles.filter(self.get_query(profiles, sdi))
 
+    # def get_filter_descriptor(self, sdi):
+
 
 class SimilarAndWorseGPAFilter(Filter):
 
