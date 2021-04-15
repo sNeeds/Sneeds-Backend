@@ -87,11 +87,29 @@ class StudentDetailedInfoRetrieveUpdateView(generics.CRetrieveUpdateAPIView):
         return super().partial_update(request, *args, **kwargs)
 
 
-class UserStudentDetailedInfoRetrieveAPIView(generics.CRetrieveAPIView):
+class UserStudentDetailedInfoRetrieveAPIView(generics.CRetrieveUpdateAPIView):
     queryset = StudentDetailedInfo.objects.all()
     serializer_class = StudentDetailedInfoSerializer
-    permission_classes = (
-        permissions.IsAuthenticated,
-    )
+    permission_classes = [
+        permission_class_factory(SameUserOrNone, ["GET", "PUT", "PATCH"]),
+        permission_class_factory(UserAlreadyHasForm, ["PUT", "PATCH"]),
+    ]
     lookup_url_kwarg = 'user_id'
     lookup_field = 'user__id'
+
+    def patch(self, request, *args, **kwargs):
+        return super().patch(request, *args, **kwargs)
+
+    def perform_update(self, serializer):
+        user = self.request.user
+        if user.is_authenticated:
+            serializer.save(user=user)
+        else:
+            super().perform_update(serializer)
+
+    def partial_update(self, request, *args, **kwargs):
+        kwargs['partial'] = True
+        user = self.request.user
+        if user.is_authenticated:
+            request.data.update({"user": user.id})
+        return super().partial_update(request, *args, **kwargs)

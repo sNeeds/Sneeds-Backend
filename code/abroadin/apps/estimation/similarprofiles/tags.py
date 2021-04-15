@@ -55,7 +55,6 @@ class Tag:
             setattr(obj, self.annotation_field, True)
         else:
             setattr(obj, self.annotation_field, False)
-        # print(obj, getattr(obj, self.annotation_field))
         return obj
 
 
