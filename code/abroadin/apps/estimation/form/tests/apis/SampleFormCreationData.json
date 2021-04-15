@@ -1,0 +1,88 @@
+{
+  "age": "18",
+  "gender": "Male",
+  "is_married": null,
+  "resume": null,
+  "related_work_experience": "5",
+  "academic_break": "1",
+  "olympiad": null,
+  "want_to_apply": {
+    "countries": [
+      40
+    ],
+    "universities": [
+      19647,
+      26039
+    ],
+    "grades": [
+      2,
+      3
+    ],
+    "majors": [
+      4132
+    ],
+    "semester_years": [
+      13,
+      14
+    ]
+  },
+  "educations": [
+    {
+      "id": 1,
+      "university": 14185,
+      "grade": "Bachelor",
+      "major": 4131,
+      "thesis_title": null,
+      "graduate_in": 2021,
+      "gpa": 16.5
+    },
+    {
+      "id": 2,
+      "university": 21793,
+      "grade": "Master",
+      "major": 4131,
+      "thesis_title": null,
+      "graduate_in": 2021,
+      "gpa": 16.5
+    }
+  ],
+  "publications": [
+    {
+      "title": "Jafarabad",
+      "publish_year": 2010,
+      "which_author": "Second",
+      "type": "Journal",
+      "journal_reputation": "One to three"
+    },
+    {
+      "title": "asdsa",
+      "publish_year": 2018,
+      "which_author": "Second",
+      "type": "Conference",
+      "journal_reputation": "Four to ten"
+    }
+  ],
+  "language_certificates": [
+    {
+      "id": "1",
+      "class_type": "applydata__regularlanguagecertificate",
+      "data": {
+        "certificate_type": "IELTS Academic",
+        "is_mock": false,
+        "speaking": 6.5,
+        "writing": 6.5,
+        "listening": 6.5,
+        "reading": 6.5,
+        "overall": 6.5
+      }
+    }
+  ],
+  "payment_affordability": null,
+  "prefers_full_fund": null,
+  "prefers_half_fund": null,
+  "prefers_self_fund": null,
+  "comment": "",
+  "powerful_recommendation": false,
+  "linkedin_url": null,
+  "homepage_url": null
+}
