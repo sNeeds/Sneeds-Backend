@@ -72,15 +72,14 @@ class ProfilesListAPIViewVersion2(ProfilesListAPIView):
         queryset = self.filter_queryset(self.get_queryset())
         sdi = self.get_form()
 
-        querysets = SimilarProfilesPipelineObject.get_querysets(queryset, sdi)
+        filtering_results = SimilarProfilesPipelineObject.get_filter_results(queryset, sdi)
         res = {}
-        res['filters'] = {}
+        res['filters'] = []
         all_ids = set()
 
-        for title in querysets.keys():
-            print(title, querysets[title].count())
-            res['filters'][title] = querysets[title].only('id').values_list('id', flat=True)
-            all_ids = all_ids.union(set(res['filters'][title]))
+        for filtering_result in filtering_results:
+            all_ids = all_ids.union(set(filtering_result['ids']))
+            res['filters'].append(filtering_result)
 
         # print('all_ids', len(all_ids))
 

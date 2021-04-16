@@ -1,11 +1,14 @@
+from django.utils.translation import ngettext_lazy
+
+from abroadin.apps.estimation.form.models import StudentDetailedInfo
 from abroadin.apps.estimation.similarprofiles import filters
 
 
 class Filtering:
+    title: str = None
+    filters: list = None
 
-    def __init__(self, title, filters: list):
-        self.title = title
-        self.filters = filters
+    def __init__(self):
         self.results_qs = None
 
     def filter_and_provide_results_qs(self, profiles, sdi):
@@ -19,10 +22,13 @@ class Filtering:
             return profiles.filter(final_query)
         return profiles
 
+    def get_filter_description(self, sdi: StudentDetailedInfo):
+        raise NotImplementedError
 
-BestCaseFiltering = Filtering(
-    title='Best Case',
-    filters=[
+
+class BestCaseFiltering(Filtering):
+    title = 'Best Matches Ancestors',
+    filters = [
         # filters.ExactHomeMajorsFilter(),
         # filters.ExactDestinationMajorsFilter(),
         filters.GeneralSimilarHomeMajorsFilter(),
@@ -36,11 +42,23 @@ BestCaseFiltering = Filtering(
         filters.SameDestinationFilter(),
 
         filters.SimilarAndWorseGPAFilter(),
-    ])
+    ]
 
-SimilarHomeUniversityExactDestinationCountryFiltering = Filtering(
-    title='Similar Home University & Exact Destination Country',
-    filters=[
+    def get_filter_description(self, sdi: StudentDetailedInfo):
+        text = ngettext_lazy(
+            'Find out about %(last_edu_uni)s students who got admission in %(wta_major)s abroad.',
+            'Find out about %(last_edu_uni)s students with admissions similar to your desired majors abroad.',
+            sdi.want_to_apply.majors.count()
+        ) % {
+            'last_edu_uni': sdi.last_education.university.name,
+            'wta_major': sdi.want_to_apply.majors.first()
+        }
+        return text
+
+
+class SimilarHomeUniversityExactDestinationCountryFiltering(Filtering):
+    title = 'Dream Country',
+    filters = [
         # filters.ExactHomeMajorsFilter(),
         # filters.ExactDestinationMajorsFilter(),
         # filters.MoreSimilarDestinationMajorsFilter(),
@@ -54,11 +72,23 @@ SimilarHomeUniversityExactDestinationCountryFiltering = Filtering(
         # filters.SimilarAndWorseHomeUniversityFilter(),
 
         filters.ExactDestinationCountryFilter(),
-    ])
+    ]
 
-SimilarHomeUniversityExactDestinationUniversityFiltering = Filtering(
-    title='Similar Home University & Exact Destination University',
-    filters=[
+    def get_filter_description(self, sdi: StudentDetailedInfo):
+        text = ngettext_lazy(
+            'Find out about %(last_edu_uni)s students who got admission in %(wta_major)s abroad.',
+            'Find out about %(last_edu_uni)s students with admissions similar to your desired majors abroad.',
+            sdi.want_to_apply.majors.count()
+        ) % {
+            'last_edu_uni': sdi.last_education.university.name,
+            'wta_major': sdi.want_to_apply.majors.first()
+        }
+        return text
+
+
+class SimilarHomeUniversityExactDestinationUniversityFiltering(Filtering):
+    title = 'Dream University',
+    filters = [
         # filters.ExactHomeMajorsFilter(),
         # filters.ExactDestinationMajorsFilter(),
         # filters.MoreSimilarDestinationMajorsFilter(),
@@ -70,11 +100,23 @@ SimilarHomeUniversityExactDestinationUniversityFiltering = Filtering(
 
         filters.SimilarHomeUniversityFilter(),
         filters.ExactDestinationUniversityFilter(),
-    ])
+    ]
 
-ExactHomeUniversityFiltering = Filtering(
-    title='Exact Home University',
-    filters=[
+    def get_filter_description(self, sdi: StudentDetailedInfo):
+        text = ngettext_lazy(
+            'Find out about %(last_edu_uni)s students who got admission in %(wta_major)s abroad.',
+            'Find out about %(last_edu_uni)s students with admissions similar to your desired majors abroad.',
+            sdi.want_to_apply.majors.count()
+        ) % {
+            'last_edu_uni': sdi.last_education.university.name,
+            'wta_major': sdi.want_to_apply.majors.first()
+        }
+        return text
+
+
+class ExactHomeUniversityFiltering(Filtering):
+    title = 'Classmates',
+    filters = [
         # filters.ExactHomeMajorsFilter(),
         # filters.ExactDestinationMajorsFilter(),
         # filters.MoreSimilarHomeMajorsFilter(),
@@ -84,16 +126,37 @@ ExactHomeUniversityFiltering = Filtering(
         # filters.VeryGeneralSimilarHomeMajorsFilter(),
         # filters.VeryGeneralSimilarDestinationMajorsFilter(),
         filters.ExactHomeUniversityFilter(),
-    ])
+    ]
 
-ExactHomeCountryFiltering = Filtering(
-    title='Exact Home Country',
-    filters=[
+    def get_filter_description(self, sdi: StudentDetailedInfo):
+        text = ngettext_lazy(
+            'Find out about %(last_edu_uni)s students who got admission in %(wta_major)s abroad.',
+            'Find out about %(last_edu_uni)s students with admissions similar to your desired majors abroad.',
+            sdi.want_to_apply.majors.count()
+        ) % {
+            'last_edu_uni': sdi.last_education.university.name,
+            'wta_major': sdi.want_to_apply.majors.first()
+        }
+        return text
+
+
+class ExactHomeCountryFiltering(Filtering):
+    title = 'All',
+    filters = [
         # filters.ExactHomeMajorsFilter(),
         # filters.ExactDestinationMajorsFilter(),
         filters.MoreSimilarHomeMajorsFilter(),
         filters.MoreSimilarDestinationMajorsFilter(),
         filters.ExactHomeCountryFilter(),
-    ])
+    ]
 
-
+    def get_filter_description(self, sdi: StudentDetailedInfo):
+        text = ngettext_lazy(
+            'Find out about %(last_edu_uni)s students who got admission in %(wta_major)s abroad.',
+            'Find out about %(last_edu_uni)s students with admissions similar to your desired majors abroad.',
+            sdi.want_to_apply.majors.count()
+        ) % {
+            'last_edu_uni': sdi.last_education.university.name,
+            'wta_major': sdi.want_to_apply.majors.first()
+        }
+        return text
