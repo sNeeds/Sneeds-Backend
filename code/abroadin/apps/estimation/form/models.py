@@ -8,12 +8,20 @@ from django.db import models
 from rest_framework.settings import api_settings
 from rest_framework.exceptions import ValidationError as DRFValidationError
 
-from abroadin.apps.data.applydata.models import Education, LanguageCertificate, Publication, Grade, SemesterYear, \
-    GradeChoices
 from abroadin.apps.data.applydata.values.language import LANGUAGE_B_VALUE
 from abroadin.apps.estimation.form.variables import MISSING_LABEL, REWARDED_LABEL
 from abroadin.apps.estimation.form.managers import StudentDetailedInfoManager, WantToApplyManager
+from abroadin.apps.data.applydata import models as ad_models
+from abroadin.apps.data.globaldata.validators import validate_resume_file_size
 
+from abroadin.apps.data.applydata.models import (
+    Education,
+    LanguageCertificate,
+    Publication,
+    Grade,
+    SemesterYear,
+    GradeChoices
+)
 from abroadin.apps.data.globaldata.models import (
     Country,
     University,
@@ -22,9 +30,6 @@ from abroadin.apps.data.globaldata.models import (
     User,
     BasicFormField
 )
-
-from abroadin.apps.data.applydata import models as ad_models
-from abroadin.apps.data.globaldata.validators import validate_resume_file_size
 
 
 def get_sdi_ct_or_none():
@@ -40,34 +45,15 @@ class WantToApply(models.Model):
         on_delete=models.CASCADE,
         related_name="want_to_apply",
     )
-    countries = models.ManyToManyField(Country, blank=True)
+    countries = models.ManyToManyField(Country)
+    majors = models.ManyToManyField(Major)
+    grades = models.ManyToManyField(Grade)
     universities = models.ManyToManyField(University, blank=True)
-    grades = models.ManyToManyField(Grade, blank=True)
-    majors = models.ManyToManyField(Major, blank=True)
     semester_years = models.ManyToManyField(SemesterYear, blank=True)
 
     objects = WantToApplyManager.as_manager()
 
-    @property
-    def is_complete(self):
-        check_fields = ['countries', 'grades']
-        if not self:
-            return False
-        completed = True
-        non_complete_fields = []
-        for field in check_fields:
-            if not getattr(self, field).exists():
-                non_complete_fields.append(field)
-                completed = False
-        return completed
-
-    def grades_want_to_apply(self):
-        # TODO: VERY IMPORTANT ***************
-        # Hossein change the structure of is_completed definition in WantToApply.
-        # Tell me afterwards *************#########
-        # **********************************************
-        # **********************************************
-        # **********************************************
+    def get_grades(self):
         return self.grades.all()
 
     def get_countries_qs(self):
