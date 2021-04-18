@@ -78,6 +78,15 @@ class WantToApply(models.Model):
 
 
 class StudentDetailedInfoBase(models.Model):
+    class TPaymentAffordabilityChoices(models.TextChoices):
+        LOW = 'Low', 'Low'
+        AVERAGE = 'Average', 'Average'
+        HIGH = 'High', 'High'
+
+    class TGenderChoices(models.TextChoices):
+        MALE = 'Male', 'Male'
+        FEMALE = 'Female', 'Female'
+
     publications_to_base = GenericRelation(
         Publication, related_query_name='student_detailed_info_base'
     )
@@ -130,6 +139,70 @@ class StudentDetailedInfoBase(models.Model):
         max_length=256,
         blank=True,
         null=True
+    )
+
+    t_user = models.OneToOneField(User, on_delete=models.CASCADE)  # TODO: Change to OneToOne
+
+    t_age = models.PositiveSmallIntegerField(validators=[MinValueValidator(15), MaxValueValidator(100)])
+
+    t_gender = models.CharField(max_length=128, choices=TGenderChoices.choices)
+
+    t_is_married = models.BooleanField(
+        default=None,
+        null=True,
+        blank=True
+    )
+
+    t_payment_affordability = models.CharField(
+        null=True,
+        blank=True,
+        max_length=30,
+        choices=TPaymentAffordabilityChoices.choices,
+    )
+
+    t_prefers_full_fund = models.BooleanField(
+        default=None,
+        null=True,
+        blank=True
+    )
+    t_prefers_half_fund = models.BooleanField(
+        default=None,
+        null=True,
+        blank=True
+    )
+    t_prefers_self_fund = models.BooleanField(
+        default=None,
+        null=True,
+        blank=True
+    )
+
+    # Extra info
+    t_comment = models.TextField(
+        max_length=1024,
+        null=True,
+        blank=True
+    )
+    t_powerful_recommendation = models.BooleanField()
+    t_linkedin_url = models.URLField(
+        blank=True,
+        null=True,
+    )
+    t_homepage_url = models.URLField(
+        blank=True,
+        null=True,
+    )
+
+    t_value = models.DecimalField(
+        validators=[MinValueValidator(0), MaxValueValidator(1)],
+        max_digits=3,
+        decimal_places=2,
+        null=True,
+        blank=True
+    )
+
+    t_rank = models.IntegerField(
+        validators=[MinValueValidator(1)],
+        editable=False
     )
 
     created = models.DateTimeField(auto_now_add=True)
