@@ -8,7 +8,6 @@ from abroadin.apps.data.applydata.serializers import SemesterYearSerializer, Gra
     EducationDetailedRepresentationSerializer, PublicationSerializer, LanguageCertificateInheritedSerializer
 from abroadin.base.factory.class_factory import exclude_meta_fields_class_factory
 from abroadin.apps.users.customAuth.serializers import SafeUserDataSerializer
-from abroadin.base.mixins.validators import CreateM2MManagerMixin
 from abroadin.apps.data.applydata.models import Education, Publication, LanguageCertificate
 from abroadin.apps.data.globaldata.serializers import CountrySerializer, UniversitySerializer, MajorSerializer
 

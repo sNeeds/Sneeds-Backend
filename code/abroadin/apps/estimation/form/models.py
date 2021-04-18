@@ -78,12 +78,12 @@ class WantToApply(models.Model):
 
 
 class StudentDetailedInfoBase(models.Model):
-    class TPaymentAffordabilityChoices(models.TextChoices):
+    class PaymentAffordabilityChoices(models.TextChoices):
         LOW = 'Low', 'Low'
         AVERAGE = 'Average', 'Average'
         HIGH = 'High', 'High'
 
-    class TGenderChoices(models.TextChoices):
+    class GenderChoices(models.TextChoices):
         MALE = 'Male', 'Male'
         FEMALE = 'Female', 'Female'
 
@@ -140,129 +140,6 @@ class StudentDetailedInfoBase(models.Model):
         blank=True,
         null=True
     )
-
-    t_user = models.OneToOneField(User, on_delete=models.CASCADE)  # TODO: Change to OneToOne
-
-    t_age = models.PositiveSmallIntegerField(validators=[MinValueValidator(15), MaxValueValidator(100)])
-
-    t_gender = models.CharField(max_length=128, choices=TGenderChoices.choices)
-
-    t_is_married = models.BooleanField(
-        default=None,
-        null=True,
-        blank=True
-    )
-
-    t_payment_affordability = models.CharField(
-        null=True,
-        blank=True,
-        max_length=30,
-        choices=TPaymentAffordabilityChoices.choices,
-    )
-
-    t_prefers_full_fund = models.BooleanField(
-        default=None,
-        null=True,
-        blank=True
-    )
-    t_prefers_half_fund = models.BooleanField(
-        default=None,
-        null=True,
-        blank=True
-    )
-    t_prefers_self_fund = models.BooleanField(
-        default=None,
-        null=True,
-        blank=True
-    )
-
-    # Extra info
-    t_comment = models.TextField(
-        max_length=1024,
-        null=True,
-        blank=True
-    )
-    t_powerful_recommendation = models.BooleanField()
-    t_linkedin_url = models.URLField(
-        blank=True,
-        null=True,
-    )
-    t_homepage_url = models.URLField(
-        blank=True,
-        null=True,
-    )
-
-    t_value = models.DecimalField(
-        validators=[MinValueValidator(0), MaxValueValidator(1)],
-        max_digits=3,
-        decimal_places=2,
-        null=True,
-        blank=True
-    )
-
-    t_rank = models.IntegerField(
-        validators=[MinValueValidator(1)],
-        editable=False
-    )
-
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
-
-    def _education_has_this_major(self, major):
-        return Education.objects.filter(
-            student_detailed_info__id=self.id,
-            major=major
-        ).exists()
-
-    def education_has_these_majors(self, majors_list):
-        found = False
-        for major in majors_list:
-            found = found or self._education_has_this_major(major)
-        return found
-
-    def last_education(self):
-        education_qs = Education.objects.filter(content_type=get_sdi_ct_or_none(), object_id=self.id)
-        return education_qs.last_education()
-
-    def language_certificates_str(self):
-        return LanguageCertificate.objects.filter(content_type=get_sdi_ct_or_none(), object_id=self.id).brief_str()
-
-
-class StudentDetailedInfo(StudentDetailedInfoBase):
-    class PaymentAffordabilityChoices(models.TextChoices):
-        LOW = 'Low', 'Low'
-        AVERAGE = 'Average', 'Average'
-        HIGH = 'High', 'High'
-
-    class GenderChoices(models.TextChoices):
-        MALE = 'Male', 'Male'
-        FEMALE = 'Female', 'Female'
-
-    # If all of these functions return True the form completion definition satisfies
-    # The keys are function names
-    completed_credentials = [
-        {'function_name': "_has_age",
-         'information': {'section': 'personal', 'model': 'StudentDetailedInfo', 'fields': ['age'], 'id': 1},
-         },
-        {'function_name': "_has_academic_break",
-         'information': {'section': 'personal', 'model': 'StudentDetailedInfo', 'fields': ['academic_break'], 'id': 2},
-         },
-        {'function_name': "_has_powerful_recommendation",
-         'information': {'section': 'personal', 'model': 'StudentDetailedInfo', 'fields': ['powerful_recommendation'],
-                         'id': 3},
-         },
-        {'function_name': "_has_related_work_experience",
-         'information': {'section': 'personam', 'model': 'StudentDetailedInfo', 'fields': ['related_work_experience'],
-                         'id': 4},
-         },
-        {'function_name': "_has_education",
-         'information': {'section': 'academic_degree', 'model': 'Education', 'fields': [], 'id': 5},
-         },
-        {'function_name': "_has_completed_want_to_apply",
-         'information': {'section': 'apply_destination', 'model': 'WantToApply',
-                         'fields': ['countries', 'grades'], 'id': 6},
-         },
-    ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
@@ -327,6 +204,57 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         validators=[MinValueValidator(1)],
         editable=False
     )
+
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def _education_has_this_major(self, major):
+        return Education.objects.filter(
+            student_detailed_info__id=self.id,
+            major=major
+        ).exists()
+
+    def education_has_these_majors(self, majors_list):
+        found = False
+        for major in majors_list:
+            found = found or self._education_has_this_major(major)
+        return found
+
+    def last_education(self):
+        education_qs = Education.objects.filter(content_type=get_sdi_ct_or_none(), object_id=self.id)
+        return education_qs.last_education()
+
+    def language_certificates_str(self):
+        return LanguageCertificate.objects.filter(content_type=get_sdi_ct_or_none(), object_id=self.id).brief_str()
+
+
+class StudentDetailedInfo(StudentDetailedInfoBase):
+
+    # If all of these functions return True the form completion definition satisfies
+    # The keys are function names
+    completed_credentials = [
+        {'function_name': "_has_age",
+         'information': {'section': 'personal', 'model': 'StudentDetailedInfo', 'fields': ['age'], 'id': 1},
+         },
+        {'function_name': "_has_academic_break",
+         'information': {'section': 'personal', 'model': 'StudentDetailedInfo', 'fields': ['academic_break'], 'id': 2},
+         },
+        {'function_name': "_has_powerful_recommendation",
+         'information': {'section': 'personal', 'model': 'StudentDetailedInfo', 'fields': ['powerful_recommendation'],
+                         'id': 3},
+         },
+        {'function_name': "_has_related_work_experience",
+         'information': {'section': 'personam', 'model': 'StudentDetailedInfo', 'fields': ['related_work_experience'],
+                         'id': 4},
+         },
+        {'function_name': "_has_education",
+         'information': {'section': 'academic_degree', 'model': 'Education', 'fields': [], 'id': 5},
+         },
+        {'function_name': "_has_completed_want_to_apply",
+         'information': {'section': 'apply_destination', 'model': 'WantToApply',
+                         'fields': ['countries', 'grades'], 'id': 6},
+         },
+    ]
 
     publications = GenericRelation(
         Publication, related_query_name='student_detailed_info'
