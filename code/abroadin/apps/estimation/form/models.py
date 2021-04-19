@@ -53,6 +53,20 @@ class WantToApply(models.Model):
 
     objects = WantToApplyManager.as_manager()
 
+    @property
+    def is_complete(self):
+        check_fields = ['countries', 'grades', 'semester_years']
+        if not self:
+            return False
+        completed = True
+        non_complete_fields = []
+        for field in check_fields:
+            if not getattr(self, field).exists():
+                non_complete_fields.append(field)
+                completed = False
+        return completed
+
+
     def get_grades(self):
         return self.grades.all()
 
