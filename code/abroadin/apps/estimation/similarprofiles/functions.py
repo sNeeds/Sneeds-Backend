@@ -136,6 +136,4 @@ class SimilarProfilesForForm:
         return admissions
 
     def find_similar_admissions_if_complete(self):
-        if self.form.is_complete:
-            return self.find_similar_admissions()
-        return []
+        return self.find_similar_admissions()

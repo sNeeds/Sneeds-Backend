@@ -10,6 +10,7 @@ from abroadin.utils.custom.admin.actions import export_as_csv_action
 from abroadin.apps.estimation.similarprofiles.functions import SimilarProfilesForForm
 
 from . import models
+from ...data.applydata.models import Education, GradeChoices
 
 LanguageCertificateType = ad_models.LanguageCertificate.LanguageCertificateType
 
@@ -82,27 +83,8 @@ class WantToApplyInline(admin.TabularInline):
     extra = 1
 
 
-class StudentDetailedInfoBaseAdmin(admin.ModelAdmin):
-    inlines = [
-        EducationInline,
-        PublicationInline,
-
-        RegularLanguageCertificateInline,
-        GMATCertificateInline,
-        GREGeneralCertificateInline,
-        GRESubjectCertificateInline,
-        GREBiologyCertificateInline,
-        GREPhysicsCertificateInline,
-        GREPsychologyCertificateInline,
-        DuolingoCertificateInline,
-    ]
-
-    list_display = ['id']
-    readonly_fields = ['rank', 'value']
-
-
 def get_destination_universities(form):
-    return [uni.name for uni in form.want_to_apply.universities.all()] if form.is_complete else []
+    return [uni.name for uni in form.want_to_apply.universities.all()]
 
 
 def get_destination_countries(form):
@@ -116,37 +98,68 @@ def get_destination_countries(form):
 
 
 def get_similar_admission(form):
-    return [a.id for a in SimilarProfilesForForm(form).find_similar_admissions()] \
-        if form.is_complete else []
+    return [a.id for a in SimilarProfilesForForm(form).find_similar_admissions()]
 
 
 @admin.register(models.StudentDetailedInfo)
-class StudentDetailedInfoAdmin(StudentDetailedInfoBaseAdmin):
-    inlines = [
-                  WantToApplyInline
-              ] + StudentDetailedInfoBaseAdmin.inlines
+class StudentDetailedInfoAdmin(admin.ModelAdmin):
+    readonly_fields = ['rank', 'value']
+    list_display = ['id', 'user', 'value', 'rank', 'updated', 'created']
+    search_fields = ['id', 'user__email']
+
     list_filter = (
         ('updated', DateTimeRangeFilter),
         ('created', DateTimeRangeFilter),
     )
-    list_display = ['id', 'user', 'value', 'rank', 'updated', 'created', 'is_complete']
-    search_fields = ['id', 'user__email']
+
+    inlines = [
+        EducationInline,
+        PublicationInline,
+        WantToApplyInline,
+
+        RegularLanguageCertificateInline,
+        GMATCertificateInline,
+        GREGeneralCertificateInline,
+        GRESubjectCertificateInline,
+        GREBiologyCertificateInline,
+        GREPhysicsCertificateInline,
+        GREPsychologyCertificateInline,
+        DuolingoCertificateInline,
+    ]
+
     actions = [
         export_as_csv_action(
             "Similar Profiles CSV Export",
-            fields=['id', 'updated', 'user_id', 'user__email', 'user__phone_number',
-                    'last_education__gpa', 'last_education__university__country', 'last_education__university__name',
-                    'bachelor_education__id', 'master_education__id', 'phd_education__id', 'post_doc_education__id',
-                    get_destination_countries,
-                    get_destination_universities,
-                    get_similar_admission,
-                    ],
+            fields=[
+                'id', 'updated', 'user_id', 'user__email', 'user__phone_number',
+                'last_education__gpa', 'last_education__university__country',
+                'last_education__university__name', 'bachelor_education__id',
+                'master_education__id', 'phd_education__id', 'post_doc_education__id',
+                get_destination_countries,
+                get_destination_universities,
+                get_similar_admission,
+            ],
             file_name='Forms_Similar_Profiles_' + str(datetime.now()),
             multi_row_field=get_similar_admission,
         )
     ]
 
-    def is_complete(self, instance):
-        return instance.is_complete
+    def get_grade(self, instance, grade):
+        try:
+            return instance.educations.filter(grade=grade)
+        except Education.DoesNotExist:
+            return None
+        except Education.MultipleObjectsReturned:
+            return list(self.educations.all().filter(grade=grade))
 
-    is_complete.boolean = True
+    def bachelor_education(self, instance):
+        return self.get_grade(instance, GradeChoices.BACHELOR)
+
+    def master_education(self, instance):
+        return self.get_grade(instance, GradeChoices.MASTER)
+
+    def phd_education(self, instance):
+        return self.get_grade(instance, GradeChoices.PHD)
+
+    def post_doc_education(self, instance):
+        return self.get_grade(instance, GradeChoices.POST_DOC)

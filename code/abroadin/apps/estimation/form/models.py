@@ -53,20 +53,6 @@ class WantToApply(models.Model):
 
     objects = WantToApplyManager.as_manager()
 
-    @property
-    def is_complete(self):
-        check_fields = ['countries', 'grades', 'semester_years']
-        if not self:
-            return False
-        completed = True
-        non_complete_fields = []
-        for field in check_fields:
-            if not getattr(self, field).exists():
-                non_complete_fields.append(field)
-                completed = False
-        return completed
-
-
     def get_grades(self):
         return self.grades.all()
 
@@ -78,30 +64,6 @@ class WantToApply(models.Model):
 
 
 class StudentDetailedInfo(models.Model):
-    completed_credentials = [
-        {'function_name': "_has_age",
-         'information': {'section': 'personal', 'model': 'StudentDetailedInfo', 'fields': ['age'], 'id': 1},
-         },
-        {'function_name': "_has_academic_break",
-         'information': {'section': 'personal', 'model': 'StudentDetailedInfo', 'fields': ['academic_break'], 'id': 2},
-         },
-        {'function_name': "_has_powerful_recommendation",
-         'information': {'section': 'personal', 'model': 'StudentDetailedInfo', 'fields': ['powerful_recommendation'],
-                         'id': 3},
-         },
-        {'function_name': "_has_related_work_experience",
-         'information': {'section': 'personam', 'model': 'StudentDetailedInfo', 'fields': ['related_work_experience'],
-                         'id': 4},
-         },
-        {'function_name': "_has_education",
-         'information': {'section': 'academic_degree', 'model': 'Education', 'fields': [], 'id': 5},
-         },
-        {'function_name': "_has_completed_want_to_apply",
-         'information': {'section': 'apply_destination', 'model': 'WantToApply',
-                         'fields': ['countries', 'grades'], 'id': 6},
-         },
-    ]
-
     class PaymentAffordabilityChoices(models.TextChoices):
         LOW = 'Low', 'Low'
         AVERAGE = 'Average', 'Average'
@@ -232,25 +194,6 @@ class StudentDetailedInfo(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    def _education_has_this_major(self, major):
-        return Education.objects.filter(
-            student_detailed_info__id=self.id,
-            major=major
-        ).exists()
-
-    def education_has_these_majors(self, majors_list):
-        found = False
-        for major in majors_list:
-            found = found or self._education_has_this_major(major)
-        return found
-
-    def last_education(self):
-        education_qs = Education.objects.filter(content_type=get_sdi_ct_or_none(), object_id=self.id)
-        return education_qs.last_education()
-
-    def language_certificates_str(self):
-        return LanguageCertificate.objects.filter(content_type=get_sdi_ct_or_none(), object_id=self.id).brief_str()
-
     objects = StudentDetailedInfoManager.as_manager()
 
     class Meta:
@@ -259,47 +202,23 @@ class StudentDetailedInfo(models.Model):
     RELATED_WORK_EXPERIENCE_STORE_LABEL_RANGE = 2
     RELATED_WORK_EXPERIENCE_VIEW_LABEL_RANGE = 6
 
+    def _education_has_this_major(self, major):
+        return Education.objects.filter(
+            student_detailed_info__id=self.id,
+            major=major
+        ).exists()
+
+    def education_has_these_majors(self, majors_list):
+        for major in majors_list:
+            if self._education_has_this_major(major):
+                return True
+        return False
+
     @property
     def last_education(self):
         if not hasattr(self, '_cached_last_education'):
             self._cached_last_education = self.educations.last_education()
         return self._cached_last_education
-
-    @property
-    def bachelor_education(self):
-        try:
-            return self.educations.all().get(grade=GradeChoices.BACHELOR)
-        except Education.DoesNotExist:
-            return None
-        except Education.MultipleObjectsReturned:
-            return list(self.educations.all().filter(grade=GradeChoices.BACHELOR))
-
-    @property
-    def master_education(self):
-        try:
-            return self.educations.all().get(grade=GradeChoices.MASTER)
-        except Education.DoesNotExist:
-            return None
-        except Education.MultipleObjectsReturned:
-            return list(self.educations.all().filter(grade=GradeChoices.MASTER))
-
-    @property
-    def phd_education(self):
-        try:
-            return self.educations.all().get(grade=GradeChoices.PHD)
-        except Education.DoesNotExist:
-            return None
-        except Education.MultipleObjectsReturned:
-            return list(self.educations.all().filter(grade=GradeChoices.PHD))
-
-    @property
-    def post_doc_education(self):
-        try:
-            return self.educations.all().get(grade=GradeChoices.POST_DOC)
-        except Education.DoesNotExist:
-            return None
-        except Education.MultipleObjectsReturned:
-            return list(self.educations.all().filter(grade=GradeChoices.POST_DOC))
 
     def _compute_rank(self):
         better_rank_qs = self.__class__.objects.filter(value__gt=self.value)
@@ -355,55 +274,11 @@ class StudentDetailedInfo(models.Model):
 
         return value
 
-    def _has_age(self):
-        return self.age is not None
-
-    def _has_academic_break(self):
-        return self.academic_break is not None
-
-    def _has_gender(self):
-        return self.gender is not None
-
-    def _has_powerful_recommendation(self):
-        return self.powerful_recommendation is not None
-
-    def _has_related_work_experience(self):
-        return self.related_work_experience is not None
-
-    def _has_education(self):
-        return self.educations.all().exists()
-
     def get_want_to_apply_or_none(self):
         try:
             return WantToApply.objects.get(student_detailed_info__id=self.id)
         except WantToApply.DoesNotExist:
             return None
-
-    def _has_completed_want_to_apply(self):
-        want_to_apply = self.get_want_to_apply_or_none()
-        if want_to_apply is None:
-            return False
-        return want_to_apply.is_complete
-
-    @property
-    def is_complete(self):
-        completed = True
-        for credential in self.completed_credentials:
-            completed = completed & getattr(self, credential.get('function_name'))()
-        return completed
-
-    def check_is_completed(self, raise_exception=True) -> (bool, list):
-        errors = []
-        completed = True
-        for credential in self.completed_credentials:
-            if not getattr(self, credential['function_name'])():
-                errors.append(credential['information'])
-                completed = False
-        if not completed and raise_exception:
-            raise DRFValidationError({
-                api_settings.NON_FIELD_ERRORS_KEY: {'incomplete_form': errors}
-            })
-        return completed, errors
 
     def get_last_university_grade(self):
         return None if self.last_education is None else self.last_education.grade
@@ -495,4 +370,3 @@ class StudentDetailedInfo(models.Model):
         self.value = self._compute_value()
         self.rank = self._compute_rank()
         super().save(*args, **kwargs)
-

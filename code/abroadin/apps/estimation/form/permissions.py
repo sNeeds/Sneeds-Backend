@@ -59,31 +59,6 @@ class IsWantToApplyOwnerOrDetailedInfoWithoutUser(permissions.BasePermission):
     pass
 
 
-class CompletedForm(permissions.BasePermission):
-
-    def has_permission(self, request, view):
-        assert hasattr(view, 'lookup_url_kwarg'), \
-            _('Missing form id lookup_url_kwarg in view: {}'.format(str(view)))
-        assert view.kwargs.get(view.lookup_url_kwarg, None) is not None, \
-            _('Missing form id lookup_url_kwarg "{}" in view {} kwargs.'.format(view.lookup_url_kwarg, str(view)))
-
-        form = get_form_obj(view.kwargs.get(view.lookup_url_kwarg, None))
-        if form:
-            form.check_is_completed(raise_exception=True)
-        return True
-
-    def has_object_permission(self, request, view, obj):
-        assert hasattr(view, 'lookup_url_kwarg'), \
-            _('Missing form id lookup_url_kwarg in view: {}'.format(str(view)))
-        assert view.kwargs.get(view.lookup_url_kwarg, None) is not None, \
-            _('Missing form id lookup_url_kwarg "{}" in view {} kwargs.'.format(view.lookup_url_kwarg, str(view)))
-
-        form = obj or get_form_obj(view.kwargs.get(view.lookup_url_kwarg, None))
-        if form:
-            form.check_is_completed(raise_exception=True)
-        return True
-
-
 class IsFormOwner(permissions.BasePermission):
     message = "User should be the owner of form"
 
