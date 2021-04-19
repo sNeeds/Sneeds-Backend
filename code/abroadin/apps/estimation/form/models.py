@@ -8,12 +8,20 @@ from django.db import models
 from rest_framework.settings import api_settings
 from rest_framework.exceptions import ValidationError as DRFValidationError
 
-from abroadin.apps.data.applydata.models import Education, LanguageCertificate, Publication, Grade, SemesterYear, \
-    GradeChoices
 from abroadin.apps.data.applydata.values.language import LANGUAGE_B_VALUE
 from abroadin.apps.estimation.form.variables import MISSING_LABEL, REWARDED_LABEL
 from abroadin.apps.estimation.form.managers import StudentDetailedInfoManager, WantToApplyManager
+from abroadin.apps.data.applydata import models as ad_models
+from abroadin.apps.data.globaldata.validators import validate_resume_file_size
 
+from abroadin.apps.data.applydata.models import (
+    Education,
+    LanguageCertificate,
+    Publication,
+    Grade,
+    SemesterYear,
+    GradeChoices
+)
 from abroadin.apps.data.globaldata.models import (
     Country,
     University,
@@ -22,9 +30,6 @@ from abroadin.apps.data.globaldata.models import (
     User,
     BasicFormField
 )
-
-from abroadin.apps.data.applydata import models as ad_models
-from abroadin.apps.data.globaldata.validators import validate_resume_file_size
 
 
 def get_sdi_ct_or_none():
@@ -40,17 +45,17 @@ class WantToApply(models.Model):
         on_delete=models.CASCADE,
         related_name="want_to_apply",
     )
-    countries = models.ManyToManyField(Country, blank=True)
+    countries = models.ManyToManyField(Country)
+    majors = models.ManyToManyField(Major)
+    grades = models.ManyToManyField(Grade)
     universities = models.ManyToManyField(University, blank=True)
-    grades = models.ManyToManyField(Grade, blank=True)
-    majors = models.ManyToManyField(Major, blank=True)
     semester_years = models.ManyToManyField(SemesterYear, blank=True)
 
     objects = WantToApplyManager.as_manager()
 
     @property
     def is_complete(self):
-        check_fields = ['countries', 'grades']
+        check_fields = ['countries', 'grades', 'semester_years']
         if not self:
             return False
         completed = True
@@ -61,13 +66,8 @@ class WantToApply(models.Model):
                 completed = False
         return completed
 
-    def grades_want_to_apply(self):
-        # TODO: VERY IMPORTANT ***************
-        # Hossein change the structure of is_completed definition in WantToApply.
-        # Tell me afterwards *************#########
-        # **********************************************
-        # **********************************************
-        # **********************************************
+
+    def get_grades(self):
         return self.grades.all()
 
     def get_countries_qs(self):
@@ -77,96 +77,7 @@ class WantToApply(models.Model):
         return self.universities.all()
 
 
-class StudentDetailedInfoBase(models.Model):
-    publications_to_base = GenericRelation(
-        Publication, related_query_name='student_detailed_info_base'
-    )
-    educations_to_base = GenericRelation(
-        Education, related_query_name='student_detailed_info_base'
-    )
-    language_certificates_to_base = GenericRelation(
-        LanguageCertificate, related_query_name='student_detailed_info_base'
-    )
-    regular_certificates_to_base = GenericRelation(
-        ad_models.RegularLanguageCertificate, related_query_name='student_detailed_info_base'
-    )
-    gmat_certificates_to_base = GenericRelation(
-        ad_models.GMATCertificate, related_query_name='student_detailed_info_base'
-    )
-    gre_general_certificates_to_base = GenericRelation(
-        ad_models.GREGeneralCertificate, related_query_name='student_detailed_info_base'
-    )
-    gre_subject_certificates_to_base = GenericRelation(
-        ad_models.GRESubjectCertificate, related_query_name='student_detailed_info_base'
-    )
-    gre_biology_certificates_to_base = GenericRelation(
-        ad_models.GREBiologyCertificate, related_query_name='student_detailed_info_base'
-    )
-    gre_physics_certificates_to_base = GenericRelation(
-        ad_models.GREPhysicsCertificate, related_query_name='student_detailed_info_base'
-    )
-    gre_psychology_certificates_to_base = GenericRelation(
-        ad_models.GREPsychologyCertificate, related_query_name='student_detailed_info_base'
-    )
-    duolingo_certificates_to_base = GenericRelation(
-        ad_models.DuolingoCertificate, related_query_name='student_detailed_info_base'
-    )
-
-    resume = models.FileField(
-        null=True,
-        blank=True,
-        upload_to=get_student_resume_path,
-        validators=[
-            FileExtensionValidator(allowed_extensions=['pdf']), validate_resume_file_size
-        ]
-    )
-
-    related_work_experience = models.PositiveIntegerField(help_text="In months")
-    academic_break = models.PositiveIntegerField(
-        validators=[MinValueValidator(0), MaxValueValidator(100)], help_text="In years"
-    )
-
-    olympiad = models.CharField(
-        max_length=256,
-        blank=True,
-        null=True
-    )
-
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
-
-    def _education_has_this_major(self, major):
-        return Education.objects.filter(
-            student_detailed_info__id=self.id,
-            major=major
-        ).exists()
-
-    def education_has_these_majors(self, majors_list):
-        found = False
-        for major in majors_list:
-            found = found or self._education_has_this_major(major)
-        return found
-
-    def last_education(self):
-        education_qs = Education.objects.filter(content_type=get_sdi_ct_or_none(), object_id=self.id)
-        return education_qs.last_education()
-
-    def language_certificates_str(self):
-        return LanguageCertificate.objects.filter(content_type=get_sdi_ct_or_none(), object_id=self.id).brief_str()
-
-
-class StudentDetailedInfo(StudentDetailedInfoBase):
-    class PaymentAffordabilityChoices(models.TextChoices):
-        LOW = 'Low', 'Low'
-        AVERAGE = 'Average', 'Average'
-        HIGH = 'High', 'High'
-
-    class GenderChoices(models.TextChoices):
-        MALE = 'Male', 'Male'
-        FEMALE = 'Female', 'Female'
-
-    # If all of these functions return True the form completion definition satisfies
-    # The keys are function names
+class StudentDetailedInfo(models.Model):
     completed_credentials = [
         {'function_name': "_has_age",
          'information': {'section': 'personal', 'model': 'StudentDetailedInfo', 'fields': ['age'], 'id': 1},
@@ -190,6 +101,69 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
                          'fields': ['countries', 'grades'], 'id': 6},
          },
     ]
+
+    class PaymentAffordabilityChoices(models.TextChoices):
+        LOW = 'Low', 'Low'
+        AVERAGE = 'Average', 'Average'
+        HIGH = 'High', 'High'
+
+    class GenderChoices(models.TextChoices):
+        MALE = 'Male', 'Male'
+        FEMALE = 'Female', 'Female'
+
+    publications = GenericRelation(
+        Publication, related_query_name='student_detailed_info'
+    )
+    educations = GenericRelation(
+        Education, related_query_name='student_detailed_info'
+    )
+    language_certificates = GenericRelation(
+        LanguageCertificate, related_query_name='student_detailed_info'
+    )
+    regular_certificates = GenericRelation(
+        ad_models.RegularLanguageCertificate, related_query_name='student_detailed_info'
+    )
+    gmat_certificates = GenericRelation(
+        ad_models.GMATCertificate, related_query_name='student_detailed_info'
+    )
+    gre_general_certificates = GenericRelation(
+        ad_models.GREGeneralCertificate, related_query_name='student_detailed_info'
+    )
+    gre_subject_certificates = GenericRelation(
+        ad_models.GRESubjectCertificate, related_query_name='student_detailed_info'
+    )
+    gre_biology_certificates = GenericRelation(
+        ad_models.GREBiologyCertificate, related_query_name='student_detailed_info'
+    )
+    gre_physics_certificates = GenericRelation(
+        ad_models.GREPhysicsCertificate, related_query_name='student_detailed_info'
+    )
+    gre_psychology_certificates = GenericRelation(
+        ad_models.GREPsychologyCertificate, related_query_name='student_detailed_info'
+    )
+    duolingo_certificates = GenericRelation(
+        ad_models.DuolingoCertificate, related_query_name='student_detailed_info'
+    )
+
+    resume = models.FileField(
+        null=True,
+        blank=True,
+        upload_to=get_student_resume_path,
+        validators=[
+            FileExtensionValidator(allowed_extensions=['pdf']), validate_resume_file_size
+        ]
+    )
+
+    related_work_experience = models.PositiveIntegerField(help_text="In months")
+    academic_break = models.PositiveIntegerField(
+        validators=[MinValueValidator(0), MaxValueValidator(100)], help_text="In years"
+    )
+
+    olympiad = models.CharField(
+        max_length=256,
+        blank=True,
+        null=True
+    )
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
@@ -255,39 +229,27 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         editable=False
     )
 
-    publications = GenericRelation(
-        Publication, related_query_name='student_detailed_info'
-    )
-    educations = GenericRelation(
-        Education, related_query_name='student_detailed_info'
-    )
-    language_certificates = GenericRelation(
-        LanguageCertificate, related_query_name='student_detailed_info'
-    )
-    regular_certificates = GenericRelation(
-        ad_models.RegularLanguageCertificate, related_query_name='student_detailed_info'
-    )
-    gmat_certificates = GenericRelation(
-        ad_models.GMATCertificate, related_query_name='student_detailed_info'
-    )
-    gre_general_certificates = GenericRelation(
-        ad_models.GREGeneralCertificate, related_query_name='student_detailed_info'
-    )
-    gre_subject_certificates = GenericRelation(
-        ad_models.GRESubjectCertificate, related_query_name='student_detailed_info'
-    )
-    gre_biology_certificates = GenericRelation(
-        ad_models.GREBiologyCertificate, related_query_name='student_detailed_info'
-    )
-    gre_physics_certificates = GenericRelation(
-        ad_models.GREPhysicsCertificate, related_query_name='student_detailed_info'
-    )
-    gre_psychology_certificates = GenericRelation(
-        ad_models.GREPsychologyCertificate, related_query_name='student_detailed_info'
-    )
-    duolingo_certificates = GenericRelation(
-        ad_models.DuolingoCertificate, related_query_name='student_detailed_info'
-    )
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def _education_has_this_major(self, major):
+        return Education.objects.filter(
+            student_detailed_info__id=self.id,
+            major=major
+        ).exists()
+
+    def education_has_these_majors(self, majors_list):
+        found = False
+        for major in majors_list:
+            found = found or self._education_has_this_major(major)
+        return found
+
+    def last_education(self):
+        education_qs = Education.objects.filter(content_type=get_sdi_ct_or_none(), object_id=self.id)
+        return education_qs.last_education()
+
+    def language_certificates_str(self):
+        return LanguageCertificate.objects.filter(content_type=get_sdi_ct_or_none(), object_id=self.id).brief_str()
 
     objects = StudentDetailedInfoManager.as_manager()
 
@@ -533,3 +495,4 @@ class StudentDetailedInfo(StudentDetailedInfoBase):
         self.value = self._compute_value()
         self.rank = self._compute_rank()
         super().save(*args, **kwargs)
+

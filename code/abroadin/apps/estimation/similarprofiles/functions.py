@@ -92,7 +92,7 @@ class SimilarProfilesForForm:
         want_to_apply = self.form.want_to_apply
         education_qs = self.form.educations.all()
 
-        grades_want_to_apply = want_to_apply.grades_want_to_apply()
+        grades_want_to_apply = want_to_apply.get_grades()
         similar_destination_countries = get_want_to_apply_similar_countries(want_to_apply)
         last_grade_gpa = education_qs.last_education().gpa
 
@@ -120,7 +120,7 @@ class SimilarProfilesForForm:
 
         form_majors = self._extract_form_majors()
         majors = self._get_related_majors(form_majors)
-        applied_grades = want_to_apply.grades_want_to_apply()
+        applied_grades = want_to_apply.get_grades()
         destination_counties = get_want_to_apply_similar_countries(want_to_apply)
         gpa_around = education_qs.last_education().gpa
 
