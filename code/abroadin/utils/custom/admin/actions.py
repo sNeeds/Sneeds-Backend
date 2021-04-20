@@ -34,6 +34,17 @@ def export_as_csv_action(description="Export selected objects as CSV file",
                 _, _, value = lookup_field_support_nested(field, obj, modeladmin)
                 row[field] = value
 
+            if multi_row_field is not None:
+                multi_row_field_value = row.pop(multi_row_field)
+                base_row_values = list(row.values())
+                if multi_row_field_value:
+                    for t in multi_row_field_value:
+                        writer.writerow(base_row_values + [t])
+                else:
+                    writer.writerow(base_row_values + [])
+            else:
+                writer.writerow(list(row.values()))
+
             writer.writerow(list(row.values()))
 
         return response
