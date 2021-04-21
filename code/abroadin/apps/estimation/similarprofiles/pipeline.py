@@ -18,16 +18,16 @@ class SimilarProfilesPipeline:
             try:
                 res.append({'title': filtering.title,
                             'description': filtering.get_filter_description(sdi),
-                            # 'qs': filtering.filter_and_provide_results_qs(profiles, sdi),
+                            'qs': filtering.filter_and_provide_results_qs(profiles, sdi),
                             'failure': False,
                             'failure_text': None,
                             'failure_front_code': None,
-                            'ids': filtering.filter_and_provide_results_qs(profiles, sdi).only('id').values_list('id', flat=True),
+                            # 'ids': filtering.filter_and_provide_results_qs(profiles, sdi).only('id').values_list('id', flat=True),
                             })
             except SDIDefectException as e:
                 res.append({'title': filtering.title,
                             'description': filtering.get_filter_description(sdi),
-                            # 'qs': None,
+                            'qs': None,
                             'failure': True,
                             'failure_text': e.pretty_message,
                             'failure_front_code': e.front_code,

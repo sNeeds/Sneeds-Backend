@@ -33,6 +33,7 @@ class Country(models.Model):
         validators=[FileExtensionValidator(['svg'])]
     )
     slug = models.SlugField(unique=True, help_text="Lowercase pls")
+    demonym = models.CharField(max_length=32)
 
     objects = CountryManager.as_manager()
 

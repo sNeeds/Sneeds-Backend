@@ -41,9 +41,15 @@ def search_country(qs, phrase):
         return qs
 
     queryset = qs.annotate(similarity=TrigramSimilarity('search_name', phrase),
-                           search_name_length=Ln(Length('search_name'))). \
-        annotate(t=F('similarity') * F('search_name_length')). \
-        filter(t__gt=0.4).order_by('-t')
+                           search_name_length=0.06 * Ln(Length('search_name')),
+                           # search_rank=SearchRank(
+                           #     SearchVector('search_name', weight='A'),
+                           #     SearchQuery(phrase),
+                           #     normalization=Value(0),
+                           # )
+                           ). \
+        annotate(t=F('similarity') + F('search_name_length')). \
+        filter(t__gt=0.2).order_by('-t')
 
     return queryset | other_queryset
 

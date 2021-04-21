@@ -1,5 +1,6 @@
 from django.db.models import Q
 
+from abroadin.apps.data.globaldata.models import Major
 from abroadin.apps.estimation.form.exceptions import SDIEducationLeakage
 from abroadin.apps.estimation.form.models import StudentDetailedInfo
 from abroadin.apps.estimation.similarprofiles.constraints import SIMILAR_GPA_OFFSET, SIMILAR_UNIVERSITY_RANK_OFFSET
@@ -29,7 +30,7 @@ class SimilarAndWorseGPAFilter(Filter):
         assert offset < 20
 
         sdi_last_education = sdi.last_education
-        if not sdi_last_education:
+        if sdi_last_education is None:
             if self.raise_defect_exception and SDIEducationLeakage in self.accepted_defect_exceptions:
                 raise SDIEducationLeakage()
             return Q(pk__in=[])
@@ -45,7 +46,7 @@ class ExactHomeCountryFilter(Filter):
 
     def get_query(self, profiles, sdi: StudentDetailedInfo):
         sdi_last_education = sdi.last_education
-        if not sdi_last_education:
+        if sdi_last_education is None:
             if self.raise_defect_exception and SDIEducationLeakage in self.accepted_defect_exceptions:
                 raise SDIEducationLeakage()
             return Q(pk__in=[])
@@ -58,7 +59,7 @@ class ExactHomeUniversityFilter(Filter):
     def get_query(self, profiles, sdi: StudentDetailedInfo):
 
         sdi_last_education = sdi.last_education
-        if not sdi_last_education:
+        if sdi_last_education is None:
             if self.raise_defect_exception and SDIEducationLeakage in self.accepted_defect_exceptions:
                 raise SDIEducationLeakage()
             return Q(pk__in=[])
@@ -71,7 +72,7 @@ class SimilarAndWorseHomeUniversityFilter(Filter):
     def get_query(self, profiles, sdi: StudentDetailedInfo):
 
         sdi_last_education = sdi.last_education
-        if not sdi_last_education:
+        if sdi_last_education is None:
             if self.raise_defect_exception and SDIEducationLeakage in self.accepted_defect_exceptions:
                 raise SDIEducationLeakage()
             return Q(pk__in=[])
@@ -92,7 +93,7 @@ class SimilarHomeUniversityFilter(Filter):
     def get_query(self, profiles, sdi: StudentDetailedInfo):
 
         sdi_last_education = sdi.last_education
-        if not sdi_last_education:
+        if sdi_last_education is None:
             if self.raise_defect_exception and SDIEducationLeakage in self.accepted_defect_exceptions:
                 raise SDIEducationLeakage()
             return Q(pk__in=[])
@@ -102,7 +103,7 @@ class SimilarHomeUniversityFilter(Filter):
         assert offset < 10000
 
         sdi_last_education = sdi.last_education
-        if not sdi_last_education:
+        if sdi_last_education is None:
             if self.raise_defect_exception and SDIEducationLeakage in self.accepted_defect_exceptions:
                 raise SDIEducationLeakage()
             return Q(pk__in=[])
@@ -157,15 +158,16 @@ class ExactDestinationUniversityFilter(Filter):
 class ExactHomeMajorsFilter(Filter):
 
     def get_query(self, profiles, sdi: StudentDetailedInfo):
-        majors_id = sdi.educations.all().values_list('major__id', flat=True)
+        majors_id = set(sdi.educations.all().values_list('major__id', flat=True))
         return Q(educations__major__id__in=majors_id)
 
 
-class MoreSimilarHomeMajorsFilter(Filter):
+class VerySimilarHomeMajorsFilter(Filter):
 
     def get_query(self, profiles, sdi: StudentDetailedInfo):
-        majors_id = sdi.educations.all().values_list('major__id', flat=True)
+        majors_id = set(sdi.educations.all().values_list('major__id', flat=True))
         if not majors_id:
+            print('Not majors id')
             if self.raise_defect_exception \
                     and sdi_exception.SDIEducationLeakage in self.accepted_defect_exceptions:
                 raise sdi_exception.SDIEducationLeakage()
@@ -173,7 +175,28 @@ class MoreSimilarHomeMajorsFilter(Filter):
 
         parents_id = sdi.educations.all().values_list('major__parent_id', flat=True)
         parents_parents_id = sdi.educations.all().values_list('major__parent__parent_id', flat=True)
-        l = set(parents_id) | set(majors_id)
+        l = set(parents_id) | majors_id
+
+        return Q(educations__major__id__in=l) | Q(educations__major__parent_id__in=l)
+
+
+class SimilarHomeMajorsFilter(Filter):
+
+    def get_query(self, profiles, sdi: StudentDetailedInfo):
+        majors_id = set(sdi.educations.all().values_list('major__id', flat=True))
+        if not majors_id:
+            print('Not majors id')
+            if self.raise_defect_exception \
+                    and sdi_exception.SDIEducationLeakage in self.accepted_defect_exceptions:
+                raise sdi_exception.SDIEducationLeakage()
+            return Q(pk__in=[])
+
+        parents_id = sdi.educations.all().values_list('major__parent_id', flat=True)
+        parents_parents_id = sdi.educations.all().values_list('major__parent__parent_id', flat=True)
+        children_id = Major.objects.filter(parent__in=majors_id).values_list('id', flat=True)
+        print('child id', list(children_id))
+        l = set(parents_id) | majors_id | set(children_id)
+        print(l)
 
         return Q(educations__major__id__in=l) | Q(educations__major__parent_id__in=l)
 
@@ -181,15 +204,39 @@ class MoreSimilarHomeMajorsFilter(Filter):
 class GeneralSimilarHomeMajorsFilter(Filter):
 
     def get_query(self, profiles, sdi: StudentDetailedInfo):
-        majors_id = sdi.educations.all().values_list('major__id', flat=True)
+        majors_id = set(sdi.educations.all().values_list('major__id', flat=True))
         if not majors_id:
+            print('Not majors id')
+            if self.raise_defect_exception \
+                    and sdi_exception.SDIEducationLeakage in self.accepted_defect_exceptions:
+                raise sdi_exception.SDIEducationLeakage()
+            return Q(pk__in=[])
+
+        parents_id = sdi.educations.all().values_list('major__parent_id', flat=True)
+        parents_parents_id = sdi.educations.all().values_list('major__parent__parent_id', flat=True)
+        children_id = Major.objects.filter(parent__in=majors_id).values_list('id', flat=True)
+        parents_children_id = Major.objects.filter(parent__in=parents_id).values_list('id', flat=True)
+        # print('child id', list(children_id))
+        l = set(parents_id) | majors_id | set(children_id)
+        # print(l)
+
+        return Q(educations__major__id__in=l | set(parents_children_id)) | Q(educations__major__parent_id__in=l)
+
+
+class MoreGeneralSimilarHomeMajorsFilter(Filter):
+
+    def get_query(self, profiles, sdi: StudentDetailedInfo):
+        majors_id = set(sdi.educations.all().values_list('major__id', flat=True))
+        if not majors_id:
+            print('Not majors id')
             if self.raise_defect_exception \
                     and sdi_exception.SDIEducationLeakage in self.accepted_defect_exceptions:
                 raise sdi_exception.SDIEducationLeakage()
             return Q(pk__in=[])
         parents_id = sdi.educations.all().values_list('major__parent_id', flat=True)
         parents_parents_id = sdi.educations.all().values_list('major__parent__parent_id', flat=True)
-        l = set(parents_id) | set(majors_id)
+        children_id = Major.objects.filter(parent__in=majors_id).values_list('id', flat=True)
+        l = set(parents_id) | majors_id | set(children_id)
 
         return Q(educations__major__id__in=l) | Q(educations__major__parent_id__in=l) | Q(
             educations__major__parent__parent_id__in=l)
@@ -198,15 +245,16 @@ class GeneralSimilarHomeMajorsFilter(Filter):
 class VeryGeneralSimilarHomeMajorsFilter(Filter):
 
     def get_query(self, profiles, sdi: StudentDetailedInfo):
-        majors_id = sdi.educations.all().values_list('major__id', flat=True)
+        majors_id = set(sdi.educations.all().values_list('major__id', flat=True))
         if not majors_id:
+            print('Not majors id')
             if self.raise_defect_exception \
                     and sdi_exception.SDIEducationLeakage in self.accepted_defect_exceptions:
                 raise sdi_exception.SDIEducationLeakage()
             return Q(pk__in=[])
         parents_id = sdi.educations.all().values_list('major__parent_id', flat=True)
         parents_parents_id = sdi.educations.all().values_list('major__parent__parent_id', flat=True)
-        l = set(parents_id) | set(majors_id) | set(parents_parents_id)
+        l = set(parents_id) | majors_id | set(parents_parents_id)
 
         return Q(educations__major__id__in=l) | Q(educations__major__parent_id__in=l)
 
@@ -219,7 +267,7 @@ class VeryGeneralSimilarHomeMajorsFilter(Filter):
 class ExactDestinationMajorsFilter(Filter):
 
     def get_query(self, profiles, sdi: StudentDetailedInfo):
-        majors_id = sdi.want_to_apply.majors.all().values_list('id', flat=True)
+        majors_id = set(sdi.want_to_apply.majors.all().values_list('id', flat=True))
         if not majors_id:
             if self.raise_defect_exception \
                     and sdi_exception.SDIWantToApplyMajorLeakage in self.accepted_defect_exceptions:
@@ -228,10 +276,10 @@ class ExactDestinationMajorsFilter(Filter):
         return Q(admission__major__id__in=majors_id)
 
 
-class MoreSimilarDestinationMajorsFilter(Filter):
+class VerySimilarDestinationMajorsFilter(Filter):
 
     def get_query(self, profiles, sdi: StudentDetailedInfo):
-        majors_id = sdi.want_to_apply.majors.all().values_list('id', flat=True)
+        majors_id = set(sdi.want_to_apply.majors.all().values_list('id', flat=True))
         if not majors_id:
             if self.raise_defect_exception \
                     and sdi_exception.SDIWantToApplyMajorLeakage in self.accepted_defect_exceptions:
@@ -239,14 +287,31 @@ class MoreSimilarDestinationMajorsFilter(Filter):
             return Q(pk__in=[])
         parents_id = sdi.want_to_apply.majors.all().values_list('major__parent_id', flat=True)
         parents_parents_id = sdi.want_to_apply.majors.all().values_list('major__parent__parent_id', flat=True)
-        l = set(parents_id) | set(majors_id)
+        children_id = Major.objects.filter(parent=sdi.last_education.major).values_list('id', flat=True)
+        l = set(parents_id) | majors_id
+        return Q(admission__major__id__in=l) | Q(admission__major__parent_id__in=l)
+
+
+class SimilarDestinationMajorsFilter(Filter):
+
+    def get_query(self, profiles, sdi: StudentDetailedInfo):
+        majors_id = set(sdi.want_to_apply.majors.all().values_list('id', flat=True))
+        if not majors_id:
+            if self.raise_defect_exception \
+                    and sdi_exception.SDIWantToApplyMajorLeakage in self.accepted_defect_exceptions:
+                raise sdi_exception.SDIWantToApplyMajorLeakage()
+            return Q(pk__in=[])
+        parents_id = sdi.want_to_apply.majors.all().values_list('major__parent_id', flat=True)
+        parents_parents_id = sdi.want_to_apply.majors.all().values_list('major__parent__parent_id', flat=True)
+        children_id = Major.objects.filter(parent__in=majors_id).values_list('id', flat=True)
+        l = set(parents_id) | majors_id | set(children_id)
         return Q(admission__major__id__in=l) | Q(admission__major__parent_id__in=l)
 
 
 class GeneralSimilarDestinationMajorsFilter(Filter):
 
     def get_query(self, profiles, sdi: StudentDetailedInfo):
-        majors_id = sdi.want_to_apply.majors.all().values_list('id', flat=True)
+        majors_id = set(sdi.want_to_apply.majors.all().values_list('id', flat=True))
         if not majors_id:
             if self.raise_defect_exception \
                     and sdi_exception.SDIWantToApplyMajorLeakage in self.accepted_defect_exceptions:
@@ -254,7 +319,26 @@ class GeneralSimilarDestinationMajorsFilter(Filter):
             return Q(pk__in=[])
         parents_id = sdi.want_to_apply.majors.all().values_list('major__parent_id', flat=True)
         parents_parents_id = sdi.want_to_apply.majors.all().values_list('major__parent__parent_id', flat=True)
-        l = set(parents_id) | set(majors_id)
+        children_id = Major.objects.filter(parent__in=majors_id).values_list('id', flat=True)
+        parents_children_id = Major.objects.filter(parent__in=parents_id).values_list('id', flat=True)
+        l = set(parents_id) | majors_id | set(children_id)
+        return Q(admission__major__id__in=l | set(parents_children_id)) | Q(admission__major__parent_id__in=l)
+
+
+class MoreGeneralSimilarDestinationMajorsFilter(Filter):
+
+    def get_query(self, profiles, sdi: StudentDetailedInfo):
+        majors_id = set(sdi.want_to_apply.majors.all().values_list('id', flat=True))
+        if not majors_id:
+            if self.raise_defect_exception \
+                    and sdi_exception.SDIWantToApplyMajorLeakage in self.accepted_defect_exceptions:
+                raise sdi_exception.SDIWantToApplyMajorLeakage()
+            return Q(pk__in=[])
+        parents_id = sdi.want_to_apply.majors.all().values_list('major__parent_id', flat=True)
+        parents_parents_id = sdi.want_to_apply.majors.all().values_list('major__parent__parent_id', flat=True)
+        children_id = Major.objects.filter(parent__in=majors_id).values_list('id', flat=True)
+
+        l = set(parents_id) | majors_id | set(children_id)
         return Q(admission__major__id__in=l) | Q(admission__major__parent_id__in=l) | Q(
             admission__major__parent__parent_id__in=l)
 
@@ -262,13 +346,14 @@ class GeneralSimilarDestinationMajorsFilter(Filter):
 class VeryGeneralSimilarDestinationMajorsFilter(Filter):
 
     def get_query(self, profiles, sdi: StudentDetailedInfo):
-        majors_id = sdi.want_to_apply.majors.all().values_list('id', flat=True)
+        majors_id = set(sdi.want_to_apply.majors.all().values_list('id', flat=True))
         if not majors_id:
+            print('Not majors id')
             if self.raise_defect_exception \
                     and sdi_exception.SDIWantToApplyMajorLeakage in self.accepted_defect_exceptions:
                 raise sdi_exception.SDIWantToApplyMajorLeakage()
             return Q(pk__in=[])
         parents_id = sdi.want_to_apply.majors.all().values_list('major__parent_id', flat=True)
         parents_parents_id = sdi.want_to_apply.majors.all().values_list('major__parent__parent_id', flat=True)
-        l = set(parents_id) | set(majors_id) | set(parents_parents_id)
+        l = set(parents_id) | majors_id | set(parents_parents_id)
         return Q(admission__major__id__in=l) | Q(admission__major__parent_id__in=l)

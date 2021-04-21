@@ -14,6 +14,7 @@ from .functions import SimilarProfilesForForm
 from .pipeline import SimilarProfilesPipelineObject
 from .taggers import SimilarProfilesTagger
 from ...applyprofile.models import ApplyProfile
+from ...data.globaldata.models import Major
 
 
 class ProfilesListAPIView(CListAPIView):
@@ -76,10 +77,19 @@ class ProfilesListAPIViewVersion2(ProfilesListAPIView):
         res = {}
         res['filters'] = []
         all_ids = set()
-
+        print('sdi last edu major:', sdi.last_education.major.name, '\n',
+              'sdi last edu parent major:', sdi.last_education.major.parent.name, '\n',
+              'sdi last edu children major:', Major.objects.filter(parent=sdi.last_education.major),
+              # Major.objects.filter(parent__id__in=sdi.educations.all().values_list('major__id', flat=True)).values_list('name', flat=True)
+        )
         for filtering_result in filtering_results:
-            all_ids = all_ids.union(set(filtering_result['ids']))
-            res['filters'].append(filtering_result)
+            t = filtering_result
+            t['ids'] = filtering_result['qs'].only('id').values_list('id', flat=True)
+            print(filtering_result['title'], '\n', list(filtering_result['qs'].values_list('admission__major__name', flat=True)))
+            # all_ids = all_ids.union(set(filtering_result['ids']))
+            all_ids = all_ids.union(set(t['ids']))
+            del(t['qs'])
+            res['filters'].append(t)
 
         # print('all_ids', len(all_ids))
 
@@ -91,7 +101,7 @@ class ProfilesListAPIViewVersion2(ProfilesListAPIView):
         #     print(str(a.educations.first().major).strip())
         #     print(str(a.admissions.first().major).strip(), '\n', '----------------------------------------------------')
 
-        res['objects'] = self.get_serializer(tagged_queryset, many=True).data
+        res['objects'] = self.get_serializer(tagged_queryset[:7], many=True).data
 
         # res['objects'] = self.get_serializer(
         #     ApplyProfile.objects.filter(id__in=all_ids)[:7],
