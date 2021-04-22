@@ -260,7 +260,7 @@ class StudentDetailedInfo(models.Model):
     RELATED_WORK_EXPERIENCE_VIEW_LABEL_RANGE = 6
 
     @property
-    def last_education(self):
+    def last_education(self) -> Education:
         if not hasattr(self, '_cached_last_education'):
             self._cached_last_education = self.educations.last_education()
         return self._cached_last_education

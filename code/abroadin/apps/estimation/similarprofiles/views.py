@@ -14,6 +14,7 @@ from .functions import SimilarProfilesForForm
 from .pipeline import SimilarProfilesPipelineObject
 from .taggers import SimilarProfilesTagger
 from ...applyprofile.models import ApplyProfile
+from ...data.globaldata.models import Major
 
 
 class ProfilesListAPIView(CListAPIView):
@@ -72,30 +73,27 @@ class ProfilesListAPIViewVersion2(ProfilesListAPIView):
         queryset = self.filter_queryset(self.get_queryset())
         sdi = self.get_form()
 
-        querysets = SimilarProfilesPipelineObject.get_querysets(queryset, sdi)
+        filtering_results = SimilarProfilesPipelineObject.get_filter_results(queryset, sdi)
         res = {}
-        res['filters'] = {}
+        res['filters'] = []
         all_ids = set()
 
-        for title in querysets.keys():
-            print(title, querysets[title].count())
-            res['filters'][title] = querysets[title].only('id').values_list('id', flat=True)
-            all_ids = all_ids.union(set(res['filters'][title]))
+        for filtering_result in filtering_results:
+            # t = filtering_result
+            # t['ids'] = filtering_result['qs'].only('id').values_list('id', flat=True)
+            # print(filtering_result['title'], '\n', list(filtering_result['qs'].values_list('admission__major__name', flat=True)))
+            # all_ids = all_ids.union(set(t['ids']))
+            # del(t['qs'])
+            # res['filters'].append(t)
 
-        # print('all_ids', len(all_ids))
+            all_ids = all_ids.union(set(filtering_result['ids']))
+            res['filters'].append(filtering_result)
 
         queryset = ApplyProfile.objects.prefetch_related('educations', 'publications', 'language_certificates')\
             .filter(id__in=all_ids)
 
         tagged_queryset = SimilarProfilesTagger.tag_queryset3(queryset, sdi)
-        # for a in tagged_queryset:
-        #     print(str(a.educations.first().major).strip())
-        #     print(str(a.admissions.first().major).strip(), '\n', '----------------------------------------------------')
 
         res['objects'] = self.get_serializer(tagged_queryset, many=True).data
-
-        # res['objects'] = self.get_serializer(
-        #     ApplyProfile.objects.filter(id__in=all_ids)[:7],
-        #     many=True).data
 
         return Response(res)
