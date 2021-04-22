@@ -77,34 +77,23 @@ class ProfilesListAPIViewVersion2(ProfilesListAPIView):
         res = {}
         res['filters'] = []
         all_ids = set()
-        print('sdi last edu major:', sdi.last_education.major.name, '\n',
-              'sdi last edu parent major:', sdi.last_education.major.parent.name, '\n',
-              'sdi last edu children major:', Major.objects.filter(parent=sdi.last_education.major),
-              # Major.objects.filter(parent__id__in=sdi.educations.all().values_list('major__id', flat=True)).values_list('name', flat=True)
-        )
-        for filtering_result in filtering_results:
-            t = filtering_result
-            t['ids'] = filtering_result['qs'].only('id').values_list('id', flat=True)
-            print(filtering_result['title'], '\n', list(filtering_result['qs'].values_list('admission__major__name', flat=True)))
-            # all_ids = all_ids.union(set(filtering_result['ids']))
-            all_ids = all_ids.union(set(t['ids']))
-            del(t['qs'])
-            res['filters'].append(t)
 
-        # print('all_ids', len(all_ids))
+        for filtering_result in filtering_results:
+            # t = filtering_result
+            # t['ids'] = filtering_result['qs'].only('id').values_list('id', flat=True)
+            # print(filtering_result['title'], '\n', list(filtering_result['qs'].values_list('admission__major__name', flat=True)))
+            # all_ids = all_ids.union(set(t['ids']))
+            # del(t['qs'])
+            # res['filters'].append(t)
+
+            all_ids = all_ids.union(set(filtering_result['ids']))
+            res['filters'].append(filtering_result)
 
         queryset = ApplyProfile.objects.prefetch_related('educations', 'publications', 'language_certificates')\
             .filter(id__in=all_ids)
 
         tagged_queryset = SimilarProfilesTagger.tag_queryset3(queryset, sdi)
-        # for a in tagged_queryset:
-        #     print(str(a.educations.first().major).strip())
-        #     print(str(a.admissions.first().major).strip(), '\n', '----------------------------------------------------')
 
-        res['objects'] = self.get_serializer(tagged_queryset[:7], many=True).data
-
-        # res['objects'] = self.get_serializer(
-        #     ApplyProfile.objects.filter(id__in=all_ids)[:7],
-        #     many=True).data
+        res['objects'] = self.get_serializer(tagged_queryset, many=True).data
 
         return Response(res)

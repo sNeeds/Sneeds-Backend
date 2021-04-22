@@ -1,5 +1,7 @@
 from django.utils.translation import ngettext_lazy
 
+from abroadin.apps.estimation.form.exceptions import SDIEducationLeakage, SDIWantToApplyUniversityAndCountryLeakage, \
+    SDIWantToApplyCountryLeakage
 from abroadin.apps.estimation.form.models import StudentDetailedInfo
 from abroadin.apps.estimation.similarprofiles import filters
 from abroadin.apps.estimation.similarprofiles.constraints import SIMILAR_GPA_OFFSET
@@ -30,19 +32,18 @@ class Filtering:
 class BestCaseFiltering(Filtering):
     title = 'Best Matches Ancestors',
     filters = [
-        # filters.ExactHomeMajorsFilter(),
-        # filters.ExactDestinationMajorsFilter(),
         filters.MoreGeneralSimilarHomeMajorsFilter(),
         filters.MoreGeneralSimilarDestinationMajorsFilter(),
-        # filters.VeryGeneralSimilarHomeMajorsFilter(),
-        # filters.VeryGeneralSimilarDestinationMajorsFilter(),
 
-        # filters.ExactHomeUniversityFilter(),
-        filters.SimilarAndWorseHomeUniversityFilter(),
+        filters.ExactHomeUniversityFilter(raise_defect_exception=True,
+                                          accepted_defect_exceptions=[SDIEducationLeakage]),
+        # filters.SimilarAndWorseHomeUniversityFilter(raise_defect_exception=True),
 
-        filters.SameDestinationFilter(),
+        filters.SameDestinationFilter(raise_defect_exception=True,
+                                      accepted_defect_exceptions=[SDIWantToApplyUniversityAndCountryLeakage]),
 
-        filters.SimilarAndWorseGPAFilter(),
+        filters.SimilarAndWorseGPAFilter(raise_defect_exception=True,
+                                         accepted_defect_exceptions=[SDIEducationLeakage]),
     ]
 
     def get_filter_description(self, sdi: StudentDetailedInfo):
@@ -58,14 +59,13 @@ class BestCaseFiltering(Filtering):
                 ' with a GPA under %(gpa_upper_bound)d based on your desired universities.',
                 len(wta_universities)
             ) % {
-                'last_edu_uni': sdi.last_education.university.name,
-                'wta_major': wta_majors.pop().strip(),
-                'wta_university': wta_universities.pop(),
-                'gpa_upper_bound': sdi.last_education.gpa + SIMILAR_GPA_OFFSET,
-            }
+                       'last_edu_uni': sdi.last_education.university.name,
+                       'wta_major': wta_majors.pop().strip(),
+                       'wta_university': wta_universities.pop(),
+                       'gpa_upper_bound': sdi.last_education.gpa + SIMILAR_GPA_OFFSET,
+                   }
 
         if len(wta_majors) > 1:
-
             text = ngettext_lazy(
                 'Find out about %(last_edu_uni)s students admitted to your desired majors'
                 ' at %(wta_university)s with a GPA under %(gpa_upper_bound)d.'
@@ -73,10 +73,10 @@ class BestCaseFiltering(Filtering):
                 ' desired majors and universities with a GPA under %(gpa_upper_bound)d.',
                 len(wta_universities)
             ) % {
-                'last_edu_uni': sdi.last_education.university.name,
-                'wta_university': wta_universities.pop(),
-                'gpa_upper_bound': sdi.last_education.gpa + SIMILAR_GPA_OFFSET,
-            }
+                       'last_edu_uni': sdi.last_education.university.name,
+                       'wta_university': wta_universities.pop(),
+                       'gpa_upper_bound': sdi.last_education.gpa + SIMILAR_GPA_OFFSET,
+                   }
         return text
 
 
@@ -95,7 +95,8 @@ class SimilarHomeUniversityExactDestinationCountryFiltering(Filtering):
         filters.SimilarHomeUniversityFilter(),
         # filters.SimilarAndWorseHomeUniversityFilter(),
 
-        filters.ExactDestinationCountryFilter(),
+        filters.ExactDestinationCountryFilter(raise_defect_exception=True,
+                                              accepted_defect_exceptions=[SDIWantToApplyCountryLeakage]),
     ]
 
     def get_filter_description(self, sdi: StudentDetailedInfo):
@@ -110,10 +111,10 @@ class SimilarHomeUniversityExactDestinationCountryFiltering(Filtering):
                 ' with rankings close to %(last_edu_uni)s.',
                 len(wta_countries)
             ) % {
-                'last_edu_uni': sdi.last_education.university.name,
-                'wta_major': wta_majors.pop().strip(),
-                'wta_country': wta_countries.pop(),
-            }
+                       'last_edu_uni': sdi.last_education.university.name,
+                       'wta_major': wta_majors.pop().strip(),
+                       'wta_country': wta_countries.pop(),
+                   }
 
         if len(wta_majors) > 1:
             text = ngettext_lazy(
@@ -124,9 +125,9 @@ class SimilarHomeUniversityExactDestinationCountryFiltering(Filtering):
                 ' with rankings close to %(last_edu_uni)s.',
                 len(wta_countries)
             ) % {
-                    'last_edu_uni': sdi.last_education.university.name,
-                    'wta_country': wta_countries.pop(),
-                }
+                       'last_edu_uni': sdi.last_education.university.name,
+                       'wta_country': wta_countries.pop(),
+                   }
 
         return text
 
@@ -159,10 +160,10 @@ class SimilarHomeUniversityExactDestinationUniversityFiltering(Filtering):
                 ' with rankings close to %(last_edu_uni)s.',
                 len(wta_universities)
             ) % {
-                'wta_major': wta_majors.pop().strip(),
-                'wta_university': wta_universities.pop(),
-                'last_edu_uni': sdi.last_education.university.name,
-            }
+                       'wta_major': wta_majors.pop().strip(),
+                       'wta_university': wta_universities.pop(),
+                       'last_edu_uni': sdi.last_education.university.name,
+                   }
 
         if len(wta_majors) > 1:
             text = ngettext_lazy(
@@ -172,9 +173,9 @@ class SimilarHomeUniversityExactDestinationUniversityFiltering(Filtering):
                 ' from universities with rankings close to %(last_edu_uni)s.',
                 len(wta_universities)
             ) % {
-                'wta_university': wta_universities.pop(),
-                'last_edu_uni': sdi.last_education.university.name,
-            }
+                       'wta_university': wta_universities.pop(),
+                       'last_edu_uni': sdi.last_education.university.name,
+                   }
 
         return text
 
@@ -202,9 +203,9 @@ class ExactHomeUniversityFiltering(Filtering):
             'Find out about %(last_edu_uni)s students with admissions similar to your desired majors abroad.',
             len(wta_majors)
         ) % {
-            'last_edu_uni': sdi.last_education.university.name,
-            'wta_major': wta_majors.pop().strip()
-        }
+                   'last_edu_uni': sdi.last_education.university.name,
+                   'wta_major': wta_majors.pop().strip()
+               }
         return text
 
 
@@ -213,12 +214,12 @@ class ExactHomeCountryFiltering(Filtering):
     filters = [
         # filters.ExactHomeMajorsFilter(),
         # filters.ExactDestinationMajorsFilter(),
-        # filters.VerySimilarHomeMajorsFilter(),
-        # filters.VerySimilarDestinationMajorsFilter(),
+        filters.VerySimilarHomeMajorsFilter(),
+        filters.VerySimilarDestinationMajorsFilter(),
         # filters.SimilarHomeMajorsFilter(),
         # filters.SimilarDestinationMajorsFilter(),
-        filters.GeneralSimilarHomeMajorsFilter(),
-        filters.GeneralSimilarDestinationMajorsFilter(),
+        # filters.GeneralSimilarHomeMajorsFilter(),
+        # filters.GeneralSimilarDestinationMajorsFilter(),
         filters.ExactHomeCountryFilter(),
     ]
 
@@ -229,7 +230,7 @@ class ExactHomeCountryFiltering(Filtering):
             'Find out about %(last_edu_country_demonym)s students admitted abroad, close to your desired majors.',
             len(wta_majors)
         ) % {
-            'last_edu_country_demonym': sdi.last_education.university.country.demonym.strip(),
-            'wta_major': wta_majors.pop().strip(),
-        }
+                   'last_edu_country_demonym': sdi.last_education.university.country.demonym.strip(),
+                   'wta_major': wta_majors.pop().strip(),
+               }
         return text
