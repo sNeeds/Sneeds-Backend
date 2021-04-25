@@ -15,10 +15,6 @@ User = get_user_model()
 
 
 def pre_save_user(sender, instance, *args, **kwargs):
-    # print('pre_save_user')
-    # print(sender)
-    # print(args)
-    # print(kwargs)
 
     if instance._state.adding is True and instance._state.db is None:
         db_instance = None

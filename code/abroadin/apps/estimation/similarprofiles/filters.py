@@ -119,11 +119,13 @@ class SameDestinationFilter(Filter):
 
     def get_query(self, profiles, sdi: StudentDetailedInfo):
         wta_unis = set(sdi.want_to_apply.universities.all().values_list('id', flat=True))
-        wta_countries = set(sdi.want_to_apply.countries.all().values_list('id', flat=True))
         if wta_unis:
             return Q(admission__destination__id__in=wta_unis)
+
+        wta_countries = set(sdi.want_to_apply.countries.all().values_list('id', flat=True))
         if wta_countries:
             return Q(admission__destination__country__id__in=wta_countries)
+
         if self.raise_defect_exception and \
                 sdi_exception.SDIWantToApplyUniversityAndCountryLeakage in self.accepted_defect_exceptions:
             raise sdi_exception.SDIWantToApplyUniversityAndCountryLeakage()
@@ -133,11 +135,15 @@ class SameDestinationFilter(Filter):
 class ExactDestinationCountryFilter(Filter):
 
     def get_query(self, profiles, sdi: StudentDetailedInfo) -> Q:
-        a = set(sdi.want_to_apply.countries.all().values_list('id', flat=True))
-        if not a:
-            a.union(set(sdi.want_to_apply.universities.values_list('country', flat=True)))
+        wta_countries = set(sdi.want_to_apply.countries.all().values_list('id', flat=True))
+        if not wta_countries:
+            wta_countries = set(sdi.want_to_apply.universities.values_list('country', flat=True))
 
-        return Q(admission__destination__country__id__in=a)
+            if not wta_countries and self.raise_defect_exception \
+                    and sdi_exception.SDIWantToApplyUniversityAndCountryLeakage in self.accepted_defect_exceptions:
+                raise sdi_exception.SDIWantToApplyUniversityAndCountryLeakage()
+
+        return Q(admission__destination__country__id__in=wta_countries)
 
 
 class ExactDestinationUniversityFilter(Filter):
