@@ -9,6 +9,8 @@ from abroadin.apps.estimation.form.models import WantToApply, StudentDetailedInf
 from abroadin.apps.estimation.estimations.reviews import StudentDetailedFormReview
 from abroadin.apps.estimation.estimations.chances import AdmissionChance
 
+from .admission_chance_test_tool import AdmissionChanceResultTest
+
 
 class FormComments(CAPIView):
     lookup_url_kwarg = 'form_id'
@@ -84,3 +86,14 @@ class WantToApplyChance(CAPIView):
 
         except WantToApply.DoesNotExist:
             return Response({})
+
+
+class AdmissionChanceTestAPIView(CAPIView):
+
+    def get(self, request):
+        admission_chance_result_test = AdmissionChanceResultTest()
+        admission_chance_result_test.test_results()
+        r = Response({'failures': admission_chance_result_test.failures})
+        print('response produced')
+        return r
+

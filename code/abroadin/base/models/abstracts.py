@@ -14,10 +14,14 @@ class InheritanceCastModel(models.Model):
 
     def save(self, *args, **kwargs):
         if self._state.adding:
-            self.real_type = self._get_real_type()
+            self.real_type = self._get_real_type(using=kwargs.get('using'))
         super().save(*args, **kwargs)
 
-    def _get_real_type(self):
+    def _get_real_type(self, *args, **kwargs):
+        using = kwargs.pop('using', None)
+        if using:
+            ct = ContentType.objects.get_for_model(type(self))
+            return ContentType.objects.using(using).get(app_label=ct.app_label, model=ct.model)
         return ContentType.objects.get_for_model(type(self))
 
     def cast(self):
