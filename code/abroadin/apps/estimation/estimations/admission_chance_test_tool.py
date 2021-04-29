@@ -1,10 +1,7 @@
-import os
-
 from decimal import Decimal
-from random import randint
+from random import randint, choice
 
 from django.contrib.contenttypes.models import ContentType
-from django.db import connections, connection, OperationalError
 from django.conf import settings
 from django.contrib.auth import get_user_model
 
@@ -12,7 +9,7 @@ from rest_framework.test import APITestCase
 
 from github import Github
 
-from abroadin.apps.data.applydata.models import Grade, Education, LanguageCertificate, RegularLanguageCertificate, \
+from abroadin.apps.data.applydata.models import Education, LanguageCertificate, RegularLanguageCertificate, \
     Publication, GradeChoices
 from abroadin.apps.data.applydata.utils import get_toefl_fake_sub_scores_based_on_overall, \
     get_ielts_fake_sub_scores_based_on_overall
@@ -22,27 +19,20 @@ from abroadin.apps.estimation.form.models import StudentDetailedInfo
 
 LCType = LanguageCertificate.LanguageCertificateType
 
-global SDI_CT
+TESTCASE_UNI_RANK_CHOICES = ['1to20', '21to100', '101to400', '401to1000', '1000above']
+RESULT_UNI_RANK_CHOICES = ["0-20", "20-100", "100-400", "+400"]
+PUBLICATION_CHOICES = ['Excellent', 'No', 'Very Good', 'Good', 'Medium']
+LANGUAGE_CERT_TYPE_CHOICES = ['IELTS']
+EDUCATION_GRADE_CHOICES = ['Master', 'Bachelor']
 
 User = get_user_model()
+PJRC = Publication.JournalReputationChoices
+PWAC = Publication.WhichAuthorChoices
+
+global SDI_CT
 
 github_access = Github(settings.GITHUB_ORGANIZATION_ACCESS_KEY)
 repo = github_access.get_repo(settings.ADMISSION_CHANCE_CREDENTIALS_REPOSITORY_NAME)
-
-
-def create_test_db():
-    main_db_name = settings.DATABASES['default']['NAME']
-    test_db_name = settings.DATABASES['custom_test_db']['NAME']
-
-    with connection.cursor() as cursor:
-        cursor.execute('DROP DATABASE IF EXISTS {} ;'.format(test_db_name))
-        try:
-            cursor.execute('CREATE DATABASE {} WITH TEMPLATE {};'.format(test_db_name, main_db_name))
-        except OperationalError:
-            a = cursor.execute(
-                "SELECT pid, usename, client_addr FROM pg_stat_activity WHERE datname ='{}';".format(main_db_name))
-            print('iiiinja', a)
-            cursor.execute('CREATE DATABASE {} WITH TEMPLATE {};'.format(test_db_name, main_db_name))
 
 
 def fill_sdi_ct():
@@ -112,6 +102,10 @@ def get_major() -> Major:
     return Major.objects.using('custom_test_db').first()
 
 
+def get_some_engineering_major():
+    return Major.objects.using('custom_test_db').first()
+
+
 def get_sdi(user):
     return StudentDetailedInfo.objects.using('custom_test_db').create(
         user=user,
@@ -128,10 +122,6 @@ def get_sdi(user):
     )
 
 
-def get_some_engineering_major():
-    return Major.objects.using('custom_test_db').first()
-
-
 def get_education(sdi: StudentDetailedInfo, raw_grade, gpa, university_rank) -> Education:
     return Education.objects.using('custom_test_db').create(
         object_id=sdi.id,
@@ -144,7 +134,40 @@ def get_education(sdi: StudentDetailedInfo, raw_grade, gpa, university_rank) -> 
     )
 
 
-# def set_publication(sdi, publications_quality):
+def get_publications(sdi, publications_quality: str):
+    if publications_quality == 'No':
+        return []
+
+    jp_choices = {
+        'Medium': [PJRC.ONE_TO_THREE],
+        'Good': [PJRC.ONE_TO_THREE],
+        'Very Good': [PJRC.ONE_TO_THREE],
+        'Excellent': [PJRC.ONE_TO_THREE],
+        }
+    wa_choices = {
+        'Medium': [PWAC.SECOND],
+        'Good': [PWAC.SECOND],
+        'Very Good': [PWAC.SECOND],
+        'Excellent': [PWAC.SECOND],
+    }
+    pub_count_choices = {
+        'Medium': 1,
+        'Good': 1,
+        'Very Good': 1,
+        'Excellent': 1,
+    }
+
+    publications = []
+    for i in range(0, pub_count_choices.get(publications_quality, 0)):
+        publications.append(Publication.objects.create(
+            content_type=SDI_CT,
+            object_id=sdi.id,
+            which_author=choice(wa_choices[publications_quality]),
+            journal_reputation=choice(jp_choices[publications_quality]),
+            publish_year=2020,
+
+        ))
+    return publications
 
 
 def get_language_certificate(sdi, lc_type_text, lc_overall):
@@ -195,6 +218,19 @@ def clear_user_data(user):
         pass
 
 
+def check_test_case(test_case):
+    if test_case['Publication'] not in PUBLICATION_CHOICES:
+        raise Exception('wrong Publication input')
+    if test_case['Language Cert Type'] not in LANGUAGE_CERT_TYPE_CHOICES:
+        raise Exception('wrong Language Cert Type input')
+    if test_case['Grade'] not in EDUCATION_GRADE_CHOICES:
+        raise Exception('wrong Grade input')
+    if list(test_case['Chances']['Admission'].keys()) != TESTCASE_UNI_RANK_CHOICES:
+        raise Exception('wrong Chances, Admission key input. valid values: {}'.format(str(TESTCASE_UNI_RANK_CHOICES)))
+    if list(test_case['Chances']['Fund'].keys()) != TESTCASE_UNI_RANK_CHOICES:
+        raise Exception('wrong Chances, Fund key input. valid values: {}'.format(str(TESTCASE_UNI_RANK_CHOICES)))
+
+
 class AdmissionChanceResultTest(APITestCase):
 
     def __init__(self, methodName='runTest'):
@@ -217,24 +253,21 @@ class AdmissionChanceResultTest(APITestCase):
             'admission_chance': admission_chance_attrs,
         }
 
-        # create_test_db()
         fill_sdi_ct()
 
-        test_case_uni_rank_keys = ['1to20', '21to100', '101to400', '401to1000', '1000above']
-        data_uni_rank_keys = ["0-20", "20-100", "100-400", "+400"]
-
         user = get_user()
-
         for test_case in test_cases:
-            print(test_case['id'])
             clear_user_data(user)
             try:
+                check_test_case(test_case)
                 sdi = get_sdi(user)
                 education = get_education(sdi, test_case['Grade'], test_case['GPA'], test_case['University Rank'])
 
                 language_certificate = get_language_certificate(sdi, test_case['Language Cert Type'],
                                                                 test_case['Language Cert Score'], )
                 admission_chance = AdmissionChance(sdi)
+
+                publications = get_publications(sdi, test_case['Publication'])
 
                 data = {
                     "0-20": admission_chance.get_1_to_20_chance(values_with_attrs=values_with_attrs),
@@ -243,16 +276,16 @@ class AdmissionChanceResultTest(APITestCase):
                     "+400": admission_chance.get_401_above_chance(values_with_attrs=values_with_attrs),
                 }
 
-                for i in range(0, len(data_uni_rank_keys)):
+                for i in range(0, len(RESULT_UNI_RANK_CHOICES)):
                     returned_result = admission_chance.convert_value_to_label(
-                        data[data_uni_rank_keys[i]]['admission'])
-                    expected_result = test_case['Chances']['Admission'][test_case_uni_rank_keys[i]]
+                        data[RESULT_UNI_RANK_CHOICES[i]]['admission'])
+                    expected_result = test_case['Chances']['Admission'][TESTCASE_UNI_RANK_CHOICES[i]]
 
                     if expected_result != returned_result:
                         detail_dict = {
                             'id': test_case['id'],
                             'admission_type': 'Admission',
-                            'case_university': test_case_uni_rank_keys[i],
+                            'case_university': TESTCASE_UNI_RANK_CHOICES[i],
                             'expected_result': expected_result,
                             'returned_result': returned_result,
                             '   ': '                                                              ',
@@ -261,16 +294,16 @@ class AdmissionChanceResultTest(APITestCase):
                         del detail_dict['Chances']
                         self.failures.append(detail_dict)
 
-                for i in range(0, len(data_uni_rank_keys)):
+                for i in range(0, len(RESULT_UNI_RANK_CHOICES)):
                     returned_result = admission_chance.convert_value_to_label(
-                        data[data_uni_rank_keys[i]]['full_fund'])
-                    expected_result = test_case['Chances']['Fund'][test_case_uni_rank_keys[i]]
+                        data[RESULT_UNI_RANK_CHOICES[i]]['full_fund'])
+                    expected_result = test_case['Chances']['Fund'][TESTCASE_UNI_RANK_CHOICES[i]]
 
                     if expected_result != returned_result:
                         detail_dict = {
                             'id': test_case['id'],
                             'admission_type': 'Fund',
-                            'case_university': test_case_uni_rank_keys[i],
+                            'case_university': TESTCASE_UNI_RANK_CHOICES[i],
                             'expected_result': expected_result,
                             'returned_result': returned_result,
                             '   ': '                                                              ',
@@ -280,6 +313,5 @@ class AdmissionChanceResultTest(APITestCase):
                         self.failures.append(detail_dict)
 
             except Exception as e:
-                raise e
+                # raise e
                 self.failures.append('case {}: ' + str(e).format(test_case['id']))
-        print('finished loop')

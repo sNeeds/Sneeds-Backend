@@ -1,4 +1,5 @@
 from django.http import Http404
+from rest_framework.permissions import IsAuthenticated
 
 from rest_framework.response import Response
 
@@ -10,6 +11,7 @@ from abroadin.apps.estimation.estimations.reviews import StudentDetailedFormRevi
 from abroadin.apps.estimation.estimations.chances import AdmissionChance
 
 from .admission_chance_test_tool import AdmissionChanceResultTest
+from ...users.customAuth.permissions import IsStaff
 
 
 class FormComments(CAPIView):
@@ -89,11 +91,9 @@ class WantToApplyChance(CAPIView):
 
 
 class AdmissionChanceTestAPIView(CAPIView):
+    permission_classes = [IsAuthenticated, IsStaff]
 
     def get(self, request):
         admission_chance_result_test = AdmissionChanceResultTest()
         admission_chance_result_test.test_results()
-        r = Response({'failures': admission_chance_result_test.failures})
-        print('response produced')
-        return r
-
+        return Response({'failures': admission_chance_result_test.failures})

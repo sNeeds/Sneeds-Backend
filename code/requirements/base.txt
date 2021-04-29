@@ -86,6 +86,7 @@ pyasn1-modules==0.2.8
 pycodestyle==2.5.0
 pycoin==0.90.20190630
 pycountry==20.7.3
+PyGithub==1.55
 PyJWT==1.7.1
 pyparsing==2.4.5
 python-bidi==0.4.2
