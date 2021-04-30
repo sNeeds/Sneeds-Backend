@@ -19,12 +19,6 @@ from abroadin.apps.estimation.form.models import StudentDetailedInfo
 
 LCType = LanguageCertificate.LanguageCertificateType
 
-TESTCASE_UNI_RANK_CHOICES = ['1to20', '21to100', '101to400', '401to1000', '1000above']
-RESULT_UNI_RANK_CHOICES = ["0-20", "20-100", "100-400", "+400"]
-PUBLICATION_CHOICES = ['Excellent', 'No', 'Very Good', 'Good', 'Medium']
-LANGUAGE_CERT_TYPE_CHOICES = ['IELTS']
-EDUCATION_GRADE_CHOICES = ['Master', 'Bachelor']
-
 User = get_user_model()
 PJRC = Publication.JournalReputationChoices
 PWAC = Publication.WhichAuthorChoices
@@ -33,6 +27,37 @@ global SDI_CT
 
 github_access = Github(settings.GITHUB_ORGANIZATION_ACCESS_KEY)
 repo = github_access.get_repo(settings.ADMISSION_CHANCE_CREDENTIALS_REPOSITORY_NAME)
+
+TESTCASE_UNI_RANK_CHOICES = ['1to20', '21to100', '101to400', '401to1000', '1000above']
+RESULT_UNI_RANK_CHOICES = ["0-20", "20-100", "100-400", "+400"]
+PUBLICATION_CHOICES = ['Excellent', 'No', 'Very Good', 'Good', 'Medium']
+LANGUAGE_CERT_TYPE_CHOICES = ['IELTS']
+EDUCATION_GRADE_CHOICES = ['Master', 'Bachelor']
+
+PUBLICATION_CREATION_CREDENTIALS = {
+    'Medium': {1: [(PJRC.ONE_TO_THREE, PWAC.FOURTH_OR_MORE), (PJRC.FOUR_TO_TEN, PWAC.FOURTH_OR_MORE)],
+               2: [(PJRC.FOUR_TO_TEN, PWAC.FOURTH_OR_MORE), (PJRC.ABOVE_TEN, PWAC.FOURTH_OR_MORE), ],
+               3: [(PJRC.ONE_TO_THREE, PWAC.FIRST), (PJRC.ONE_TO_THREE, PWAC.FIRST), ],
+               },
+    'Good': {1: [(PJRC.ONE_TO_THREE, PWAC.THIRD), (PJRC.ONE_TO_THREE, PWAC.FOURTH_OR_MORE),
+                 (PJRC.FOUR_TO_TEN, PWAC.SECOND), (PJRC.FOUR_TO_TEN, PWAC.THIRD),
+                 (PJRC.ABOVE_TEN, PWAC.SECOND), (PJRC.ABOVE_TEN, PWAC.THIRD), ],
+             2: [(PJRC.FOUR_TO_TEN, PWAC.THIRD), (PJRC.ABOVE_TEN, PWAC.FIRST),
+                 (PJRC.ABOVE_TEN, PWAC.SECOND), (PJRC.ABOVE_TEN, PWAC.THIRD), ],
+             3: [(PJRC.FOUR_TO_TEN, PWAC.FOURTH_OR_MORE), (PJRC.ABOVE_TEN, PWAC.SECOND)]
+             },
+    'Very Good': {1: [(PJRC.ONE_TO_THREE, PWAC.FIRST), (PJRC.ONE_TO_THREE, PWAC.SECOND),
+                      (PJRC.FOUR_TO_TEN, PWAC.FIRST), (PJRC.ABOVE_TEN, PWAC.FIRST), ],
+                  2: [(PJRC.ONE_TO_THREE, PWAC.THIRD), (PJRC.FOUR_TO_TEN, PWAC.FIRST),
+                      (PJRC.FOUR_TO_TEN, PWAC.SECOND)],
+                  3: [(PJRC.ONE_TO_THREE, PWAC.THIRD), (PJRC.FOUR_TO_TEN, PWAC.THIRD),
+                      (PJRC.ABOVE_TEN, PWAC.FIRST)],
+                  },
+    'Excellent': {2: [(PJRC.ONE_TO_THREE, PWAC.FIRST), (PJRC.ONE_TO_THREE, PWAC.SECOND), ],
+                  3: [(PJRC.ONE_TO_THREE, PWAC.FIRST), (PJRC.ONE_TO_THREE, PWAC.SECOND),
+                      (PJRC.FOUR_TO_TEN, PWAC.FIRST), (PJRC.FOUR_TO_TEN, PWAC.SECOND), ],
+                  },
+}
 
 
 def fill_sdi_ct():
@@ -138,34 +163,16 @@ def get_publications(sdi, publications_quality: str):
     if publications_quality == 'No':
         return []
 
-    jp_choices = {
-        'Medium': [PJRC.ONE_TO_THREE],
-        'Good': [PJRC.ONE_TO_THREE],
-        'Very Good': [PJRC.ONE_TO_THREE],
-        'Excellent': [PJRC.ONE_TO_THREE],
-        }
-    wa_choices = {
-        'Medium': [PWAC.SECOND],
-        'Good': [PWAC.SECOND],
-        'Very Good': [PWAC.SECOND],
-        'Excellent': [PWAC.SECOND],
-    }
-    pub_count_choices = {
-        'Medium': 1,
-        'Good': 1,
-        'Very Good': 1,
-        'Excellent': 1,
-    }
-
     publications = []
-    for i in range(0, pub_count_choices.get(publications_quality, 0)):
+    count = choice(list(PUBLICATION_CREATION_CREDENTIALS[publications_quality].keys()))
+    for i in range(0, count):
         publications.append(Publication.objects.create(
             content_type=SDI_CT,
             object_id=sdi.id,
-            which_author=choice(wa_choices[publications_quality]),
-            journal_reputation=choice(jp_choices[publications_quality]),
+            journal_reputation=choice(PUBLICATION_CREATION_CREDENTIALS[publications_quality][count])[0],
+            which_author=choice(PUBLICATION_CREATION_CREDENTIALS[publications_quality][count])[1],
             publish_year=2020,
-
+            title=''
         ))
     return publications
 
