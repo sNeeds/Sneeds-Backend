@@ -50,7 +50,6 @@ class ExactHomeCountryFilter(Filter):
             if self.raise_defect_exception and SDIEducationLeakage in self.accepted_defect_exceptions:
                 raise SDIEducationLeakage()
             return Q(pk__in=[])
-        # print(sdi_last_education.university.country, sdi_last_education.university.country.id)
         return Q(educations__university__country__id=sdi_last_education.university.country.id)
 
 
@@ -119,11 +118,13 @@ class SameDestinationFilter(Filter):
 
     def get_query(self, profiles, sdi: StudentDetailedInfo):
         wta_unis = set(sdi.want_to_apply.universities.all().values_list('id', flat=True))
-        wta_countries = set(sdi.want_to_apply.countries.all().values_list('id', flat=True))
         if wta_unis:
             return Q(admission__destination__id__in=wta_unis)
+
+        wta_countries = set(sdi.want_to_apply.countries.all().values_list('id', flat=True))
         if wta_countries:
             return Q(admission__destination__country__id__in=wta_countries)
+
         if self.raise_defect_exception and \
                 sdi_exception.SDIWantToApplyUniversityAndCountryLeakage in self.accepted_defect_exceptions:
             raise sdi_exception.SDIWantToApplyUniversityAndCountryLeakage()
@@ -133,11 +134,15 @@ class SameDestinationFilter(Filter):
 class ExactDestinationCountryFilter(Filter):
 
     def get_query(self, profiles, sdi: StudentDetailedInfo) -> Q:
-        a = set(sdi.want_to_apply.countries.all().values_list('id', flat=True))
-        if not a:
-            a.union(set(sdi.want_to_apply.universities.values_list('country', flat=True)))
+        wta_countries = set(sdi.want_to_apply.countries.all().values_list('id', flat=True))
+        if not wta_countries:
+            wta_countries = set(sdi.want_to_apply.universities.values_list('country', flat=True))
 
-        return Q(admission__destination__country__id__in=a)
+            if not wta_countries and self.raise_defect_exception \
+                    and sdi_exception.SDIWantToApplyUniversityAndCountryLeakage in self.accepted_defect_exceptions:
+                raise sdi_exception.SDIWantToApplyUniversityAndCountryLeakage()
+
+        return Q(admission__destination__country__id__in=wta_countries)
 
 
 class ExactDestinationUniversityFilter(Filter):
@@ -167,7 +172,6 @@ class VerySimilarHomeMajorsFilter(Filter):
     def get_query(self, profiles, sdi: StudentDetailedInfo):
         majors_id = set(sdi.educations.all().values_list('major__id', flat=True))
         if not majors_id:
-            print('Not majors id')
             if self.raise_defect_exception \
                     and sdi_exception.SDIEducationLeakage in self.accepted_defect_exceptions:
                 raise sdi_exception.SDIEducationLeakage()
@@ -185,7 +189,6 @@ class SimilarHomeMajorsFilter(Filter):
     def get_query(self, profiles, sdi: StudentDetailedInfo):
         majors_id = set(sdi.educations.all().values_list('major__id', flat=True))
         if not majors_id:
-            print('Not majors id')
             if self.raise_defect_exception \
                     and sdi_exception.SDIEducationLeakage in self.accepted_defect_exceptions:
                 raise sdi_exception.SDIEducationLeakage()
@@ -194,9 +197,7 @@ class SimilarHomeMajorsFilter(Filter):
         parents_id = sdi.educations.all().values_list('major__parent_id', flat=True)
         parents_parents_id = sdi.educations.all().values_list('major__parent__parent_id', flat=True)
         children_id = Major.objects.filter(parent__in=majors_id).values_list('id', flat=True)
-        print('child id', list(children_id))
         l = set(parents_id) | majors_id | set(children_id)
-        print(l)
 
         return Q(educations__major__id__in=l) | Q(educations__major__parent_id__in=l)
 
@@ -206,7 +207,6 @@ class GeneralSimilarHomeMajorsFilter(Filter):
     def get_query(self, profiles, sdi: StudentDetailedInfo):
         majors_id = set(sdi.educations.all().values_list('major__id', flat=True))
         if not majors_id:
-            print('Not majors id')
             if self.raise_defect_exception \
                     and sdi_exception.SDIEducationLeakage in self.accepted_defect_exceptions:
                 raise sdi_exception.SDIEducationLeakage()
@@ -216,9 +216,7 @@ class GeneralSimilarHomeMajorsFilter(Filter):
         parents_parents_id = sdi.educations.all().values_list('major__parent__parent_id', flat=True)
         children_id = Major.objects.filter(parent__in=majors_id).values_list('id', flat=True)
         parents_children_id = Major.objects.filter(parent__in=parents_id).values_list('id', flat=True)
-        # print('child id', list(children_id))
         l = set(parents_id) | majors_id | set(children_id)
-        # print(l)
 
         return Q(educations__major__id__in=l | set(parents_children_id)) | Q(educations__major__parent_id__in=l)
 
@@ -228,7 +226,6 @@ class MoreGeneralSimilarHomeMajorsFilter(Filter):
     def get_query(self, profiles, sdi: StudentDetailedInfo):
         majors_id = set(sdi.educations.all().values_list('major__id', flat=True))
         if not majors_id:
-            print('Not majors id')
             if self.raise_defect_exception \
                     and sdi_exception.SDIEducationLeakage in self.accepted_defect_exceptions:
                 raise sdi_exception.SDIEducationLeakage()
@@ -248,7 +245,6 @@ class MoreGeneralSimilarHomeMajorsFilter2(Filter):
     def get_query(self, profiles, sdi: StudentDetailedInfo):
         majors_id = set(sdi.educations.all().values_list('major__id', flat=True))
         if not majors_id:
-            print('Not majors id')
             if self.raise_defect_exception \
                     and sdi_exception.SDIEducationLeakage in self.accepted_defect_exceptions:
                 raise sdi_exception.SDIEducationLeakage()
@@ -268,7 +264,6 @@ class VeryGeneralSimilarHomeMajorsFilter(Filter):
     def get_query(self, profiles, sdi: StudentDetailedInfo):
         majors_id = set(sdi.educations.all().values_list('major__id', flat=True))
         if not majors_id:
-            print('Not majors id')
             if self.raise_defect_exception \
                     and sdi_exception.SDIEducationLeakage in self.accepted_defect_exceptions:
                 raise sdi_exception.SDIEducationLeakage()
@@ -394,7 +389,6 @@ class VeryGeneralSimilarDestinationMajorsFilter(Filter):
     def get_query(self, profiles, sdi: StudentDetailedInfo):
         majors_id = set(sdi.want_to_apply.majors.all().values_list('id', flat=True))
         if not majors_id:
-            print('Not majors id')
             if self.raise_defect_exception \
                     and sdi_exception.SDIWantToApplyMajorLeakage in self.accepted_defect_exceptions:
                 raise sdi_exception.SDIWantToApplyMajorLeakage()

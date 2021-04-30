@@ -1,7 +1,7 @@
 from django.utils.translation import ngettext_lazy
 
 from abroadin.apps.estimation.form.exceptions import SDIEducationLeakage, SDIWantToApplyUniversityAndCountryLeakage, \
-    SDIWantToApplyCountryLeakage
+    SDIWantToApplyCountryLeakage, SDIWantToApplyMajorLeakage, SDIWantToApplyUniversityLeakage
 from abroadin.apps.estimation.form.models import StudentDetailedInfo
 from abroadin.apps.estimation.similarprofiles import filters
 from abroadin.apps.estimation.similarprofiles.constraints import SIMILAR_GPA_OFFSET
@@ -15,9 +15,6 @@ class Filtering:
         self.results_qs = None
 
     def filter_and_provide_results_qs(self, profiles, sdi):
-        # self.results_qs = profiles
-        # for _filter in self.filters:
-        #     self.results_qs = _filter.filter(self.results_qs, sdi)
         if self.filters:
             final_query = self.filters.pop().get_query(profiles, sdi)
             for _filter in self.filters:
@@ -37,7 +34,6 @@ class BestCaseFiltering(Filtering):
 
         filters.ExactHomeUniversityFilter(raise_defect_exception=True,
                                           accepted_defect_exceptions=[SDIEducationLeakage]),
-        # filters.SimilarAndWorseHomeUniversityFilter(raise_defect_exception=True),
 
         filters.SameDestinationFilter(raise_defect_exception=True,
                                       accepted_defect_exceptions=[SDIWantToApplyUniversityAndCountryLeakage]),
@@ -47,6 +43,8 @@ class BestCaseFiltering(Filtering):
     ]
 
     def get_filter_description(self, sdi: StudentDetailedInfo):
+        text = 'Find out about your university fellows with admissions close to your' \
+               ' desired majors and universities with a GPA under your gpa.'
         wta_majors = list(sdi.want_to_apply.majors.values_list('name', flat=True))
         wta_universities = list(sdi.want_to_apply.universities.values_list('name', flat=True))
 
@@ -83,23 +81,22 @@ class BestCaseFiltering(Filtering):
 class SimilarHomeUniversityExactDestinationCountryFiltering(Filtering):
     title = 'Dream Country',
     filters = [
-        # filters.ExactHomeMajorsFilter(),
-        # filters.ExactDestinationMajorsFilter(),
-        # filters.MoreSimilarDestinationMajorsFilter(),
-        # filters.MoreSimilarHomeMajorsFilter(),
-        filters.MoreGeneralSimilarHomeMajorsFilter(),
-        filters.MoreGeneralSimilarDestinationMajorsFilter(),
-        # filters.VeryGeneralSimilarHomeMajorsFilter(),
-        # filters.VeryGeneralSimilarDestinationMajorsFilter(),
+        filters.MoreGeneralSimilarHomeMajorsFilter(raise_defect_exception=True,
+                                                   accepted_defect_exceptions=[SDIEducationLeakage]),
+        filters.MoreGeneralSimilarDestinationMajorsFilter(raise_defect_exception=True,
+                                                          accepted_defect_exceptions=[SDIWantToApplyMajorLeakage]),
 
         filters.SimilarHomeUniversityFilter(),
         # filters.SimilarAndWorseHomeUniversityFilter(),
 
         filters.ExactDestinationCountryFilter(raise_defect_exception=True,
-                                              accepted_defect_exceptions=[SDIWantToApplyCountryLeakage]),
+                                              accepted_defect_exceptions=[SDIWantToApplyUniversityAndCountryLeakage]),
     ]
 
     def get_filter_description(self, sdi: StudentDetailedInfo):
+        text = 'Find out about students admitted to your desired countries and desired majors' \
+               ' from universities with rankings close to your education university.'
+
         wta_majors = list(sdi.want_to_apply.majors.values_list('name', flat=True))
         wta_countries = list(sdi.want_to_apply.countries.values_list('name', flat=True))
         if len(wta_majors) == 1:
@@ -135,20 +132,21 @@ class SimilarHomeUniversityExactDestinationCountryFiltering(Filtering):
 class SimilarHomeUniversityExactDestinationUniversityFiltering(Filtering):
     title = 'Dream University',
     filters = [
-        # filters.ExactHomeMajorsFilter(),
-        # filters.ExactDestinationMajorsFilter(),
-        # filters.MoreSimilarDestinationMajorsFilter(),
-        # filters.MoreSimilarHomeMajorsFilter(),
-        filters.MoreGeneralSimilarHomeMajorsFilter(),
-        filters.MoreGeneralSimilarDestinationMajorsFilter(),
-        # filters.VeryGeneralSimilarHomeMajorsFilter(),
-        # filters.VeryGeneralSimilarDestinationMajorsFilter(),
+        filters.MoreGeneralSimilarHomeMajorsFilter(raise_defect_exception=True,
+                                                   accepted_defect_exceptions=[SDIEducationLeakage]),
+        filters.MoreGeneralSimilarDestinationMajorsFilter(raise_defect_exception=True,
+                                                          accepted_defect_exceptions=[SDIWantToApplyMajorLeakage]),
 
-        filters.SimilarHomeUniversityFilter(),
-        filters.ExactDestinationUniversityFilter(),
+        filters.SimilarHomeUniversityFilter(raise_defect_exception=True,
+                                            accepted_defect_exceptions=[SDIEducationLeakage]),
+        filters.ExactDestinationUniversityFilter(raise_defect_exception=True,
+                                                 accepted_defect_exceptions=[SDIWantToApplyUniversityLeakage]),
     ]
 
     def get_filter_description(self, sdi: StudentDetailedInfo):
+        text = 'Find out about students with admissions close to your desired majors and universities' \
+               ' from universities with rankings close to your education university.'
+
         wta_majors = list(sdi.want_to_apply.majors.values_list('name', flat=True))
         wta_universities = list(sdi.want_to_apply.universities.values_list('name', flat=True))
 
@@ -183,54 +181,52 @@ class SimilarHomeUniversityExactDestinationUniversityFiltering(Filtering):
 class ExactHomeUniversityFiltering(Filtering):
     title = 'Classmates',
     filters = [
-        # filters.ExactHomeMajorsFilter(),
-        # filters.ExactDestinationMajorsFilter(),
-        # filters.MoreSimilarHomeMajorsFilter(),
-        # filters.MoreSimilarDestinationMajorsFilter(),
-        # filters.SimilarHomeMajorsFilter(),
-        # filters.SimilarDestinationMajorsFilter(),
-        filters.GeneralSimilarHomeMajorsFilter(),
-        filters.GeneralSimilarDestinationMajorsFilter(),
-        # filters.VeryGeneralSimilarHomeMajorsFilter(),
-        # filters.VeryGeneralSimilarDestinationMajorsFilter(),
-        filters.ExactHomeUniversityFilter(),
+        filters.GeneralSimilarHomeMajorsFilter(raise_defect_exception=True,
+                                               accepted_defect_exceptions=[SDIEducationLeakage]),
+        filters.GeneralSimilarDestinationMajorsFilter(raise_defect_exception=True,
+                                                      accepted_defect_exceptions=[SDIWantToApplyMajorLeakage]),
+        filters.ExactHomeUniversityFilter(raise_defect_exception=True,
+                                          accepted_defect_exceptions=[SDIEducationLeakage]),
     ]
 
     def get_filter_description(self, sdi: StudentDetailedInfo):
+        text = 'Find out about your university fellows with admissions similar to your desired majors abroad.'
+
         wta_majors = list(sdi.want_to_apply.majors.values_list('name', flat=True))
-        text = ngettext_lazy(
-            'Find out about %(last_edu_uni)s students who got admission in %(wta_major)s abroad.',
-            'Find out about %(last_edu_uni)s students with admissions similar to your desired majors abroad.',
-            len(wta_majors)
-        ) % {
-                   'last_edu_uni': sdi.last_education.university.name,
-                   'wta_major': wta_majors.pop().strip()
-               }
+        if len(wta_majors) > 0:
+            text = ngettext_lazy(
+                'Find out about %(last_edu_uni)s students who got admission in %(wta_major)s abroad.',
+                'Find out about %(last_edu_uni)s students with admissions similar to your desired majors abroad.',
+                len(wta_majors)
+            ) % {
+                       'last_edu_uni': sdi.last_education.university.name,
+                       'wta_major': wta_majors.pop().strip()
+                   }
         return text
 
 
 class ExactHomeCountryFiltering(Filtering):
     title = 'All',
     filters = [
-        # filters.ExactHomeMajorsFilter(),
-        # filters.ExactDestinationMajorsFilter(),
-        filters.VerySimilarHomeMajorsFilter(),
-        filters.VerySimilarDestinationMajorsFilter(),
-        # filters.SimilarHomeMajorsFilter(),
-        # filters.SimilarDestinationMajorsFilter(),
-        # filters.GeneralSimilarHomeMajorsFilter(),
-        # filters.GeneralSimilarDestinationMajorsFilter(),
+        filters.VerySimilarHomeMajorsFilter(raise_defect_exception=True,
+                                            accepted_defect_exceptions=[SDIEducationLeakage]),
+
+        filters.VerySimilarDestinationMajorsFilter(raise_defect_exception=True,
+                                                   accepted_defect_exceptions=[SDIWantToApplyMajorLeakage]),
         filters.ExactHomeCountryFilter(),
     ]
 
     def get_filter_description(self, sdi: StudentDetailedInfo):
+        text = 'Find out about your compatriot students admitted abroad, close to your desired majors.'
+
         wta_majors = list(sdi.want_to_apply.majors.values_list('name', flat=True))
-        text = ngettext_lazy(
-            'Find out about %(last_edu_country_demonym)s students admitted abroad to %(wta_major)s',
-            'Find out about %(last_edu_country_demonym)s students admitted abroad, close to your desired majors.',
-            len(wta_majors)
-        ) % {
-                   'last_edu_country_demonym': sdi.last_education.university.country.demonym.strip(),
-                   'wta_major': wta_majors.pop().strip(),
-               }
+        if len(wta_majors) > 0:
+            text = ngettext_lazy(
+                'Find out about %(last_edu_country_demonym)s students admitted abroad to %(wta_major)s',
+                'Find out about %(last_edu_country_demonym)s students admitted abroad, close to your desired majors.',
+                len(wta_majors)
+            ) % {
+                       'last_edu_country_demonym': sdi.last_education.university.country.demonym.strip(),
+                       'wta_major': wta_majors.pop().strip(),
+                   }
         return text

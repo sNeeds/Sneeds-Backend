@@ -1,4 +1,5 @@
 from django.http import Http404
+from rest_framework.permissions import IsAuthenticated
 
 from rest_framework.response import Response
 
@@ -8,6 +9,9 @@ from abroadin.base.api.viewsets import CAPIView
 from abroadin.apps.estimation.form.models import WantToApply, StudentDetailedInfo
 from abroadin.apps.estimation.estimations.reviews import StudentDetailedFormReview
 from abroadin.apps.estimation.estimations.chances import AdmissionChance
+
+from .admission_chance_test_tool import AdmissionChanceResultTest
+from ...users.customAuth.permissions import IsStaff
 
 
 class FormComments(CAPIView):
@@ -84,3 +88,12 @@ class WantToApplyChance(CAPIView):
 
         except WantToApply.DoesNotExist:
             return Response({})
+
+
+class AdmissionChanceTestAPIView(CAPIView):
+    permission_classes = [IsAuthenticated, IsStaff]
+
+    def get(self, request):
+        admission_chance_result_test = AdmissionChanceResultTest()
+        admission_chance_result_test.test_results()
+        return Response({'failures': admission_chance_result_test.failures})

@@ -10,4 +10,5 @@ urlpatterns = [
          name="form-admission-ranking-chance"),
     path('form/<int:form_id>/want-to-apply-chance/', views.WantToApplyChance.as_view(),
          name="want-to-apply-chance"),
+    path('admission-chance-test/', views.AdmissionChanceTestAPIView.as_view(), name='admission-chance-test')
 ]

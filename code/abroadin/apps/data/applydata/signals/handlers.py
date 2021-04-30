@@ -18,7 +18,7 @@ def pre_save_publication(sender, instance, *args, **kwargs):
 
 
 def post_save_publication(sender, instance, *args, **kwargs):
-    if instance.content_type == get_sdi_ct_or_none():
+    if instance.content_type == get_sdi_ct_or_none() and instance.content_object:
         instance.content_object.save()
     pass
 

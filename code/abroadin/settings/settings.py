@@ -142,6 +142,15 @@ DATABASES = {
         'PASSWORD': os.environ.get('DB_PASSWORD'),
         'HOST': os.environ.get('DB_HOST_IP'),
         'PORT': os.environ.get('DB_HOST_PORT'),
+    },
+
+    'custom_test_db': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME') + '_custom_test_db',
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST_IP'),
+        'PORT': os.environ.get('DB_HOST_PORT'),
     }
 }
 
@@ -254,4 +263,8 @@ FROALA_EDITOR_PLUGINS = ('align', 'char_counter', 'code_beautifier', 'code_view'
 FRAOLA_EDITOR_THIRD_PARTY = ('font_awesome', 'spell_checker')
 
 USE_FROALA_EDITOR = True
+
+from abroadin.settings.secure.APIs import GITHUB_ORGANIZATION_ACCESS_KEY
+
+ADMISSION_CHANCE_CREDENTIALS_REPOSITORY_NAME = "Abroadin/AdmissionChanceTest"
 
