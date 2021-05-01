@@ -56,6 +56,12 @@ PUBLICATION_CREATION_CREDENTIALS = {
                   },
 }
 
+ADMISSION_CHANCE_LABEL_VALUES = {
+    'High': 3,
+    'Medium': 2,
+    'Low': 1,
+}
+
 
 def fill_sdi_ct():
     global SDI_CT
@@ -315,7 +321,9 @@ class AdmissionChanceResultTest(APITestCase):
                 'admission_type': admission_type,
                 'case_university': uni_rank_range,
                 'expected_result': expected_result,
-                'returned_result': returned_result,
+                'system_result': returned_result,
+                'system_result_is': 'Better' if ADMISSION_CHANCE_LABEL_VALUES[returned_result] >
+                                                ADMISSION_CHANCE_LABEL_VALUES[expected_result] else 'Worse',
                 '   ': '                                                              ',
             }
             detail_dict.update(test_case)
