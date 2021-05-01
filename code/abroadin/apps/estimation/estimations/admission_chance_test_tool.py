@@ -166,11 +166,12 @@ def get_publications(sdi, publications_quality: str):
     publications = []
     count = choice(list(PUBLICATION_CREATION_CREDENTIALS[publications_quality].keys()))
     for i in range(0, count):
+        wa, jp = choice(PUBLICATION_CREATION_CREDENTIALS[publications_quality][count])
         publications.append(Publication.objects.create(
             content_type=SDI_CT,
             object_id=sdi.id,
-            journal_reputation=choice(PUBLICATION_CREATION_CREDENTIALS[publications_quality][count])[0],
-            which_author=choice(PUBLICATION_CREATION_CREDENTIALS[publications_quality][count])[1],
+            journal_reputation=jp,
+            which_author=wa,
             publish_year=2020,
             title=''
         ))
@@ -272,53 +273,50 @@ class AdmissionChanceResultTest(APITestCase):
 
                 language_certificate = get_language_certificate(sdi, test_case['Language Cert Type'],
                                                                 test_case['Language Cert Score'], )
-                admission_chance = AdmissionChance(sdi)
-
                 publications = get_publications(sdi, test_case['Publication'])
 
+                admission_chance = AdmissionChance(sdi)
                 data = {
                     "0-20": admission_chance.get_1_to_20_chance(values_with_attrs=values_with_attrs),
                     "20-100": admission_chance.get_21_to_100_chance(values_with_attrs=values_with_attrs),
                     "100-400": admission_chance.get_101_to_400_chance(values_with_attrs=values_with_attrs),
                     "+400": admission_chance.get_401_above_chance(values_with_attrs=values_with_attrs),
                 }
-
-                for i in range(0, len(RESULT_UNI_RANK_CHOICES)):
-                    returned_result = admission_chance.convert_value_to_label(
-                        data[RESULT_UNI_RANK_CHOICES[i]]['admission'])
-                    expected_result = test_case['Chances']['Admission'][TESTCASE_UNI_RANK_CHOICES[i]]
-
-                    if expected_result != returned_result:
-                        detail_dict = {
-                            'id': test_case['id'],
-                            'admission_type': 'Admission',
-                            'case_university': TESTCASE_UNI_RANK_CHOICES[i],
-                            'expected_result': expected_result,
-                            'returned_result': returned_result,
-                            '   ': '                                                              ',
-                        }
-                        detail_dict.update(test_case)
-                        del detail_dict['Chances']
-                        self.failures.append(detail_dict)
-
-                for i in range(0, len(RESULT_UNI_RANK_CHOICES)):
-                    returned_result = admission_chance.convert_value_to_label(
-                        data[RESULT_UNI_RANK_CHOICES[i]]['full_fund'])
-                    expected_result = test_case['Chances']['Fund'][TESTCASE_UNI_RANK_CHOICES[i]]
-
-                    if expected_result != returned_result:
-                        detail_dict = {
-                            'id': test_case['id'],
-                            'admission_type': 'Fund',
-                            'case_university': TESTCASE_UNI_RANK_CHOICES[i],
-                            'expected_result': expected_result,
-                            'returned_result': returned_result,
-                            '   ': '                                                              ',
-                        }
-                        detail_dict.update(test_case)
-                        del detail_dict['Chances']
-                        self.failures.append(detail_dict)
+                self.check_result(test_case, admission_chance, data)
 
             except Exception as e:
                 # raise e
                 self.failures.append('case {}: ' + str(e).format(test_case['id']))
+
+    def check_result(self, test_case, admission_chance, result_data):
+        # Admission part
+        for i in range(0, len(RESULT_UNI_RANK_CHOICES)):
+            returned_result = admission_chance.\
+                convert_value_to_label(result_data[RESULT_UNI_RANK_CHOICES[i]]['admission'])
+            expected_result = test_case['Chances']['Admission'][TESTCASE_UNI_RANK_CHOICES[i]]
+
+            self.check_test_and_result(test_case, expected_result, returned_result, 'Admission',
+                                       TESTCASE_UNI_RANK_CHOICES[i])
+
+        # Fund part
+        for i in range(0, len(RESULT_UNI_RANK_CHOICES)):
+            returned_result = admission_chance.\
+                convert_value_to_label(result_data[RESULT_UNI_RANK_CHOICES[i]]['full_fund'])
+            expected_result = test_case['Chances']['Fund'][TESTCASE_UNI_RANK_CHOICES[i]]
+
+            self.check_test_and_result(test_case, expected_result, returned_result, 'Fund',
+                                       TESTCASE_UNI_RANK_CHOICES[i])
+
+    def check_test_and_result(self, test_case, expected_result, returned_result, admission_type, uni_rank_range):
+        if expected_result != returned_result:
+            detail_dict = {
+                'id': test_case['id'],
+                'admission_type': admission_type,
+                'case_university': uni_rank_range,
+                'expected_result': expected_result,
+                'returned_result': returned_result,
+                '   ': '                                                              ',
+            }
+            detail_dict.update(test_case)
+            del detail_dict['Chances']
+            self.failures.append(detail_dict)
