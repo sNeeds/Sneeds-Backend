@@ -25,9 +25,6 @@ PWAC = Publication.WhichAuthorChoices
 
 global SDI_CT
 
-github_access = Github(settings.GITHUB_ORGANIZATION_ACCESS_KEY)
-repo = github_access.get_repo(settings.ADMISSION_CHANCE_CREDENTIALS_REPOSITORY_NAME)
-
 TESTCASE_UNI_RANK_CHOICES = ['1to20', '21to100', '101to400', '401to1000', '1000above']
 RESULT_UNI_RANK_CHOICES = ["0-20", "20-100", "100-400", "+400"]
 PUBLICATION_CHOICES = ['Excellent', 'No', 'Very Good', 'Good', 'Medium']
@@ -243,17 +240,21 @@ class AdmissionChanceResultTest(APITestCase):
 
     def __init__(self, methodName='runTest'):
         self.failures = []
+        self.github_access = Github(settings.GITHUB_ORGANIZATION_ACCESS_KEY)
+        self.github_admission_chance_repo = \
+            self.github_access.get_repo(settings.ADMISSION_CHANCE_CREDENTIALS_REPOSITORY_NAME)
         super().__init__(methodName)
 
     def test_results(self):
-
         # test_cases = None
         # with open(os.path.join(settings.BASE_DIR,
         #                        'apps/estimation/estimations/admission_chance_test_data/test_data.py'), 'r') as f:
         #     test_cases = eval(f.read())
-        test_cases = eval(repo.get_contents("test_data.py").decoded_content)
-        education_attrs = eval(repo.get_contents("education_attrs.py").decoded_content)
-        admission_chance_attrs = eval(repo.get_contents("admission_attrs.py").decoded_content)
+        test_cases = eval(self.github_admission_chance_repo.get_contents("test_data.py").decoded_content)
+        education_attrs = eval(self.github_admission_chance_repo.get_contents("education_attrs.py").decoded_content)
+        admission_chance_attrs = eval(
+            self.github_admission_chance_repo.get_contents("admission_attrs.py").decoded_content
+        )
 
         # Structure adopted from abroadin.apps.data.applydata.values.values.VALUES_WITH_ATTRS
         values_with_attrs = {
