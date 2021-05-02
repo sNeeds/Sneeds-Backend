@@ -38,8 +38,8 @@ class SimilarAndWorseGPAFilter(Filter):
         gpa = sdi_last_education.gpa
 
         high_q = Q(educations__gpa__lte=min(20, gpa + offset))
-        low_q = Q(educations__gpa__gte=max(0, gpa - offset - 1))
-        return high_q
+        low_q = Q(educations__gpa__gte=max(0, gpa - offset - 2))
+        return high_q & low_q
 
 
 class ExactHomeCountryFilter(Filter):
