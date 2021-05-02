@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from abroadin.apps.estimation.form.permissions import CompletedForm, IsFormOwner
+from abroadin.base.api.permissions import SiteInDebugMode
 from abroadin.base.api.viewsets import CAPIView
 
 from abroadin.apps.estimation.form.models import WantToApply, StudentDetailedInfo
@@ -91,7 +92,7 @@ class WantToApplyChance(CAPIView):
 
 
 class AdmissionChanceTestAPIView(CAPIView):
-    permission_classes = [IsAuthenticated, IsStaff]
+    permission_classes = [IsAuthenticated, IsStaff, SiteInDebugMode]
 
     def get(self, request):
         admission_chance_result_test = AdmissionChanceResultTest()

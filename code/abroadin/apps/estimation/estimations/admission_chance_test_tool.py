@@ -65,11 +65,11 @@ ADMISSION_CHANCE_LABEL_VALUES = {
 
 def fill_sdi_ct():
     global SDI_CT
-    SDI_CT = ContentType.objects.using('custom_test_db').get(app_label='form', model='studentdetailedinfo')
+    SDI_CT = ContentType.objects.get(app_label='form', model='studentdetailedinfo')
 
 
 def get_user():
-    obj, created = User.objects.using('custom_test_db').get_or_create(
+    obj, created = User.objects.get_or_create(
         email='ttteeessstttuser@gmail.com',
         password='123456789',
         is_email_verified=True,
@@ -119,23 +119,23 @@ def get_uni_around(rank: int) -> University:
     tolerance = int(rank / 5)
     try:
         random_rank = randint(rank - tolerance, rank + tolerance)
-        return University.objects.using('custom_test_db').get(rank=random_rank)
+        return University.objects.get(rank=random_rank)
     except University.DoesNotExist:
         return get_uni_around(rank)
     except University.MultipleObjectsReturned:
-        return University.objects.using('custom_test_db').filter(rank=rank).first()
+        return University.objects.filter(rank=rank).first()
 
 
 def get_major() -> Major:
-    return Major.objects.using('custom_test_db').first()
+    return Major.objects.first()
 
 
 def get_some_engineering_major():
-    return Major.objects.using('custom_test_db').first()
+    return Major.objects.first()
 
 
 def get_sdi(user):
-    return StudentDetailedInfo.objects.using('custom_test_db').create(
+    return StudentDetailedInfo.objects.create(
         user=user,
         age=20,
         gender=StudentDetailedInfo.GenderChoices.MALE,
@@ -151,7 +151,7 @@ def get_sdi(user):
 
 
 def get_education(sdi: StudentDetailedInfo, raw_grade, gpa, university_rank) -> Education:
-    return Education.objects.using('custom_test_db').create(
+    return Education.objects.create(
         object_id=sdi.id,
         content_type=SDI_CT,
         grade=_get_suitable_grade(raw_grade),
@@ -218,13 +218,13 @@ def get_language_certificate(sdi, lc_type_text, lc_overall):
 def clear_user_data(user):
     global SDI_CT
     try:
-        sdi = StudentDetailedInfo.objects.using('custom_test_db').get(user=user)
-        Education.objects.using('custom_test_db').filter(content_type=SDI_CT, object_id=sdi.id).delete()
-        LanguageCertificate.objects.using('custom_test_db').filter(content_type=SDI_CT, object_id=sdi.id).delete()
-        RegularLanguageCertificate.objects.using('custom_test_db').filter(content_type=SDI_CT,
-                                                                          object_id=sdi.id).delete()
-        Publication.objects.using('custom_test_db').filter(content_type=SDI_CT, object_id=sdi.id).delete()
-        StudentDetailedInfo.objects.using('custom_test_db').filter(id=sdi.id).delete()
+        sdi = StudentDetailedInfo.objects.get(user=user)
+        Education.objects.filter(content_type=SDI_CT, object_id=sdi.id).delete()
+        LanguageCertificate.objects.filter(content_type=SDI_CT, object_id=sdi.id).delete()
+        RegularLanguageCertificate.objects.filter(content_type=SDI_CT,
+                                                  object_id=sdi.id).delete()
+        Publication.objects.filter(content_type=SDI_CT, object_id=sdi.id).delete()
+        StudentDetailedInfo.objects.filter(id=sdi.id).delete()
     except StudentDetailedInfo.DoesNotExist:
         pass
 
@@ -252,6 +252,9 @@ class AdmissionChanceResultTest(APITestCase):
         super().__init__(methodName)
 
     def test_results(self):
+        assert settings.DEBUG, 'This method is allowed to run in Debug mode only'
+        if not settings.DEBUG:
+            return
         # test_cases = None
         # with open(os.path.join(settings.BASE_DIR,
         #                        'apps/estimation/estimations/admission_chance_test_data/test_data.py'), 'r') as f:
@@ -298,7 +301,7 @@ class AdmissionChanceResultTest(APITestCase):
     def check_result(self, test_case, admission_chance, result_data):
         # Admission part
         for i in range(0, len(RESULT_UNI_RANK_CHOICES)):
-            returned_result = admission_chance.\
+            returned_result = admission_chance. \
                 convert_value_to_label(result_data[RESULT_UNI_RANK_CHOICES[i]]['admission'])
             expected_result = test_case['Chances']['Admission'][TESTCASE_UNI_RANK_CHOICES[i]]
 
@@ -307,7 +310,7 @@ class AdmissionChanceResultTest(APITestCase):
 
         # Fund part
         for i in range(0, len(RESULT_UNI_RANK_CHOICES)):
-            returned_result = admission_chance.\
+            returned_result = admission_chance. \
                 convert_value_to_label(result_data[RESULT_UNI_RANK_CHOICES[i]]['full_fund'])
             expected_result = test_case['Chances']['Fund'][TESTCASE_UNI_RANK_CHOICES[i]]
 
