@@ -9,15 +9,24 @@ from abroadin.apps.estimation.similarprofiles.constraints import SIMILAR_GPA_OFF
 
 class Filtering:
     title: str = None
-    filters: list = None
+    normal_filters: list = None
+    strict_filters: list = None
 
     def __init__(self):
         self.results_qs = None
 
-    def filter_and_provide_results_qs(self, profiles, sdi):
-        if self.filters:
-            final_query = self.filters.pop().get_query(profiles, sdi)
-            for _filter in self.filters:
+    def normal_filter_and_provide_results_qs(self, profiles, sdi):
+        if self.normal_filters:
+            final_query = self.normal_filters.pop().get_query(profiles, sdi)
+            for _filter in self.normal_filters:
+                final_query = final_query & _filter.get_query(profiles, sdi)
+            return profiles.filter(final_query)
+        return profiles
+
+    def strict_filter_and_provide_results_qs(self, profiles, sdi):
+        if self.strict_filters:
+            final_query = self.strict_filters.pop().get_query(profiles, sdi)
+            for _filter in self.strict_filters:
                 final_query = final_query & _filter.get_query(profiles, sdi)
             return profiles.filter(final_query)
         return profiles
@@ -27,10 +36,24 @@ class Filtering:
 
 
 class BestCaseFiltering(Filtering):
-    title = 'Best Matches Ancestors',
-    filters = [
+    title = 'Best Matches Ancestors'
+    normal_filters = [
         filters.MoreGeneralSimilarHomeMajorsFilter(),
         filters.MoreGeneralSimilarDestinationMajorsFilter(),
+
+        filters.ExactHomeUniversityFilter(raise_defect_exception=True,
+                                          accepted_defect_exceptions=[SDIEducationLeakage]),
+
+        filters.SameDestinationFilter(raise_defect_exception=True,
+                                      accepted_defect_exceptions=[SDIWantToApplyUniversityAndCountryLeakage]),
+
+        filters.SimilarAndWorseGPAFilter(raise_defect_exception=True,
+                                         accepted_defect_exceptions=[SDIEducationLeakage]),
+    ]
+
+    strict_filters = [
+        filters.SimilarHomeMajorsFilter(),
+        filters.SimilarDestinationMajorsFilter(),
 
         filters.ExactHomeUniversityFilter(raise_defect_exception=True,
                                           accepted_defect_exceptions=[SDIEducationLeakage]),
@@ -60,31 +83,44 @@ class BestCaseFiltering(Filtering):
                        'last_edu_uni': sdi.last_education.university.name,
                        'wta_major': wta_majors.pop().strip(),
                        'wta_university': wta_universities.pop(),
-                       'gpa_upper_bound': sdi.last_education.gpa + SIMILAR_GPA_OFFSET,
+                       'gpa_upper_bound': (sdi.last_education.gpa + SIMILAR_GPA_OFFSET),
                    }
 
         if len(wta_majors) > 1:
             text = ngettext_lazy(
                 'Find out about %(last_edu_uni)s students admitted to your desired majors'
-                ' at %(wta_university)s with a GPA under %(gpa_upper_bound)d.'
+                ' at %(wta_university)s with a GPA under %(gpa_upper_bound)d.',
                 'Find out about %(last_edu_uni)s students with admissions close to your'
                 ' desired majors and universities with a GPA under %(gpa_upper_bound)d.',
                 len(wta_universities)
             ) % {
                        'last_edu_uni': sdi.last_education.university.name,
                        'wta_university': wta_universities.pop(),
-                       'gpa_upper_bound': sdi.last_education.gpa + SIMILAR_GPA_OFFSET,
+                       'gpa_upper_bound': (sdi.last_education.gpa + SIMILAR_GPA_OFFSET),
                    }
         return text
 
 
 class SimilarHomeUniversityExactDestinationCountryFiltering(Filtering):
-    title = 'Dream Country',
-    filters = [
+    title = 'Dream Country'
+    normal_filters = [
         filters.MoreGeneralSimilarHomeMajorsFilter(raise_defect_exception=True,
                                                    accepted_defect_exceptions=[SDIEducationLeakage]),
         filters.MoreGeneralSimilarDestinationMajorsFilter(raise_defect_exception=True,
                                                           accepted_defect_exceptions=[SDIWantToApplyMajorLeakage]),
+
+        filters.SimilarHomeUniversityFilter(),
+        # filters.SimilarAndWorseHomeUniversityFilter(),
+
+        filters.ExactDestinationCountryFilter(raise_defect_exception=True,
+                                              accepted_defect_exceptions=[SDIWantToApplyUniversityAndCountryLeakage]),
+    ]
+
+    strict_filters = [
+        filters.SimilarHomeMajorsFilter(raise_defect_exception=True,
+                                        accepted_defect_exceptions=[SDIEducationLeakage]),
+        filters.SimilarDestinationMajorsFilter(raise_defect_exception=True,
+                                               accepted_defect_exceptions=[SDIWantToApplyMajorLeakage]),
 
         filters.SimilarHomeUniversityFilter(),
         # filters.SimilarAndWorseHomeUniversityFilter(),
@@ -130,12 +166,24 @@ class SimilarHomeUniversityExactDestinationCountryFiltering(Filtering):
 
 
 class SimilarHomeUniversityExactDestinationUniversityFiltering(Filtering):
-    title = 'Dream University',
-    filters = [
+    title = 'Dream University'
+    normal_filters = [
         filters.MoreGeneralSimilarHomeMajorsFilter(raise_defect_exception=True,
                                                    accepted_defect_exceptions=[SDIEducationLeakage]),
         filters.MoreGeneralSimilarDestinationMajorsFilter(raise_defect_exception=True,
                                                           accepted_defect_exceptions=[SDIWantToApplyMajorLeakage]),
+
+        filters.SimilarHomeUniversityFilter(raise_defect_exception=True,
+                                            accepted_defect_exceptions=[SDIEducationLeakage]),
+        filters.ExactDestinationUniversityFilter(raise_defect_exception=True,
+                                                 accepted_defect_exceptions=[SDIWantToApplyUniversityLeakage]),
+    ]
+
+    strict_filters = [
+        filters.SimilarHomeMajorsFilter(raise_defect_exception=True,
+                                        accepted_defect_exceptions=[SDIEducationLeakage]),
+        filters.SimilarDestinationMajorsFilter(raise_defect_exception=True,
+                                               accepted_defect_exceptions=[SDIWantToApplyMajorLeakage]),
 
         filters.SimilarHomeUniversityFilter(raise_defect_exception=True,
                                             accepted_defect_exceptions=[SDIEducationLeakage]),
@@ -179,12 +227,21 @@ class SimilarHomeUniversityExactDestinationUniversityFiltering(Filtering):
 
 
 class ExactHomeUniversityFiltering(Filtering):
-    title = 'Classmates',
-    filters = [
+    title = 'Classmates'
+    normal_filters = [
         filters.GeneralSimilarHomeMajorsFilter(raise_defect_exception=True,
                                                accepted_defect_exceptions=[SDIEducationLeakage]),
         filters.GeneralSimilarDestinationMajorsFilter(raise_defect_exception=True,
                                                       accepted_defect_exceptions=[SDIWantToApplyMajorLeakage]),
+        filters.ExactHomeUniversityFilter(raise_defect_exception=True,
+                                          accepted_defect_exceptions=[SDIEducationLeakage]),
+    ]
+
+    strict_filters = [
+        filters.SimilarHomeMajorsFilter(raise_defect_exception=True,
+                                        accepted_defect_exceptions=[SDIEducationLeakage]),
+        filters.SimilarDestinationMajorsFilter(raise_defect_exception=True,
+                                               accepted_defect_exceptions=[SDIWantToApplyMajorLeakage]),
         filters.ExactHomeUniversityFilter(raise_defect_exception=True,
                                           accepted_defect_exceptions=[SDIEducationLeakage]),
     ]
@@ -206,13 +263,22 @@ class ExactHomeUniversityFiltering(Filtering):
 
 
 class ExactHomeCountryFiltering(Filtering):
-    title = 'All',
-    filters = [
+    title = 'All'
+    normal_filters = [
         filters.VerySimilarHomeMajorsFilter(raise_defect_exception=True,
                                             accepted_defect_exceptions=[SDIEducationLeakage]),
 
         filters.VerySimilarDestinationMajorsFilter(raise_defect_exception=True,
                                                    accepted_defect_exceptions=[SDIWantToApplyMajorLeakage]),
+        filters.ExactHomeCountryFilter(),
+    ]
+
+    strict_filters = [
+        filters.ExactHomeMajorsFilter(raise_defect_exception=True,
+                                      accepted_defect_exceptions=[SDIEducationLeakage]),
+
+        filters.ExactDestinationMajorsFilter(raise_defect_exception=True,
+                                             accepted_defect_exceptions=[SDIWantToApplyMajorLeakage]),
         filters.ExactHomeCountryFilter(),
     ]
 

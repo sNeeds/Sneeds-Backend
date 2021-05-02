@@ -1,3 +1,8 @@
+from django.conf import settings
+
+from rest_framework.permissions import BasePermission
+
+
 def permission_class_factory(cls: object, apply_on: list):
     _ALL_METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
 
@@ -17,3 +22,13 @@ def permission_class_factory(cls: object, apply_on: list):
 
     cls.has_permission = decorator(cls.has_permission, allowed_methods)
     return cls
+
+
+class SiteInDebugMode(BasePermission):
+    message = 'Site should be in Debug mode for this endpoint'
+
+    def has_permission(self, request, view):
+        return settings.DEBUG
+
+    def has_object_permission(self, request, view, obj):
+        return self.has_permission(request, view)

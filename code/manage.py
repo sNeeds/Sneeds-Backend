@@ -5,12 +5,12 @@ import sys
 
 
 def main():
-    development = int(os.environ.get('DJANGO_DEPLOYMENT', default=0))
+    deployment = int(os.environ.get('DJANGO_DEPLOYMENT', default=0))
 
-    if development == 0:
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'abroadin.settings.development')
-    else:
+    if deployment == 1:
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'abroadin.settings.deployment')
+    else:
+        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'abroadin.settings.development')
 
     try:
         from django.core.management import execute_from_command_line
