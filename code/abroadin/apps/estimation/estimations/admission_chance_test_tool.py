@@ -296,7 +296,7 @@ class AdmissionChanceResultTest(APITestCase):
 
             except Exception as e:
                 raise e
-                self.failures.append('case {}: ' + str(e).format(test_case['id']))
+                # self.failures.append('case {}: ' + str(e).format(test_case['id']))
 
     def check_result(self, test_case, admission_chance, result_data):
         # Admission part
