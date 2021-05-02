@@ -198,7 +198,7 @@ def get_language_certificate(sdi, lc_type_text, lc_overall):
             reading=reading,
             overall=lc_overall,
         )
-        lc.save(using='custom_test_db')
+        lc
 
     if lc_type == LCType.IELTS_ACADEMIC or lc_type == LCType.IELTS_GENERAL:
         lc = RegularLanguageCertificate(
@@ -211,7 +211,7 @@ def get_language_certificate(sdi, lc_type_text, lc_overall):
             reading=Decimal("%.1f" % reading),
             overall=Decimal("%.1f" % lc_overall),
         )
-        lc.save(using='custom_test_db')
+        lc
     return lc
 
 
@@ -295,7 +295,7 @@ class AdmissionChanceResultTest(APITestCase):
                 self.check_result(test_case, admission_chance, data)
 
             except Exception as e:
-                # raise e
+                raise e
                 self.failures.append('case {}: ' + str(e).format(test_case['id']))
 
     def check_result(self, test_case, admission_chance, result_data):
