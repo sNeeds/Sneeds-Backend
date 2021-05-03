@@ -12,6 +12,7 @@ from ..form.exceptions import SDIDefectException
 
 class SimilarProfilesPipeline:
     max_result_size = 10
+    min_result_size = 2
 
     def __init__(self, filterings: iter, tagger: Tagger):
         self.filterings = filterings
@@ -54,19 +55,26 @@ class SimilarProfilesPipeline:
             .only('id').values_list('id', flat=True)
         strict_ids = set(strict_ids)
 
-        if len(strict_ids) <= self.max_result_size:
+        if self.min_result_size < len(strict_ids) <= self.max_result_size:
             return strict_ids
+
+        if len(strict_ids) > self.max_result_size:
+            return set(itertools.islice(strict_ids, self.max_result_size))
+
+        if len(strict_ids) <= self.min_result_size:
+            return strict_ids.union(set(itertools.islice(normal_ids, self.min_result_size)))
 
         return set(itertools.islice(normal_ids, self.max_result_size))
 
 
 SimilarProfilesPipelineObject = SimilarProfilesPipeline(
     [
+        ExactHomeCountryFiltering(),
         BestCaseFiltering(),
         SimilarHomeUniversityExactDestinationCountryFiltering(),
         SimilarHomeUniversityExactDestinationUniversityFiltering(),
         ExactHomeUniversityFiltering(),
-        ExactHomeCountryFiltering(),
+
     ],
     SimilarProfilesTagger,
 )
