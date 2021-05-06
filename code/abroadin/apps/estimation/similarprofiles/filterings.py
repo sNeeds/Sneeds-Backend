@@ -11,6 +11,7 @@ class Filtering:
     title: str = None
     normal_filters: list = None
     strict_filters: list = None
+    style_image_uri: str = None
 
     def __init__(self):
         self.results_qs = None
@@ -37,6 +38,7 @@ class Filtering:
 
 class BestCaseFiltering(Filtering):
     title = 'Best Matches Ancestors'
+    style_image_uri = 'img/similar/best_matches_ancestors.jpg'
     normal_filters = [
         filters.MoreGeneralSimilarHomeMajorsFilter(),
         filters.MoreGeneralSimilarDestinationMajorsFilter(),
@@ -103,6 +105,7 @@ class BestCaseFiltering(Filtering):
 
 class SimilarHomeUniversityExactDestinationCountryFiltering(Filtering):
     title = 'Dream Country'
+    style_image_uri = 'img/similar/dream_country.jpg'
     normal_filters = [
         filters.MoreGeneralSimilarHomeMajorsFilter(raise_defect_exception=True,
                                                    accepted_defect_exceptions=[SDIEducationLeakage]),
@@ -167,6 +170,7 @@ class SimilarHomeUniversityExactDestinationCountryFiltering(Filtering):
 
 class SimilarHomeUniversityExactDestinationUniversityFiltering(Filtering):
     title = 'Dream University'
+    style_image_uri = 'img/similar/dream_university.jpg'
     normal_filters = [
         filters.MoreGeneralSimilarHomeMajorsFilter(raise_defect_exception=True,
                                                    accepted_defect_exceptions=[SDIEducationLeakage]),
@@ -228,6 +232,7 @@ class SimilarHomeUniversityExactDestinationUniversityFiltering(Filtering):
 
 class ExactHomeUniversityFiltering(Filtering):
     title = 'Classmates'
+    style_image_uri = 'img/similar/classmates.jpg'
     normal_filters = [
         filters.GeneralSimilarHomeMajorsFilter(raise_defect_exception=True,
                                                accepted_defect_exceptions=[SDIEducationLeakage]),
@@ -264,6 +269,7 @@ class ExactHomeUniversityFiltering(Filtering):
 
 class ExactHomeCountryFiltering(Filtering):
     title = 'All'
+    style_image_uri = 'img/similar/all.jpg'
     normal_filters = [
         filters.VerySimilarHomeMajorsFilter(raise_defect_exception=True,
                                             accepted_defect_exceptions=[SDIEducationLeakage]),
