@@ -25,6 +25,7 @@ class SimilarProfilesPipeline:
 
                 res.append({'title': filtering.title,
                             'description': filtering.get_filter_description(sdi),
+                            'style_image_uri': filtering.style_image_uri,
                             # 'qs': filtering.filter_and_provide_results_qs(profiles, sdi),
                             'qs': None,
                             'failure': False,
@@ -35,6 +36,7 @@ class SimilarProfilesPipeline:
             except SDIDefectException as e:
                 res.append({'title': filtering.title,
                             'description': filtering.get_filter_description(sdi),
+                            'style_image_uri': filtering.style_image_uri,
                             'qs': None,
                             'failure': True,
                             'failure_text': e.pretty_message,
