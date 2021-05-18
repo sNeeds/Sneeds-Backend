@@ -11,7 +11,7 @@ from ..form.exceptions import SDIDefectException
 
 
 class SimilarProfilesPipeline:
-    max_result_size = 10
+    max_result_size = 12
     min_result_size = 2
 
     def __init__(self, filterings: iter, tagger: Tagger):
@@ -47,26 +47,24 @@ class SimilarProfilesPipeline:
 
     def prepare_suitable_result_ids(self, filtering, profiles, sdi):
         normal_ids = filtering.normal_filter_and_provide_results_qs(profiles, sdi) \
-            .only('id').values_list('id', flat=True)
-        normal_ids = set(normal_ids)
+            .only('id').values_list('id', flat=True).distinct()
 
         if len(normal_ids) <= self.max_result_size:
             return normal_ids
 
         strict_ids = filtering.strict_filter_and_provide_results_qs(profiles, sdi) \
-            .only('id').values_list('id', flat=True)
-        strict_ids = set(strict_ids)
+            .only('id').values_list('id', flat=True).distinct()
 
-        if self.min_result_size < len(strict_ids) <= self.max_result_size:
+        if self.min_result_size <= len(strict_ids) <= self.max_result_size:
             return strict_ids
 
         if len(strict_ids) > self.max_result_size:
-            return set(itertools.islice(strict_ids, self.max_result_size))
+            return strict_ids[:self.max_result_size]
 
-        if len(strict_ids) <= self.min_result_size:
-            return strict_ids.union(set(itertools.islice(normal_ids, self.min_result_size)))
+        if len(strict_ids) < self.min_result_size:
+            return list(set(strict_ids + normal_ids))[:self.max_result_size]
 
-        return set(itertools.islice(normal_ids, self.max_result_size))
+        return normal_ids[:self.max_result_size]
 
 
 SimilarProfilesPipelineObject = SimilarProfilesPipeline(
