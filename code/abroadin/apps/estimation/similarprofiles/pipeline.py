@@ -62,7 +62,7 @@ class SimilarProfilesPipeline:
             return strict_ids[:self.max_result_size]
 
         if len(strict_ids) < self.min_result_size:
-            return list(set(strict_ids + normal_ids))[:self.max_result_size]
+            return list(set(strict_ids | normal_ids))[:self.max_result_size]
 
         return normal_ids[:self.max_result_size]
 
