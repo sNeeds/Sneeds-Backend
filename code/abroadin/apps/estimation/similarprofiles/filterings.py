@@ -18,7 +18,7 @@ class Filtering:
 
     def normal_filter_and_provide_results_qs(self, profiles, sdi):
         if self.normal_filters:
-            final_query = self.normal_filters.pop().get_query(profiles, sdi)
+            final_query = self.normal_filters[0].get_query(profiles, sdi)
             for _filter in self.normal_filters:
                 final_query = final_query & _filter.get_query(profiles, sdi)
             return profiles.filter(final_query)
@@ -26,7 +26,7 @@ class Filtering:
 
     def strict_filter_and_provide_results_qs(self, profiles, sdi):
         if self.strict_filters:
-            final_query = self.strict_filters.pop().get_query(profiles, sdi)
+            final_query = self.strict_filters[0].get_query(profiles, sdi)
             for _filter in self.strict_filters:
                 final_query = final_query & _filter.get_query(profiles, sdi)
             return profiles.filter(final_query)
@@ -40,6 +40,7 @@ class BestCaseFiltering(Filtering):
     title = 'Best Matches Ancestors'
     style_image_uri = 'img/similar/best_matches_ancestors.jpg'
     normal_filters = [
+        filters.ExactWTAGradeFilter(),
         filters.MoreGeneralSimilarHomeMajorsFilter(),
         filters.MoreGeneralSimilarDestinationMajorsFilter(),
 
@@ -54,6 +55,7 @@ class BestCaseFiltering(Filtering):
     ]
 
     strict_filters = [
+        filters.ExactWTAGradeFilter(),
         filters.SimilarHomeMajorsFilter(),
         filters.SimilarDestinationMajorsFilter(),
 
@@ -107,6 +109,7 @@ class SimilarHomeUniversityExactDestinationCountryFiltering(Filtering):
     title = 'Dream Country'
     style_image_uri = 'img/similar/dream_country.jpg'
     normal_filters = [
+        filters.ExactWTAGradeFilter(),
         filters.MoreGeneralSimilarHomeMajorsFilter(raise_defect_exception=True,
                                                    accepted_defect_exceptions=[SDIEducationLeakage]),
         filters.MoreGeneralSimilarDestinationMajorsFilter(raise_defect_exception=True,
@@ -120,6 +123,7 @@ class SimilarHomeUniversityExactDestinationCountryFiltering(Filtering):
     ]
 
     strict_filters = [
+        filters.ExactWTAGradeFilter(),
         filters.SimilarHomeMajorsFilter(raise_defect_exception=True,
                                         accepted_defect_exceptions=[SDIEducationLeakage]),
         filters.SimilarDestinationMajorsFilter(raise_defect_exception=True,
@@ -172,6 +176,7 @@ class SimilarHomeUniversityExactDestinationUniversityFiltering(Filtering):
     title = 'Dream University'
     style_image_uri = 'img/similar/dream_university.jpg'
     normal_filters = [
+        filters.ExactWTAGradeFilter(),
         filters.MoreGeneralSimilarHomeMajorsFilter(raise_defect_exception=True,
                                                    accepted_defect_exceptions=[SDIEducationLeakage]),
         filters.MoreGeneralSimilarDestinationMajorsFilter(raise_defect_exception=True,
@@ -184,6 +189,7 @@ class SimilarHomeUniversityExactDestinationUniversityFiltering(Filtering):
     ]
 
     strict_filters = [
+        filters.ExactWTAGradeFilter(),
         filters.SimilarHomeMajorsFilter(raise_defect_exception=True,
                                         accepted_defect_exceptions=[SDIEducationLeakage]),
         filters.SimilarDestinationMajorsFilter(raise_defect_exception=True,
@@ -234,6 +240,7 @@ class ExactHomeUniversityFiltering(Filtering):
     title = 'Classmates'
     style_image_uri = 'img/similar/classmates.jpg'
     normal_filters = [
+        filters.ExactWTAGradeFilter(),
         filters.GeneralSimilarHomeMajorsFilter(raise_defect_exception=True,
                                                accepted_defect_exceptions=[SDIEducationLeakage]),
         filters.GeneralSimilarDestinationMajorsFilter(raise_defect_exception=True,
@@ -243,6 +250,7 @@ class ExactHomeUniversityFiltering(Filtering):
     ]
 
     strict_filters = [
+        filters.ExactWTAGradeFilter(),
         filters.SimilarHomeMajorsFilter(raise_defect_exception=True,
                                         accepted_defect_exceptions=[SDIEducationLeakage]),
         filters.SimilarDestinationMajorsFilter(raise_defect_exception=True,
@@ -271,6 +279,7 @@ class ExactHomeCountryFiltering(Filtering):
     title = 'All'
     style_image_uri = 'img/similar/all.jpg'
     normal_filters = [
+        filters.ExactWTAGradeFilter(),
         filters.VerySimilarHomeMajorsFilter(raise_defect_exception=True,
                                             accepted_defect_exceptions=[SDIEducationLeakage]),
 
@@ -280,6 +289,7 @@ class ExactHomeCountryFiltering(Filtering):
     ]
 
     strict_filters = [
+        filters.ExactWTAGradeFilter(),
         filters.ExactHomeMajorsFilter(raise_defect_exception=True,
                                       accepted_defect_exceptions=[SDIEducationLeakage]),
 
