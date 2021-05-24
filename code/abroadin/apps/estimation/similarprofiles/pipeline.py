@@ -1,6 +1,3 @@
-import itertools
-import random
-
 from .filterings import (BestCaseFiltering,
                          SimilarHomeUniversityExactDestinationCountryFiltering,
                          SimilarHomeUniversityExactDestinationUniversityFiltering, ExactHomeUniversityFiltering,

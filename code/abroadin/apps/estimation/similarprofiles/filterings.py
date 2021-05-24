@@ -37,7 +37,7 @@ class Filtering:
 
 
 class BestCaseFiltering(Filtering):
-    title = 'Best Matches Ancestors'
+    title = 'Best Matches'
     style_image_uri = 'img/similar/best_matches_ancestors.jpg'
     normal_filters = [
         filters.ExactWTAGradeFilter(),

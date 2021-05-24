@@ -306,19 +306,10 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
 
     def represent_admissions(self, obj, is_unlocked, ):
         if is_unlocked:
-            # print('admissions ################################################################')
-            # t = time.time()
-            # s = str(
-            #     obj.admissions.select_related(
-            #         *FullAdmissionSerializer.related_fields).all().order_by_grade_and_des_rank())
-            # # select_related('apply_profile', 'major', 'grade')
-            # print('query time', time.time() - t)
-            # t = time.time()
             objects = FullAdmissionSerializer(
                 obj.admissions.select_related(
                     *FullAdmissionSerializer.related_fields).all().order_by_grade_and_des_rank(),
                 many=True, context=self.context).data
-            # print("query + serialize time", time.time() - t)
             accessibility_type = AccessibilityTypeChoices.UNLOCKED
         else:
             free_admissions, locked_admissions = obj.get_free_locked_admissions()
@@ -338,16 +329,8 @@ class ApplyProfileSerializer(serializers.ModelSerializer):
 
     def represent_publications(self, obj, is_unlocked, ):
         if is_unlocked:
-            # print('################################################################')
-            # t = time.time()
-            # s = str(obj.publications.all())
-            # print('query time', time.time() - t)
-
-            # t = time.time()
             objects = FullPublicationSerializer(obj.publications.select_related('content_type').all(), many=True,
                                                 context=self.context).data
-            # pprint.pprint(str(obj.publications.all().query))
-            # print("query + serialize time", time.time() - t)
 
             accessibility_type = AccessibilityTypeChoices.UNLOCKED
         else:
