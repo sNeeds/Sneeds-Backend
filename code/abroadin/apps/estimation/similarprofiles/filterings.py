@@ -276,7 +276,7 @@ class ExactHomeUniversityFiltering(Filtering):
 
 
 class ExactHomeCountryFiltering(Filtering):
-    title = 'All'
+    title = 'Home Country'
     style_image_uri = 'img/similar/all.jpg'
     normal_filters = [
         filters.ExactWTAGradeFilter(),

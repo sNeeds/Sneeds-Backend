@@ -64,12 +64,11 @@ class SimilarProfilesPipeline:
 
 SimilarProfilesPipelineObject = SimilarProfilesPipeline(
     [
-        ExactHomeCountryFiltering(),
         BestCaseFiltering(),
         SimilarHomeUniversityExactDestinationCountryFiltering(),
         SimilarHomeUniversityExactDestinationUniversityFiltering(),
         ExactHomeUniversityFiltering(),
-
+        ExactHomeCountryFiltering(),
     ],
     SimilarProfilesTagger,
 )
