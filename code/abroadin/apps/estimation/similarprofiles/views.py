@@ -68,6 +68,19 @@ class ProfilesListAPIViewVersion2(ProfilesListAPIView):
 
         tagged_queryset = SimilarProfilesTagger.tag_queryset3(queryset, sdi)
 
-        res['objects'] = self.get_serializer(tagged_queryset, many=True).data
+        res_objects = self.get_serializer(tagged_queryset, many=True).data
+
+        def refine_tags(tags):
+            refined_tags = []
+            for tag in tags:
+                if tag.startswith('Similar') and tag.replace('Similar', 'Exact') in tags:
+                    continue
+                refined_tags.append(tag)
+            return refined_tags
+
+        for obj in res_objects:
+            obj['tags'] = refine_tags(obj['tags'])
+
+        res['objects'] = res_objects
 
         return Response(res)

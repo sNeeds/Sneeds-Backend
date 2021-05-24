@@ -35,12 +35,8 @@ class Tagger:
         return queryset.annotate(**annotation_dict)
 
     def tag_queryset3(self, queryset, sdi: StudentDetailedInfo):
-        # start_time_ = time.time()
         for tag_class in self.tag_classes:
-            # start_time = time.time()
             queryset = tag_class().tag_queryset2(queryset, sdi)
-            # print(tag_class.title, time.time() - start_time)
-        # print('end of loop', time.time() - start_time_)
         return queryset
 
     def tag_object(self, obj, sdi: StudentDetailedInfo):

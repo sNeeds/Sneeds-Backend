@@ -8,8 +8,8 @@ from abroadin.apps.estimation.form import exceptions as sdi_exception
 
 
 class Filter:
-    raise_defect_exception = None
-    accepted_defect_exceptions = None
+    raise_defect_exception = True
+    accepted_defect_exceptions = []
 
     def __init__(self, **kwargs):
         self.raise_defect_exception = kwargs.pop('raise_defect_exception', False)
@@ -40,6 +40,13 @@ class SimilarAndWorseGPAFilter(Filter):
         high_q = Q(educations__gpa__lte=min(20, gpa + offset))
         low_q = Q(educations__gpa__gte=max(0, gpa - offset - 2))
         return high_q & low_q
+
+
+class ExactWTAGradeFilter(Filter):
+
+    def get_query(self, profiles, sdi: StudentDetailedInfo):
+        wta_grades = sdi.want_to_apply.grades.all().values_list('name', flat=True)
+        return Q(educations__grade__in=wta_grades)
 
 
 class ExactHomeCountryFilter(Filter):
