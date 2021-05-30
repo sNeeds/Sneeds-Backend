@@ -45,8 +45,8 @@ class SimilarAndWorseGPAFilter(Filter):
 class ExactWTAGradeFilter(Filter):
 
     def get_query(self, profiles, sdi: StudentDetailedInfo):
-        wta_grades = sdi.want_to_apply.grades.all().values_list('name', flat=True)
-        return Q(educations__grade__in=wta_grades)
+        wta_grades = sdi.want_to_apply.grades.all().values_list('id', flat=True)
+        return Q(admission__grade__in=wta_grades)
 
 
 class ExactHomeCountryFilter(Filter):

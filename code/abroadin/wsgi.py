@@ -13,10 +13,10 @@ from django.core.wsgi import get_wsgi_application
 
 DEPLOYMENT = int(os.environ.get('DJANGO_DEPLOYMENT', default=0))
 
-if DEPLOYMENT == 0:
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'abroadin.settings.development')
-else:
+if DEPLOYMENT == 1:
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'abroadin.settings.deployment')
+else:
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'abroadin.settings.development')
 
 application = get_wsgi_application()
 
