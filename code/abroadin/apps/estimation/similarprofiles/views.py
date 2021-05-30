@@ -57,8 +57,8 @@ class ProfilesListAPIViewVersion2(ProfilesListAPIView):
         all_ids = set()
 
         for filtering_result in filtering_results:
-            if len(filtering_result['ids']) == 0:
-                continue
+            # if len(filtering_result['ids']) == 0:
+            #     continue
             all_ids = all_ids.union(set(filtering_result['ids']))
             del(filtering_result['qs'])
             res['filters'].append(filtering_result)
