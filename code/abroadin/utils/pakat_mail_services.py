@@ -124,8 +124,12 @@ def create_pakat_doi_contact(email, *args, **kwargs):
     return response.text
 
 
-def send_email(send_to, mail_template, **params):
+def send_email(send_to, mail_template, **parameters):
     url = "https://api.pakat.net/v3/smtp/email"
+
+    params = parameters
+    if not params:
+        params['is_empty_params'] = True
 
     payload = {
         "sender": {"name": "abroadin", "email": 'marketing@abroadin.com'},

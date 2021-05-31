@@ -29,7 +29,7 @@ def get_jwt_tokens(user):
 
 @shared_task()
 def send_webinar_discount(*args, **kwargs):
-    send_email(send_to=kwargs.pop('send_to'), mail_template=kwargs.pop('mail_template'), **kwargs)
+    return send_email(send_to=kwargs.pop('send_to'), mail_template=kwargs.pop('mail_template'), **kwargs)
 
 
 def login_register_social_user(email, provider, first_name, last_name):
@@ -49,6 +49,6 @@ def login_register_social_user(email, provider, first_name, last_name):
             email=email, first_name=first_name, last_name=last_name,
             auth_provider=provider
         )
-        send_webinar_discount.delay(send_to=user.email, mail_template=121)
+        send_webinar_discount.delay(send_to=user.email, mail_template=122)
 
     return user
