@@ -49,6 +49,6 @@ def login_register_social_user(email, provider, first_name, last_name):
             email=email, first_name=first_name, last_name=last_name,
             auth_provider=provider
         )
-        # send_webinar_discount.delay(send_to=user.email, mail_template=107)
+        send_webinar_discount.delay(send_to=user.email, mail_template=107)
 
     return user
