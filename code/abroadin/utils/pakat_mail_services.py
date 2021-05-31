@@ -124,6 +124,21 @@ def create_pakat_doi_contact(email, *args, **kwargs):
     return response.text
 
 
+def send_email(send_to, mail_template, **params):
+    url = "https://api.pakat.net/v3/smtp/email"
+
+    payload = {
+        "sender": {"name": "abroadin", "email": 'marketing@abroadin.com'},
+        "to": [{"email": send_to}],
+        "replyTo": {'email': 'abroadin.marketing@gmail.com'},
+        "params": params,
+        "templateId": mail_template,
+    }
+    json_data = json.dumps(payload)
+    response = requests.request("POST", url, data=json_data, headers=headers)
+    return response.text
+
+
 def send_order_created_email(send_to, name, order_url):
     url = "https://api.sendinblue.com/v3/smtp/email"
 

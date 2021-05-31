@@ -1,6 +1,9 @@
+from celery import shared_task
 from django.contrib.auth import get_user_model
 
 from rest_framework_simplejwt.tokens import RefreshToken
+
+from abroadin.utils.pakat_mail_services import send_email
 
 User = get_user_model()
 
@@ -24,6 +27,11 @@ def get_jwt_tokens(user):
     return data
 
 
+@shared_task()
+def send_webinar_discount(*args, **kwargs):
+    send_email(send_to=kwargs.pop('send_to'), mail_template=kwargs.pop('mail_template'), **kwargs)
+
+
 def login_register_social_user(email, provider, first_name, last_name):
     assert provider in User.AuthProviderTypeChoices.values
 
@@ -41,5 +49,6 @@ def login_register_social_user(email, provider, first_name, last_name):
             email=email, first_name=first_name, last_name=last_name,
             auth_provider=provider
         )
+        send_webinar_discount.delay(send_to=user.email, mail_template=107)
 
     return user
