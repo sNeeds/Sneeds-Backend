@@ -1,3 +1,4 @@
-from abroadin.base.api.generics import CCreateAPIView
+from abroadin.base.api import generics
 
-# class ApplyRedeemCodeAPIView()
+# class ApplyRedeemCodeAPIView(generics.CCreateAPIView):
+#     serializer_class =

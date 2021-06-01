@@ -3,5 +3,5 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # path('apply-redeem-code/', )
+    path('apply-redeem-code/', )
 ]

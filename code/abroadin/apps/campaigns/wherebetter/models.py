@@ -7,7 +7,7 @@ User = get_user_model()
 
 class RedeemCode(models.Model):
     active = models.BooleanField(default=True)
-    code = models.CharField(max_length=32)
+    code = models.CharField(unique=True, max_length=32)
     usage_limit = models.IntegerField(default=2000)
     usages = models.IntegerField(default=0)
     start_date = models.DateTimeField(null=True, blank=True)
@@ -31,17 +31,20 @@ class AppliedRedeemCodes(models.Model):
         unique_together = ('participant', 'redeem_code')
 
 
-class InviteInfo(models.Model):
-    class Origin(models.TextChoices):
-        TELEGRAM = 'Telegram', 'Telegram'
-        FACEBOOK = 'Facebook', 'Facebook'
-        LINKEDIN = 'Linkedin', 'Linkedin'
-        TWITTER = 'Twitter', 'Twitter'
-        INSTAGRAM = 'Instagram', 'Instagram'
+class InviteOrigin(models.TextChoices):
+    TELEGRAM = 'Telegram', 'Telegram'
+    FACEBOOK = 'Facebook', 'Facebook'
+    LINKEDIN = 'Linkedin', 'Linkedin'
+    TWITTER = 'Twitter', 'Twitter'
+    INSTAGRAM = 'Instagram', 'Instagram'
 
+
+class InviteInfo(models.Model):
     invitor = models.ForeignKey(Participant, on_delete=models.CASCADE)
     invited = models.ForeignKey(Participant, on_delete=models.CASCADE)
-    origin = models.CharField(choices=Origin.choices, null=True, blank=True)
+    origin = models.CharField(choices=InviteOrigin.choices, null=True, blank=True)
+    invite_date = models.DateTimeField(auto_now=True, auto_now_add=True)
+    approved = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('invitor', 'invited')
@@ -61,7 +64,3 @@ class Play(models.Model):
     date = models.DateTimeField(auto_now=True, auto_created=True)
     duration = models.SmallIntegerField(default=0, help_text='In seconds')
     answered_questions = ArrayField(models.PositiveSmallIntegerField(), null=True, blank=True)
-
-
-
-
