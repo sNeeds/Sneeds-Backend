@@ -1,6 +1,12 @@
+import uuid
+
 from django.contrib.postgres.fields import JSONField, ArrayField
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.db.models import F
+from django.utils.crypto import get_random_string
+
+from abroadin.apps.campaigns.wherebetter.constants import PARTICIPANT_REFERRAL_CHARS
 
 User = get_user_model()
 
@@ -17,12 +23,21 @@ class RedeemCode(models.Model):
 class Participant(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, unique=True)
     score = models.IntegerField(default=0)
+    rank = models.IntegerField(null=True, blank=True)
     available_rounds = models.IntegerField(default=1)
-    redeem_codes = models.ManyToManyField(RedeemCode, through='AppliedRedeemCodes')
+    redeem_codes = models.ManyToManyField(RedeemCode, through='AppliedRedeemCode')
     invited_participants = models.ManyToManyField(User, through='InviteInfo')
+    referral_id = models.CharField(max_length=8, )
+
+    @classmethod
+    def get_random_ref(cls):
+        s = get_random_string(length=8, allowed_chars=PARTICIPANT_REFERRAL_CHARS)
+        if cls.objects.filter(referral_id=s).exists():
+            return cls.get_random_ref
+        return s
 
 
-class AppliedRedeemCodes(models.Model):
+class AppliedRedeemCode(models.Model):
     participant = models.ForeignKey(Participant, on_delete=models.CASCADE)
     redeem_code = models.ForeignKey(RedeemCode, on_delete=models.CASCADE)
     apply_date = models.DateTimeField(auto_now=True)
@@ -40,14 +55,17 @@ class InviteOrigin(models.TextChoices):
 
 
 class InviteInfo(models.Model):
-    invitor = models.ForeignKey(Participant, on_delete=models.CASCADE)
-    invited = models.ForeignKey(Participant, on_delete=models.CASCADE)
+    invitor_user = models.ForeignKey(User, on_delete=models.CASCADE)
+    invited_user = models.ForeignKey(User, on_delete=models.CASCADE)
     origin = models.CharField(choices=InviteOrigin.choices, null=True, blank=True)
     invite_date = models.DateTimeField(auto_now=True, auto_now_add=True)
     approved = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('invitor', 'invited')
+
+    def apply_extra_round_to_invitor(self):
+        Participant.objects.filter(user=self.invitor_user).update(available_rounds=F('available_rounds') + 1)
 
 
 class UsedFeatures(models.Model):
