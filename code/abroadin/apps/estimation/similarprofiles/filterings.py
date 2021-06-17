@@ -74,8 +74,9 @@ class BestCaseFiltering(Filtering):
                ' desired majors and universities with a GPA under your gpa.'
         wta_majors = list(sdi.want_to_apply.majors.values_list('name', flat=True))
         wta_universities = list(sdi.want_to_apply.universities.values_list('name', flat=True))
+        wta_countries = list(sdi.want_to_apply.countries.values_list('name', flat=True))
 
-        if len(wta_majors) == 1:
+        if len(wta_majors) == 1 and wta_universities:
             text = ngettext_lazy(
                 'Find out about %(last_edu_uni)s students admitted to %(wta_major)s'
                 ' at %(wta_university)s with a GPA under %(gpa_upper_bound)d.',
@@ -90,7 +91,22 @@ class BestCaseFiltering(Filtering):
                        'gpa_upper_bound': (sdi.last_education.gpa + SIMILAR_GPA_OFFSET),
                    }
 
-        if len(wta_majors) > 1:
+        if len(wta_majors) == 1 and not wta_universities and wta_countries:
+            text = ngettext_lazy(
+                'Find out about %(last_edu_uni)s students admitted to %(wta_major)s'
+                ' in %(wta_country)s with a GPA under %(gpa_upper_bound)d.',
+
+                'Find out about %(last_edu_uni)s students admitted to %(wta_major)s'
+                ' with a GPA under %(gpa_upper_bound)d based on your desired destinations.',
+                len(wta_countries)
+            ) % {
+                       'last_edu_uni': sdi.last_education.university.name,
+                       'wta_major': wta_majors.pop().strip(),
+                       'wta_country': wta_countries.pop(),
+                       'gpa_upper_bound': (sdi.last_education.gpa + SIMILAR_GPA_OFFSET),
+                   }
+
+        if len(wta_majors) > 1 and wta_universities:
             text = ngettext_lazy(
                 'Find out about %(last_edu_uni)s students admitted to your desired majors'
                 ' at %(wta_university)s with a GPA under %(gpa_upper_bound)d.',
@@ -100,6 +116,19 @@ class BestCaseFiltering(Filtering):
             ) % {
                        'last_edu_uni': sdi.last_education.university.name,
                        'wta_university': wta_universities.pop(),
+                       'gpa_upper_bound': (sdi.last_education.gpa + SIMILAR_GPA_OFFSET),
+                   }
+
+        if len(wta_majors) > 1 and not wta_universities and wta_countries:
+            text = ngettext_lazy(
+                'Find out about %(last_edu_uni)s students admitted to your desired majors'
+                ' in %(wta_country)s with a GPA under %(gpa_upper_bound)d.',
+                'Find out about %(last_edu_uni)s students with admissions close to your'
+                ' desired majors and destinations with a GPA under %(gpa_upper_bound)d.',
+                len(wta_countries)
+            ) % {
+                       'last_edu_uni': sdi.last_education.university.name,
+                       'wta_country': wta_countries.pop(),
                        'gpa_upper_bound': (sdi.last_education.gpa + SIMILAR_GPA_OFFSET),
                    }
         return text
@@ -202,13 +231,13 @@ class SimilarHomeUniversityExactDestinationUniversityFiltering(Filtering):
     ]
 
     def get_filter_description(self, sdi: StudentDetailedInfo):
-        text = 'Find out about students with admissions close to your desired majors and universities' \
-               ' from universities with rankings close to your education university.'
+        text = 'Find out about students admitted to your desired majors and destinations from universities' \
+                ' with rankings close to your last university.'
 
         wta_majors = list(sdi.want_to_apply.majors.values_list('name', flat=True))
         wta_universities = list(sdi.want_to_apply.universities.values_list('name', flat=True))
 
-        if len(wta_majors) == 1:
+        if len(wta_majors) == 1 and wta_universities:
             text = ngettext_lazy(
                 'Find out about %(wta_major)s students admitted to %(wta_university)s from universities'
                 ' with rankings close to %(last_edu_uni)s.',
@@ -221,7 +250,7 @@ class SimilarHomeUniversityExactDestinationUniversityFiltering(Filtering):
                        'last_edu_uni': sdi.last_education.university.name,
                    }
 
-        if len(wta_majors) > 1:
+        if len(wta_majors) > 1 and wta_universities:
             text = ngettext_lazy(
                 'Find out about students admitted to your desired majors in %(wta_university)s'
                 ' from universities with rankings close to %(last_edu_uni)s.',

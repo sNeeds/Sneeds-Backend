@@ -21,26 +21,25 @@ class RedeemCode(models.Model):
 
 
 class Participant(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, unique=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     score = models.IntegerField(default=0)
     rank = models.IntegerField(null=True, blank=True)
     available_rounds = models.IntegerField(default=1)
     redeem_codes = models.ManyToManyField(RedeemCode, through='AppliedRedeemCode')
-    invited_participants = models.ManyToManyField(User, through='InviteInfo')
-    referral_id = models.CharField(max_length=8, )
+    referral_id = models.CharField(max_length=8)
 
     @classmethod
     def get_random_ref(cls):
         s = get_random_string(length=8, allowed_chars=PARTICIPANT_REFERRAL_CHARS)
         if cls.objects.filter(referral_id=s).exists():
-            return cls.get_random_ref
+            return cls.get_random_ref()
         return s
 
 
 class AppliedRedeemCode(models.Model):
     participant = models.ForeignKey(Participant, on_delete=models.CASCADE)
     redeem_code = models.ForeignKey(RedeemCode, on_delete=models.CASCADE)
-    apply_date = models.DateTimeField(auto_now=True)
+    apply_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ('participant', 'redeem_code')
@@ -55,14 +54,14 @@ class InviteOrigin(models.TextChoices):
 
 
 class InviteInfo(models.Model):
-    invitor_user = models.ForeignKey(User, on_delete=models.CASCADE)
-    invited_user = models.ForeignKey(User, on_delete=models.CASCADE)
-    origin = models.CharField(choices=InviteOrigin.choices, null=True, blank=True)
-    invite_date = models.DateTimeField(auto_now=True, auto_now_add=True)
+    invitor_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="%(app_label)s_%(class)s_as_invitor")
+    invited_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="%(app_label)s_%(class)s_as_invited")
+    origin = models.CharField(max_length=16, choices=InviteOrigin.choices, null=True, blank=True)
+    invite_date = models.DateTimeField(auto_now_add=True)
     approved = models.BooleanField(default=False)
 
     class Meta:
-        unique_together = ('invitor', 'invited')
+        unique_together = ('invitor_user', 'invited_user')
 
     def apply_extra_round_to_invitor(self):
         Participant.objects.filter(user=self.invitor_user).update(available_rounds=F('available_rounds') + 1)
@@ -73,7 +72,7 @@ class UsedFeatures(models.Model):
         ANALYZE = 'Analyze'
 
     participant = models.ForeignKey(Participant, on_delete=models.CASCADE)
-    feature = models.CharField(Feature.choices)
+    feature = models.CharField(max_length=32, choices=Feature.choices)
     date = models.DateTimeField(auto_now=True, auto_created=True)
 
 
