@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'abroadin.apps.data.programs',
     'abroadin.apps.analytics.events',
     'abroadin.apps.applyprofile',
-    # 'abroadin.apps.campaigns.wherebetter',
+    'abroadin.apps.campaigns.wherebetter',
 
     'django.contrib.auth',
     'django.contrib.admin',

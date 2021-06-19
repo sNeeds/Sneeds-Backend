@@ -1,4 +1,5 @@
 from rest_framework.generics import get_object_or_404
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 
 from abroadin.base.api import generics
@@ -10,12 +11,10 @@ from .serializers import (AppliedRedeemCodesRequestSerializer, AppliedRedeemCode
                           ParticipantRequestSerializer, ParticipantSerializer)
 
 
-class ParticipantAPIView(generics.CRetrieveAPIView):
-    lookup_field = 'user'
-    lookup_url_kwarg = 'user_id'
-    queryset = Participant.objects.all()
-    serializer_class = ParticipantSerializer
-    permission_classes = [IsAuthenticated, IsParticipantOwner]
+class SmallResultsSetPagination(PageNumberPagination):
+    page_size = 20
+    page_size_query_param = 'page_size'
+    max_page_size = 20
 
 
 class ParticipantsAPIView(generics.CListCreateAPIView):
@@ -23,6 +22,15 @@ class ParticipantsAPIView(generics.CListCreateAPIView):
     request_serializer_class = ParticipantRequestSerializer
     serializer_class = SafeParticipantSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = SmallResultsSetPagination
+
+
+class ParticipantAPIView(generics.CRetrieveAPIView):
+    lookup_field = 'user'
+    lookup_url_kwarg = 'user_id'
+    queryset = Participant.objects.all()
+    serializer_class = ParticipantSerializer
+    permission_classes = [IsAuthenticated, IsParticipantOwner]
 
 
 class ApplyRedeemCodeAPIView(generics.CListCreateAPIView):

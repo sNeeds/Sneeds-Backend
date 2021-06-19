@@ -109,3 +109,80 @@ class BrowsableAPIRenderer(renderers.BrowsableAPIRenderer):
                                                           request, **kwargs)
 
             return self.render_form_for_serializer(serializer)
+
+    def get_raw_data_form(self, data, view, method, request):
+        """
+        Returns a form that allows for arbitrary content types to be tunneled
+        via standard HTML forms.
+        (Which are typically application/x-www-form-urlencoded)
+        """
+        # See issue #2089 for refactoring this.
+        serializer = getattr(data, 'serializer', None)
+        if serializer and not getattr(serializer, 'many', False):
+            instance = getattr(serializer, 'instance', None)
+            if isinstance(instance, Page):
+                instance = None
+        else:
+            instance = None
+
+        with override_method(view, request, method) as request:
+            # Check permissions
+            if not self.show_form_for_method(view, method, request, instance):
+                return
+
+            # If possible, serialize the initial content for the generic form
+            default_parser = view.parser_classes[0]
+            renderer_class = getattr(default_parser, 'renderer_class', None)
+            if hasattr(view, 'get_serializer') and renderer_class:
+                # View has a serializer defined and parser class has a
+                # corresponding renderer that can be used to render the data.
+
+                if method in ('PUT', 'PATCH'):
+                    if hasattr(view, 'get_request_serializer'):
+                        serializer = view.get_request_serializer(instance=instance)
+                    else:
+                        serializer = view.get_serializer(instance=instance)
+                else:
+                    if hasattr(view, 'get_request_serializer'):
+                        serializer = view.get_request_serializer()
+                    else:
+                        serializer = view.get_serializer()
+
+                # Render the raw data content
+                renderer = renderer_class()
+                accepted = self.accepted_media_type
+                context = self.renderer_context.copy()
+                context['indent'] = 4
+
+                # strip HiddenField from output
+                data = serializer.data.copy()
+                for name, field in serializer.fields.items():
+                    if isinstance(field, serializers.HiddenField):
+                        data.pop(name, None)
+                content = renderer.render(data, accepted, context)
+                # Renders returns bytes, but CharField expects a str.
+                content = content.decode()
+            else:
+                content = None
+
+            # Generate a generic form that includes a content type field,
+            # and a content field.
+            media_types = [parser.media_type for parser in view.parser_classes]
+            choices = [(media_type, media_type) for media_type in media_types]
+            initial = media_types[0]
+
+            class GenericContentForm(forms.Form):
+                _content_type = forms.ChoiceField(
+                    label='Media type',
+                    choices=choices,
+                    initial=initial,
+                    widget=forms.Select(attrs={'data-override': 'content-type'})
+                )
+                _content = forms.CharField(
+                    label='Content',
+                    widget=forms.Textarea(attrs={'data-override': 'content'}),
+                    initial=content,
+                    required=False
+                )
+
+            return GenericContentForm()

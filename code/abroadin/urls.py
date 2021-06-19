@@ -31,6 +31,7 @@ urlpatterns = [
                   path('analyze/', include('abroadin.apps.estimation.urls')),
                   path('analytics/', include('abroadin.apps.analytics.urls')),
                   path('apply-profile/', include('abroadin.apps.applyprofile.urls')),
+                  path('campaigns/', include('abroadin.apps.campaigns.urls')),
                   path('test/', include('abroadin.apps.testapps.urls')),
                   path('__debug__/', include(debug_toolbar.urls)),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

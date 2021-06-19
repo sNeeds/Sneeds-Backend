@@ -2,6 +2,8 @@ from datetime import datetime
 
 from django.utils.translation import gettext_lazy as _
 from django.db.utils import OperationalError
+from django.contrib.auth import get_user_model
+
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
@@ -9,13 +11,22 @@ from abroadin.apps.users.customAuth.serializers import SafeUserDataSerializer, U
 
 from .models import Participant, AppliedRedeemCode, RedeemCode, InviteInfo
 
+User = get_user_model()
+
 
 class ParticipantRequestSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField()
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), html_cutoff=0)
 
     class Meta:
         model = Participant
         fields = ['id', 'user']
+
+    def validate_user(self, value):
+        if self.context['request'].user != value:
+            raise ValidationError(_("Request user and entered user must be same."))
+        if Participant.objects.filter(user=value).exists():
+            raise ValidationError(_("User is already in the match."))
+        return value
 
 
 class SafeParticipantSerializer(serializers.ModelSerializer):
@@ -35,7 +46,7 @@ class ParticipantSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'score', 'applied_redeem_codes']
 
     def get_applied_redeem_codes(self, obj: Participant):
-        obj.user.all().values_list('redeem_code__code')
+        return obj.redeem_codes.all().values_list('code')
 
 
 class AppliedRedeemCodesRequestSerializer(serializers.ModelSerializer):
