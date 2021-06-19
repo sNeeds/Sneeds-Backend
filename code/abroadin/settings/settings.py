@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'abroadin.apps.data.programs',
     'abroadin.apps.analytics.events',
     'abroadin.apps.applyprofile',
-    'abroadin.apps.campaigns.wherebetter',
+    # 'abroadin.apps.campaigns.wherebetter',
 
     'django.contrib.auth',
     'django.contrib.admin',
@@ -130,6 +130,10 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
         'rest_framework.filters.OrderingFilter'
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'abroadin.base.api.renderers.BrowsableAPIRenderer',
     ],
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
     'EXCEPTION_HANDLER': 'abroadin.utils.custom.exception_handler.exception_handler',
