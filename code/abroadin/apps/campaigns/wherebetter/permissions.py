@@ -14,6 +14,12 @@ class IsInviteInfoOwner(BasePermission):
         return obj.invitor_user == request.user
 
 
+class IsAppliedRedeemCodeOwner(BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        return obj.participant.user == request.user
+
+
 class URLUserMatchReqUser(BasePermission):
 
     def has_permission(self, request, view):

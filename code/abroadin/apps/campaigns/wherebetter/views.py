@@ -4,8 +4,9 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 
 from abroadin.base.api import generics
-from .models import AppliedRedeemCode, InviteInfo, Participant
-from .permissions import IsParticipantOwner, URLUserMatchReqUser, IsInviteInfoOwner
+from abroadin.base.api.enum_views import EnumViewList
+from .models import AppliedRedeemCode, InviteInfo, Participant, InviteOrigin
+from .permissions import IsParticipantOwner, URLUserMatchReqUser, IsInviteInfoOwner, IsAppliedRedeemCodeOwner
 
 from .serializers import (AppliedRedeemCodesRequestSerializer, AppliedRedeemCodesSerializer,
                           InviteInfoSerializer, InviteInfoRequestSerializer, SafeParticipantSerializer,
@@ -34,9 +35,7 @@ class ParticipantAPIView(generics.CRetrieveAPIView):
     permission_classes = [IsAuthenticated, IsParticipantOwner]
 
 
-class ApplyRedeemCodeAPIView(generics.CListCreateAPIView):
-    # lookup_field = 'participant__user'
-    # lookup_url_kwarg = 'user_id'
+class ApplyRedeemCodesAPIView(generics.CListCreateAPIView):
     queryset = AppliedRedeemCode.objects.all()
     request_serializer_class = AppliedRedeemCodesRequestSerializer
     serializer_class = AppliedRedeemCodesSerializer
@@ -44,6 +43,14 @@ class ApplyRedeemCodeAPIView(generics.CListCreateAPIView):
 
     def get_queryset(self):
         return AppliedRedeemCode.objects.filter(participant__user=self.request.user)
+
+
+class ApplyRedeemCodeAPIView(generics.CRetrieveAPIView):
+    lookup_field = 'id'
+    queryset = AppliedRedeemCode.objects.all()
+    request_serializer_class = AppliedRedeemCodesRequestSerializer
+    serializer_class = AppliedRedeemCodesSerializer
+    permission_classes = [IsAuthenticated, IsAppliedRedeemCodeOwner]
 
 
 class InviteInfoListAPIView(generics.CListAPIView):
@@ -80,3 +87,7 @@ class InviteByReferralAPIView(generics.CCreateAPIView):
     )
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
+
+
+class InviteOriginChoicesListView(EnumViewList):
+    enum_class = InviteOrigin

@@ -19,6 +19,9 @@ class RedeemCode(models.Model):
     start_date = models.DateTimeField(null=True, blank=True)
     expiration_date = models.DateTimeField(null=True, blank=True)
 
+    def __str__(self):
+        return self.code
+
 
 class Participant(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
