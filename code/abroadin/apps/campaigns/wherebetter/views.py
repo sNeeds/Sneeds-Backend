@@ -1,10 +1,11 @@
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 
 from abroadin.base.api import generics
 from .models import AppliedRedeemCode, InviteInfo, Participant
-from .permissions import IsParticipantOwner, URLUserMatchReqUser
+from .permissions import IsParticipantOwner, URLUserMatchReqUser, IsInviteInfoOwner
 
 from .serializers import (AppliedRedeemCodesRequestSerializer, AppliedRedeemCodesSerializer,
                           InviteInfoSerializer, InviteInfoRequestSerializer, SafeParticipantSerializer,
@@ -34,24 +35,48 @@ class ParticipantAPIView(generics.CRetrieveAPIView):
 
 
 class ApplyRedeemCodeAPIView(generics.CListCreateAPIView):
-    lookup_field = 'participant__user'
-    lookup_url_kwarg = 'user_id'
+    # lookup_field = 'participant__user'
+    # lookup_url_kwarg = 'user_id'
     queryset = AppliedRedeemCode.objects.all()
     request_serializer_class = AppliedRedeemCodesRequestSerializer
     serializer_class = AppliedRedeemCodesSerializer
-    permission_classes = [IsAuthenticated, URLUserMatchReqUser]
+    permission_classes = [IsAuthenticated]
 
-    # def get_queryset(self):
-    #     return AppliedRedeemCode.objects.filter(participant__user=self.request.user)
+    def get_queryset(self):
+        return AppliedRedeemCode.objects.filter(participant__user=self.request.user)
 
 
-class InviteByReferralAPIView(generics.CListCreateAPIView):
-    lookup_field = 'invitor__user'
-    lookup_url_kwarg = 'user_id'
+class InviteInfoListAPIView(generics.CListAPIView):
     queryset = InviteInfo.objects.all()
     request_serializer_class = InviteInfoRequestSerializer
     serializer_class = InviteInfoSerializer
-    permission_classes = [IsAuthenticated, URLUserMatchReqUser]
+    permission_classes = [IsAuthenticated]
 
-    # def get_queryset(self):
-    #     return InviteInfo.objects.filter(invitor_user=self.request.user)
+    def get_queryset(self):
+        return InviteInfo.objects.filter(invitor_user=self.request.user)
+
+
+class InviteInfoDetailAPIView(generics.CRetrieveAPIView):
+    lookup_field = 'id'
+    queryset = InviteInfo.objects.all()
+    request_serializer_class = InviteInfoRequestSerializer
+    serializer_class = InviteInfoSerializer
+    permission_classes = [IsAuthenticated, IsInviteInfoOwner]
+
+
+class InviteByReferralAPIView(generics.CCreateAPIView):
+
+    queryset = InviteInfo.objects.all()
+    request_serializer_class = InviteInfoRequestSerializer
+    serializer_class = InviteInfoSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return InviteInfo.objects.filter(invitor_user=self.request.user)
+
+    @swagger_auto_schema(
+        request_body=request_serializer_class,
+        responses={200: serializer_class},
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)

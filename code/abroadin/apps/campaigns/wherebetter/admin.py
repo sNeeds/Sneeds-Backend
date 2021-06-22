@@ -1,3 +1,9 @@
 from django.contrib import admin
 
-# Register your models here.
+from . import models
+
+
+admin.site.register(models.Participant)
+admin.site.register(models.RedeemCode)
+admin.site.register(models.AppliedRedeemCode)
+admin.site.register(models.InviteInfo)

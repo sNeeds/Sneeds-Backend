@@ -8,6 +8,12 @@ class IsParticipantOwner(BasePermission):
         return obj.user == request.user
 
 
+class IsInviteInfoOwner(BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        return obj.invitor_user == request.user
+
+
 class URLUserMatchReqUser(BasePermission):
 
     def has_permission(self, request, view):
@@ -15,5 +21,5 @@ class URLUserMatchReqUser(BasePermission):
             _('Missing user id lookup_url_kwarg in view: {}'.format(str(view)))
         user_id = view.kwargs.get(view.lookup_url_kwarg, None)
         if user_id:
-            return user_id == request.user
+            return user_id == request.user.id
         return True

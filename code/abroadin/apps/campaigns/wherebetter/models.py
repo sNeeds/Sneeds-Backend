@@ -28,6 +28,9 @@ class Participant(models.Model):
     redeem_codes = models.ManyToManyField(RedeemCode, through='AppliedRedeemCode')
     referral_id = models.CharField(max_length=8)
 
+    def __str__(self):
+        return self.user.get_full_name() + ' ({}) '.format(self.id)
+
     @classmethod
     def get_random_ref(cls):
         s = get_random_string(length=8, allowed_chars=PARTICIPANT_REFERRAL_CHARS)

@@ -1,8 +1,10 @@
 from datetime import datetime
+import pytz
 
 from django.utils.translation import gettext_lazy as _
 from django.db.utils import OperationalError
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -10,6 +12,7 @@ from rest_framework.exceptions import ValidationError
 from abroadin.apps.users.customAuth.serializers import SafeUserDataSerializer, UserSerializer
 
 from .models import Participant, AppliedRedeemCode, RedeemCode, InviteInfo
+
 
 User = get_user_model()
 
@@ -43,7 +46,7 @@ class ParticipantSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Participant
-        fields = ['id', 'user', 'score', 'applied_redeem_codes']
+        fields = ['id', 'user', 'score', 'rank', 'applied_redeem_codes', 'referral_id', 'available_rounds']
 
     def get_applied_redeem_codes(self, obj: Participant):
         return obj.redeem_codes.all().values_list('code')
@@ -51,6 +54,7 @@ class ParticipantSerializer(serializers.ModelSerializer):
 
 class AppliedRedeemCodesRequestSerializer(serializers.ModelSerializer):
     redeem_code_text = serializers.CharField(max_length=32)
+    participant = serializers.PrimaryKeyRelatedField(queryset=Participant.objects.all(), html_cutoff=0)
 
     class Meta:
         model = AppliedRedeemCode
@@ -59,7 +63,7 @@ class AppliedRedeemCodesRequestSerializer(serializers.ModelSerializer):
     def validate_redeem_code_text(self, value):
         try:
             redeem_code = RedeemCode.objects.get(code=value)
-        except RedeemCode.DoesNotExist():
+        except RedeemCode.DoesNotExist:
             raise ValidationError(_("Redeem code doesn't exist."))
 
         if not redeem_code.active:
@@ -68,12 +72,14 @@ class AppliedRedeemCodesRequestSerializer(serializers.ModelSerializer):
         if redeem_code.usage_limit - redeem_code.usages < 1:
             raise ValidationError(_("Redeem code usage limit has reached to zero. :("))
 
-        now = datetime.now()
+        utc = pytz.UTC
 
-        if now < redeem_code.start_date:
+        now = datetime.now().replace(tzinfo=utc)
+
+        if now < redeem_code.start_date.replace(tzinfo=utc):
             raise ValidationError(_("Redeem code is not usable yet."))
 
-        if now > redeem_code.expiration_date:
+        if now > redeem_code.expiration_date.replace(tzinfo=utc):
             raise ValidationError(_("Redeem code is expired."))
 
         return value
@@ -116,16 +122,11 @@ class AppliedRedeemCodesSerializer(serializers.ModelSerializer):
 
 class InviteInfoRequestSerializer(serializers.ModelSerializer):
     referral_id = serializers.CharField(write_only=True, max_length=8)
+    invited_user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), html_cutoff=0)
 
     class Meta:
         model = InviteInfo
         fields = ['id', 'referral_id', 'invited_user', 'origin']
-
-    # def validate_referral_id(self, value):
-    #     qs = Participant.objects.filter(referral_id=value)
-    #     if not qs.exists():
-    #         raise ValidationError(_("There is no user with this referral id."))
-    #     return value
 
     def validate_invited_user(self, value):
         assert self.context is not None, "context is None"
@@ -141,6 +142,9 @@ class InviteInfoRequestSerializer(serializers.ModelSerializer):
         except Participant.DoesNotExist:
             raise ValidationError(_("There is no user with this referral id."))
 
+        if validated_data['invited_user'] == validated_data['invitor_user']:
+            raise ValidationError(_("User can't invite himself."))
+
         if InviteInfo.objects.filter(invited_user=validated_data['invited_user'],
                                      invitor_user=validated_data['invitor_user']
                                      ).exists():
@@ -153,8 +157,7 @@ class InviteInfoRequestSerializer(serializers.ModelSerializer):
 
 
 class InviteInfoSerializer(serializers.ModelSerializer):
-    referral_id = serializers.CharField(write_only=True, max_length=8)
 
     class Meta:
         model = InviteInfo
-        fields = ['id', 'invitor_user', 'invited_user', 'origin']
+        fields = ['id', 'invitor_user', 'invited_user', 'origin', 'approved', 'invite_date']

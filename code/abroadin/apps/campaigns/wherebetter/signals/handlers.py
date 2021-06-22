@@ -48,7 +48,8 @@ def pre_save_participant(sender, instance, *args, **kwargs):
 
 def pre_save_invite_info(sender, instance: InviteInfo, *args, **kwargs):
     if instance._state.adding is True and instance._state.db:
-        if instance.approved:
+        if instance.approved or instance.invited_user.is_email_verified:
+            instance.approved = True
             instance.apply_extra_round_to_invitor()
     else:
         db_instance = InviteInfo.objects.get(pk=instance.pk)
@@ -58,6 +59,7 @@ def pre_save_invite_info(sender, instance: InviteInfo, *args, **kwargs):
 
 pre_save.connect(pre_save_participant, Participant)
 pre_save.connect(pre_save_invite_info, InviteInfo)
+pre_save.connect(pre_save_user, User)
 
 post_save.connect(post_save_applied_redeem_code, AppliedRedeemCode)
 post_delete.connect(post_delete_applied_redeem_code, AppliedRedeemCode)
