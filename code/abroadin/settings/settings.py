@@ -16,6 +16,7 @@ INSTALLED_APPS = [
     'phonenumber_field',
     'rangefilter',
     'froala_editor',
+    'channels',
 
     'abroadin.apps.docs',
     'abroadin.apps.customUtils',
@@ -92,6 +93,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'abroadin.wsgi.application'
+ASGI_APPLICATION = "abroadin.asgi.application"
 
 LANGUAGE_CODE = 'en-us'
 
@@ -137,6 +139,15 @@ REST_FRAMEWORK = {
     ],
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
     'EXCEPTION_HANDLER': 'abroadin.utils.custom.exception_handler.exception_handler',
+}
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
 }
 
 DATABASES = {

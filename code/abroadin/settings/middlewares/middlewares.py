@@ -1,4 +1,9 @@
 import pytz
+from channels.auth import AuthMiddleware
+from channels.auth import get_user as async_get_user
+from channels.db import database_sync_to_async
+from channels.middleware import BaseMiddleware
+from channels.sessions import CookieMiddleware, SessionMiddleware
 
 from django.utils import timezone
 from django.contrib.auth.middleware import get_user
@@ -74,3 +79,46 @@ class JWTAuthenticationMiddleware(object):
             user = authentication.JWTAuthentication().authenticate(request)[0]
 
         return user
+
+
+@database_sync_to_async
+async def get_jwt_user(scope):
+
+    print('injaaaaaa1')
+    user = await async_get_user(scope)
+
+    print('2', user)
+
+    print('2.5', user.is_authenticated)
+
+    if user.is_authenticated:
+        return user
+
+    authenticated_users_by_jwt = authentication.JWTAuthentication().authenticate(scope['request'])
+
+    print('3', authenticated_users_by_jwt)
+    if authenticated_users_by_jwt:
+        user = authenticated_users_by_jwt[0]
+
+    return user
+
+
+class ChannelsJWTAuthenticationMiddleware(BaseMiddleware):
+
+    async def __call__(self, scope, receive, send):
+        """
+        ASGI application; can insert things into the scope and run asynchronous
+        code.
+        """
+        # Copy scope to stop changes going upstream
+        scope = dict(scope)
+        scope['user'] = await get_jwt_user(scope)
+
+        print('mmmm', self.inner)
+
+        return await self.inner(scope, receive, send)
+
+
+def AuthMiddlewareStack(inner):
+    # return CookieMiddleware(SessionMiddleware(AuthMiddleware(ChannelsJWTAuthenticationMiddleware(inner))))
+    return CookieMiddleware(SessionMiddleware(AuthMiddleware(inner)))
